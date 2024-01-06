@@ -5,6 +5,7 @@ export const Sidebar = styled("aside", {
     position: "relative",
     display: "flex",
     flexDirection: "column",
+    transition: "transform 0.3s ease-in-out",
   },
   variants: {
     size: {
@@ -21,15 +22,15 @@ export const Sidebar = styled("aside", {
         width: "240px",
         height: "full",
         background: "oklch(62.84% 0.202 256.31)",
-        transform: "translateX(-100%)",
-        transition: "transform 0.3s ease-in-out",
       },
     },
     opened: {
       true: {
         transform: "translateX(0)",
       },
-      false: {},
+      false: {
+        transform: "translateX(-100%)",
+      },
     },
   },
 })

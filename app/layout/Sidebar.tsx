@@ -4,6 +4,7 @@ import { useAtom, useSetAtom } from "jotai"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { useEffect } from "react"
 import { useMediaQuery } from "react-responsive"
 
 import { AppState } from "@/lib/globalAtoms"
@@ -18,6 +19,11 @@ export default function Sidebar() {
   const router = useRouter()
   const isMobile = useMediaQuery({ maxWidth: 800 })
   const [appState, setAppState] = useAtom(AppState)
+
+  // 윈도우 사이즈가 변할 때마다 열림 상태 초기화
+  useEffect(() => {
+    setAppState((s) => ({ ...s, isSidebarOpened: !isMobile }))
+  }, [isMobile, setAppState])
 
   const opened = appState.isSidebarOpened
   function toggleSidebar() {
@@ -37,7 +43,7 @@ export default function Sidebar() {
       <S.Sidebar size={isMobile ? "mobile" : "desktop"} opened={opened}>
         <S.Title>
           <Image
-            {...kongal}
+            src={kongal}
             alt="콩알이"
             style={{ width: 60, height: 40, objectFit: "contain", objectPosition: "left" }}
           />
