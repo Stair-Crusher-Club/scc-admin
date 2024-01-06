@@ -1,6 +1,8 @@
 import "@reactleaf/input/style"
 import type { Metadata } from "next"
 import { Noto_Sans_KR } from "next/font/google"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 import "./globals.css"
 import * as S from "./layout.style"
@@ -23,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <S.Body>
             <Header />
             {children}
+            <ToastContainer />
           </S.Body>
         </S.Layout>
       </body>

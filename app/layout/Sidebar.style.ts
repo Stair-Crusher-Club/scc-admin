@@ -97,7 +97,7 @@ export const SidebarDim = styled("div", {
     left: "0",
     width: "full",
     height: "full",
-    background: "rgba(255,255,255,0.5)",
+    background: "rgba(0,0,0,0.5)",
     backdropFilter: "blur(4px)",
     transition: "opacity 0.3s ease-in-out",
   },

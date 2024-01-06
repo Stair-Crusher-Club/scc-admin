@@ -1,12 +1,13 @@
 "use client"
 
-import { useAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useMediaQuery } from "react-responsive"
 
 import { AppState } from "@/lib/globalAtoms"
+import { storage } from "@/lib/storage"
 
 import { Spacer } from "@/styles/jsx"
 
@@ -14,12 +15,21 @@ import * as S from "./Sidebar.style"
 import kongal from "./character_astronut.png"
 
 export default function Sidebar() {
+  const router = useRouter()
   const isMobile = useMediaQuery({ maxWidth: 800 })
   const [appState, setAppState] = useAtom(AppState)
 
   const opened = appState.isSidebarOpened
   function toggleSidebar() {
     setAppState((s) => ({ ...s, isSidebarOpened: !s.isSidebarOpened }))
+  }
+
+  function logout() {
+    storage.remove("token")
+    if (isMobile) {
+      setAppState((s) => ({ ...s, isSidebarOpened: false }))
+    }
+    router.replace("/account/login")
   }
 
   return (
@@ -39,7 +49,7 @@ export default function Sidebar() {
           <MenuItem href="/region">오픈 지역 관리</MenuItem>
         </S.Menu>
         <Spacer />
-        <S.LogoutButton>로그아웃</S.LogoutButton>
+        <S.LogoutButton onClick={logout}>로그아웃</S.LogoutButton>
       </S.Sidebar>
       {isMobile && <S.SidebarDim opened={opened} onClick={toggleSidebar} />}
     </>
@@ -47,10 +57,19 @@ export default function Sidebar() {
 }
 
 function MenuItem({ href, children }: { href: string; children: React.ReactNode }) {
+  const isMobile = useMediaQuery({ maxWidth: 800 })
   const path = usePathname()
   const isActive = path.startsWith(href)
+  const setAppState = useSetAtom(AppState)
+
+  function closeSidebar() {
+    if (isMobile) {
+      setAppState((s) => ({ ...s, isSidebarOpened: false }))
+    }
+  }
+
   return (
-    <Link href={href}>
+    <Link href={href} onClick={closeSidebar}>
       <S.MenuItem isActive={isActive}>{children}</S.MenuItem>
     </Link>
   )

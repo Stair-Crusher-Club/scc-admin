@@ -21,7 +21,7 @@ export default function Header() {
     <S.Header size={isMobile ? "mobile" : "desktop"}>
       {isMobile && (
         <button onClick={openSidebar}>
-          <Hamburger size={24} />
+          <Hamburger size={24} color="black" />
         </button>
       )}
     </S.Header>
