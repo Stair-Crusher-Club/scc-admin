@@ -4,7 +4,8 @@ export const Header = styled("header", {
   base: {
     position: "relative",
     height: "72px",
-    background: "red",
+    background: "white",
+    borderBottom: "1px solid #eaeaea",
   },
   variants: {
     size: {
