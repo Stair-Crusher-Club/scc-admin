@@ -13,5 +13,6 @@ export const Body = styled("div", {
     display: "flex",
     flexDir: "column",
     width: "full",
+    overflow: "scroll",
   },
 })

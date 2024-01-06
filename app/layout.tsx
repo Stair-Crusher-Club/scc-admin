@@ -4,11 +4,10 @@ import { Noto_Sans_KR } from "next/font/google"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
-import SafeHydration from "@/lib/components/SafeHydration"
-
 import "./globals.css"
 import * as S from "./layout.style"
 import Header from "./layout/Header"
+import Providers from "./layout/Providers"
 import Sidebar from "./layout/Sidebar"
 
 const fonts = Noto_Sans_KR({ subsets: ["latin"] })
@@ -22,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <body className={fonts.className}>
-        <SafeHydration>
+        <Providers>
           <S.Layout>
             <Sidebar />
             <S.Body>
@@ -31,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <ToastContainer />
             </S.Body>
           </S.Layout>
-        </SafeHydration>
+        </Providers>
       </body>
     </html>
   )
