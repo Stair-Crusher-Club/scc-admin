@@ -5,6 +5,10 @@ import { useEffect, useState } from "react"
 
 import { storage } from "@/lib/storage"
 
+import * as S from "@/layout.style"
+import Header from "@/layout/Header"
+import Sidebar from "@/layout/Sidebar"
+
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -23,5 +27,13 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
 
   if (authenticated === undefined) return null
   if (!authenticated) return <div>로그인이 필요합니다.</div>
-  return children
+  return (
+    <S.Layout>
+      <Sidebar />
+      <S.Body>
+        <Header />
+        {children}
+      </S.Body>
+    </S.Layout>
+  )
 }

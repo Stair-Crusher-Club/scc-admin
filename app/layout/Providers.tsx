@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
+import { ToastContainer } from "react-toastify"
 
 import SafeHydration from "@/lib/components/SafeHydration"
 
@@ -22,6 +23,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeHydration>{children}</SafeHydration>
+      <ToastContainer />
     </QueryClientProvider>
   )
 }

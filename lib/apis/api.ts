@@ -1,12 +1,19 @@
 import { useQuery } from "@tanstack/react-query"
 
 import { http } from "../http"
-import { QuestSummary } from "../models/quest"
-
-export function fetchQuests() {
-  return http("https://api.staircrusher.club/admin/clubQuests").then((res) => res.json() as Promise<QuestSummary[]>)
-}
+import { QuestDetail, QuestSummary } from "../models/quest"
 
 export function useQuests() {
-  return useQuery({ queryKey: ["@quests"], queryFn: fetchQuests })
+  return useQuery({
+    queryKey: ["@quests"],
+    queryFn: () => http("/admin/clubQuests").then((res) => res.json() as Promise<QuestSummary[]>),
+  })
+}
+
+export function useQuest({ id }: { id: string }) {
+  return useQuery({
+    queryKey: ["@quests", id],
+    queryFn: ({ queryKey }) =>
+      http(`/admin/clubQuests/${queryKey[1]}`).then((res) => res.json() as Promise<QuestDetail>),
+  })
 }
