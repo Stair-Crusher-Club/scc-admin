@@ -8,6 +8,9 @@ dependencies:
   '@reactleaf/input':
     specifier: 0.2.1
     version: 0.2.1(react-dom@18.2.0)(react-hook-form@7.49.2)(react@18.2.0)
+  '@reactleaf/modal':
+    specifier: ^1.1.3
+    version: 1.1.3(react-dom@18.2.0)(react@18.2.0)
   '@reactleaf/storage':
     specifier: ^0.2.0
     version: 0.2.0
@@ -61,6 +64,9 @@ devDependencies:
   eslint-config-next:
     specifier: 14.0.4
     version: 14.0.4(eslint@8.56.0)(typescript@5.3.3)
+  kakao.maps.d.ts:
+    specifier: ^0.1.39
+    version: 0.1.39
   prettier:
     specifier: ^3.1.1
     version: 3.1.1
@@ -833,6 +839,17 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-hook-form: 7.49.2(react@18.2.0)
+    dev: false
+
+  /@reactleaf/modal@1.1.3(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-JkBqLJRex6hxkGT65yFhhq/h8NcuNFSwzFugnDt+zlRK1jZBU2oBsDtqJR9zCQuA5/Zs0iFxf6qUWDfJ6CpeFw==}
+    peerDependencies:
+      react: ^15 || ^16 || ^17 || ^18
+      react-dom: ^15 || ^16 || ^17 || ^18
+    dependencies:
+      classnames: 2.5.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /@reactleaf/storage@0.2.0:
@@ -2555,6 +2572,10 @@ packages:
       array.prototype.flat: 1.3.2
       object.assign: 4.1.5
       object.values: 1.1.7
+    dev: true
+
+  /kakao.maps.d.ts@0.1.39:
+    resolution: {integrity: sha512-KXENJ8hHYtjb5G+0vf8TXx/PwWW4j5ndDiQTSMvGtF7EFWu2P3N/+Zivcj9/UKn3j29Iz/sIUaA7WL8Ug3IDGQ==}
     dev: true
 
   /keyv@4.5.4:

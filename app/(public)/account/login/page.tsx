@@ -17,7 +17,6 @@ export default function Page() {
   const form = useForm<FormValues>()
 
   async function onSubmit(values: FormValues) {
-    console.log(values)
     try {
       const res = await http("/admin/login", {
         method: "POST",

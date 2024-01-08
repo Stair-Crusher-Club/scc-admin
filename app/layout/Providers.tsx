@@ -1,10 +1,13 @@
 "use client"
 
+import { ModalProvider } from "@reactleaf/modal"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
 import { ToastContainer } from "react-toastify"
 
 import SafeHydration from "@/lib/components/SafeHydration"
+
+import register from "@/modals/register"
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -22,8 +25,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SafeHydration>{children}</SafeHydration>
-      <ToastContainer />
+      <ModalProvider register={register}>
+        <SafeHydration>{children}</SafeHydration>
+        <ToastContainer />
+      </ModalProvider>
     </QueryClientProvider>
   )
 }

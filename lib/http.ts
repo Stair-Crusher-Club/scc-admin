@@ -7,6 +7,10 @@ export const http = returnFetch({
   headers: { "Content-Type": "application/json" },
   interceptors: {
     request: async ([url, config]: FetchArgs) => {
+      // 로그인 요청에는 Authorization 헤더를 설정하지 않는다.
+      if (`${url}`.includes("/login")) {
+        return [url, config]
+      }
       const token = storage.get("token")
       if (!token) return [url, config]
 
