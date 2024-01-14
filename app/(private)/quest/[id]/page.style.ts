@@ -8,6 +8,7 @@ export const Page = styled("main", {
         height: "full",
       },
       large: {
+        height: "full",
         padding: "2rem",
       },
     },
@@ -18,5 +19,16 @@ export const Map = styled("div", {
   base: {
     width: "full",
     height: "full",
+  },
+})
+
+export const Loading = styled("div", {
+  base: {
+    width: "full",
+    height: "full",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "gray.200",
   },
 })

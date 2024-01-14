@@ -11,14 +11,14 @@ import * as S from "./Header.style"
 
 export default function Header() {
   const isMobile = useMediaQuery({ maxWidth: 800 })
-  const [_, setAppState] = useAtom(AppState)
+  const [appState, setAppState] = useAtom(AppState)
 
   function openSidebar() {
     setAppState((s) => ({ ...s, isSidebarOpened: true }))
   }
 
   return (
-    <S.Header size={isMobile ? "mobile" : "desktop"}>
+    <S.Header size={isMobile ? "mobile" : "desktop"} hidden={appState.isHeaderHidden}>
       {isMobile && (
         <button onClick={openSidebar}>
           <Hamburger size={24} color="black" />
