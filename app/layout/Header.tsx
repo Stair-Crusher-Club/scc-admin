@@ -24,6 +24,7 @@ export default function Header() {
           <Hamburger size={24} color="black" />
         </button>
       )}
+      <S.Title>{appState.headerTitle}</S.Title>
     </S.Header>
   )
 }

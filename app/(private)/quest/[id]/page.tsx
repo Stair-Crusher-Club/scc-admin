@@ -9,6 +9,7 @@ import { useQuest } from "@/lib/apis/api"
 import { QuestBuilding } from "@/lib/models/quest"
 
 import { useModal } from "@/hooks/useModal"
+import { useTitle } from "@/hooks/useTitle"
 
 import * as S from "./page.style"
 
@@ -22,6 +23,8 @@ export default function QuestDetail() {
   const mapElement = useRef<HTMLDivElement>(null)
   const mapRef = useRef<kakao.maps.Map>()
   const { openModal } = useModal()
+
+  useTitle(data?.name)
 
   useEffect(() => {
     if (!scriptLoaded) return
@@ -90,7 +93,17 @@ export default function QuestDetail() {
     map.panTo(focusPoint!)
 
     // 바텀시트를 엽니다.
-    openModal({ type: "BuildingDetailSheet", props: {} })
+    openModal({
+      type: "BuildingDetailSheet",
+      props: { building },
+      events: {
+        onClose: () => {
+          // 모달이 닫히면 빌딩을 중앙으로 이동합니다
+          const buildingCenter = new kakao.maps.LatLng(building.location.lat, building.location.lng)
+          map.panTo(buildingCenter)
+        },
+      },
+    })
   }
 
   /**

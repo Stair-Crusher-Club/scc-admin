@@ -1,2 +1,2 @@
 export { default } from "./BuildingDetailSheet"
-export const defaultOverlayOptions = { dim: false, closeDelay: 200 }
+export const defaultOverlayOptions = { closeDelay: 200 }

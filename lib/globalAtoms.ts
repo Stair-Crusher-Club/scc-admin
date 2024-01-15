@@ -1,3 +1,8 @@
 import { atom } from "jotai"
 
-export const AppState = atom({ isSidebarOpened: false, isHeaderHidden: false })
+interface AppStateType {
+  isSidebarOpened: boolean
+  isHeaderHidden: boolean
+  headerTitle?: string
+}
+export const AppState = atom<AppStateType>({ isSidebarOpened: false, isHeaderHidden: false, headerTitle: "" })
