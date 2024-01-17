@@ -54,7 +54,7 @@ export default function QuestDetail() {
 
     // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
     const markerImage = new kakao.maps.MarkerImage(
-      `http://localhost:3066/marker_sprite.png`,
+      building.places.every((p) => p.isConquered) ? `/marker_sprite_done.png` : `/marker_sprite.png`,
       new kakao.maps.Size(24, 36),
       {
         offset: new kakao.maps.Point(12, 36),
@@ -127,7 +127,7 @@ export default function QuestDetail() {
     <S.Page size={isMobile ? "small" : "large"}>
       <Script
         src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
-        onLoad={() => setScriptLoaded(true)}
+        onReady={() => setScriptLoaded(true)}
       />
       <S.Map id="map" ref={mapElement} />
       {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}
