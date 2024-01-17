@@ -10,6 +10,7 @@ import { useMediaQuery } from "react-responsive"
 import { AppState } from "@/lib/globalAtoms"
 import { storage } from "@/lib/storage"
 
+import Logo from "@/icons/Logo"
 import { Spacer } from "@/styles/jsx"
 
 import * as S from "./Sidebar.style"
@@ -47,7 +48,7 @@ export default function Sidebar() {
             alt="콩알이"
             style={{ width: 60, height: 40, objectFit: "contain", objectPosition: "left" }}
           />
-          <h1>계단뿌셔클럽</h1>
+          <Logo color="white" />
         </S.Title>
         <S.Menu>
           <MenuItem href="/quest">퀘스트 관리</MenuItem>
