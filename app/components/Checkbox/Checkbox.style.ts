@@ -8,11 +8,11 @@ export const CheckBox = styled("div", {
     borderRadius: "full",
     backgroundColor: "white",
     border: "1px solid",
-    borderColor: "#d4d7d9",
+    borderColor: "#B5B5C0",
   },
   variants: {
     disabled: {
-      true: { opacity: 0.4 },
+      true: { backgroundColor: "#d4d7d9", opacity: 0.4 },
       false: {},
     },
     checked: {
@@ -38,6 +38,8 @@ export const CheckItemInput = styled("input", { base: { display: "none" } })
 export const CheckItemLabel = styled("label", {
   base: {
     display: "flex",
+    width: "full",
+    height: "full",
     "input:not(:disabled) + &": {
       cursor: "pointer",
     },

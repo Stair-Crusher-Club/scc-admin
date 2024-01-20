@@ -17,44 +17,64 @@ const KAKAO_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_APP_KEY
 
 export default function QuestDetail() {
   const { id } = useParams<{ id: string }>()
-  const { data } = useQuest({ id })
+  const { data: quest } = useQuest({ id })
   const isMobile = useMediaQuery({ maxWidth: 800 })
   const [scriptLoaded, setScriptLoaded] = useState(false)
   const mapElement = useRef<HTMLDivElement>(null)
   const mapRef = useRef<kakao.maps.Map>()
+  const markersRef = useRef<kakao.maps.Marker[]>([])
   const { openModal } = useModal()
 
-  useTitle(data?.name)
+  useTitle(quest?.name)
 
+  // 데이터가 바뀌어도 초기화는 한 번만 합니다.
   useEffect(() => {
     if (!scriptLoaded) return
-    if (!data) return
-    kakao.maps.load(initializeMap)
-  }, [data, scriptLoaded])
+    if (!quest) return
+    kakao.maps.load(() => {
+      initializeMap()
+      drawMarkers()
+    })
+  }, [quest?.id, scriptLoaded])
+
+  // 데이터가 바뀌면 마커를 다시 그립니다
+  useEffect(() => {
+    if (!scriptLoaded) return
+    if (!quest) return
+    if (!mapRef.current) return // 초기화 되었는지 확인합니다
+    drawMarkers()
+  }, [quest, scriptLoaded])
 
   function initializeMap() {
-    if (!data) return
+    if (!quest) return
 
     const mapContainer = document.getElementById("map")!
-    const center = getCenterOf(data.buildings)
+    const center = getCenterOf(quest.buildings)
     const options = {
       center: center, // 지도의 중심좌표.
       level: 3, // 지도의 레벨(확대, 축소 정도)
     }
 
     mapRef.current = new kakao.maps.Map(mapContainer, options)
-
-    data.buildings.map(addBuildingMarker)
-    // coords.forEach((c, i) => addMarker(new kakao.maps.LatLng(c.lat, c.lng), i))
   }
 
-  function addBuildingMarker(building: QuestBuilding, index: number) {
-    const map = mapRef.current
-    if (!map) return
+  function drawMarkers() {
+    if (!quest) return
+    // remove previous markers
+    markersRef.current.forEach((m) => m.setMap(null))
 
+    // redraw markers
+    const markers = quest.buildings.map(createBuildingMarker)
+    markersRef.current = markers
+    markers.map((m) => m.setMap(mapRef.current!))
+  }
+
+  function createBuildingMarker(building: QuestBuilding, index: number) {
     // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
     const markerImage = new kakao.maps.MarkerImage(
-      building.places.every((p) => p.isConquered) ? `/marker_sprite_done.png` : `/marker_sprite.png`,
+      building.places.every((p) => p.isConquered || p.isClosed || p.isNotAccessible)
+        ? `/marker_sprite_done.png`
+        : `/marker_sprite.png`,
       new kakao.maps.Size(24, 36),
       {
         offset: new kakao.maps.Point(12, 36),
@@ -72,7 +92,7 @@ export default function QuestDetail() {
     // 마커 클릭 시 바텀 시트를 열어줍니다
     kakao.maps.event.addListener(marker, "click", () => onMarkerClick(building))
 
-    marker.setMap(map)
+    return marker
   }
 
   function getCenterOf(buildings: QuestBuilding[]) {
@@ -95,7 +115,7 @@ export default function QuestDetail() {
     // 바텀시트를 엽니다.
     openModal({
       type: "BuildingDetailSheet",
-      props: { building },
+      props: { building, questId: quest?.id ?? "" },
       events: {
         onClose: () => {
           // 모달이 닫히면 빌딩을 중앙으로 이동합니다

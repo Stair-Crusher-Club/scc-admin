@@ -17,3 +17,29 @@ export function useQuest({ id }: { id: string }) {
       http(`/admin/clubQuests/${queryKey[1]}`).then((res) => res.json() as Promise<QuestDetail>),
   })
 }
+
+type UpdateQuestStatusParams = {
+  questId: string
+  placeId: string
+  buildingId: string
+  isClosed?: boolean
+  isNotAccessible?: boolean
+}
+export async function updateQuestStatus({ questId, ...params }: UpdateQuestStatusParams) {
+  if (typeof params.isClosed == "boolean") {
+    await http(`/admin/clubQuests/${questId}/isClosed`, {
+      method: "PUT",
+      body: JSON.stringify(params),
+      mode: "cors",
+      headers: { "Content-Type": "application/json" },
+    })
+  }
+  if (typeof params.isNotAccessible == "boolean") {
+    await http(`/admin/clubQuests/${questId}/isNotAccessible`, {
+      method: "PUT",
+      body: JSON.stringify(params),
+      mode: "cors",
+      headers: { "Content-Type": "application/json" },
+    })
+  }
+}

@@ -1,7 +1,10 @@
 import { BasicModalProps } from "@reactleaf/modal"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
+import { Controller, useForm } from "react-hook-form"
 
+import { updateQuestStatus } from "@/lib/apis/api"
 import { AppState } from "@/lib/globalAtoms"
 import { QuestBuilding, QuestPlace } from "@/lib/models/quest"
 
@@ -12,8 +15,9 @@ import * as S from "./BuildingDetailSheet.style"
 
 interface Props extends BasicModalProps {
   building: QuestBuilding
+  questId: string
 }
-export default function BuildingDetailSheet({ building, visible, close }: Props) {
+export default function BuildingDetailSheet({ building, questId, visible, close }: Props) {
   const [appState, setAppState] = useAtom(AppState)
 
   useEffect(() => {
@@ -40,7 +44,7 @@ export default function BuildingDetailSheet({ building, visible, close }: Props)
             <S.HeaderCell>접근불가</S.HeaderCell>
           </S.HeaderRow>
           {building.places.map((place) => (
-            <PlaceRow place={place} key={place.placeId} />
+            <PlaceRow place={place} questId={questId} key={place.placeId} />
           ))}
         </S.PlaceTable>
       </S.TableWrapper>
@@ -48,9 +52,37 @@ export default function BuildingDetailSheet({ building, visible, close }: Props)
   )
 }
 
-function PlaceRow({ place }: { place: QuestPlace }) {
-  const visited = place.isConquered || place.isClosed || place.isNotAccessible
+function PlaceRow({ place, questId }: { place: QuestPlace; questId: string }) {
+  const form = useForm({ defaultValues: { isClosed: place.isClosed, isNotAccessible: place.isNotAccessible } })
+  const [isClosed, isNotAccessible] = form.watch(["isClosed", "isNotAccessible"])
+  const visited = place.isConquered || isClosed || isNotAccessible
   const isBadPlace = place.isClosed || place.isNotAccessible
+  const queryClient = useQueryClient()
+  const updateStatus = useMutation({
+    mutationFn: updateQuestStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["@quests", questId] })
+    },
+  })
+
+  useEffect(() => {
+    updateStatus.mutateAsync({
+      questId,
+      buildingId: place.buildingId,
+      placeId: place.placeId,
+      isClosed,
+    })
+  }, [isClosed])
+
+  useEffect(() => {
+    updateStatus.mutate({
+      questId,
+      buildingId: place.buildingId,
+      placeId: place.placeId,
+      isNotAccessible,
+    })
+  }, [isNotAccessible])
+
   return (
     <tr>
       <S.Cell style={{ textAlign: "left" }}>{place.name}</S.Cell>
@@ -63,10 +95,28 @@ function PlaceRow({ place }: { place: QuestPlace }) {
         />
       </S.Cell>
       <S.Cell>
-        <Checkbox id={place.placeId + "-closed"} checked={place.isClosed} />
+        <Controller
+          name="isClosed"
+          control={form.control}
+          render={({ field }) => (
+            <Checkbox id={place.placeId + "-is-closed"} checked={field.value} onChange={field.onChange} />
+          )}
+        />
+        {/* <Checkbox id={place.placeId + "-closed"} checked={place.isClosed} onChange={updateClosedStatus} /> */}
       </S.Cell>
       <S.Cell>
-        <Checkbox id={place.placeId + "-not-accessible"} checked={place.isNotAccessible} />
+        <Controller
+          name="isNotAccessible"
+          control={form.control}
+          render={({ field }) => (
+            <Checkbox id={place.placeId + "-not-accessible"} checked={field.value} onChange={field.onChange} />
+          )}
+        />
+        {/* <Checkbox
+          id={place.placeId + "-not-accessible"}
+          checked={place.isNotAccessible}
+          onChange={updateAccessibleStatus}
+        /> */}
       </S.Cell>
     </tr>
   )

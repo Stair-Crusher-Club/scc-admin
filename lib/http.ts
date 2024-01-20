@@ -7,6 +7,8 @@ export const http = returnFetch({
   headers: { "Content-Type": "application/json" },
   interceptors: {
     request: async ([url, config]: FetchArgs) => {
+      config = config || {}
+
       // 로그인 요청에는 Authorization 헤더를 설정하지 않는다.
       if (`${url}`.includes("/login")) {
         return [url, config]
@@ -14,13 +16,10 @@ export const http = returnFetch({
       const token = storage.get("token")
       if (!token) return [url, config]
 
-      const newConfig: RequestInit = {
-        ...config,
-        headers: {
-          ...config?.headers,
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      const newHeaders = new Headers(config.headers)
+      newHeaders.set("Authorization", `Bearer ${token}`)
+
+      const newConfig: RequestInit = { ...config, headers: newHeaders }
       return [url, newConfig]
     },
   },

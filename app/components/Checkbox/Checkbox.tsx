@@ -18,11 +18,20 @@ export default function Checkbox({ id, checked, onChange, readOnly, disabled, st
 
   return (
     <S.CheckBox disabled={disabled} checked={checked} style={style}>
-      <S.CheckItemInput id={id} checked={checked === true} disabled={disabled} onChange={handleChange} />
+      <S.CheckItemInput
+        type="checkbox"
+        id={id}
+        checked={checked === true}
+        disabled={disabled}
+        readOnly={readOnly}
+        onChange={handleChange}
+      />
       <S.CheckItemLabel htmlFor={id}>
-        <S.CheckItemIconWrapper>
-          <Check size="100%" />
-        </S.CheckItemIconWrapper>
+        {checked && (
+          <S.CheckItemIconWrapper>
+            <Check size="100%" />
+          </S.CheckItemIconWrapper>
+        )}
       </S.CheckItemLabel>
     </S.CheckBox>
   )
