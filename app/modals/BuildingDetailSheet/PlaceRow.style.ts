@@ -9,3 +9,13 @@ export const Cell = styled("td", {
     lineHeight: 1,
   },
 })
+
+export const ExternalMap = styled("button", {
+  base: {
+    width: "20px",
+    height: "20px",
+    border: "1px solid #ccc",
+    verticalAlign: "middle",
+    marginLeft: "4px",
+  },
+})

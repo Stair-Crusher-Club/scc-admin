@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import Image from "next/image"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 
@@ -8,6 +9,7 @@ import { QuestPlace } from "@/lib/models/quest"
 import Checkbox from "@/components/Checkbox"
 
 import * as S from "./PlaceRow.style"
+import naverMapIcon from "./assets/naver_map.jpg"
 
 interface Props {
   place: QuestPlace
@@ -45,9 +47,23 @@ export default function PlaceRow({ place, questId }: Props) {
     })
   }, [isNotAccessible])
 
+  function openNaverMap() {
+    const isMobile = false
+    if (isMobile) {
+      window.open(`nmap://search?query=${place.name}`)
+    } else {
+      window.open(`https://map.naver.com/p/search/${place.name}`)
+    }
+  }
+
   return (
     <tr>
-      <S.Cell style={{ textAlign: "left", lineHeight: 1.5 }}>{place.name}</S.Cell>
+      <S.Cell style={{ textAlign: "left", lineHeight: 1.5 }}>
+        {place.name}
+        <S.ExternalMap onClick={openNaverMap}>
+          <Image src={naverMapIcon} alt="네이버 지도" />
+        </S.ExternalMap>
+      </S.Cell>
       <S.Cell>
         <Checkbox
           id={place.placeId}

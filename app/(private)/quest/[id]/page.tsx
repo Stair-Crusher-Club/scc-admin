@@ -181,6 +181,7 @@ export default function QuestDetail() {
       <Script
         src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
         onReady={() => setScriptLoaded(true)}
+        onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
       />
       <S.Map id="map" ref={mapElement} />
       {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}

@@ -22,6 +22,9 @@ export const Map = styled("div", {
 
 export const Loading = styled("div", {
   base: {
+    position: "absolute",
+    top: "0",
+    left: "0",
     width: "full",
     height: "full",
     display: "flex",
