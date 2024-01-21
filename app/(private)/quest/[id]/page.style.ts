@@ -1,16 +1,14 @@
 import { styled } from "@/styles/jsx"
 
 export const Page = styled("main", {
-  base: {},
+  base: {
+    display: "flex",
+    height: "full",
+  },
   variants: {
     size: {
-      small: {
-        height: "full",
-      },
-      large: {
-        height: "full",
-        padding: "2rem",
-      },
+      small: {},
+      large: {},
     },
   },
 })

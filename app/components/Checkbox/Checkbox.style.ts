@@ -55,37 +55,3 @@ export const CheckItemIconWrapper = styled("i", {
     height: "1.75rem",
   },
 })
-
-// &::before {
-//   width: 0.6rem;
-//   height: 0.6rem;
-//   background: ${primary(50)};
-//   border-radius: 0.1rem;
-// }
-// &::after {
-//   position: absolute;
-//   width: 0.25rem;
-//   height: 0.5rem;
-//   border-right: 0.15rem solid;
-//   border-bottom: 0.15rem solid;
-//   border-color: ${primary(100)};
-//   transform: rotate(45deg) translate(-10%, -10%) skewX(5deg);
-//   transition: 0.2s ease;
-// }
-
-// ${({ checked }) =>
-//   checked === true &&
-//   // show check icon
-//   css`
-//     &::after {
-//       content: "";
-//     }
-//   `}
-// ${({ checked }) =>
-//   checked === "notAll" &&
-//   // show square icon
-//   css`
-//     &::before {
-//       content: "";
-//     }
-//   `}

@@ -1,14 +1,14 @@
 import { styled } from "@/styles/jsx"
 
-export const BottomSheet = styled("div", {
+export const RightSheet = styled("div", {
   base: {
     position: "absolute",
-    bottom: 0,
+    right: 0,
     display: "flex",
     flexFlow: "column",
-    width: "100%",
+    height: "100%",
     borderTopLeftRadius: "1.6rem",
-    borderTopRightRadius: "1.6rem",
+    borderBottomLeftRadius: "1.6rem",
     background: "white",
     overflow: "hidden",
     transition: "transform 0.2s ease-in-out",
@@ -18,16 +18,16 @@ export const BottomSheet = styled("div", {
   variants: {
     visible: {
       true: {
-        transform: "translateY(0)",
+        transform: "translateX(0)",
       },
       false: {
-        transform: "translateY(100%)",
+        transform: "translateX(100%)",
       },
     },
   },
 })
 
-export const BottomSheetHeader = styled("div", {
+export const RightSheetHeader = styled("div", {
   base: {
     position: "relative",
     display: "flex",
@@ -68,7 +68,7 @@ export const ActionButtonWrapper = styled("div", {
   },
 })
 
-export const BottomSheetBody = styled("div", {
+export const RightSheetBody = styled("div", {
   base: {
     height: "100%",
     overflow: "auto",

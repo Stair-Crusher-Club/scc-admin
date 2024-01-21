@@ -10,7 +10,7 @@ export const Header = styled("header", {
   },
   variants: {
     size: {
-      desktop: { position: "relative", height: "72px" },
+      desktop: { position: "relative", height: "72px", paddingInline: "16px" },
       mobile: {
         position: "fixed",
         top: 0,

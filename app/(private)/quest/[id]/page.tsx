@@ -108,22 +108,41 @@ export default function QuestDetail() {
     const map = mapRef.current
     if (!map) return
 
-    // 지도 중앙에 마커를 위치시킵니다.
-    const focusPoint = getFocusedCenter(building)
-    map.panTo(focusPoint!)
+    if (isMobile) {
+      // 지도 중앙에 마커를 위치시킵니다.
+      const focusPoint = getFocusedCenter(building)
+      map.panTo(focusPoint!)
 
-    // 바텀시트를 엽니다.
-    openModal({
-      type: "BuildingDetailSheet",
-      props: { building, questId: quest?.id ?? "" },
-      events: {
-        onClose: () => {
-          // 모달이 닫히면 빌딩을 중앙으로 이동합니다
-          const buildingCenter = new kakao.maps.LatLng(building.location.lat, building.location.lng)
-          map.panTo(buildingCenter)
+      // 바텀시트를 엽니다.
+      openModal({
+        type: "BuildingDetailSheetMobile",
+        props: { building, questId: quest?.id ?? "" },
+        events: {
+          onClose: () => {
+            // 모달이 닫히면 빌딩을 중앙으로 이동합니다
+            const buildingCenter = new kakao.maps.LatLng(building.location.lat, building.location.lng)
+            map.panTo(buildingCenter)
+          },
         },
-      },
-    })
+      })
+    } else {
+      // 지도 중앙에 마커를 위치시킵니다.
+      const focusPoint = getFocusedCenter(building)
+      map.panTo(focusPoint!)
+
+      // 바텀시트를 엽니다.
+      openModal({
+        type: "BuildingDetailSheetDesktop",
+        props: { building, questId: quest?.id ?? "" },
+        events: {
+          onClose: () => {
+            // 모달이 닫히면 빌딩을 중앙으로 이동합니다
+            const buildingCenter = new kakao.maps.LatLng(building.location.lat, building.location.lng)
+            map.panTo(buildingCenter)
+          },
+        },
+      })
+    }
   }
 
   /**
@@ -135,12 +154,25 @@ export default function QuestDetail() {
     if (!map) return
     if (!mapElement.current) return
 
-    const mapHeight = mapElement.current.getClientRects()[0].height
-    const latN = map.getBounds().getNorthEast().getLat()
-    const latS = map.getBounds().getSouthWest().getLat()
-    const latDiff = latN - latS
-    const newLat = building.location.lat + ((300 / mapHeight - 1) * latDiff) / 2
-    return new kakao.maps.LatLng(newLat, building.location.lng)
+    const rect = mapElement.current.getClientRects()[0]
+    const ne = map.getBounds().getNorthEast()
+    const sw = map.getBounds().getSouthWest()
+
+    if (isMobile) {
+      const latN = ne.getLat()
+      const latS = sw.getLat()
+      const latDiff = latN - latS
+      const newLat = building.location.lat + ((300 / rect.height - 1) * latDiff) / 2
+      return new kakao.maps.LatLng(newLat, building.location.lng)
+    } else {
+      const lngE = ne.getLng()
+      const lngW = sw.getLng()
+      const lngDiff = lngE - lngW
+      const newLng = building.location.lng + ((340 / rect.width) * lngDiff) / 2
+      console.log(lngE, lngW, newLng, building.location.lat, rect.width)
+      console.log(building.location.lat, newLng)
+      return new kakao.maps.LatLng(building.location.lat, newLng)
+    }
   }
 
   return (
