@@ -15,7 +15,7 @@ interface Props extends BasicModalProps {
   questId: string
 }
 
-export const defaultOverlayOptions = { closeDelay: 200 }
+export const defaultOverlayOptions = { closeDelay: 200, dim: false }
 export default function BuildingDetailSheet({ building, questId, visible, close }: Props) {
   const [appState, setAppState] = useAtom(AppState)
 

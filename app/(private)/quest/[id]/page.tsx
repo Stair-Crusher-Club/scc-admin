@@ -23,7 +23,8 @@ export default function QuestDetail() {
   const mapElement = useRef<HTMLDivElement>(null)
   const mapRef = useRef<kakao.maps.Map>()
   const markersRef = useRef<kakao.maps.Marker[]>([])
-  const { openModal } = useModal()
+  const { openModal, closeModal, closeAll } = useModal()
+  const openedModal = useRef<string>()
 
   useTitle(quest?.name)
 
@@ -32,10 +33,11 @@ export default function QuestDetail() {
     if (!scriptLoaded) return
     if (!quest) return
     kakao.maps.load(() => {
+      closeAll()
       initializeMap()
       drawMarkers()
     })
-  }, [quest?.id, scriptLoaded])
+  }, [quest?.id, scriptLoaded, isMobile])
 
   // 데이터가 바뀌면 마커를 다시 그립니다
   useEffect(() => {
@@ -108,22 +110,20 @@ export default function QuestDetail() {
     const map = mapRef.current
     if (!map) return
 
+    if (openedModal.current) {
+      closeModal({ id: openedModal.current })
+    }
+
     if (isMobile) {
       // 지도 중앙에 마커를 위치시킵니다.
       const focusPoint = getFocusedCenter(building)
       map.panTo(focusPoint!)
 
       // 바텀시트를 엽니다.
-      openModal({
+      openedModal.current = openModal({
         type: "BuildingDetailSheetMobile",
         props: { building, questId: quest?.id ?? "" },
-        events: {
-          onClose: () => {
-            // 모달이 닫히면 빌딩을 중앙으로 이동합니다
-            const buildingCenter = new kakao.maps.LatLng(building.location.lat, building.location.lng)
-            map.panTo(buildingCenter)
-          },
-        },
+        events: { onClose: () => onModalClose(building) },
       })
     } else {
       // 지도 중앙에 마커를 위치시킵니다.
@@ -131,18 +131,21 @@ export default function QuestDetail() {
       map.panTo(focusPoint!)
 
       // 바텀시트를 엽니다.
-      openModal({
+      openedModal.current = openModal({
         type: "BuildingDetailSheetDesktop",
         props: { building, questId: quest?.id ?? "" },
-        events: {
-          onClose: () => {
-            // 모달이 닫히면 빌딩을 중앙으로 이동합니다
-            const buildingCenter = new kakao.maps.LatLng(building.location.lat, building.location.lng)
-            map.panTo(buildingCenter)
-          },
-        },
+        events: { onClose: () => onModalClose(building) },
       })
     }
+  }
+
+  function onModalClose(building: QuestBuilding) {
+    const map = mapRef.current
+    if (!map) return
+
+    // 모달이 닫히면 빌딩을 중앙으로 이동합니다
+    const buildingCenter = new kakao.maps.LatLng(building.location.lat, building.location.lng)
+    map.panTo(buildingCenter)
   }
 
   /**
@@ -169,8 +172,6 @@ export default function QuestDetail() {
       const lngW = sw.getLng()
       const lngDiff = lngE - lngW
       const newLng = building.location.lng + ((340 / rect.width) * lngDiff) / 2
-      console.log(lngE, lngW, newLng, building.location.lat, rect.width)
-      console.log(building.location.lat, newLng)
       return new kakao.maps.LatLng(building.location.lat, newLng)
     }
   }
