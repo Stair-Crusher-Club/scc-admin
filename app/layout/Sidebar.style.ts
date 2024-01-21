@@ -39,9 +39,10 @@ export const Title = styled("div", {
   base: {
     display: "flex",
     alignItems: "center",
-    padding: "1rem",
+    padding: "0.75rem",
     fontSize: "1.5rem",
     color: "white",
+    cursor: "pointer",
     "& img": {
       display: "inline-block",
     },

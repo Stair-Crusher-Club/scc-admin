@@ -42,13 +42,13 @@ export default function Sidebar() {
   return (
     <>
       <S.Sidebar size={isMobile ? "mobile" : "desktop"} opened={opened}>
-        <S.Title>
+        <S.Title onClick={() => router.push("/")}>
           <Image
             src={kongal}
             alt="콩알이"
             style={{ width: 60, height: 40, objectFit: "contain", objectPosition: "left" }}
           />
-          <Logo color="white" />
+          <Logo color="white" height={40} />
         </S.Title>
         <S.Menu>
           <MenuItem href="/quest">퀘스트 관리</MenuItem>
