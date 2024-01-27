@@ -14,7 +14,7 @@ interface Props extends BasicModalProps {
 export const defaultOverlayOptions = { closeDelay: 200, dim: false }
 export default function BuildingDetailSheet({ building, questId, visible, close }: Props) {
   return (
-    <RightSheet visible={visible} close={close} title={building.name} style={{ width: "340px" }}>
+    <RightSheet visible={visible} close={close} title={building.name} style={{ width: "360px" }}>
       <S.TableWrapper>
         <S.PlaceTable>
           <colgroup>

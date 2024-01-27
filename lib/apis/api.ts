@@ -30,16 +30,25 @@ export async function updateQuestStatus({ questId, ...params }: UpdateQuestStatu
     await http(`/admin/clubQuests/${questId}/isClosed`, {
       method: "PUT",
       body: JSON.stringify(params),
-      mode: "cors",
-      headers: { "Content-Type": "application/json" },
     })
   }
   if (typeof params.isNotAccessible == "boolean") {
     await http(`/admin/clubQuests/${questId}/isNotAccessible`, {
       method: "PUT",
       body: JSON.stringify(params),
-      mode: "cors",
-      headers: { "Content-Type": "application/json" },
     })
   }
+}
+
+type PreviewDivisionsParams = {
+  centerLocation: { lng: number; lat: number }
+  clusterCount: number
+  maxPlaceCountPerQuest: number
+  radiusMeters: number
+}
+export async function previewDivisions(params: PreviewDivisionsParams) {
+  return http(`/admin/clubQuests/create/dryRun`, {
+    method: "POST",
+    body: JSON.stringify(params),
+  })
 }

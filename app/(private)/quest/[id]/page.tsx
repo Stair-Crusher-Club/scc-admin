@@ -130,7 +130,7 @@ export default function QuestDetail() {
       const focusPoint = getFocusedCenter(building)
       map.panTo(focusPoint!)
 
-      // 바텀시트를 엽니다.
+      // 우측에 시트를 엽니다.
       openedModal.current = openModal({
         type: "BuildingDetailSheetDesktop",
         props: { building, questId: quest?.id ?? "" },
@@ -171,7 +171,7 @@ export default function QuestDetail() {
       const lngE = ne.getLng()
       const lngW = sw.getLng()
       const lngDiff = lngE - lngW
-      const newLng = building.location.lng + ((340 / rect.width) * lngDiff) / 2
+      const newLng = building.location.lng + ((360 / rect.width) * lngDiff) / 2
       return new kakao.maps.LatLng(building.location.lat, newLng)
     }
   }
@@ -179,6 +179,7 @@ export default function QuestDetail() {
   return (
     <S.Page size={isMobile ? "small" : "large"}>
       <Script
+        id="kakao-map-script"
         src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
         onReady={() => setScriptLoaded(true)}
         onError={(e) => alert(`지도를 불러올 수 없습니다.`)}

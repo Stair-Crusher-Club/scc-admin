@@ -6,6 +6,24 @@ export const Page = styled("main", {
   },
 })
 
+export const PageTitle = styled("h1", {
+  base: {
+    textStyle: "3xl",
+    marginBottom: "2rem",
+  },
+})
+export const PageAction = styled("button", {
+  base: {
+    padding: "0.25rem 1rem 0.4rem",
+    marginLeft: "0.5rem",
+    borderRadius: "4px",
+    backgroundColor: "#1D85FF",
+    color: "white",
+    textStyle: "lg",
+    cursor: "pointer",
+  },
+})
+
 export const Event = styled("div", {
   base: {
     marginBottom: "1rem",

@@ -17,8 +17,10 @@ export default function Header() {
     setAppState((s) => ({ ...s, isSidebarOpened: true }))
   }
 
+  if (!isMobile) return null
+
   return (
-    <S.Header size={isMobile ? "mobile" : "desktop"} hidden={appState.isHeaderHidden}>
+    <S.Header hidden={appState.isHeaderHidden}>
       {isMobile && (
         <button onClick={openSidebar}>
           <Hamburger size={24} color="black" />

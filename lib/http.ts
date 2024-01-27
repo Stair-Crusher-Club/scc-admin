@@ -3,7 +3,7 @@ import returnFetch, { FetchArgs } from "return-fetch"
 import { storage } from "./storage"
 
 export const http = returnFetch({
-  baseUrl: "https://api.staircrusher.club/",
+  baseUrl: "https://api.dev.staircrusher.club/",
   headers: { "Content-Type": "application/json" },
   interceptors: {
     request: async ([url, config]: FetchArgs) => {
