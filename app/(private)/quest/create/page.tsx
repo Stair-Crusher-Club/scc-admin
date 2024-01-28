@@ -1,7 +1,6 @@
 "use client"
 
 import { NumberInput, TextInput } from "@reactleaf/input/hookform"
-import cluster from "cluster"
 import { useRouter } from "next/navigation"
 import Script from "next/script"
 import { useEffect, useRef, useState } from "react"
@@ -55,7 +54,6 @@ export default function QuestCreate() {
 
   const radius = form.watch("radius")
   useEffect(() => {
-    console.log(radius)
     if (!radius) return
     circle.current?.setRadius(radius)
   }, [radius])
@@ -139,7 +137,7 @@ export default function QuestCreate() {
 
         const infowindow = new kakao.maps.InfoWindow({ content: iwContent })
         kakao.maps.event.addListener(marker, "mouseover", () => infowindow.open(mapRef.current!, marker))
-        kakao.maps.event.addListener(marker, "mouseout", infowindow.close)
+        kakao.maps.event.addListener(marker, "mouseout", () => infowindow.close())
 
         previewMarkers.current.push(marker)
       })
