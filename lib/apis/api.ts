@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 
 import { http } from "../http"
+import { Challenge } from "../models/challenge"
 import { QuestDetail, QuestSummary } from "../models/quest"
 
 export function useQuests() {
@@ -50,5 +51,19 @@ export async function previewDivisions(params: PreviewDivisionsParams) {
   return http(`/admin/clubQuests/create/dryRun`, {
     method: "POST",
     body: JSON.stringify(params),
+  })
+}
+
+export function useChallenges() {
+  return useQuery({
+    queryKey: ["@challenges"],
+    queryFn: () => http(`/admin/challenges`).then((res) => res.json() as Promise<Challenge[]>),
+  })
+}
+
+export function useChallenge({ id }: { id: string }) {
+  return useQuery({
+    queryKey: ["@challenges", id] as const,
+    queryFn: ({ queryKey }) => http(`/admin/challenges/${queryKey[1]}`).then((res) => res.json() as Promise<Challenge>),
   })
 }

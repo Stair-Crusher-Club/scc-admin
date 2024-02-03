@@ -12,7 +12,6 @@ export const PageTitle = styled("h1", {
     marginBottom: "2rem",
   },
 })
-
 export const PageAction = styled("button", {
   base: {
     padding: "0.25rem 1rem 0.4rem",
@@ -25,31 +24,16 @@ export const PageAction = styled("button", {
   },
 })
 
-export const Event = styled("div", {
-  base: {
-    marginBottom: "1rem",
-  },
+export const Challenges = styled("ul", {
+  base: {},
 })
-
-export const EventName = styled("span", {
-  base: {
-    display: "inline-block",
-    fontWeight: "bold",
-    marginBottom: "0.25rem",
-  },
-})
-
-export const Quests = styled("ul", {
-  base: {
-    display: "flex",
-    "& li:not(:first-child)": {
-      marginLeft: "-1px",
-    },
-  },
-})
-export const Quest = styled("li", {
+export const Challenge = styled("li", {
   base: {
     padding: "0.25rem 0.5rem",
-    border: "1px solid #eaeaea",
+    margin: "0.25rem 0",
+    cursor: "pointer",
+    _hover: {
+      backgroundColor: "#f5f5f5",
+    },
   },
 })
