@@ -34,3 +34,8 @@ body {
 .modal-overlay.dim.visible {
   background: rgba(0, 0, 0, 0);
 }
+
+/* react-datepicker */
+.react-datepicker__view-calendar-icon input.leaf-input {
+  padding: 0 0.5rem 0 1.75rem;
+}
