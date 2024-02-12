@@ -1,6 +1,7 @@
 import "@reactleaf/input/style"
 import type { Metadata } from "next"
 import { Noto_Sans_KR } from "next/font/google"
+import "react-datepicker/dist/react-datepicker.css"
 import "react-toastify/dist/ReactToastify.css"
 
 import "./globals.css"

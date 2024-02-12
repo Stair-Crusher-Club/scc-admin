@@ -67,3 +67,25 @@ export function useChallenge({ id }: { id: string }) {
     queryFn: ({ queryKey }) => http(`/admin/challenges/${queryKey[1]}`).then((res) => res.json() as Promise<Challenge>),
   })
 }
+
+type CreateChallengeParams = {
+  name: string
+  isPublic: boolean
+  invitationCode?: string
+  passcode?: string
+  startsAtMillis: number
+  endsAtMillis?: number
+  goal: number
+  milestones: number[]
+  conditions: {
+    addressCondition: { rawEupMyeonDongs: string[] }
+    actionCondition: { types: string[] }
+  }[]
+  description: string
+}
+export function createChallenge(payload: CreateChallengeParams) {
+  return http(`/admin/challenges`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  })
+}

@@ -35,3 +35,13 @@ export const Body = styled("div", {
 export const Form = styled("form", {
   base: { padding: "2rem" },
 })
+
+export const SubmitButton = styled("button", {
+  base: {
+    width: "100%",
+    padding: "0.5rem 0.5rem",
+    backgroundColor: "var(--leaf-primary-60)",
+    color: "white",
+    borderRadius: "0.25rem",
+  },
+})
