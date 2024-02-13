@@ -4,4 +4,4 @@ type StorageData = {
   token: string
 }
 
-export const storage = new StorageAccessor<StorageData>("@scc")
+export const storage = new StorageAccessor<StorageData>("@scc/")

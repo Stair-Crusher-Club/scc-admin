@@ -2,6 +2,16 @@ import returnFetch, { FetchArgs } from "return-fetch"
 
 import { storage } from "./storage"
 
+export class NetworkError extends Error {
+  response: Response
+
+  constructor(response: Response) {
+    super(response.statusText)
+    this.name = "NetworkError"
+    this.response = response
+  }
+}
+
 export const http = returnFetch({
   baseUrl: "https://api.dev.staircrusher.club/",
   headers: { "Content-Type": "application/json" },
@@ -21,6 +31,12 @@ export const http = returnFetch({
 
       const newConfig: RequestInit = { ...config, headers: newHeaders }
       return [url, newConfig]
+    },
+    response: async (response) => {
+      if (response.status >= 400) {
+        throw new NetworkError(response)
+      }
+      return response
     },
   },
 })
