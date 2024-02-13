@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { toast } from "react-toastify"
 
 import { useQuests } from "@/lib/apis/api"
 import { QuestSummary } from "@/lib/models/quest"
@@ -23,6 +24,12 @@ export default function QuestList() {
     {} as Record<string, QuestSummary[]>,
   )
 
+  function share(quests: QuestSummary[]) {
+    const text = quests.map((q) => `${q.name} : ${window.location.origin}/public/quest/${q.id}`).join("\n")
+    navigator.clipboard.writeText(text)
+    toast.success("공개 URL 목록이 클립보드에 복사되었습니다.")
+  }
+
   return (
     <S.Page>
       <S.PageTitle>
@@ -31,7 +38,9 @@ export default function QuestList() {
 
       {Object.entries(regrouped).map(([key, quests]) => (
         <S.Event key={key}>
-          <S.EventName>{key}</S.EventName>
+          <S.EventName>
+            {key} <S.ShareButton onClick={() => share(quests)}>공유하기</S.ShareButton>
+          </S.EventName>
           <S.Quests>
             {quests
               .sort((a, b) => (a.name > b.name ? 1 : -1))

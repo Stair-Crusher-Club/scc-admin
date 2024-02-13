@@ -39,6 +39,19 @@ export const EventName = styled("span", {
   },
 })
 
+export const ShareButton = styled("button", {
+  base: {
+    padding: "0.125rem 0.25rem",
+    marginLeft: "0.5rem",
+    borderRadius: "4px",
+    border: "1px solid #1D85FF",
+    color: "#1D85FF",
+    fontSize: "0.75rem",
+    cursor: "pointer",
+    fontWeight: "normal",
+  },
+})
+
 export const Quests = styled("ul", {
   base: {
     display: "flex",

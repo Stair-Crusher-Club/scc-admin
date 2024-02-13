@@ -17,5 +17,6 @@ export const ExternalMap = styled("button", {
     border: "1px solid #ccc",
     verticalAlign: "middle",
     marginLeft: "4px",
+    cursor: "pointer",
   },
 })
