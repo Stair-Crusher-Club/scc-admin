@@ -50,8 +50,10 @@ export default function CreateChallenge() {
     <S.Page>
       <S.Header>퀘스트 생성</S.Header>
       <S.Body>
-        <ChallengeForm form={form} onSubmit={onSubmit} />
-        <S.SubmitButton>등록</S.SubmitButton>
+        <ChallengeForm id="create-challenge" form={form} onSubmit={onSubmit} />
+        <S.SubmitButton type="submit" form="create-challenge">
+          등록
+        </S.SubmitButton>
       </S.Body>
     </S.Page>
   )

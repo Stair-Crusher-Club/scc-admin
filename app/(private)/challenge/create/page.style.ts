@@ -40,5 +40,10 @@ export const SubmitButton = styled("button", {
     backgroundColor: "var(--leaf-primary-60)",
     color: "white",
     borderRadius: "0.25rem",
+    cursor: "pointer",
+    _disabled: {
+      backgroundColor: "var(--leaf-grey-80)",
+      cursor: "not-allowed",
+    },
   },
 })

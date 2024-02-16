@@ -89,3 +89,9 @@ export function createChallenge(payload: CreateChallengeParams) {
     body: JSON.stringify(payload),
   })
 }
+
+export function deleteChallenge({ id }: { id: string }) {
+  return http(`/admin/challenges/${id}`, {
+    method: "DELETE",
+  })
+}

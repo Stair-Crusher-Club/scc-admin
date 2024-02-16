@@ -51,3 +51,18 @@ export const SubmitButton = styled("button", {
     },
   },
 })
+
+export const DeleteButton = styled("button", {
+  base: {
+    width: "50rem",
+    padding: "0.5rem 0.5rem",
+    backgroundColor: "var(--leaf-status-red)",
+    color: "white",
+    borderRadius: "0.25rem",
+    cursor: "pointer",
+    _disabled: {
+      backgroundColor: "var(--leaf-grey-80)",
+      cursor: "not-allowed",
+    },
+  },
+})

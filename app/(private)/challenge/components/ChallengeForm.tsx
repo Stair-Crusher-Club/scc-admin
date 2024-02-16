@@ -45,10 +45,11 @@ export const defaultValues: Partial<ChallengeFormValues> = {
 
 interface Props {
   form: UseFormReturn<ChallengeFormValues>
-  onSubmit: (values: ChallengeFormValues) => void
-  forEdit?: boolean
+  id?: string
+  disabled?: boolean
+  onSubmit?: (values: ChallengeFormValues) => void
 }
-export default function ChallengeForm({ forEdit, form, onSubmit }: Props) {
+export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
   // milestones는 증가하는 순서로 입력되도록 한다.
   // useEffect 실행을 최소화하기 위한 stringify
   const stringifiedMilestones = form
@@ -65,41 +66,43 @@ export default function ChallengeForm({ forEdit, form, onSubmit }: Props) {
 
   return (
     <FormProvider {...form}>
-      <form className={css({ width: "50rem" })} onSubmit={form.handleSubmit(onSubmit)}>
+      <form id={id} className={css({ width: "50rem" })} onSubmit={onSubmit ? form.handleSubmit(onSubmit) : undefined}>
         <TextInput
           name="name"
           label="이름"
           rules={{ required: { value: true, message: "챌린지 이름을 입력해주세요" } }}
-          disabled={forEdit}
+          disabled={disabled}
         />
         <Flex gap="2rem">
           <TextInput
             name="inviteCode"
             label="초대코드"
             placeholder="초대코드를 입력하면 비공개 챌린지가 됩니다."
-            disabled={forEdit}
+            disabled={disabled}
           />
           <TextInput
             name="joinCode"
             label="참여코드"
             placeholder="챌린지에 참여할 때 입력해야 하는 암호입니다."
-            disabled={forEdit}
+            disabled={disabled}
           />
         </Flex>
         <Flex gap="2rem">
-          <DateInput name="startDate" label="챌린지 시작" dateFormat="yyyy-MM-dd HH:mm" />
+          <DateInput name="startDate" label="챌린지 시작" dateFormat="yyyy-MM-dd HH:mm" disabled={disabled} />
           <DateInput
             name="endDate"
             label="챌린지 종료"
             dateFormat="yyyy-MM-dd HH:mm"
             placeholderText="비워두면 무기한으로 적용됩니다."
+            disabled={disabled}
           />
         </Flex>
         <Autocomplete
+          isMulti
           name="milestones"
           label="마일스톤"
           placeholder="가장 큰 숫자가 목표로 지정됩니다."
-          isDisabled={forEdit}
+          isDisabled={disabled}
           rules={{ required: { value: true, message: "마일스톤을 1개 이상 입력해주세요." } }}
           options={[
             { label: "100", value: "100" },
@@ -112,7 +115,7 @@ export default function ChallengeForm({ forEdit, form, onSubmit }: Props) {
           name="questRegions"
           label="퀘스트 대상 지역"
           placeholder="전체 지역"
-          isDisabled={forEdit}
+          isDisabled={disabled}
           filterOption={(option, inputValue) => option.label.includes(inputValue)}
           options={emdOptions}
         />
@@ -122,11 +125,11 @@ export default function ChallengeForm({ forEdit, form, onSubmit }: Props) {
           label="퀘스트 대상 액션"
           placeholder="이 행동을 하면 퀘스트로 인정됩니다."
           closeMenuOnSelect={false}
-          isDisabled={forEdit}
+          isDisabled={disabled}
           rules={{ required: { value: true, message: "1개 이상의 조건을 선택해주세요." } }}
           options={actionOptions}
         />
-        <TextInput name="description" label="설명" />
+        <TextInput name="description" label="설명" disabled={disabled} />
       </form>
     </FormProvider>
   )
