@@ -11,6 +11,8 @@ export interface Challenge {
   id: string
   name: string
   isPublic: true
+  passcode?: string
+  invitationCode?: string
   isComplete: false
   startsAtMillis: number
   goal: number
