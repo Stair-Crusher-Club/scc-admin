@@ -33,3 +33,17 @@ export const Loading = styled("div", {
     background: "gray.200",
   },
 })
+
+export const SummaryButton = styled("button", {
+  base: {
+    position: "absolute",
+    zIndex: 10,
+    bottom: "1rem",
+    right: "1rem",
+    padding: "0.5rem 1rem",
+    backgroundColor: "var(--leaf-primary-60)",
+    color: "white",
+    borderRadius: "0.25rem",
+    cursor: "pointer",
+  },
+})

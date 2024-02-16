@@ -176,6 +176,10 @@ export default function QuestDetail() {
     }
   }
 
+  function openSummary() {
+    openModal({ type: "QuestSummarySheet", props: { questId: quest?.id ?? "" } })
+  }
+
   return (
     <S.Page size={isMobile ? "small" : "large"}>
       <Script
@@ -185,6 +189,7 @@ export default function QuestDetail() {
         onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
       />
       <S.Map id="map" ref={mapElement} />
+      <S.SummaryButton onClick={openSummary}>개요</S.SummaryButton>
       {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}
     </S.Page>
   )
