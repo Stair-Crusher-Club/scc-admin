@@ -1,3 +1,4 @@
+import { env } from "process"
 import returnFetch, { FetchArgs } from "return-fetch"
 
 import { storage } from "./storage"
@@ -12,8 +13,9 @@ export class NetworkError extends Error {
   }
 }
 
+const isLive = env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
 export const http = returnFetch({
-  baseUrl: "https://api.dev.staircrusher.club/",
+  baseUrl: isLive ? "https://api.staircrusher.club/" : "https://api.dev.staircrusher.club/",
   headers: { "Content-Type": "application/json" },
   interceptors: {
     request: async ([url, config]: FetchArgs) => {
