@@ -15,8 +15,16 @@ curl -fsSL https://get.pnpm.io/install.sh | sh -
 ```bash
 # 인스톨
 pnpm i
+# 스타일 설정
+pnpm panda
 # dev 서버 실행
 pnpm dev
 ```
 
-dev 서버는 3066 포트를 사용합니다. [http://localhost:3066](http://localhost:3066)
+### 환경 설정
+
+`.env` 파일 혹은 환경변수에 `NEXT_PUBLIC_DEPLOY_TYPE`을 `dev` | `live`로 설정하여 연결되는 엔드포인트를 변경할 수 있습니다.
+
+### 로컬 실행
+
+`pnpm dev`를 통해 로컬에서 실행한 경우, 3066 포트를 사용합니다. [http://localhost:3066](http://localhost:3066)
