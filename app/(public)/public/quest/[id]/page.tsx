@@ -9,6 +9,7 @@ import { useMediaQuery } from "react-responsive"
 import { useQuest } from "@/lib/apis/api"
 import { AppState } from "@/lib/globalAtoms"
 import { QuestBuilding } from "@/lib/models/quest"
+import { storage } from "@/lib/storage"
 
 import { useModal } from "@/hooks/useModal"
 import { useTitle } from "@/hooks/useTitle"
@@ -49,6 +50,13 @@ export default function QuestDetail() {
     if (!mapRef.current) return // 초기화 되었는지 확인합니다
     drawMarkers()
   }, [quest, scriptLoaded])
+
+  // 최초 접속 시 가이드 모달을 띄워줍니다.
+  useEffect(() => {
+    const sawGuide = storage.get("sawQuestGuide")
+    if (sawGuide) return
+    openGuide()
+  }, [])
 
   function initializeMap() {
     if (!quest) return
@@ -179,10 +187,17 @@ export default function QuestDetail() {
     }
   }
 
+  function openGuide() {
+    openModal({ type: "QuestGuide", events: { onClose: () => storage.set("sawQuestGuide", Date()) } })
+  }
+
   return (
     <S.Page size={isMobile ? "small" : "large"}>
       {/* public page 이므로 메뉴를 제공하지 않는 커스텀 헤더 사용 */}
-      <S.Header hidden={isHeaderHidden}>{quest?.name}</S.Header>
+      <S.Header hidden={isHeaderHidden}>
+        {quest?.name}
+        <S.GuideButton onClick={openGuide}>가이드</S.GuideButton>
+      </S.Header>
       <Script
         id="kakao-map-script"
         src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}

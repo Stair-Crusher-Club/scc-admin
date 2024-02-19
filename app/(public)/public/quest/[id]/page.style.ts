@@ -36,6 +36,19 @@ export const Header = styled("header", {
   },
 })
 
+export const GuideButton = styled("button", {
+  base: {
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    right: "16px",
+    padding: "4px 8px",
+    border: "1px solid var(--leaf-grey-70)",
+    borderRadius: "4px",
+    fontSize: "14px",
+  },
+})
+
 export const Map = styled("div", {
   base: {
     width: "full",
