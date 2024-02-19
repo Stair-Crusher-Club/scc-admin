@@ -73,7 +73,7 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
           rules={{ required: { value: true, message: "챌린지 이름을 입력해주세요" } }}
           disabled={disabled}
         />
-        <Flex gap="2rem">
+        <Flex gap={16}>
           <TextInput
             name="inviteCode"
             label="초대코드"
@@ -87,7 +87,7 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
             disabled={disabled}
           />
         </Flex>
-        <Flex gap="2rem">
+        <Flex gap={16}>
           <DateInput name="startDate" label="챌린지 시작" dateFormat="yyyy-MM-dd HH:mm" disabled={disabled} />
           <DateInput
             name="endDate"

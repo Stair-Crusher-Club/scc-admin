@@ -1,12 +1,5 @@
 import { styled } from "@/styles/jsx"
 
-export const Fullscreen = styled("div", {
-  base: {
-    width: "full",
-    height: "full",
-  },
-})
-
 export const Modal = styled("div", {
   base: {
     minWidth: "320px",
@@ -20,8 +13,8 @@ export const Modal = styled("div", {
 
 export const List = styled("ul", {
   base: {
-    marginLeft: "20px",
-    marginBottom: "16px",
+    marginLeft: 20,
+    marginBottom: 16,
     listStyle: "disc",
   },
 })
@@ -29,9 +22,9 @@ export const List = styled("ul", {
 export const Button = styled("button", {
   base: {
     width: "full",
-    padding: "12px",
+    padding: 12,
     background: "var(--leaf-primary-60)",
     color: "white",
-    borderRadius: "4px",
+    borderRadius: 4,
   },
 })

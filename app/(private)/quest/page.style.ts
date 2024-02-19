@@ -2,32 +2,33 @@ import { styled } from "@/styles/jsx"
 
 export const Page = styled("main", {
   base: {
-    padding: "2rem",
+    padding: 32,
   },
 })
 
 export const PageTitle = styled("h1", {
   base: {
-    textStyle: "3xl",
-    marginBottom: "2rem",
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 16,
   },
 })
 
 export const PageAction = styled("button", {
   base: {
-    padding: "0.25rem 1rem 0.4rem",
-    marginLeft: "0.5rem",
-    borderRadius: "4px",
+    padding: "4px 16px",
+    marginLeft: 4,
+    borderRadius: 4,
     backgroundColor: "#1D85FF",
     color: "white",
-    textStyle: "md",
+    fontSize: 14,
     cursor: "pointer",
   },
 })
 
 export const Event = styled("div", {
   base: {
-    marginBottom: "1rem",
+    marginBottom: 16,
   },
 })
 
@@ -35,18 +36,18 @@ export const EventName = styled("span", {
   base: {
     display: "inline-block",
     fontWeight: "bold",
-    marginBottom: "0.25rem",
+    marginBottom: 4,
   },
 })
 
 export const ShareButton = styled("button", {
   base: {
-    padding: "0.125rem 0.25rem",
-    marginLeft: "0.5rem",
-    borderRadius: "4px",
+    padding: "2px 4px",
+    marginLeft: 4,
+    borderRadius: 4,
     border: "1px solid #1D85FF",
     color: "#1D85FF",
-    fontSize: "0.75rem",
+    fontSize: 12,
     cursor: "pointer",
     fontWeight: "normal",
   },
@@ -62,7 +63,7 @@ export const Quests = styled("ul", {
 })
 export const Quest = styled("li", {
   base: {
-    padding: "0.25rem 0.5rem",
+    padding: "4px 8px",
     border: "1px solid #eaeaea",
   },
 })

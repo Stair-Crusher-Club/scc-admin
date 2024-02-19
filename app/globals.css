@@ -40,5 +40,5 @@ body {
   height: 20px;
 }
 .react-datepicker__view-calendar-icon input.leaf-input {
-  padding: 0 0.5rem 0 1.75rem;
+  padding: 0 8px 0 28px;
 }

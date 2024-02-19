@@ -38,12 +38,12 @@ export const SummaryButton = styled("button", {
   base: {
     position: "absolute",
     zIndex: 10,
-    bottom: "1rem",
-    right: "1rem",
-    padding: "0.5rem 1rem",
+    bottom: 16,
+    right: 16,
+    padding: "8px 16px",
     backgroundColor: "var(--leaf-primary-60)",
     color: "white",
-    borderRadius: "0.25rem",
+    borderRadius: 4,
     cursor: "pointer",
   },
 })

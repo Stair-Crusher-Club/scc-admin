@@ -3,9 +3,9 @@ import { styled } from "@/styles/jsx"
 export const CheckBox = styled("div", {
   base: {
     display: "inline-block",
-    width: "1.75rem",
-    height: "1.75rem",
-    borderRadius: "full",
+    width: 28,
+    height: 28,
+    borderRadius: "50%",
     backgroundColor: "white",
     border: "1px solid",
     borderColor: "#B5B5C0",
@@ -51,7 +51,7 @@ export const CheckItemIconWrapper = styled("i", {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "1.75rem",
-    height: "1.75rem",
+    width: 28,
+    height: 28,
   },
 })

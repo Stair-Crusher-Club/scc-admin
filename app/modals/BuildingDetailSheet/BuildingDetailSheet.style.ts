@@ -3,7 +3,7 @@ import { styled } from "@/styles/jsx"
 export const TableWrapper = styled("div", {
   base: {
     padding: "0 20px",
-    marginBottom: "4rem",
+    marginBottom: 64,
   },
 })
 export const PlaceTable = styled("table", {

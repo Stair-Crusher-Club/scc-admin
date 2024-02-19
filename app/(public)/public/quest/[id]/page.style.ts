@@ -41,11 +41,11 @@ export const GuideButton = styled("button", {
     position: "absolute",
     top: "50%",
     transform: "translateY(-50%)",
-    right: "16px",
+    right: 16,
     padding: "4px 8px",
     border: "1px solid var(--leaf-grey-70)",
-    borderRadius: "4px",
-    fontSize: "14px",
+    borderRadius: 4,
+    fontSize: 14,
   },
 })
 

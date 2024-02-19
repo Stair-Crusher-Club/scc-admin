@@ -24,6 +24,6 @@ export const Header = styled("header", {
 
 export const Title = styled("h2", {
   base: {
-    marginLeft: "4px",
+    marginLeft: 4,
   },
 })

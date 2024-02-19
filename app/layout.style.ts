@@ -11,7 +11,7 @@ export const Layout = styled("div", {
 export const Body = styled("div", {
   base: {
     display: "flex",
-    flexDir: "column",
+    flexDirection: "column",
     width: "full",
     overflow: "scroll",
   },

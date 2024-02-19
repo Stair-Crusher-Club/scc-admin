@@ -1,8 +1,12 @@
 import { defineConfig } from "@pandacss/dev"
 
 export default defineConfig({
+  eject: true,
+
   // Whether to use css reset
   preflight: true,
+
+  presets: ["@pandacss/preset-base"],
 
   // Where to look for your css declarations
   include: ["./app/**/*.{ts,tsx}"],
@@ -12,6 +16,11 @@ export default defineConfig({
 
   // Useful for theme customization
   theme: {
+    tokens: {
+      sizes: {
+        full: { value: "100%" },
+      },
+    },
     extend: {},
   },
 

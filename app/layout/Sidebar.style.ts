@@ -39,8 +39,8 @@ export const Title = styled("div", {
   base: {
     display: "flex",
     alignItems: "center",
-    padding: "0.75rem",
-    fontSize: "1.5rem",
+    padding: 12,
+    fontSize: 24,
     color: "white",
     cursor: "pointer",
     "& img": {
@@ -51,7 +51,7 @@ export const Title = styled("div", {
 
 export const Menu = styled("ul", {
   base: {
-    paddingBlock: "1rem",
+    paddingBlock: 16,
   },
 })
 
@@ -59,8 +59,8 @@ export const MenuItem = styled("li", {
   base: {
     display: "flex",
     alignItems: "center",
-    padding: "0.5rem 1rem",
-    fontSize: "1rem",
+    padding: "8px 16px",
+    fontSize: 16,
     color: "white",
     cursor: "pointer",
     _hover: {
@@ -81,8 +81,8 @@ export const LogoutButton = styled("button", {
   base: {
     display: "flex",
     alignItems: "center",
-    padding: "0.5rem 1rem",
-    fontSize: "0.75rem",
+    padding: "8px 16px",
+    fontSize: 12,
     color: "white",
     cursor: "pointer",
     _hover: {

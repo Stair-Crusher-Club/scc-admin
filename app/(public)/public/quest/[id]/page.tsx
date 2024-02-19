@@ -191,11 +191,13 @@ export default function QuestDetail() {
     openModal({ type: "QuestGuide", events: { onClose: () => storage.set("sawQuestGuide", Date()) } })
   }
 
+  const placeCount = quest?.buildings.reduce((acc, building) => acc + building.places.length, 0) ?? 0
+  const buildingCount = quest?.buildings.length ?? 0
   return (
     <S.Page size={isMobile ? "small" : "large"}>
       {/* public page 이므로 메뉴를 제공하지 않는 커스텀 헤더 사용 */}
       <S.Header hidden={isHeaderHidden}>
-        {quest?.name}
+        {quest?.name} ({buildingCount}개 건물 / {placeCount}개 장소)
         <S.GuideButton onClick={openGuide}>가이드</S.GuideButton>
       </S.Header>
       <Script

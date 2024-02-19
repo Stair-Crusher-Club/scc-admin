@@ -59,8 +59,8 @@ export const Form = styled("form", {
   base: {
     position: "relative",
     zIndex: 1,
-    width: "25rem",
-    padding: "1.5rem",
+    width: 400,
+    padding: 24,
     boxShadow: "0 0 6px 4px rgba(0, 0, 0, 0.1)",
   },
 })
@@ -69,17 +69,17 @@ export const Buttons = styled("div", {
   base: {
     display: "flex",
 
-    gap: "0.5rem",
+    gap: 4,
   },
 })
 export const PreviewButton = styled("button", {
   base: {
     width: "full",
-    padding: "0.5rem",
-    borderRadius: "4px",
+    padding: 4,
+    borderRadius: 4,
     backgroundColor: "#1D85FF",
     color: "white",
-    textStyle: "md",
+    fontSize: 14,
     cursor: "pointer",
   },
 })
@@ -87,11 +87,11 @@ export const PreviewButton = styled("button", {
 export const SubmitButton = styled("button", {
   base: {
     width: "full",
-    padding: "0.5rem",
-    borderRadius: "4px",
+    padding: 4,
+    borderRadius: 4,
     backgroundColor: "#1D85FF",
     color: "white",
-    textStyle: "md",
+    fontSize: 14,
     cursor: "pointer",
     _disabled: {
       backgroundColor: "gray.400",

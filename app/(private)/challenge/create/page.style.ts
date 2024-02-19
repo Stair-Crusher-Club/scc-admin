@@ -15,8 +15,8 @@ export const Header = styled("header", {
     display: "flex",
     alignItems: "center",
     width: "100%",
-    height: "48px",
-    paddingInline: "16px",
+    height: 48,
+    paddingInline: 16,
     background: "white",
     borderBottom: "1px solid #eaeaea",
     transition: "transform 0.3s",
@@ -29,17 +29,17 @@ export const Body = styled("div", {
     position: "relative",
     display: "flex",
     flexDirection: "column",
-    padding: "2rem",
+    padding: 32,
   },
 })
 
 export const SubmitButton = styled("button", {
   base: {
-    width: "50rem",
-    padding: "0.5rem 0.5rem",
+    width: 800,
+    padding: 8,
     backgroundColor: "var(--leaf-primary-60)",
     color: "white",
-    borderRadius: "0.25rem",
+    borderRadius: 4,
     cursor: "pointer",
     _disabled: {
       backgroundColor: "var(--leaf-grey-80)",

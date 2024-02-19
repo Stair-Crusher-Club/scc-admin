@@ -7,13 +7,13 @@ export const BottomSheet = styled("div", {
     display: "flex",
     flexFlow: "column",
     width: "100%",
-    borderTopLeftRadius: "1.6rem",
-    borderTopRightRadius: "1.6rem",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
     background: "white",
     overflow: "hidden",
     transition: "transform 0.2s ease-in-out",
     pointerEvents: "all",
-    boxShadow: "0 0 0.8rem rgba(0, 0, 0, 0.2)",
+    boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)",
   },
   variants: {
     visible: {
@@ -34,13 +34,13 @@ export const BottomSheetHeader = styled("div", {
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    flex: "0 0 4rem",
+    flex: "0 0 64px",
   },
 })
 
 export const SheetTitle = styled("h5", {
   base: {
-    fontSize: "1.25rem",
+    fontSize: 20,
     fontWeight: 700,
   },
 })
@@ -48,13 +48,13 @@ export const SheetTitle = styled("h5", {
 export const CloseButton = styled("button", {
   base: {
     position: "absolute",
-    top: "1rem",
-    left: "1rem",
+    top: 16,
+    left: 16,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "2rem",
-    height: "2rem",
+    width: 32,
+    height: 32,
     lineHeight: 0,
   },
 })
@@ -62,8 +62,8 @@ export const CloseButton = styled("button", {
 export const ActionButtonWrapper = styled("div", {
   base: {
     position: "absolute",
-    top: "1.4rem",
-    right: "1.6rem",
+    top: 14,
+    right: 16,
     lineHeight: 0,
   },
 })

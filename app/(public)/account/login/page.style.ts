@@ -4,7 +4,7 @@ export const LoginButton = styled("button", {
   base: {
     width: "100%",
     backgroundColor: "var(--leaf-primary-60)",
-    padding: "0.5rem",
+    padding: 4,
     color: "white",
     cursor: "pointer",
   },
