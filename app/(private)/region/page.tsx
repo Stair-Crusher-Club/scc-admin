@@ -23,7 +23,7 @@ export default function Page() {
   const [scriptLoaded, setScriptLoaded] = useState(false)
   const isMobile = useMediaQuery({ maxWidth: 800 })
   const regions = data ?? []
-  const { closeAll } = useModal()
+  const { openModal, closeAll } = useModal()
 
   // 데이터가 바뀌어도 초기화는 한 번만 합니다.
   useEffect(() => {
@@ -98,7 +98,9 @@ export default function Page() {
     // open modal
   }
 
-  function showList() {}
+  function showList() {
+    openModal({ type: "RegionList" })
+  }
 
   return (
     <S.Page>

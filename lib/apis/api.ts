@@ -103,3 +103,9 @@ export function useRegions() {
     queryFn: () => http(`/admin/accessibilityAllowedRegions`).then((res) => res.json() as Promise<Region[]>),
   })
 }
+
+export function deleteRegion({ id }: { id: string }) {
+  return http(`/admin/accessibilityAllowedRegions/${id}`, {
+    method: "DELETE",
+  })
+}
