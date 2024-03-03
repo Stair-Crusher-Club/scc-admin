@@ -43,7 +43,7 @@ export default function ChallengeDetail() {
 
   return (
     <S.Page>
-      <S.Header>퀘스트 상세</S.Header>
+      <S.Header>챌린지 상세</S.Header>
       <S.Body>
         <ChallengeForm form={form} disabled />
         <S.DeleteButton onClick={confirmAndDeleteChallenge}>삭제</S.DeleteButton>

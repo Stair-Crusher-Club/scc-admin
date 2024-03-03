@@ -1,7 +1,4 @@
-export interface LatLng {
-  lng: number
-  lat: number
-}
+import { LatLng } from "./common"
 
 export interface QuestSummary {
   id: string

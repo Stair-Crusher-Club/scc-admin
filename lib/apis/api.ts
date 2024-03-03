@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { http } from "../http"
 import { Challenge } from "../models/challenge"
 import { QuestDetail, QuestSummary } from "../models/quest"
+import { Region } from "../models/region"
 
 export function useQuests() {
   return useQuery({
@@ -93,5 +94,12 @@ export function createChallenge(payload: CreateChallengeParams) {
 export function deleteChallenge({ id }: { id: string }) {
   return http(`/admin/challenges/${id}`, {
     method: "DELETE",
+  })
+}
+
+export function useRegions() {
+  return useQuery({
+    queryKey: ["@regions"],
+    queryFn: () => http(`/admin/accessibilityAllowedRegions`).then((res) => res.json() as Promise<Region[]>),
   })
 }

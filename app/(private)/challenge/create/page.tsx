@@ -48,7 +48,7 @@ export default function CreateChallenge() {
 
   return (
     <S.Page>
-      <S.Header>퀘스트 생성</S.Header>
+      <S.Header>챌린지 생성</S.Header>
       <S.Body>
         <ChallengeForm id="create-challenge" form={form} onSubmit={onSubmit} />
         <S.SubmitButton type="submit" form="create-challenge">
