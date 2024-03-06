@@ -30,5 +30,6 @@ pnpm dev
 `pnpm dev`를 통해 로컬에서 실행한 경우, 3066 포트를 사용합니다. [http://localhost:3066](http://localhost:3066)
 
 ### 배포
-- DEV - main 브랜치에 커밋될 때마다 자동으로 배포됩니다.
-- PROD - `a.b.c` 형식의 git tag를 푸시하면 해당 tag가 달린 커밋 기준으로 푸시됩니다.
+
+- DEV - `dev` 브랜치에 커밋될 때마다 자동으로 배포됩니다.
+- PROD - `live` 브랜치에 커밋될 때마다 자동으로 배포됩니다.
