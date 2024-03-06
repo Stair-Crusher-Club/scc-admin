@@ -95,7 +95,7 @@ export default function Page() {
   }
 
   function createNewRegion() {
-    // open modal
+    openModal({ type: "RegionCreate" })
   }
 
   function showList() {
