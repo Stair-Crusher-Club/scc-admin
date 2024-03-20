@@ -13,6 +13,11 @@ export class NetworkError extends Error {
 }
 
 const isLive = process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
+
+export const internal = returnFetch({
+  baseUrl: typeof window === "undefined" ? "" : location.origin,
+})
+
 export const http = returnFetch({
   baseUrl: isLive ? "https://api.staircrusher.club/" : "https://api.dev.staircrusher.club/",
   headers: { "Content-Type": "application/json" },

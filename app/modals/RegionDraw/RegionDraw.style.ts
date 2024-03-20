@@ -1,5 +1,14 @@
 import { styled } from "@/styles/jsx"
 
+export const Modal = styled("div", {
+  base: {
+    padding: 20,
+    borderRadius: 8,
+    background: "white",
+    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+  },
+})
+
 export const ButtonsWrapper = styled("div", {
   base: {
     display: "flex",

@@ -104,6 +104,19 @@ export function useRegions() {
   })
 }
 
+export function createRegion({
+  name,
+  boundaryVertices,
+}: {
+  name: string
+  boundaryVertices: { lat: number; lng: number }[]
+}) {
+  return http(`/admin/accessibilityAllowedRegions`, {
+    method: "POST",
+    body: JSON.stringify({ name, boundaryVertices }),
+  })
+}
+
 export function deleteRegion({ id }: { id: string }) {
   return http(`/admin/accessibilityAllowedRegions/${id}`, {
     method: "DELETE",
