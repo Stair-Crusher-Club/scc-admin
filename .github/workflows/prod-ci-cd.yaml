@@ -70,7 +70,7 @@ jobs:
       - name: Update image tag for scc-admin-frontend
         uses: mikefarah/yq@master
         with:
-          cmd: yq -i '.image.tag = strenv(RELEASE_VERSION)' 'infra/helm/scc-admin-frontend/values-prod.yaml'
+          cmd: yq -i '.image.tag = strenv(RELEASE_VERSION)' 'helm-chart/scc-admin-frontend/values-prod.yaml'
 
       - name: Upgrade scc-admin-frontend helm chart
         working-directory: helm-chart/scc-admin-frontend
