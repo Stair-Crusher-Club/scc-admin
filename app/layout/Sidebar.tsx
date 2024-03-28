@@ -54,6 +54,7 @@ export default function Sidebar() {
           <MenuItem href="/quest">퀘스트 관리</MenuItem>
           <MenuItem href="/challenge">챌린지 관리</MenuItem>
           <MenuItem href="/region">오픈 지역 관리</MenuItem>
+          <MenuItem href="/accessibility">등록된 정보 관리</MenuItem>
         </S.Menu>
         <Spacer />
         <S.LogoutButton onClick={logout}>로그아웃</S.LogoutButton>
