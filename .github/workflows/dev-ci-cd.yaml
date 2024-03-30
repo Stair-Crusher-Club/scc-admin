@@ -2,7 +2,7 @@ name: dev-ci-cd
 on:
   push:
     branches:
-      - main
+      - dev
   workflow_dispatch: # for manual trigger
 
 permissions:
@@ -51,12 +51,12 @@ jobs:
 
       - uses: azure/setup-helm@v1
         with:
-          version: '3.8.2'
+          version: "3.8.2"
         id: install-helm
 
       - uses: azure/setup-kubectl@v3
         with:
-           version: 'v1.24.1'
+          version: "v1.24.1"
         id: install-kubectl
 
       - name: Upgrade scc-admin-frontend helm chart

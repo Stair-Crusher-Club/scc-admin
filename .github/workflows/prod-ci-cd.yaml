@@ -2,8 +2,10 @@ name: prod-ci-cd
 on:
   push:
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+' # Follow semantic versioning
-      - '[0-9]+.[0-9]+.[0-9]+-hotfix[0-9]' # For hotfix
+      - "v?[0-9]+.[0-9]+.[0-9]+"
+      - "v?[0-9]+.[0-9]+.[0-9]+-[a-z]+.?[0-9]*" # ex. 0.0.0-hotfix.1 // pre-release
+      - 'v?[0-9]+.[0-9]+.[0-9]+\+[a-z0-9]+' # ex. 0.0.0+3f4f3f4 // build number
+      - 'v?[0-9]+.[0-9]+.[0-9]+-[a-z]+.?[0-9]*\+[a-z0-9]+' # ex. 0.0.0-hotfix.1+3f4f3f4 // pre-release with build number
   workflow_dispatch: # for manual trigger
 
 permissions:
@@ -59,12 +61,12 @@ jobs:
 
       - uses: azure/setup-helm@v1
         with:
-          version: '3.8.2'
+          version: "3.8.2"
         id: install-helm
 
       - uses: azure/setup-kubectl@v3
         with:
-           version: 'v1.24.1'
+          version: "v1.24.1"
         id: install-kubectl
 
       - name: Update image tag for scc-admin-frontend

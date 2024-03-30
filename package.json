@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "panda": "panda codegen",
-    "dev": "rm -rf .next && NEXT_PUBLIC_DEPLOY_TYPE=dev next dev -p 3066",
+    "dev": "rm -rf .next && next dev -p 3066",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

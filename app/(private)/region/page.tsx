@@ -5,7 +5,7 @@ import Script from "next/script"
 import { useEffect, useRef, useState } from "react"
 import { useMediaQuery } from "react-responsive"
 
-import { useRegions } from "@/lib/apis/api"
+import { createRegion, useRegions } from "@/lib/apis/api"
 
 import { useModal } from "@/hooks/useModal"
 
@@ -19,7 +19,8 @@ export default function Page() {
   const mapElement = useRef<HTMLDivElement>(null)
   const mapRef = useRef<kakao.maps.Map>()
   const shapesRef = useRef<kakao.maps.Polygon[]>([])
-  const { data } = useRegions()
+  const newShape = useRef<kakao.maps.Polygon>()
+  const { data, refetch } = useRegions()
   const [scriptLoaded, setScriptLoaded] = useState(false)
   const isMobile = useMediaQuery({ maxWidth: 800 })
   const regions = data ?? []
@@ -28,13 +29,18 @@ export default function Page() {
   // 데이터가 바뀌어도 초기화는 한 번만 합니다.
   useEffect(() => {
     if (!scriptLoaded) return
-    if (regions.length === 0) return
     kakao.maps.load(() => {
+      console.log("map loaded")
       closeAll()
       initializeMap()
       drawRegions()
     })
-  }, [regions.length, scriptLoaded, isMobile])
+  }, [scriptLoaded, isMobile])
+
+  useEffect(() => {
+    if (!scriptLoaded) return
+    drawRegions()
+  }, [data])
 
   function initializeMap() {
     const mapContainer = mapElement.current!
@@ -74,11 +80,7 @@ export default function Page() {
       polygon.setMap(mapRef.current!)
 
       // 라벨을 표시할 bound rect의 중심점을 구한다
-      const bounds = new kakao.maps.LatLngBounds()
-      region.boundaryVertices.forEach((v) => bounds.extend(new kakao.maps.LatLng(v.lat, v.lng)))
-      const centerLat = (bounds.getNorthEast().getLat() + bounds.getSouthWest().getLat()) / 2
-      const centerLng = (bounds.getNorthEast().getLng() + bounds.getSouthWest().getLng()) / 2
-      const center = new kakao.maps.LatLng(centerLat, centerLng)
+      const center = getCenterOf(region.boundaryVertices)
 
       const overlay = new kakao.maps.CustomOverlay({
         map: mapRef.current!,
@@ -94,8 +96,53 @@ export default function Page() {
     })
   }
 
-  function createNewRegion() {
-    // open modal
+  function selectHowToCreateRegion() {
+    openModal({ type: "RegionDraw", props: { onSelect: handleNewRegionSelected } })
+  }
+  async function createNewRegion({ name, vertices }: { name: string; vertices: { lat: number; lng: number }[] }) {
+    await createRegion({ name, boundaryVertices: vertices })
+  }
+
+  function handleNewRegionSelected(name: string | null, vertices: { lat: number; lng: number }[]) {
+    const path = vertices.map((v) => new kakao.maps.LatLng(v.lat, v.lng))
+    const polygon = new kakao.maps.Polygon({
+      map: mapRef.current,
+      path,
+      strokeWeight: 3,
+      strokeColor: "#f43",
+      strokeOpacity: 1,
+      fillColor: "#f43",
+      fillOpacity: 0.2,
+    })
+
+    polygon.setMap(mapRef.current!)
+
+    // 라벨을 표시할 bound rect의 중심점을 구한다
+    const center = getCenterOf(vertices)
+    const overlay = new kakao.maps.CustomOverlay({
+      map: mapRef.current!,
+      content: `<div style="padding:5px;background:rgba(255,255,255,0.5)"><b>${name}</b></div>`,
+      position: center,
+      zIndex: 3,
+    })
+    const newBounds = mapRef.current!.getBounds().extend(center)
+    mapRef.current!.setBounds(newBounds!)
+    newShape.current = polygon
+    openModal({
+      type: "RegionCreate",
+      props: {
+        defaultName: name ?? undefined,
+        onConfirm: async (name) => {
+          await createNewRegion({ name, vertices })
+          polygon.setMap(null)
+          refetch()
+        },
+        onCancel: () => {
+          polygon.setMap(null)
+          overlay.setMap(null)
+        },
+      },
+    })
   }
 
   function showList() {
@@ -105,7 +152,7 @@ export default function Page() {
   return (
     <S.Page>
       <S.Header>
-        오픈 지역 관리<S.PageAction onClick={createNewRegion}>오픈 지역 추가</S.PageAction>
+        오픈 지역 관리<S.PageAction onClick={selectHowToCreateRegion}>오픈 지역 추가</S.PageAction>
       </S.Header>
       <Script
         id="kakao-map-script"
@@ -113,8 +160,17 @@ export default function Page() {
         onReady={() => setScriptLoaded(true)}
         onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
       />
+      {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}
       <S.Map id="map" ref={mapElement} />
       <S.ListButton onClick={showList}>목록 보기</S.ListButton>
     </S.Page>
   )
+}
+
+function getCenterOf(vertices: { lat: number; lng: number }[]) {
+  const bounds = new kakao.maps.LatLngBounds()
+  vertices.forEach((v) => bounds.extend(new kakao.maps.LatLng(v.lat, v.lng)))
+  const centerLat = (bounds.getNorthEast().getLat() + bounds.getSouthWest().getLat()) / 2
+  const centerLng = (bounds.getNorthEast().getLng() + bounds.getSouthWest().getLng()) / 2
+  return new kakao.maps.LatLng(centerLat, centerLng)
 }
