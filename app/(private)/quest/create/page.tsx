@@ -1,13 +1,14 @@
 "use client"
 
 import { NumberInput, TextInput } from "@reactleaf/input/hookform"
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import Script from "next/script"
 import { useEffect, useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
+import { toast } from "react-toastify"
 
-import { previewDivisions } from "@/lib/apis/api"
-import { QuestBuilding } from "@/lib/models/quest"
+import { ClusterPreview, createQuest, previewDivisions } from "@/lib/apis/api"
 
 import { Flex } from "@/styles/jsx"
 
@@ -23,16 +24,12 @@ interface FormValues {
   maxPlacesPerQuest: number
 }
 
-interface ClusterPreview {
-  questNamePostfix: string
-  targetBuildings: QuestBuilding[]
-}
-
 export default function QuestCreate() {
   const router = useRouter()
   // 센터 모드 : 중심점 설정 모드
   // 프리뷰 모드 : 조 분할 미리보기 모드
   const mode = useRef<"center" | "preview">("center")
+  const queryClient = useQueryClient()
   const [scriptLoaded, setScriptLoaded] = useState(false)
   const [previewChecked, setPreviewChecked] = useState(false)
   const [isPreviewLoading, setPreviewLoading] = useState(false)
@@ -44,6 +41,7 @@ export default function QuestCreate() {
     defaultValues: { name: "", radius: 200, division: 3, maxPlacesPerQuest: 50 },
   })
   const previewMarkers = useRef<kakao.maps.Marker[]>([])
+  const clusters = useRef<ClusterPreview[]>([])
 
   useEffect(() => {
     if (!scriptLoaded) return
@@ -115,8 +113,9 @@ export default function QuestCreate() {
     setPreviewLoading(false)
 
     mode.current = "preview"
-    const clusters = (await res.json()) as ClusterPreview[]
-    clusters.forEach((cluster, i) => {
+    clusters.current = (await res.json()) as ClusterPreview[]
+
+    clusters.current.forEach((cluster, i) => {
       cluster.targetBuildings.forEach((building) => {
         const marker = new kakao.maps.Marker({
           position: new kakao.maps.LatLng(building.location.lat, building.location.lng),
@@ -151,14 +150,17 @@ export default function QuestCreate() {
     setPreviewChecked(false)
   }
 
-  function onSubmit(values: FormValues) {
+  async function onSubmit(values: FormValues) {
     // name 값은 프리뷰 시에는 필수가 아니지만 생성할 때는 필수이므로 별도 체크 필요
     if (!values.name) {
       form.setError("name", { type: "required", message: "퀘스트 이름을 입력해주세요." })
       return
     }
-    alert("컨펌 후 생성하기")
-    console.log(values)
+    await createQuest({ questNamePrefix: values.name, dryRunResults: clusters.current })
+
+    toast.success("퀘스트가 생성되었습니다.")
+    queryClient.invalidateQueries({ queryKey: ["@quests"], exact: true })
+    router.back()
   }
 
   return (

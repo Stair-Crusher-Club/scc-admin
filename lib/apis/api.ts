@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 
 import { http } from "../http"
 import { Challenge } from "../models/challenge"
-import { QuestDetail, QuestSummary } from "../models/quest"
+import { QuestBuilding, QuestDetail, QuestSummary } from "../models/quest"
 import { Region } from "../models/region"
 
 export function useQuests() {
@@ -48,10 +48,26 @@ type PreviewDivisionsParams = {
   maxPlaceCountPerQuest: number
   radiusMeters: number
 }
+export interface ClusterPreview {
+  questNamePostfix: string
+  targetBuildings: QuestBuilding[]
+}
+
 export async function previewDivisions(params: PreviewDivisionsParams) {
   return http(`/admin/clubQuests/create/dryRun`, {
     method: "POST",
     body: JSON.stringify(params),
+  })
+}
+
+type CreateQuestPayload = {
+  questNamePrefix: string
+  dryRunResults: ClusterPreview[]
+}
+export async function createQuest(payload: CreateQuestPayload) {
+  return http(`/admin/clubQuests/create`, {
+    method: "POST",
+    body: JSON.stringify(payload),
   })
 }
 
