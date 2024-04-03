@@ -2,7 +2,7 @@ name: dev-ci-cd
 on:
   push:
     branches:
-      - dev
+      - main
   workflow_dispatch: # for manual trigger
 
 permissions:
