@@ -94,33 +94,3 @@ jobs:
           echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}"
           CURRENT_GITHUB_ACTION_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"[PROD] scc-admin-frontend version $RELEASE_VERSION is deployed!\"}" ${{ secrets.SLACK_URL_SCC_SERVER_CHANNEL }} -v
-
-  update-main-branch:
-    runs-on: ubuntu-latest
-    needs:
-      - cd
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set RELEASE_VERSION
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
-      - uses: actions/checkout@v3
-        with:
-          ref: refs/heads/main
-          token: ${{ secrets.STAIRCRUSHERCLUB_ACCOUNT_GH_TOKEN }}
-
-      - name: Update image tag for scc-admin-frontend
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq -i '.image.tag = strenv(RELEASE_VERSION)' 'helm-chart/scc-admin-frontend/values-prod.yaml'
-
-      - name: Commit and push image tag for main branch
-        run: |
-          git config --global user.email "staircrusherclub.dev@gmail.com"
-          git config --global user.name "Stair-Crusher-Club"
-          git diff
-          git add .
-          git commit -m "[skip ci] Prod deploy: $RELEASE_VERSION"
-          git push
