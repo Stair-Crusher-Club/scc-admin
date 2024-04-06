@@ -213,6 +213,22 @@ export default function QuestCreate() {
                 수정하기
               </S.PreviewButton>
             )}
+            {previewChecked && (
+              <S.PreviewSummary>
+                <tr>
+                  <td colSpan={3} style={{ padding: "4px 0" }}>
+                    미리보기 요약
+                  </td>
+                </tr>
+                {clusters.current.map((cluster, i) => (
+                  <tr key={i}>
+                    <td>{cluster.questNamePostfix}</td>
+                    <td>{cluster.targetBuildings.length}개 건물</td>
+                    <td>{cluster.targetBuildings.reduce((acc, b) => acc + b.places.length, 0)}개 장소</td>
+                  </tr>
+                ))}
+              </S.PreviewSummary>
+            )}
             {previewChecked && <S.SubmitButton type="submit">이대로 생성하기</S.SubmitButton>}
           </Flex>
         </S.Form>

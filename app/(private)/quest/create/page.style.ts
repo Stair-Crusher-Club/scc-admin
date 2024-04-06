@@ -84,6 +84,12 @@ export const PreviewButton = styled("button", {
   },
 })
 
+export const PreviewSummary = styled("table", {
+  base: {
+    margin: "12px 0 4px",
+  },
+})
+
 export const SubmitButton = styled("button", {
   base: {
     width: "full",
