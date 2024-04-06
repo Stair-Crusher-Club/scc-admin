@@ -179,7 +179,6 @@ export default function QuestCreate() {
         <S.Form onSubmit={form.handleSubmit(onSubmit)}>
           <FormProvider {...form}>
             <fieldset disabled={previewChecked}>
-              <TextInput name="name" label="퀘스트 이름" />
               <TextInput
                 name="center.lat"
                 label="중심점 (위도)"
@@ -201,36 +200,39 @@ export default function QuestCreate() {
               />
               <NumberInput name="maxPlacesPerQuest" label="퀘스트 당 최대 장소 수" clearable={false} />
             </fieldset>
-          </FormProvider>
-          <Flex direction="column" gap="8px">
-            {!previewChecked && (
-              <S.PreviewButton type="button" onClick={previewOn}>
-                미리보기
-              </S.PreviewButton>
-            )}
-            {previewChecked && (
-              <S.PreviewButton type="button" onClick={previewOff}>
-                수정하기
-              </S.PreviewButton>
-            )}
-            {previewChecked && (
-              <S.PreviewSummary>
-                <tr>
-                  <td colSpan={3} style={{ padding: "4px 0" }}>
-                    미리보기 요약
-                  </td>
-                </tr>
-                {clusters.current.map((cluster, i) => (
-                  <tr key={i}>
-                    <td>{cluster.questNamePostfix}</td>
-                    <td>{cluster.targetBuildings.length}개 건물</td>
-                    <td>{cluster.targetBuildings.reduce((acc, b) => acc + b.places.length, 0)}개 장소</td>
+
+            <Flex direction="column" gap="8px">
+              {!previewChecked && (
+                <S.PreviewButton type="button" onClick={previewOn}>
+                  미리보기
+                </S.PreviewButton>
+              )}
+              {previewChecked && (
+                <S.PreviewButton type="button" onClick={previewOff}>
+                  수정하기
+                </S.PreviewButton>
+              )}
+
+              {previewChecked && (
+                <S.PreviewSummary>
+                  <tr>
+                    <td colSpan={3} style={{ padding: "4px 0" }}>
+                      미리보기 요약
+                    </td>
                   </tr>
-                ))}
-              </S.PreviewSummary>
-            )}
-            {previewChecked && <S.SubmitButton type="submit">이대로 생성하기</S.SubmitButton>}
-          </Flex>
+                  {clusters.current.map((cluster, i) => (
+                    <tr key={i}>
+                      <td>{cluster.questNamePostfix}</td>
+                      <td>{cluster.targetBuildings.length}개 건물</td>
+                      <td>{cluster.targetBuildings.reduce((acc, b) => acc + b.places.length, 0)}개 장소</td>
+                    </tr>
+                  ))}
+                </S.PreviewSummary>
+              )}
+              {previewChecked && <TextInput name="name" label="퀘스트 이름" />}
+              {previewChecked && <S.SubmitButton type="submit">이대로 생성하기</S.SubmitButton>}
+            </Flex>
+          </FormProvider>
         </S.Form>
       </S.Body>
     </S.Page>
