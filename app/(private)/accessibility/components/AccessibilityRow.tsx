@@ -31,14 +31,14 @@ export default function AccessibilityRow(props: Props) {
       <S.Cell>
         {
           accessibilitySummary.placeAccessibility.imageUrls.map((imageUrl) => (
-            <S.Image src={imageUrl} onClick={() => onClickImage(imageUrl)} />
+            <S.Image key={imageUrl} src={imageUrl} onClick={() => onClickImage(imageUrl)} />
           ))
         }
       </S.Cell>
       <S.Cell>
         {
           accessibilitySummary.buildingAccessibility?.imageUrls.map((imageUrl) => (
-            <S.Image src={imageUrl} />
+            <S.Image key={imageUrl} src={imageUrl} />
           ))
         }
       </S.Cell>
