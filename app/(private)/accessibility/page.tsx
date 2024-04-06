@@ -90,6 +90,7 @@ export default function AccessibilityList() {
           </S.HeaderRow>
           {accessibilitySummaries.map((accessibilitySummary) =>
             <AccessibilityRow
+              key={accessibilitySummary.placeAccessibility.id}
               accessibilitySummary={accessibilitySummary}
               onDeletePlaceAccessibility={handleDeletePlaceAccessibility}
               onDeleteBuildingAccessibility={handleDeleteBuildingAccessibility}
