@@ -85,12 +85,18 @@ export default function AccessibilityList() {
             <S.DeleteButton onClick={() => handleDeletePlaceAccessibility(accessibility.placeAccessibility.id, accessibility.placeAccessibility.placeName)}>
               장소 정보 삭제
             </S.DeleteButton>
-            <S.DeleteButton
-              onClick={() => handleDeleteBuildingAccessibility(accessibility.buildingAccessibility?.id, accessibility.placeAccessibility.placeName)}
-              disabled={!accessibility.buildingAccessibility}
-            >
-              건물 정보 삭제
-            </S.DeleteButton>
+            {
+              accessibility.buildingAccessibility
+                ? (
+                  <S.DeleteButton
+                    onClick={() => handleDeleteBuildingAccessibility(accessibility.buildingAccessibility?.id, accessibility.placeAccessibility.placeName)}
+                  >
+                    건물 정보 삭제
+                  </S.DeleteButton>
+                )
+                : <S.DeleteButton disabled>건물 정보 없음</S.DeleteButton>
+            }
+
           </S.Accessibility>
         ))}
       </S.Accessibilities>
