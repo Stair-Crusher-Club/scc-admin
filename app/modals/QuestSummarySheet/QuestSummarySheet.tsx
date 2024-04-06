@@ -43,6 +43,19 @@ export default function QuestSummarySheet({ questId, visible, close }: Props) {
                 <S.Cell>{building.places.filter((p) => p.isClosed || p.isNotAccessible).length}</S.Cell>
               </tr>
             ))}
+            <tr style={{ fontWeight: "bold" }}>
+              <S.Cell style={{ textAlign: "left", lineHeight: 1.5 }}>합계</S.Cell>
+              <S.Cell>{quest?.buildings.reduce((acc, b) => acc + b.places.length, 0)}</S.Cell>
+              <S.Cell>
+                {quest?.buildings.reduce((acc, b) => acc + b.places.filter((p) => p.isConquered).length, 0)}
+              </S.Cell>
+              <S.Cell>
+                {quest?.buildings.reduce(
+                  (acc, b) => acc + b.places.filter((p) => p.isClosed || p.isNotAccessible).length,
+                  0,
+                )}
+              </S.Cell>
+            </tr>
           </tbody>
         </S.BuildingTable>
       </S.TableWrapper>
