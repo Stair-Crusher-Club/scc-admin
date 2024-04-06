@@ -1,4 +1,5 @@
 const register = {
+  AccessibilityImage: () => import("./AccessibilityImage/AccessibilityImage"),
   BuildingDetailSheetMobile: () => import("./BuildingDetailSheet/BuildingDetailSheet.mobile"),
   BuildingDetailSheetDesktop: () => import("./BuildingDetailSheet/BuildingDetailSheet.desktop"),
   RegionList: () => import("./RegionList"),

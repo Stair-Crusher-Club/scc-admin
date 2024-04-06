@@ -13,19 +13,7 @@ export const PageTitle = styled("h1", {
     marginBottom: 32,
   },
 })
-export const Accessibilities = styled("ul", {
-  base: {},
-})
-export const Accessibility = styled("li", {
-  base: {
-    padding: "4px 8px",
-    margin: "4px 0",
-    cursor: "pointer",
-    _hover: {
-      backgroundColor: "#f5f5f5",
-    },
-  },
-})
+
 export const SearchButton = styled("button", {
   base: {
     padding: "8px 16px",
@@ -39,6 +27,7 @@ export const SearchButton = styled("button", {
     },
   },
 })
+
 export const LoadNextPageButton = styled("button", {
   base: {
     padding: 8,
@@ -52,16 +41,30 @@ export const LoadNextPageButton = styled("button", {
     },
   },
 })
-export const DeleteButton = styled("button", {
+
+export const TableWrapper = styled("div", {
   base: {
-    padding: 8,
-    backgroundColor: "var(--leaf-primary-60)",
-    color: "white",
-    borderRadius: 4,
-    cursor: "pointer",
-    _disabled: {
-      backgroundColor: "var(--leaf-grey-80)",
-      cursor: "not-allowed",
-    },
+    padding: "20px 20px",
+  },
+})
+export const AccessibilityTable = styled("table", {
+  base: {
+    tableLayout: "auto",
+    width: "full",
+  },
+})
+
+export const HeaderRow = styled("tr", {
+  base: {
+    position: "sticky",
+    top: 0,
+    zIndex: 1,
+    backgroundColor: "white",
+  },
+})
+export const HeaderCell = styled("th", {
+  base: {
+    padding: "8px 4px 12px",
+    fontWeight: "bold",
   },
 })

@@ -2,14 +2,11 @@
 
 import { useState } from "react"
 
-import {
-    deleteBuildingAccessibility,
-    deletePlaceAccessibility,
-    searchAccessibilities,
-} from "@/lib/apis/api"
+import {deleteBuildingAccessibility, deletePlaceAccessibility, searchAccessibilities} from "@/lib/apis/api"
 
-import {AccessibilitySummary} from "@/lib/models/accessibility";
+import {AccessibilitySummary, BuildingAccessibility, PlaceAccessibility} from "@/lib/models/accessibility";
 import * as S from "./page.style"
+import AccessibilityRow from "@/(private)/accessibility/components/AccessibilityRow";
 
 const limit = 10
 
@@ -34,7 +31,8 @@ export default function AccessibilityList() {
       })
   }
 
-  const handleDeletePlaceAccessibility = (id: string, placeName: string) => {
+  const handleDeletePlaceAccessibility = (accessibilitySummary: AccessibilitySummary) => {
+    const { id, placeName } = accessibilitySummary.placeAccessibility
     if (!confirm(`정말 [${placeName}] 장소의 정보를 삭제하시겠습니까?`)) return
     deletePlaceAccessibility({ id })
       .then(() => {
@@ -42,7 +40,9 @@ export default function AccessibilityList() {
       })
   }
 
-  const handleDeleteBuildingAccessibility = (id: string | undefined, placeName: string) => {
+  const handleDeleteBuildingAccessibility = (accessibilitySummary: AccessibilitySummary) => {
+    const id = accessibilitySummary.buildingAccessibility?.id
+    const placeName = accessibilitySummary.placeAccessibility.placeName
     if (!id) return
     if (!confirm(`정말 [${placeName}] 장소의 건물 정보를 삭제하시겠습니까?`)) return
     deleteBuildingAccessibility({ id })
@@ -78,28 +78,25 @@ export default function AccessibilityList() {
       >
         검색
       </S.SearchButton>
-      <S.Accessibilities>
-        {accessibilitySummaries.map((accessibility) => (
-          <S.Accessibility key={accessibility.placeAccessibility.id}>
-            장소명: {accessibility.placeAccessibility.placeName} / 등록자: {accessibility.placeAccessibility.registeredUserName || "익명의 정복자"}
-            <S.DeleteButton onClick={() => handleDeletePlaceAccessibility(accessibility.placeAccessibility.id, accessibility.placeAccessibility.placeName)}>
-              장소 정보 삭제
-            </S.DeleteButton>
-            {
-              accessibility.buildingAccessibility
-                ? (
-                  <S.DeleteButton
-                    onClick={() => handleDeleteBuildingAccessibility(accessibility.buildingAccessibility?.id, accessibility.placeAccessibility.placeName)}
-                  >
-                    건물 정보 삭제
-                  </S.DeleteButton>
-                )
-                : <S.DeleteButton disabled>건물 정보 없음</S.DeleteButton>
-            }
-
-          </S.Accessibility>
-        ))}
-      </S.Accessibilities>
+      <S.TableWrapper>
+        <S.AccessibilityTable>
+          <S.HeaderRow>
+            <S.HeaderCell>장소명</S.HeaderCell>
+            <S.HeaderCell>정복자</S.HeaderCell>
+            <S.HeaderCell>정복 시점</S.HeaderCell>
+            <S.HeaderCell>장소 사진</S.HeaderCell>
+            <S.HeaderCell>건물 사진</S.HeaderCell>
+            <S.HeaderCell>삭제</S.HeaderCell>
+          </S.HeaderRow>
+          {accessibilitySummaries.map((accessibilitySummary) =>
+            <AccessibilityRow
+              accessibilitySummary={accessibilitySummary}
+              onDeletePlaceAccessibility={handleDeletePlaceAccessibility}
+              onDeleteBuildingAccessibility={handleDeleteBuildingAccessibility}
+            />
+          )}
+        </S.AccessibilityTable>
+      </S.TableWrapper>
       {
         cursor
           ? <S.LoadNextPageButton
