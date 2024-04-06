@@ -29,6 +29,7 @@ export default function QuestDetail() {
   const { openModal, closeModal, closeAll } = useModal()
   const openedModal = useRef<string>()
   const { isHeaderHidden } = useAtomValue(AppState)
+  const me = useRef<kakao.maps.Marker>()
 
   useTitle(quest?.name)
 
@@ -58,6 +59,13 @@ export default function QuestDetail() {
     openGuide()
   }, [])
 
+  // 10초마다 내 위치를 업데이트합니다.
+  useEffect(() => {
+    drawMyLocationMarker()
+    const interval = setInterval(drawMyLocationMarker, 10 * 1000)
+    return () => clearInterval(interval)
+  }, [])
+
   function initializeMap() {
     if (!quest) return
 
@@ -80,6 +88,30 @@ export default function QuestDetail() {
     const markers = quest.buildings.map(createBuildingMarker)
     markersRef.current = markers
     markers.map((m) => m.setMap(mapRef.current!))
+  }
+
+  function drawMyLocationMarker() {
+    // HTML5의 geolocation으로 사용할 수 있는지 확인합니다
+    if (!navigator.geolocation) return
+
+    // GeoLocation을 이용해서 접속 위치를 얻어옵니다
+    navigator.geolocation.getCurrentPosition(function (position) {
+      const lat = position.coords.latitude // 위도
+      const lon = position.coords.longitude // 경도
+
+      const locPosition = new kakao.maps.LatLng(lat, lon) // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
+      console.log(locPosition)
+
+      // 내 위치를 표시합니다
+      me.current?.setMap(null)
+      me.current = new kakao.maps.Marker({
+        position: locPosition,
+        image: new kakao.maps.MarkerImage("/me.png", new kakao.maps.Size(16, 16), {
+          offset: new kakao.maps.Point(8, 8),
+        }),
+      })
+      me.current.setMap(mapRef.current!)
+    })
   }
 
   function createBuildingMarker(building: QuestBuilding, index: number) {
