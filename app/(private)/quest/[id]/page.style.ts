@@ -1,18 +1,5 @@
 import { styled } from "@/styles/jsx"
 
-export const Page = styled("main", {
-  base: {
-    display: "flex",
-    height: "full",
-  },
-  variants: {
-    size: {
-      small: {},
-      large: {},
-    },
-  },
-})
-
 export const Map = styled("div", {
   base: {
     width: "full",

@@ -7,6 +7,7 @@ import { useMediaQuery } from "react-responsive"
 
 import { createRegion, useRegions } from "@/lib/apis/api"
 
+import { Contents, Header } from "@/components/layout"
 import { useModal } from "@/hooks/useModal"
 
 import { FIXED_REGIONS } from "./data"
@@ -150,20 +151,22 @@ export default function Page() {
   }
 
   return (
-    <S.Page>
-      <S.Header>
-        오픈 지역 관리<S.PageAction onClick={selectHowToCreateRegion}>오픈 지역 추가</S.PageAction>
-      </S.Header>
-      <Script
-        id="kakao-map-script"
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
-        onReady={() => setScriptLoaded(true)}
-        onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
-      />
-      {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}
-      <S.Map id="map" ref={mapElement} />
-      <S.ListButton onClick={showList}>목록 보기</S.ListButton>
-    </S.Page>
+    <>
+      <Header title="오픈 지역 관리">
+        <Header.ActionButton onClick={selectHowToCreateRegion}>오픈 지역 추가</Header.ActionButton>
+      </Header>
+      <Contents>
+        <Script
+          id="kakao-map-script"
+          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
+          onReady={() => setScriptLoaded(true)}
+          onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
+        />
+        {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}
+        <S.Map id="map" ref={mapElement} />
+        <S.ListButton onClick={showList}>목록 보기</S.ListButton>
+      </Contents>
+    </>
   )
 }
 

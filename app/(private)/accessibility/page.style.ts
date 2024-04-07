@@ -1,16 +1,8 @@
 import { styled } from "@/styles/jsx"
 
-export const Page = styled("main", {
+export const Contents = styled("main", {
   base: {
     padding: 32,
-  },
-})
-
-export const PageTitle = styled("h1", {
-  base: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 32,
   },
 })
 

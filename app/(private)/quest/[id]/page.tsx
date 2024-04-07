@@ -8,8 +8,8 @@ import { useMediaQuery } from "react-responsive"
 import { useQuest } from "@/lib/apis/api"
 import { QuestBuilding } from "@/lib/models/quest"
 
+import { Contents, Header } from "@/components/layout"
 import { useModal } from "@/hooks/useModal"
-import { useTitle } from "@/hooks/useTitle"
 
 import * as S from "./page.style"
 
@@ -25,8 +25,6 @@ export default function QuestDetail() {
   const markersRef = useRef<kakao.maps.Marker[]>([])
   const { openModal, closeModal, closeAll } = useModal()
   const openedModal = useRef<string>()
-
-  useTitle(quest?.name)
 
   // 데이터가 바뀌어도 초기화는 한 번만 합니다.
   useEffect(() => {
@@ -181,16 +179,19 @@ export default function QuestDetail() {
   }
 
   return (
-    <S.Page size={isMobile ? "small" : "large"}>
-      <Script
-        id="kakao-map-script"
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
-        onReady={() => setScriptLoaded(true)}
-        onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
-      />
-      <S.Map id="map" ref={mapElement} />
-      <S.SummaryButton onClick={openSummary}>개요</S.SummaryButton>
-      {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}
-    </S.Page>
+    <>
+      <Header title={quest?.name} />
+      <Contents>
+        <Script
+          id="kakao-map-script"
+          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
+          onReady={() => setScriptLoaded(true)}
+          onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
+        />
+        <S.Map id="map" ref={mapElement} />
+        <S.SummaryButton onClick={openSummary}>개요</S.SummaryButton>
+        {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}
+      </Contents>
+    </>
   )
 }

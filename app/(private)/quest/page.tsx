@@ -7,6 +7,8 @@ import { toast } from "react-toastify"
 import { useQuests } from "@/lib/apis/api"
 import { QuestSummary } from "@/lib/models/quest"
 
+import { Contents, Header } from "@/components/layout"
+
 import * as S from "./page.style"
 
 export default function QuestList() {
@@ -31,27 +33,28 @@ export default function QuestList() {
   }
 
   return (
-    <S.Page>
-      <S.PageTitle>
-        퀘스트 관리<S.PageAction onClick={() => router.push("/quest/create")}>퀘스트 추가</S.PageAction>
-      </S.PageTitle>
-
-      {Object.entries(regrouped).map(([key, quests]) => (
-        <S.Event key={key}>
-          <S.EventName>
-            {key} <S.ShareButton onClick={() => share(quests)}>공유하기</S.ShareButton>
-          </S.EventName>
-          <S.Quests>
-            {quests
-              .sort((a, b) => (a.name > b.name ? 1 : -1))
-              .map((q) => (
-                <Link key={q.id} href={`/quest/${q.id}`}>
-                  <S.Quest>{q.name.split(" - ")[1]}</S.Quest>
-                </Link>
-              ))}
-          </S.Quests>
-        </S.Event>
-      ))}
-    </S.Page>
+    <>
+      <Header title="퀘스트 관리">
+        <Header.ActionButton onClick={() => router.push("/quest/create")}>퀘스트 추가</Header.ActionButton>
+      </Header>
+      <Contents.Normal>
+        {Object.entries(regrouped).map(([key, quests]) => (
+          <S.Event key={key}>
+            <S.EventName>
+              {key} <S.ShareButton onClick={() => share(quests)}>공유하기</S.ShareButton>
+            </S.EventName>
+            <S.Quests>
+              {quests
+                .sort((a, b) => (a.name > b.name ? 1 : -1))
+                .map((q) => (
+                  <Link key={q.id} href={`/quest/${q.id}`}>
+                    <S.Quest>{q.name.split(" - ")[1]}</S.Quest>
+                  </Link>
+                ))}
+            </S.Quests>
+          </S.Event>
+        ))}
+      </Contents.Normal>
+    </>
   )
 }

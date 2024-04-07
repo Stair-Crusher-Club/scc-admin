@@ -4,8 +4,8 @@ import { Noto_Sans_KR } from "next/font/google"
 import "react-datepicker/dist/react-datepicker.css"
 import "react-toastify/dist/ReactToastify.css"
 
+import Providers from "./components/layout/Providers"
 import "./globals.css"
-import Providers from "./layout/Providers"
 
 const fonts = Noto_Sans_KR({ subsets: ["latin"] })
 

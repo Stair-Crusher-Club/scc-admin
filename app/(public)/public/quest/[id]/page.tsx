@@ -11,8 +11,8 @@ import { AppState } from "@/lib/globalAtoms"
 import { QuestBuilding } from "@/lib/models/quest"
 import { storage } from "@/lib/storage"
 
+import { Contents, Header } from "@/components/layout"
 import { useModal } from "@/hooks/useModal"
-import { useTitle } from "@/hooks/useTitle"
 
 import * as S from "./page.style"
 
@@ -30,8 +30,6 @@ export default function QuestDetail() {
   const openedModal = useRef<string>()
   const { isHeaderHidden } = useAtomValue(AppState)
   const me = useRef<kakao.maps.Marker>()
-
-  useTitle(quest?.name)
 
   // 데이터가 바뀌어도 초기화는 한 번만 합니다.
   useEffect(() => {
@@ -226,20 +224,25 @@ export default function QuestDetail() {
   const placeCount = quest?.buildings.reduce((acc, building) => acc + building.places.length, 0) ?? 0
   const buildingCount = quest?.buildings.length ?? 0
   return (
-    <S.Page size={isMobile ? "small" : "large"}>
+    <>
       {/* public page 이므로 메뉴를 제공하지 않는 커스텀 헤더 사용 */}
-      <S.Header hidden={isHeaderHidden}>
-        {quest?.name} ({buildingCount}개 건물 / {placeCount}개 장소)
-        <S.GuideButton onClick={openGuide}>가이드</S.GuideButton>
-      </S.Header>
-      <Script
-        id="kakao-map-script"
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
-        onReady={() => setScriptLoaded(true)}
-        onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
-      />
-      <S.Map id="map" ref={mapElement} />
-      {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}
-    </S.Page>
+      <Header
+        title={quest ? `${quest?.name} (${buildingCount}개 건물 / ${placeCount}개 장소)` : ""}
+        hidden={isHeaderHidden}
+        hideMenu
+      >
+        <Header.ActionButton onClick={openGuide}>가이드</Header.ActionButton>
+      </Header>
+      <Contents>
+        <Script
+          id="kakao-map-script"
+          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
+          onReady={() => setScriptLoaded(true)}
+          onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
+        />
+        <S.Map id="map" ref={mapElement} />
+        {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}
+      </Contents>
+    </>
   )
 }

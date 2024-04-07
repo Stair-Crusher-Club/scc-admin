@@ -6,9 +6,10 @@ import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import { toast } from "react-toastify"
 
 import { deleteChallenge, useChallenge } from "@/lib/apis/api"
+
+import { Contents, Header } from "@/components/layout"
 
 import ChallengeForm, { ChallengeFormValues, actionOptions, defaultValues } from "../components/ChallengeForm"
 import * as S from "./page.style"
@@ -42,12 +43,12 @@ export default function ChallengeDetail() {
   }
 
   return (
-    <S.Page>
-      <S.Header>챌린지 상세</S.Header>
-      <S.Body>
+    <>
+      <Header title="챌린지 상세" />
+      <Contents.Normal>
         <ChallengeForm form={form} disabled />
         <S.DeleteButton onClick={confirmAndDeleteChallenge}>삭제</S.DeleteButton>
-      </S.Body>
-    </S.Page>
+      </Contents.Normal>
+    </>
   )
 }

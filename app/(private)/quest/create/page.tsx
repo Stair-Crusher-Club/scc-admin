@@ -10,6 +10,7 @@ import { toast } from "react-toastify"
 
 import { ClusterPreview, createQuest, previewDivisions } from "@/lib/apis/api"
 
+import { Contents, Header } from "@/components/layout"
 import { Flex } from "@/styles/jsx"
 
 import * as S from "./page.style"
@@ -164,9 +165,9 @@ export default function QuestCreate() {
   }
 
   return (
-    <S.Page>
-      <S.Header>퀘스트 생성</S.Header>
-      <S.Body>
+    <>
+      <Header title="퀘스트 생성" />
+      <Contents.Normal>
         <Script
           id="kakao-map-script"
           src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
@@ -234,7 +235,7 @@ export default function QuestCreate() {
             </Flex>
           </FormProvider>
         </S.Form>
-      </S.Body>
-    </S.Page>
+      </Contents.Normal>
+    </>
   )
 }

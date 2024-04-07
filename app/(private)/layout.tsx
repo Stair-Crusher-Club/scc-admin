@@ -5,9 +5,8 @@ import { useEffect, useState } from "react"
 
 import { storage } from "@/lib/storage"
 
-import * as S from "@/layout.style"
-import Header from "@/layout/Header"
-import Sidebar from "@/layout/Sidebar"
+import { Sidebar } from "@/components/layout"
+import { Flex } from "@/styles/jsx"
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -28,12 +27,11 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   if (authenticated === undefined) return null
   if (!authenticated) return <div>로그인이 필요합니다.</div>
   return (
-    <S.Layout>
+    <Flex css={{ width: "full", height: "full" }}>
       <Sidebar />
-      <S.Body>
-        <Header />
+      <Flex direction="column" css={{ width: "full", overflow: "auto" }}>
         {children}
-      </S.Body>
-    </S.Layout>
+      </Flex>
+    </Flex>
   )
 }
