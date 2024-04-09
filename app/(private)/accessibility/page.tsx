@@ -1,10 +1,11 @@
 "use client"
 
-import { TextInput } from "@reactleaf/input"
+import { TextInput } from "@reactleaf/input/hookform"
+import { useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useState } from "react"
+import { FormProvider, useForm } from "react-hook-form"
 
-import { searchAccessibilities } from "@/lib/apis/api"
 import { AccessibilitySummary } from "@/lib/models/accessibility"
 
 import Table, { makeTypedColumn } from "@/components/Table"
@@ -12,58 +13,36 @@ import { Contents, Header } from "@/components/layout"
 
 import { ActionsCell, ImagesCell } from "./components/Cells"
 import * as S from "./page.style"
-
-const limit = 10
+import { useAccessibilities } from "./query"
 
 export default function AccessibilityList() {
+  const queryClient = useQueryClient()
+  const form = useForm<{ query: string }>()
   const [query, setQuery] = useState<string>("")
-  const [cursor, setCursor] = useState<string | undefined>(undefined)
-  const [accessibilitySummaries, setAccessibilitySummaries] = useState<AccessibilitySummary[]>([])
-
-  const searchAccessibilitiesWithNewQuery = () => {
-    searchAccessibilities(query, undefined, limit).then((res) => {
-      setAccessibilitySummaries(res.items)
-      setCursor(res.cursor)
-    })
-  }
-
-  const loadNextPage = () => {
-    searchAccessibilities(query, cursor, limit).then((res) => {
-      setAccessibilitySummaries([...accessibilitySummaries, ...res.items])
-      setCursor(res.cursor)
-    })
-  }
+  const { data, fetchNextPage, hasNextPage } = useAccessibilities(query)
+  const accessibilities = data?.pages.flatMap((p) => p.items) ?? []
 
   return (
     <>
       <Header title="등록된 정보 관리" />
       <Contents.Normal>
-        <TextInput
-          type="text"
-          name="query"
-          placeholder="등록 최신순 검색"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <S.SearchButton onClick={searchAccessibilitiesWithNewQuery}>검색</S.SearchButton>
+        <FormProvider {...form}>
+          <TextInput type="text" name="query" placeholder="등록 최신순 검색" />
+          <S.SearchButton onClick={() => setQuery(form.watch("query"))}>검색</S.SearchButton>
+        </FormProvider>
         <Table
-          rows={accessibilitySummaries}
+          rows={accessibilities}
           rowKey={(row) => row.placeAccessibility.id}
           columns={columns}
-          // TODO: reload
-          reload={() => void 0}
+          context={{ query }}
         />
-        {cursor ? (
-          <S.LoadNextPageButton onClick={loadNextPage} disabled={!cursor}>
-            더 불러오기
-          </S.LoadNextPageButton>
-        ) : null}
+        {hasNextPage && <S.LoadNextPageButton onClick={() => fetchNextPage()}>더 불러오기</S.LoadNextPageButton>}
       </Contents.Normal>
     </>
   )
 }
 
-const col = makeTypedColumn<AccessibilitySummary>()
+const col = makeTypedColumn<AccessibilitySummary, { query: string }>()
 const columns = [
   col({
     title: "장소 사진",
@@ -88,5 +67,5 @@ const columns = [
       </p>
     ),
   }),
-  col({ field: "_", render: (_, row, ctx) => <ActionsCell accessibility={row} reload={ctx.reload} /> }),
+  col({ field: "_", render: (_, row, ctx) => <ActionsCell accessibility={row} query={ctx?.query} /> }),
 ]

@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
+import { stringify } from "querystring"
+
+import { AccessibilitySummary } from "@/lib/models/accessibility"
 
 import { http } from "../http"
 import { Challenge } from "../models/challenge"
 import { QuestBuilding, QuestDetail, QuestSummary } from "../models/quest"
 import { Region } from "../models/region"
-import {AccessibilitySummary} from "@/lib/models/accessibility";
-import {stringify} from "querystring";
 
 export function useQuests() {
   return useQuery({
@@ -143,22 +144,21 @@ export function deleteRegion({ id }: { id: string }) {
 
 export interface SearchAccessibilitiesResult {
   items: AccessibilitySummary[]
-  cursor: string | undefined
+  cursor: string | null
 }
 export function searchAccessibilities(
   query: string,
   cursor: string | undefined,
   limit: number | undefined,
 ): Promise<SearchAccessibilitiesResult> {
-  const params: {[key: string]: any} = { placeName: query };
+  const params: { [key: string]: any } = { placeName: query }
   if (cursor) {
-    params["cursor"] = cursor;
+    params["cursor"] = cursor
   }
   if (limit) {
-    params["limit"] = limit.toString();
+    params["limit"] = limit.toString()
   }
-  return http(`/admin/accessibilities/search?${stringify(params)}`)
-      .then((res) => res.json())
+  return http(`/admin/accessibilities/search?${stringify(params)}`).then((res) => res.json())
 }
 
 export function deletePlaceAccessibility({ id }: { id: string }) {

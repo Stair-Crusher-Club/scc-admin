@@ -1,25 +1,24 @@
 import * as S from "./Table.style"
 import { Column } from "./column"
 
-interface Props<Data> {
+interface Props<Data, Context> {
   rows: Data[]
   rowKey: keyof Data | ((row: Data) => React.Key)
-  columns: Column<Data>[]
+  columns: Column<Data, Context>[]
   isLoading?: boolean
   emptyMessasge?: string
-  reload?: () => void | Promise<void>
+  context?: Context
 }
 
-export default function Table<T extends Record<string, any>>({
+export default function Table<T extends Record<string, any>, Context>({
   rows,
   rowKey,
   columns,
   isLoading,
   emptyMessasge,
-  reload,
-}: Props<T>) {
-  const context = { reload }
-  function renderCell<T>(row: T, col: Column<T>) {
+  context,
+}: Props<T, Context>) {
+  function renderCell<T>(row: T, col: Column<T, Context>) {
     if (col.render) return col.render(row[col.field], row, context)
     return defaultCellRenderer(row, col)
   }
@@ -58,11 +57,11 @@ export default function Table<T extends Record<string, any>>({
   )
 }
 
-function getKey<Data>(row: Data, rowKey: Props<Data>["rowKey"]) {
+function getKey<Data, Context>(row: Data, rowKey: Props<Data, Context>["rowKey"]) {
   return typeof rowKey === "function" ? rowKey(row) : row[rowKey]
 }
 
-function defaultCellRenderer<Data>(row: Data, col: Column<Data>) {
+function defaultCellRenderer<Data, Context>(row: Data, col: Column<Data, Context>) {
   const value = row[col.field]
   if (value === null) return "-"
   if (typeof value === "boolean") return value ? "O" : "X"
