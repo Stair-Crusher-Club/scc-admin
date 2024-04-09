@@ -10,6 +10,7 @@ import { AccessibilitySummary } from "@/lib/models/accessibility"
 
 import Table, { makeTypedColumn } from "@/components/Table"
 import { Contents, Header } from "@/components/layout"
+import { Flex } from "@/styles/jsx"
 
 import { ActionsCell, ImagesCell } from "./components/Cells"
 import * as S from "./page.style"
@@ -27,8 +28,12 @@ export default function AccessibilityList() {
       <Header title="등록된 정보 관리" />
       <Contents.Normal>
         <FormProvider {...form}>
-          <TextInput type="text" name="query" placeholder="등록 최신순 검색" />
-          <S.SearchButton onClick={() => setQuery(form.watch("query"))}>검색</S.SearchButton>
+          <Flex>
+            <TextInput type="text" name="query" placeholder="등록 최신순 검색" />
+            <S.SearchButton style={{ width: 80 }} onClick={() => setQuery(form.watch("query"))}>
+              검색
+            </S.SearchButton>
+          </Flex>
         </FormProvider>
         <Table
           rows={accessibilities}
