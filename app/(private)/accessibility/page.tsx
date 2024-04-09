@@ -1,13 +1,16 @@
 "use client"
 
+import { TextInput } from "@reactleaf/input"
+import dayjs from "dayjs"
 import { useState } from "react"
 
-import { deleteBuildingAccessibility, deletePlaceAccessibility, searchAccessibilities } from "@/lib/apis/api"
-import { AccessibilitySummary, BuildingAccessibility, PlaceAccessibility } from "@/lib/models/accessibility"
+import { searchAccessibilities } from "@/lib/apis/api"
+import { AccessibilitySummary } from "@/lib/models/accessibility"
 
-import AccessibilityRow from "@/(private)/accessibility/components/AccessibilityRow"
+import Table, { makeTypedColumn } from "@/components/Table"
 import { Contents, Header } from "@/components/layout"
 
+import { ActionsCell, ImagesCell } from "./components/Cells"
 import * as S from "./page.style"
 
 const limit = 10
@@ -31,39 +34,11 @@ export default function AccessibilityList() {
     })
   }
 
-  const handleDeletePlaceAccessibility = (accessibilitySummary: AccessibilitySummary) => {
-    const { id, placeName } = accessibilitySummary.placeAccessibility
-    if (!confirm(`정말 [${placeName}] 장소의 정보를 삭제하시겠습니까?`)) return
-    deletePlaceAccessibility({ id }).then(() => {
-      setAccessibilitySummaries(accessibilitySummaries.filter((it) => it.placeAccessibility.id !== id))
-    })
-  }
-
-  const handleDeleteBuildingAccessibility = (accessibilitySummary: AccessibilitySummary) => {
-    const id = accessibilitySummary.buildingAccessibility?.id
-    const placeName = accessibilitySummary.placeAccessibility.placeName
-    if (!id) return
-    if (!confirm(`정말 [${placeName}] 장소의 건물 정보를 삭제하시겠습니까?`)) return
-    deleteBuildingAccessibility({ id }).then(() => {
-      setAccessibilitySummaries(
-        accessibilitySummaries.map((it) => {
-          if (it.buildingAccessibility?.id !== id) {
-            return it
-          }
-          return {
-            placeAccessibility: it.placeAccessibility,
-            buildingAccessibility: undefined,
-          }
-        }),
-      )
-    })
-  }
-
   return (
     <>
       <Header title="등록된 정보 관리" />
       <Contents.Normal>
-        <input
+        <TextInput
           type="text"
           name="query"
           placeholder="등록 최신순 검색"
@@ -71,26 +46,13 @@ export default function AccessibilityList() {
           onChange={(e) => setQuery(e.target.value)}
         />
         <S.SearchButton onClick={searchAccessibilitiesWithNewQuery}>검색</S.SearchButton>
-        <S.TableWrapper>
-          <S.AccessibilityTable>
-            <S.HeaderRow>
-              <S.HeaderCell>장소명</S.HeaderCell>
-              <S.HeaderCell>정복자</S.HeaderCell>
-              <S.HeaderCell>정복 시점</S.HeaderCell>
-              <S.HeaderCell>장소 사진</S.HeaderCell>
-              <S.HeaderCell>건물 사진</S.HeaderCell>
-              <S.HeaderCell>삭제</S.HeaderCell>
-            </S.HeaderRow>
-            {accessibilitySummaries.map((accessibilitySummary) => (
-              <AccessibilityRow
-                key={accessibilitySummary.placeAccessibility.id}
-                accessibilitySummary={accessibilitySummary}
-                onDeletePlaceAccessibility={handleDeletePlaceAccessibility}
-                onDeleteBuildingAccessibility={handleDeleteBuildingAccessibility}
-              />
-            ))}
-          </S.AccessibilityTable>
-        </S.TableWrapper>
+        <Table
+          rows={accessibilitySummaries}
+          rowKey={(row) => row.placeAccessibility.id}
+          columns={columns}
+          // TODO: reload
+          reload={() => void 0}
+        />
         {cursor ? (
           <S.LoadNextPageButton onClick={loadNextPage} disabled={!cursor}>
             더 불러오기
@@ -100,3 +62,31 @@ export default function AccessibilityList() {
     </>
   )
 }
+
+const col = makeTypedColumn<AccessibilitySummary>()
+const columns = [
+  col({
+    title: "장소 사진",
+    field: "placeAccessibility",
+    render: (placeAccessibility) => <ImagesCell images={placeAccessibility.imageUrls} />,
+  }),
+  col({
+    title: "건물 사진",
+    field: "buildingAccessibility",
+    render: (buildingAccessibility) => <ImagesCell images={buildingAccessibility?.imageUrls ?? []} />,
+  }),
+  col({
+    title: "촬영 정보",
+    field: "placeAccessibility",
+    render: (placeAccessibility) => (
+      <p>
+        장소 : {placeAccessibility.placeName}
+        <br />
+        촬영 : {placeAccessibility.registeredUserName}
+        <br />
+        시각 : {dayjs(placeAccessibility.createdAtMillis).format("YYYY-MM-DD HH:mm")}
+      </p>
+    ),
+  }),
+  col({ field: "_", render: (_, row, ctx) => <ActionsCell accessibility={row} reload={ctx.reload} /> }),
+]
