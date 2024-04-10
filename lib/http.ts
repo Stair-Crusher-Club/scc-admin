@@ -39,9 +39,15 @@ export const http = returnFetch({
       return [url, newConfig]
     },
     response: async (response) => {
+      if (response.status === 401) {
+        storage.remove("token")
+        history.pushState(null, '', "/account/login?redirect=" + window.location.pathname)
+        throw new NetworkError(response)
+      }
       if (response.status >= 400) {
         throw new NetworkError(response)
       }
+
       return response
     },
   },
