@@ -2,7 +2,12 @@ import { InfiniteData, useQueryClient } from "@tanstack/react-query"
 import Image from "next/image"
 import { toast } from "react-toastify"
 
-import { SearchAccessibilitiesResult, deleteBuildingAccessibility, deletePlaceAccessibility } from "@/lib/apis/api"
+import {
+  SearchAccessibilitiesPayload,
+  SearchAccessibilitiesResult,
+  deleteBuildingAccessibility,
+  deletePlaceAccessibility,
+} from "@/lib/apis/api"
 import { AccessibilitySummary } from "@/lib/models/accessibility"
 
 import { useModal } from "@/hooks/useModal"
@@ -44,7 +49,7 @@ export function ImagesCell({ images }: { images: string[] }) {
   )
 }
 
-export function ActionsCell({ accessibility, query }: { accessibility: AccessibilitySummary; query?: string }) {
+export function ActionsCell({ accessibility, ctx }: { accessibility: AccessibilitySummary; ctx?: SearchAccessibilitiesPayload }) {
   const queryClient = useQueryClient()
   async function handleDeletePlaceAccessibility() {
     const { id, placeName } = accessibility.placeAccessibility
@@ -54,7 +59,7 @@ export function ActionsCell({ accessibility, query }: { accessibility: Accessibi
 
     // Refresh 하지는 않고 client 데이터에서 삭제
     queryClient.setQueryData(
-      ["@accessibilities", { placeName: query }],
+      ["@accessibilities", ctx],
       (data: InfiniteData<SearchAccessibilitiesResult>) => {
         const newPages = data.pages.map((page) => ({
           ...page,
@@ -75,7 +80,7 @@ export function ActionsCell({ accessibility, query }: { accessibility: Accessibi
 
     // Refresh 하지는 않고 client 데이터에서 삭제
     queryClient.setQueryData(
-      ["@accessibilities", { placeName: query }],
+      ["@accessibilities", ctx],
       (data: InfiniteData<SearchAccessibilitiesResult>) => {
         const newPages = data.pages.map((page) => ({
           ...page,

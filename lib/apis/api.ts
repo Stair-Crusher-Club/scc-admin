@@ -142,23 +142,15 @@ export function deleteRegion({ id }: { id: string }) {
   })
 }
 
+export interface SearchAccessibilitiesPayload {
+  placeName: string
+  createdAtFromLocalDate: string
+  createdAtToLocalDate: string
+}
+
 export interface SearchAccessibilitiesResult {
   items: AccessibilitySummary[]
   cursor: string | null
-}
-export function searchAccessibilities(
-  query: string,
-  cursor: string | undefined,
-  limit: number | undefined,
-): Promise<SearchAccessibilitiesResult> {
-  const params: { [key: string]: any } = { placeName: query }
-  if (cursor) {
-    params["cursor"] = cursor
-  }
-  if (limit) {
-    params["limit"] = limit.toString()
-  }
-  return http(`/admin/accessibilities/search?${stringify(params)}`).then((res) => res.json())
 }
 
 export function deletePlaceAccessibility({ id }: { id: string }) {

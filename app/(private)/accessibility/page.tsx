@@ -1,45 +1,72 @@
 "use client"
 
-import { TextInput } from "@reactleaf/input/hookform"
-import { useQueryClient } from "@tanstack/react-query"
+import { TextInput, DateInput } from "@reactleaf/input/hookform"
 import dayjs from "dayjs"
+import { format } from "date-fns"
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 import { AccessibilitySummary } from "@/lib/models/accessibility"
+import { SearchAccessibilitiesPayload } from "@/lib/apis/api";
 
 import Table, { makeTypedColumn } from "@/components/Table"
 import { Contents, Header } from "@/components/layout"
-import { Flex } from "@/styles/jsx"
 
+import { Flex } from "@/styles/jsx"
 import { ActionsCell, ImagesCell } from "./components/Cells"
 import * as S from "./page.style"
 import { useAccessibilities } from "./query"
 
 export default function AccessibilityList() {
-  const queryClient = useQueryClient()
-  const form = useForm<{ query: string }>()
-  const [query, setQuery] = useState<string>("")
-  const { data, fetchNextPage, hasNextPage } = useAccessibilities(query)
+  const form = useForm<SearchAccessibilitiesPayload>()
+  const [formInput, setFormInput] = useState<SearchAccessibilitiesPayload>({
+    placeName: "",
+    createdAtFromLocalDate: "",
+    createdAtToLocalDate: "",
+  })
+  const { data, fetchNextPage, hasNextPage } = useAccessibilities(formInput)
   const accessibilities = data?.pages.flatMap((p) => p.items) ?? []
+
+  const updateFormInput = (payload: SearchAccessibilitiesPayload) => {
+    setFormInput({
+      ...payload,
+      createdAtFromLocalDate: payload.createdAtFromLocalDate ? format(new Date(payload.createdAtFromLocalDate), "yyyy-MM-dd") : '',
+      createdAtToLocalDate: payload.createdAtToLocalDate ? format(new Date(payload.createdAtToLocalDate), "yyyy-MM-dd") : ''
+    })
+  }
 
   return (
     <>
       <Header title="등록된 정보 관리" />
       <Contents.Normal>
         <FormProvider {...form}>
-          <Flex>
-            <TextInput type="text" name="query" placeholder="등록 최신순 검색" />
-            <S.SearchButton style={{ width: 80 }} onClick={() => setQuery(form.watch("query"))}>
-              검색
-            </S.SearchButton>
-          </Flex>
+          <form id="search-accessibilities" onSubmit={form.handleSubmit(updateFormInput)}>
+            <Flex>
+              <S.InputTitle>장소명</S.InputTitle>
+              <TextInput type="text" name="placeName" placeholder="등록 최신순 검색" />
+            </Flex>
+            <Flex>
+              <S.InputTitle>정보 등록 시각</S.InputTitle>
+              <DateInput name="createdAtFromLocalDate" label="시작" dateFormat="yyyy-MM-dd" />
+              <DateInput name="createdAtToLocalDate" label="끝" dateFormat="yyyy-MM-dd" />
+            </Flex>
+            <Flex>
+              <S.SearchButton
+                type="submit"
+                form="search-accessibilities"
+                style={{ width: 80 }}
+                // onClick={() => { console.log(form.watch(), form.watch("createdAtToLocalDate")); setFormInput(form.watch()) }}
+              >
+                검색
+              </S.SearchButton>
+            </Flex>
+          </form>
         </FormProvider>
         <Table
           rows={accessibilities}
           rowKey={(row) => row.placeAccessibility.id}
           columns={columns}
-          context={{ query }}
+          context={formInput}
         />
         {hasNextPage && <S.LoadNextPageButton onClick={() => fetchNextPage()}>더 불러오기</S.LoadNextPageButton>}
       </Contents.Normal>
@@ -47,7 +74,7 @@ export default function AccessibilityList() {
   )
 }
 
-const col = makeTypedColumn<AccessibilitySummary, { query: string }>()
+const col = makeTypedColumn<AccessibilitySummary, SearchAccessibilitiesPayload>()
 const columns = [
   col({
     title: "장소 사진",
@@ -72,5 +99,5 @@ const columns = [
       </p>
     ),
   }),
-  col({ field: "_", render: (_, row, ctx) => <ActionsCell accessibility={row} query={ctx?.query} /> }),
+  col({ field: "_", render: (_, row, ctx) => <ActionsCell accessibility={row} ctx={ctx} /> }),
 ]
