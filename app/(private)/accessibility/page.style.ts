@@ -6,6 +6,13 @@ export const Contents = styled("main", {
   },
 })
 
+export const InputTitle = styled("span", {
+  base: {
+    textWrap: "nowrap",
+    margin: "auto 8px auto 0",
+  },
+})
+
 export const SearchButton = styled("button", {
   base: {
     padding: "8px 16px",

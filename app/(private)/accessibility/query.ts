@@ -1,16 +1,16 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import qs from "query-string"
 
-import { SearchAccessibilitiesResult } from "@/lib/apis/api"
 import { http } from "@/lib/http"
+import { SearchAccessibilitiesPayload, SearchAccessibilitiesResult } from "@/lib/apis/api";
 
-export function useAccessibilities(placeName: string) {
+export function useAccessibilities(payload: SearchAccessibilitiesPayload) {
   return useInfiniteQuery({
-    queryKey: ["@accessibilities", { placeName }],
+    queryKey: ["@accessibilities", payload],
     queryFn: ({ pageParam }) =>
       http(
         `/admin/accessibilities/search?${qs.stringify(
-          { placeName, cursor: pageParam, limit: 10 },
+          { ...payload, cursor: pageParam, limit: 10 },
           { skipNull: true },
         )}`,
       ).then((res) => res.json() as Promise<SearchAccessibilitiesResult>),
