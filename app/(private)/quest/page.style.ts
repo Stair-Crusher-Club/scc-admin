@@ -20,7 +20,7 @@ export const EventName = styled("span", {
   },
 })
 
-export const ShareButton = styled("button", {
+const Button = styled("button", {
   base: {
     padding: "2px 4px",
     marginLeft: 4,
@@ -30,6 +30,20 @@ export const ShareButton = styled("button", {
     fontSize: 12,
     cursor: "pointer",
     fontWeight: "normal",
+  },
+})
+
+export const ShareButton = styled(Button, {
+  base: {
+    borderColor: "#1D85FF",
+    color: "#1D85FF",
+  },
+})
+
+export const DeleteButton = styled(Button, {
+  base: {
+    borderColor: "var(--leaf-status-red)",
+    color: "var(--leaf-status-red)",
   },
 })
 

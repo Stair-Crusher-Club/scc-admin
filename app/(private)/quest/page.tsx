@@ -1,10 +1,11 @@
 "use client"
 
+import { useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 
-import { useQuests } from "@/lib/apis/api"
+import { deleteQuest, useQuests } from "@/lib/apis/api"
 import { QuestSummary } from "@/lib/models/quest"
 
 import { Contents, Header } from "@/components/layout"
@@ -14,6 +15,7 @@ import * as S from "./page.style"
 export default function QuestList() {
   const router = useRouter()
   const { data } = useQuests()
+  const queryClient = useQueryClient()
   const quests = data ?? []
 
   const regrouped = quests.reduce(
@@ -32,6 +34,17 @@ export default function QuestList() {
     toast.success("공개 URL 목록이 클립보드에 복사되었습니다.")
   }
 
+  async function deleteQuests(quests: QuestSummary[]) {
+    const confirm = window.confirm("정말로 삭제하시겠습니까?")
+    if (!confirm) return
+
+    for (const q of quests) {
+      await deleteQuest({ questId: q.id })
+    }
+    queryClient.invalidateQueries({ queryKey: ["@quests"] })
+    toast.success(`퀘스트가 삭제되었습니다.`)
+  }
+
   return (
     <>
       <Header title="퀘스트 관리">
@@ -42,6 +55,7 @@ export default function QuestList() {
           <S.Event key={key}>
             <S.EventName>
               {key} <S.ShareButton onClick={() => share(quests)}>공유하기</S.ShareButton>
+              <S.DeleteButton onClick={() => deleteQuests(quests)}>삭제하기</S.DeleteButton>
             </S.EventName>
             <S.Quests>
               {quests

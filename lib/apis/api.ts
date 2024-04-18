@@ -74,6 +74,15 @@ export async function createQuest(payload: CreateQuestPayload) {
   })
 }
 
+type DeleteQuestPayload = {
+  questId: string
+}
+export async function deleteQuest(payload: DeleteQuestPayload) {
+  return http(`/admin/clubQuests/${payload.questId}`, {
+    method: "DELETE",
+  })
+}
+
 export function useChallenges() {
   return useQuery({
     queryKey: ["@challenges"],
