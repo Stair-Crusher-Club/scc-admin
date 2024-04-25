@@ -3,9 +3,9 @@ on:
   push:
     tags:
       - "v?[0-9]+.[0-9]+.[0-9]+"
-      - "v?[0-9]+.[0-9]+.[0-9]+-[a-z]+.?[0-9]*" # ex. 0.0.0-hotfix.1 // pre-release
+      - "v?[0-9]+.[0-9]+.[0-9]+-[a-z]+.?[0-9]?" # ex. 0.0.0-hotfix.1 // pre-release, filter pattern의 한계로 "-hotfix.10" 은 매칭되지 않음
       - 'v?[0-9]+.[0-9]+.[0-9]+\+[a-z0-9]+' # ex. 0.0.0+3f4f3f4 // build number
-      - 'v?[0-9]+.[0-9]+.[0-9]+-[a-z]+.?[0-9]*\+[a-z0-9]+' # ex. 0.0.0-hotfix.1+3f4f3f4 // pre-release with build number
+      - 'v?[0-9]+.[0-9]+.[0-9]+-[a-z]+.?[0-9]?\+[a-z0-9]+' # ex. 0.0.0-hotfix.1+3f4f3f4 // pre-release with build number
   workflow_dispatch: # for manual trigger
 
 permissions:
