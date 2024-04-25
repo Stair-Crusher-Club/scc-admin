@@ -167,7 +167,7 @@ export default function QuestCreate() {
   return (
     <>
       <Header title="퀘스트 생성" />
-      <Contents.Normal>
+      <Contents.Columns>
         <Script
           id="kakao-map-script"
           src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
@@ -235,7 +235,7 @@ export default function QuestCreate() {
             </Flex>
           </FormProvider>
         </S.Form>
-      </Contents.Normal>
+      </Contents.Columns>
     </>
   )
 }

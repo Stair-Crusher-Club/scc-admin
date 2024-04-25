@@ -9,4 +9,8 @@ Contents.Normal = styled("main", {
   base: { width: "fit-content", padding: 32 },
 })
 
+Contents.Columns = styled("main", {
+  base: { display: "flex", height: "full" },
+})
+
 export default Contents
