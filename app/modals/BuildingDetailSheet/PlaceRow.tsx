@@ -29,23 +29,23 @@ export default function PlaceRow({ place, questId }: Props) {
     },
   })
 
-  useEffect(() => {
+  const updateClosed = (isClosed: boolean) => {
     updateStatus.mutateAsync({
       questId,
       buildingId: place.buildingId,
       placeId: place.placeId,
       isClosed,
     })
-  }, [isClosed])
+  }
 
-  useEffect(() => {
+  const updateNotAccessible = (isNotAccessible: boolean) => {
     updateStatus.mutate({
       questId,
       buildingId: place.buildingId,
       placeId: place.placeId,
       isNotAccessible,
     })
-  }, [isNotAccessible])
+  }
 
   function openNaverMap() {
     const isMobile = false
@@ -77,7 +77,14 @@ export default function PlaceRow({ place, questId }: Props) {
           name="isClosed"
           control={form.control}
           render={({ field }) => (
-            <Checkbox id={place.placeId + "-is-closed"} checked={field.value} onChange={field.onChange} />
+            <Checkbox
+              id={place.placeId + "-is-closed"}
+              checked={field.value}
+              onChange={(isClosed) => {
+                field.onChange(isClosed)
+                updateClosed(isClosed)
+              }}
+            />
           )}
         />
       </S.Cell>
@@ -86,7 +93,14 @@ export default function PlaceRow({ place, questId }: Props) {
           name="isNotAccessible"
           control={form.control}
           render={({ field }) => (
-            <Checkbox id={place.placeId + "-not-accessible"} checked={field.value} onChange={field.onChange} />
+            <Checkbox
+              id={place.placeId + "-not-accessible"}
+              checked={field.value}
+              onChange={(isNotAccessible) => {
+                field.onChange(isNotAccessible)
+                updateNotAccessible(isNotAccessible)
+              }}
+            />
           )}
         />
       </S.Cell>
