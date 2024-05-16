@@ -32,6 +32,7 @@ export function ImagesCell({ images }: { images: string[] }) {
           alt=""
           style={{ gridRow: "1/3", gridColumn: "1/3" }}
           onClick={() => seeDetails(imageUrl)}
+          unoptimized
         />
       </S.ImagesGrid>
     )
@@ -49,7 +50,13 @@ export function ImagesCell({ images }: { images: string[] }) {
   )
 }
 
-export function ActionsCell({ accessibility, ctx }: { accessibility: AccessibilitySummary; ctx?: SearchAccessibilitiesPayload }) {
+export function ActionsCell({
+  accessibility,
+  ctx,
+}: {
+  accessibility: AccessibilitySummary
+  ctx?: SearchAccessibilitiesPayload
+}) {
   const queryClient = useQueryClient()
   async function handleDeletePlaceAccessibility() {
     const { id, placeName } = accessibility.placeAccessibility
@@ -58,16 +65,13 @@ export function ActionsCell({ accessibility, ctx }: { accessibility: Accessibili
     toast.success(`[${placeName}]의 장소 정보가 삭제되었습니다.`)
 
     // Refresh 하지는 않고 client 데이터에서 삭제
-    queryClient.setQueryData(
-      ["@accessibilities", ctx],
-      (data: InfiniteData<SearchAccessibilitiesResult>) => {
-        const newPages = data.pages.map((page) => ({
-          ...page,
-          items: page.items.filter((it) => it.placeAccessibility.id !== id),
-        }))
-        return { ...data, pages: newPages }
-      },
-    )
+    queryClient.setQueryData(["@accessibilities", ctx], (data: InfiniteData<SearchAccessibilitiesResult>) => {
+      const newPages = data.pages.map((page) => ({
+        ...page,
+        items: page.items.filter((it) => it.placeAccessibility.id !== id),
+      }))
+      return { ...data, pages: newPages }
+    })
   }
 
   async function handleDeleteBuildingAccessibility() {
@@ -79,18 +83,15 @@ export function ActionsCell({ accessibility, ctx }: { accessibility: Accessibili
     toast.success(`[${placeName}]의 건물 정보가 삭제되었습니다.`)
 
     // Refresh 하지는 않고 client 데이터에서 삭제
-    queryClient.setQueryData(
-      ["@accessibilities", ctx],
-      (data: InfiniteData<SearchAccessibilitiesResult>) => {
-        const newPages = data.pages.map((page) => ({
-          ...page,
-          items: page.items.map((it) =>
-            it.buildingAccessibility?.id === id ? { ...it, buildingAccessibility: undefined } : it,
-          ),
-        }))
-        return { ...data, pages: newPages }
-      },
-    )
+    queryClient.setQueryData(["@accessibilities", ctx], (data: InfiniteData<SearchAccessibilitiesResult>) => {
+      const newPages = data.pages.map((page) => ({
+        ...page,
+        items: page.items.map((it) =>
+          it.buildingAccessibility?.id === id ? { ...it, buildingAccessibility: undefined } : it,
+        ),
+      }))
+      return { ...data, pages: newPages }
+    })
   }
 
   return (
