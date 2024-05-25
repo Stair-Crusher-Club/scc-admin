@@ -73,6 +73,13 @@ export default function PlaceRow({ place, questId }: Props) {
         />
       </S.Cell>
       <S.Cell>
+        <Checkbox
+          id={place.placeId}
+          checked={place.isClosedExpected}
+          disabled
+        />
+      </S.Cell>
+      <S.Cell>
         <Controller
           name="isClosed"
           control={form.control}

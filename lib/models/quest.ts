@@ -21,6 +21,7 @@ export interface QuestBuilding {
 export interface QuestPlace {
   buildingId: string
   isClosed: boolean
+  isClosedExpected: boolean
   isConquered: boolean
   isNotAccessible: boolean
   location: LatLng
