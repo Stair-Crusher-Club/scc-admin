@@ -19,10 +19,10 @@ export default function BuildingDetailSheet({ building, questId, visible, close 
         <S.PlaceTable>
           <colgroup>
             <col />
-            <col width="72px" />
-            <col width="72px" />
-            <col width="72px" />
-            <col width="72px" />
+            <col width="54px" />
+            <col width="54px" />
+            <col width="54px" />
+            <col width="54px" />
           </colgroup>
           <S.HeaderRow>
             <S.HeaderCell style={{ textAlign: "left" }}>업체명</S.HeaderCell>
