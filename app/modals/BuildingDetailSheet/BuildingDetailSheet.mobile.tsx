@@ -42,7 +42,7 @@ export default function BuildingDetailSheet({ building, questId, visible, close 
             <S.HeaderCell>정복</S.HeaderCell>
             <S.HeaderCell>폐업 추정</S.HeaderCell>
             <S.HeaderCell>폐업</S.HeaderCell>
-            <S.HeaderCell>접근불가</S.HeaderCell>
+            <S.HeaderCell>접근 불가</S.HeaderCell>
           </S.HeaderRow>
           {building.places.map((place) => (
             <PlaceRow place={place} questId={questId} key={place.placeId} />
