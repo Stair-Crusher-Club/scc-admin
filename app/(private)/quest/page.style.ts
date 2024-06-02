@@ -47,6 +47,20 @@ export const DeleteButton = styled(Button, {
   },
 })
 
+export const LoadNextPageButton = styled("button", {
+  base: {
+    padding: 8,
+    backgroundColor: "var(--leaf-primary-60)",
+    color: "white",
+    borderRadius: 4,
+    cursor: "pointer",
+    _disabled: {
+      backgroundColor: "var(--leaf-grey-80)",
+      cursor: "not-allowed",
+    },
+  },
+})
+
 export const Quests = styled("ul", {
   base: {
     display: "flex",
@@ -55,6 +69,7 @@ export const Quests = styled("ul", {
     },
   },
 })
+
 export const Quest = styled("li", {
   base: {
     padding: "4px 8px",
