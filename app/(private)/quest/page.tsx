@@ -17,7 +17,7 @@ export default function QuestList() {
   const router = useRouter()
   const { data, fetchNextPage, hasNextPage } = useClubQuestSummaries()
   const queryClient = useQueryClient()
-  const quests = data?.pages.flatMap((p) => p.items) ?? []
+  const quests = data?.pages.flatMap((p) => p.list) ?? []
 
   const regrouped = quests.reduce(
     (acc, q) => {
@@ -42,7 +42,7 @@ export default function QuestList() {
     for (const q of quests) {
       await deleteQuest({ questId: q.id })
     }
-    queryClient.invalidateQueries({ queryKey: ["@quests"] })
+    queryClient.invalidateQueries({ queryKey: ["@clubQuestSummaries"] })
     toast.success(`퀘스트가 삭제되었습니다.`)
   }
 

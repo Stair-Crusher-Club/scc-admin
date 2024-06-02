@@ -10,7 +10,7 @@ export function useClubQuestSummaries() {
     queryFn: ({ pageParam }) =>
       http(
         `/admin/clubQuestSummaries/cursored?${qs.stringify(
-          { cursor: pageParam, limit: 10 },
+          { cursor: pageParam, limit: 100 },
           { skipNull: true },
         )}`,
       ).then((res) => res.json() as Promise<GetCursoredClubQuestSummariesResult>),
@@ -20,6 +20,6 @@ export function useClubQuestSummaries() {
 }
 
 export interface GetCursoredClubQuestSummariesResult {
-  items: QuestSummary[]
+  list: QuestSummary[]
   cursor: string | null
 }
