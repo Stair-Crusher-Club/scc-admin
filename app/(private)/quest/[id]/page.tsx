@@ -185,6 +185,8 @@ export default function QuestDetail() {
     // 모달이 닫히면 빌딩을 중앙으로 이동합니다
     const buildingCenter = new kakao.maps.LatLng(building.location.lat, building.location.lng)
     map.panTo(buildingCenter)
+
+    openedModal.current = undefined
   }
 
   /**
