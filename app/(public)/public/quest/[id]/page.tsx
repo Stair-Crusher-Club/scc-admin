@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import Script from "next/script"
 import { useEffect, useRef, useState } from "react"
 import { useMediaQuery } from "react-responsive"
+import { useQueryClient } from "@tanstack/react-query";
 
 import { useQuest } from "@/lib/apis/api"
 import { AppState } from "@/lib/globalAtoms"
@@ -30,6 +31,7 @@ export default function QuestDetail() {
   const openedModal = useRef<string>()
   const { isHeaderHidden } = useAtomValue(AppState)
   const me = useRef<kakao.maps.Marker>()
+  const queryClient = useQueryClient()
 
   // 데이터가 바뀌어도 초기화는 한 번만 합니다.
   useEffect(() => {
@@ -63,6 +65,14 @@ export default function QuestDetail() {
     const interval = setInterval(drawMyLocationMarker, 10 * 1000)
     return () => clearInterval(interval)
   }, [])
+
+  // 10초마다 퀘스트 진행 상황을 갱신합니다.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ["@quests", id] })
+    }, 10 * 1000)
+    return () => clearInterval(interval)
+  }, [quest?.id])
 
   function initializeMap() {
     if (!quest) return
@@ -98,7 +108,6 @@ export default function QuestDetail() {
       const lon = position.coords.longitude // 경도
 
       const locPosition = new kakao.maps.LatLng(lat, lon) // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
-      console.log(locPosition)
 
       // 내 위치를 표시합니다
       me.current?.setMap(null)

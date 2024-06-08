@@ -27,7 +27,6 @@ export const MobileHeader = styled("header", {
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    height: "48px",
     paddingInline: "16px",
     background: "white",
     borderBottom: "1px solid #eaeaea",
@@ -43,7 +42,9 @@ export const MobileHeader = styled("header", {
 
 export const Title = styled("h2", {
   base: {
-    marginLeft: 4,
+    marginLeft: 8,
+    marginTop: 6,
+    marginBottom: 8,
     paddingBottom: 2,
     fontSize: "1.25rem",
     fontWeight: "bold",
