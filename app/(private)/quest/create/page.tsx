@@ -3,19 +3,18 @@
 import { NumberInput, TextInput } from "@reactleaf/input/hookform"
 import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import Script from "next/script"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
 import { ClusterPreview, createQuest, previewDivisions } from "@/lib/apis/api"
 
+import Map from "@/components/Map"
+import { Circle } from "@/components/Map/components"
 import { Contents, Header } from "@/components/layout"
 import { Flex } from "@/styles/jsx"
 
 import * as S from "./page.style"
-
-const KAKAO_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_APP_KEY
 
 interface FormValues {
   name: string
@@ -31,73 +30,20 @@ export default function QuestCreate() {
   // 프리뷰 모드 : 조 분할 미리보기 모드
   const mode = useRef<"center" | "preview">("center")
   const queryClient = useQueryClient()
-  const [scriptLoaded, setScriptLoaded] = useState(false)
   const [previewChecked, setPreviewChecked] = useState(false)
   const [isPreviewLoading, setPreviewLoading] = useState(false)
-  const mapElement = useRef<HTMLDivElement>(null)
   const mapRef = useRef<kakao.maps.Map>()
-  const marker = useRef<kakao.maps.Marker>()
-  const circle = useRef<kakao.maps.Circle>()
   const form = useForm<FormValues>({
     defaultValues: { name: "", radius: 200, division: 3, maxPlacesPerQuest: 50 },
   })
   const previewMarkers = useRef<kakao.maps.Marker[]>([])
   const clusters = useRef<ClusterPreview[]>([])
 
-  useEffect(() => {
-    if (!scriptLoaded) return
-    kakao.maps.load(() => {
-      initializeMap()
-    })
-  }, [scriptLoaded])
-
-  const radius = form.watch("radius")
-  useEffect(() => {
-    if (!radius) return
-    circle.current?.setRadius(radius)
-  }, [radius])
-
-  function initializeMap() {
-    const mapContainer = document.getElementById("map")!
-    const map = (mapRef.current = new kakao.maps.Map(mapContainer, {
-      center: new kakao.maps.LatLng(37.566826, 126.9786567),
-    }))
-
-    map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.LEFT)
-
-    // 보이지 않는 곳에 마커를 생성합니다.
-    marker.current = new kakao.maps.Marker({
-      position: new kakao.maps.LatLng(0, 0),
-      image: new kakao.maps.MarkerImage("/marker_center.jpg", new kakao.maps.Size(20, 20), {
-        offset: new kakao.maps.Point(10, 10),
-      }),
-    })
-    marker.current.setMap(map)
-
-    // 지도에 표시할 원을 생성합니다
-    circle.current = new kakao.maps.Circle({
-      center: new kakao.maps.LatLng(0, 0), // 원의 중심좌표 입니다
-      radius: 200, // 미터 단위의 원의 반지름입니다
-      strokeWeight: 5, // 선의 두께입니다
-      strokeColor: "#75B8FA", // 선의 색깔입니다
-      strokeOpacity: 0.7, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-      strokeStyle: "solid", // 선의 스타일 입니다
-      fillColor: "#CFE7FF", // 채우기 색깔입니다
-      fillOpacity: 0.1, // 채우기 불투명도 입니다
-    })
-    circle.current.setMap(map)
-
+  function initializeMap(map: kakao.maps.Map) {
     kakao.maps.event.addListener(map, "click", function (e: kakao.maps.event.MouseEvent) {
-      handleClick(e.latLng)
+      if (mode.current !== "center") return
+      form.setValue("center", { lat: e.latLng.getLat(), lng: e.latLng.getLng() })
     })
-  }
-
-  function handleClick(latlng: kakao.maps.LatLng) {
-    if (mode.current !== "center") return
-    marker.current?.setPosition(latlng)
-    circle.current?.setPosition(latlng)
-
-    form.setValue("center", { lat: latlng.getLat(), lng: latlng.getLng() })
   }
 
   async function previewOn() {
@@ -168,14 +114,9 @@ export default function QuestCreate() {
     <>
       <Header title="퀘스트 생성" />
       <Contents.Columns>
-        <Script
-          id="kakao-map-script"
-          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
-          onReady={() => setScriptLoaded(true)}
-          onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
-        />
-        <S.Map id="map" ref={mapElement} />
-        {!scriptLoaded && <S.Loading>지도를 불러오는 중입니다...</S.Loading>}
+        <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
+          <Circle center={form.watch("center")} radius={form.watch("radius")} />
+        </Map>
         {isPreviewLoading && <S.Loading>건물 정보를 불러오는 중입니다...</S.Loading>}
         <S.Form onSubmit={form.handleSubmit(onSubmit)}>
           <FormProvider {...form}>
