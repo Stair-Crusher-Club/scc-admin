@@ -3,14 +3,14 @@
 import { Combobox, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
 import { ClusterPreview, createQuest, previewDivisions } from "@/lib/apis/api"
 
 import Map from "@/components/Map"
-import { Circle } from "@/components/Map/components"
+import { Circle, Polygon } from "@/components/Map/components"
 import { Contents, Header } from "@/components/layout"
 import { Flex } from "@/styles/jsx"
 
@@ -25,6 +25,7 @@ interface FormValues {
   name: string
   method: (typeof methodOptions)[number]
   center: { lat: number; lng: number }
+  points: { lat: number; lng: number }[]
   radius: number
   division: number
   maxPlacesPerQuest: number
@@ -43,6 +44,7 @@ export default function QuestCreate() {
     defaultValues: {
       method: methodOptions[0],
       name: "",
+      points: [],
       radius: 200,
       division: 3,
       maxPlacesPerQuest: 50,
@@ -55,9 +57,28 @@ export default function QuestCreate() {
     kakao.maps.event.addListener(map, "click", (e: kakao.maps.event.MouseEvent) => handleClick(e.latLng))
   }
 
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [])
+
+  function handleKeyDown(e: KeyboardEvent) {
+    if (e.metaKey && e.key === "z") {
+      undo()
+    }
+  }
+  function undo() {
+    if (form.watch("method").value === "center") return
+    if (form.watch("points").length === 0) return
+    form.setValue("points", [...form.watch("points").slice(0, -1)])
+  }
+
   function handleClick(latLng: kakao.maps.LatLng) {
     if (form.watch("method.value") === "center") {
       form.setValue("center", { lat: latLng.getLat(), lng: latLng.getLng() })
+    }
+    if (form.watch("method.value") === "polygon") {
+      form.setValue("points", [...form.getValues("points"), { lat: latLng.getLat(), lng: latLng.getLng() }])
     }
   }
 
@@ -133,6 +154,7 @@ export default function QuestCreate() {
           {form.watch("method").value === "center" && (
             <Circle center={form.watch("center")} radius={form.watch("radius")} />
           )}
+          {form.watch("method").value === "polygon" && <Polygon points={form.watch("points")} />}
         </Map>
         {isPreviewLoading && <S.Loading>건물 정보를 불러오는 중입니다...</S.Loading>}
         <S.Form onSubmit={form.handleSubmit(onSubmit)}>
