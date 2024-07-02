@@ -1,6 +1,6 @@
 "use client"
 
-import { NumberInput, TextInput } from "@reactleaf/input/hookform"
+import { Combobox, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useRef, useState } from "react"
@@ -16,8 +16,14 @@ import { Flex } from "@/styles/jsx"
 
 import * as S from "./page.style"
 
+const methodOptions = [
+  { label: "지점 - 반경", value: "center" },
+  { label: "다각형 그리기", value: "polygon" },
+]
+
 interface FormValues {
   name: string
+  method: (typeof methodOptions)[number]
   center: { lat: number; lng: number }
   radius: number
   division: number
@@ -28,22 +34,31 @@ export default function QuestCreate() {
   const router = useRouter()
   // 센터 모드 : 중심점 설정 모드
   // 프리뷰 모드 : 조 분할 미리보기 모드
-  const mode = useRef<"center" | "preview">("center")
+  const mode = useRef<"draw" | "preview">("draw")
   const queryClient = useQueryClient()
   const [previewChecked, setPreviewChecked] = useState(false)
   const [isPreviewLoading, setPreviewLoading] = useState(false)
   const mapRef = useRef<kakao.maps.Map>()
   const form = useForm<FormValues>({
-    defaultValues: { name: "", radius: 200, division: 3, maxPlacesPerQuest: 50 },
+    defaultValues: {
+      method: methodOptions[0],
+      name: "",
+      radius: 200,
+      division: 3,
+      maxPlacesPerQuest: 50,
+    },
   })
   const previewMarkers = useRef<kakao.maps.Marker[]>([])
   const clusters = useRef<ClusterPreview[]>([])
 
   function initializeMap(map: kakao.maps.Map) {
-    kakao.maps.event.addListener(map, "click", function (e: kakao.maps.event.MouseEvent) {
-      if (mode.current !== "center") return
-      form.setValue("center", { lat: e.latLng.getLat(), lng: e.latLng.getLng() })
-    })
+    kakao.maps.event.addListener(map, "click", (e: kakao.maps.event.MouseEvent) => handleClick(e.latLng))
+  }
+
+  function handleClick(latLng: kakao.maps.LatLng) {
+    if (form.watch("method.value") === "center") {
+      form.setValue("center", { lat: latLng.getLat(), lng: latLng.getLng() })
+    }
   }
 
   async function previewOn() {
@@ -92,7 +107,7 @@ export default function QuestCreate() {
   }
 
   function previewOff() {
-    mode.current = "center"
+    mode.current = "draw"
     previewMarkers.current.forEach((m) => m.setMap(null))
     setPreviewChecked(false)
   }
@@ -115,25 +130,32 @@ export default function QuestCreate() {
       <Header title="퀘스트 생성" />
       <Contents.Columns>
         <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
-          <Circle center={form.watch("center")} radius={form.watch("radius")} />
+          {form.watch("method").value === "center" && (
+            <Circle center={form.watch("center")} radius={form.watch("radius")} />
+          )}
         </Map>
         {isPreviewLoading && <S.Loading>건물 정보를 불러오는 중입니다...</S.Loading>}
         <S.Form onSubmit={form.handleSubmit(onSubmit)}>
           <FormProvider {...form}>
             <fieldset disabled={previewChecked}>
-              <TextInput
-                name="center.lat"
-                label="중심점 (위도)"
-                readOnly
-                rules={{ required: "지도를 클릭해 중심점을 입력해주세요." }}
-              />
-              <TextInput
-                name="center.lng"
-                label="중심점 (경도)"
-                readOnly
-                rules={{ required: "지도를 클릭해 중심점을 입력해주세요." }}
-              />
-              <NumberInput name="radius" label="반경(m)" clearable={false} />
+              <Combobox name="method" label="영역 설정 방식" options={methodOptions} />
+              {form.watch("method").value === "center" && (
+                <>
+                  <TextInput
+                    name="center.lat"
+                    label="중심점 (위도)"
+                    readOnly
+                    rules={{ required: "지도를 클릭해 중심점을 입력해주세요." }}
+                  />
+                  <TextInput
+                    name="center.lng"
+                    label="중심점 (경도)"
+                    readOnly
+                    rules={{ required: "지도를 클릭해 중심점을 입력해주세요." }}
+                  />
+                  <NumberInput name="radius" label="반경(m)" clearable={false} />
+                </>
+              )}
               <NumberInput
                 name="division"
                 label="조 분할"
