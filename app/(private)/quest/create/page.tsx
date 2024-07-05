@@ -87,16 +87,24 @@ export default function QuestCreate() {
     if (!isValid) return
 
     setPreviewLoading(true)
-    const res = await previewDivisions({
-      centerLocation: form.getValues("center"),
-      radiusMeters: form.getValues("radius"),
-      clusterCount: form.getValues("division"),
-      maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
-    })
+    if (form.getValues("method").value === "center") {
+      const res = await previewDivisions({
+        centerLocation: form.getValues("center"),
+        radiusMeters: form.getValues("radius"),
+        clusterCount: form.getValues("division"),
+        maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
+      })
+      clusters.current = (await res.json()) as ClusterPreview[]
+    } else {
+      console.log({
+        points: form.getValues("points"),
+        clusterCount: form.getValues("division"),
+        maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
+      })
+    }
     setPreviewLoading(false)
 
     mode.current = "preview"
-    clusters.current = (await res.json()) as ClusterPreview[]
 
     clusters.current.forEach((cluster, i) => {
       cluster.targetBuildings.forEach((building) => {
@@ -160,7 +168,7 @@ export default function QuestCreate() {
         <S.Form onSubmit={form.handleSubmit(onSubmit)}>
           <FormProvider {...form}>
             <fieldset disabled={previewChecked}>
-              <Combobox name="method" label="영역 설정 방식" options={methodOptions} />
+              <Combobox name="method" label="영역 설정 방식" options={methodOptions} isClearable={false} />
               {form.watch("method").value === "center" && (
                 <>
                   <TextInput
@@ -177,6 +185,11 @@ export default function QuestCreate() {
                   />
                   <NumberInput name="radius" label="반경(m)" clearable={false} />
                 </>
+              )}
+              {form.watch("method").value === "polygon" && (
+                <p style={{ opacity: 0.8, fontSize: "0.8em", marginBottom: 12 }}>
+                  지도를 클릭해 다각형을 그리세요. <kbd>Cmd</kbd> + <kbd>Z</kbd>로 마지막 클릭 지점을 취소할 수 있어요.
+                </p>
               )}
               <NumberInput
                 name="division"
