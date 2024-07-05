@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
-import { ClusterPreview, createQuest, previewDivisions } from "@/lib/apis/api"
+import {ClusterPreview, createQuest, previewDivisions, ClubQuestCreateRegionType} from "@/lib/apis/api"
 
 import Map from "@/components/Map"
 import { Circle, Polygon } from "@/components/Map/components"
@@ -16,9 +16,9 @@ import { Flex } from "@/styles/jsx"
 
 import * as S from "./page.style"
 
-const methodOptions = [
-  { label: "지점 - 반경", value: "center" },
-  { label: "다각형 그리기", value: "polygon" },
+const methodOptions: { label: string, value: ClubQuestCreateRegionType }[] = [
+  { label: "지점 - 반경", value: "CIRCLE" },
+  { label: "다각형 그리기", value: "POLYGON" },
 ]
 
 interface FormValues {
@@ -68,16 +68,16 @@ export default function QuestCreate() {
     }
   }
   function undo() {
-    if (form.watch("method").value === "center") return
+    if (form.watch("method").value === "CIRCLE") return
     if (form.watch("points").length === 0) return
     form.setValue("points", [...form.watch("points").slice(0, -1)])
   }
 
   function handleClick(latLng: kakao.maps.LatLng) {
-    if (form.watch("method.value") === "center") {
+    if (form.watch("method.value") === "CIRCLE") {
       form.setValue("center", { lat: latLng.getLat(), lng: latLng.getLng() })
     }
-    if (form.watch("method.value") === "polygon") {
+    if (form.watch("method.value") === "POLYGON") {
       form.setValue("points", [...form.getValues("points"), { lat: latLng.getLat(), lng: latLng.getLng() }])
     }
   }
@@ -87,21 +87,15 @@ export default function QuestCreate() {
     if (!isValid) return
 
     setPreviewLoading(true)
-    if (form.getValues("method").value === "center") {
-      const res = await previewDivisions({
-        centerLocation: form.getValues("center"),
-        radiusMeters: form.getValues("radius"),
-        clusterCount: form.getValues("division"),
-        maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
-      })
-      clusters.current = (await res.json()) as ClusterPreview[]
-    } else {
-      console.log({
-        points: form.getValues("points"),
-        clusterCount: form.getValues("division"),
-        maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
-      })
-    }
+    const res = await previewDivisions({
+      regionType: form.getValues("method").value,
+      centerLocation: form.getValues("center"),
+      radiusMeters: form.getValues("radius"),
+      points: form.getValues("points"),
+      clusterCount: form.getValues("division"),
+      maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
+    })
+    clusters.current = (await res.json()) as ClusterPreview[]
     setPreviewLoading(false)
 
     mode.current = "preview"
@@ -159,17 +153,17 @@ export default function QuestCreate() {
       <Header title="퀘스트 생성" />
       <Contents.Columns>
         <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
-          {form.watch("method").value === "center" && (
+          {form.watch("method").value === "CIRCLE" && (
             <Circle center={form.watch("center")} radius={form.watch("radius")} />
           )}
-          {form.watch("method").value === "polygon" && <Polygon points={form.watch("points")} />}
+          {form.watch("method").value === "POLYGON" && <Polygon points={form.watch("points")} />}
         </Map>
         {isPreviewLoading && <S.Loading>건물 정보를 불러오는 중입니다...</S.Loading>}
         <S.Form onSubmit={form.handleSubmit(onSubmit)}>
           <FormProvider {...form}>
             <fieldset disabled={previewChecked}>
               <Combobox name="method" label="영역 설정 방식" options={methodOptions} isClearable={false} />
-              {form.watch("method").value === "center" && (
+              {form.watch("method").value === "CIRCLE" && (
                 <>
                   <TextInput
                     name="center.lat"
@@ -186,7 +180,7 @@ export default function QuestCreate() {
                   <NumberInput name="radius" label="반경(m)" clearable={false} />
                 </>
               )}
-              {form.watch("method").value === "polygon" && (
+              {form.watch("method").value === "POLYGON" && (
                 <p style={{ opacity: 0.8, fontSize: "0.8em", marginBottom: 12 }}>
                   지도를 클릭해 다각형을 그리세요. <kbd>Cmd</kbd> + <kbd>Z</kbd>로 마지막 클릭 지점을 취소할 수 있어요.
                 </p>
