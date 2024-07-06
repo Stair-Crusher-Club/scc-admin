@@ -6,17 +6,23 @@ export const Contents = styled("main", {
   },
 })
 
-export const Event = styled("div", {
+export const QuestRow = styled("div", {
   base: {
     marginBottom: 16,
   },
 })
 
-export const EventName = styled("span", {
+export const QuestHeader = styled("span", {
   base: {
     display: "inline-block",
     fontWeight: "bold",
     marginBottom: 4,
+  },
+})
+
+export const CreatedAt = styled("span", {
+  base: {
+    marginLeft: 8,
   },
 })
 

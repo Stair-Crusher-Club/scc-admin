@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 
 import { deleteQuest } from "@/lib/apis/api"
-import { useClubQuestSummaries } from "@/(private)/quest/query";
-
 import { QuestSummary } from "@/lib/models/quest"
 
+import { useClubQuestSummaries } from "@/(private)/quest/query"
 import { Contents, Header } from "@/components/layout"
+
 import * as S from "./page.style"
 
 export default function QuestList() {
@@ -30,8 +30,10 @@ export default function QuestList() {
   )
 
   function share(quests: QuestSummary[]) {
-    const text = quests.map((q) => `${q.name} : ${window.location.origin}/public/quest/${q.id}`).join("\n")
-    navigator.clipboard.writeText(text)
+    const [groupName] = quests[0].name.split(" - ")
+    const questList = quests.map((q) => `- ${q.name.split(" - ")[1]}: ${window.location.origin}/public/quest/${q.id}`)
+
+    navigator.clipboard.writeText(`${groupName}\n${questList.join("\n")}`)
     toast.success("공개 URL 목록이 클립보드에 복사되었습니다.")
   }
 
@@ -52,12 +54,14 @@ export default function QuestList() {
         <Header.ActionButton onClick={() => router.push("/quest/create")}>퀘스트 추가</Header.ActionButton>
       </Header>
       <Contents.Normal>
-        {Object.entries(regrouped).map(([key, quests]) => (
-          <S.Event key={key}>
-            <S.EventName>
-              {key} <S.ShareButton onClick={() => share(quests)}>공유하기</S.ShareButton>
+        {Object.entries(regrouped).map(([questGroupName, quests]) => (
+          <S.QuestRow key={questGroupName}>
+            <S.QuestHeader>
+              {questGroupName}
+              <S.CreatedAt></S.CreatedAt>
+              <S.ShareButton onClick={() => share(quests)}>공유하기</S.ShareButton>
               <S.DeleteButton onClick={() => deleteQuests(quests)}>삭제하기</S.DeleteButton>
-            </S.EventName>
+            </S.QuestHeader>
             <S.Quests>
               {quests
                 .sort((a, b) => (a.name > b.name ? 1 : -1))
@@ -67,7 +71,7 @@ export default function QuestList() {
                   </Link>
                 ))}
             </S.Quests>
-          </S.Event>
+          </S.QuestRow>
         ))}
         {hasNextPage && <S.LoadNextPageButton onClick={() => fetchNextPage()}>더 불러오기</S.LoadNextPageButton>}
       </Contents.Normal>
