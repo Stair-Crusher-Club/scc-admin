@@ -3,6 +3,7 @@ import { LatLng } from "./common"
 export interface QuestSummary {
   id: string
   name: string
+  shortenedUrl?: string
 }
 
 export interface QuestDetail {
