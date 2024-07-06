@@ -37,16 +37,18 @@ export default function BuildingDetailSheet({ building, questId, visible, close 
             <col width="54px" />
             <col width="54px" />
           </colgroup>
-          <S.HeaderRow>
-            <S.HeaderCell style={{ textAlign: "left" }}>업체명</S.HeaderCell>
-            <S.HeaderCell>정복</S.HeaderCell>
-            <S.HeaderCell>폐업 추정</S.HeaderCell>
-            <S.HeaderCell>폐업</S.HeaderCell>
-            <S.HeaderCell>접근 불가</S.HeaderCell>
-          </S.HeaderRow>
-          {building.places.map((place) => (
-            <PlaceRow place={place} questId={questId} key={place.placeId} />
-          ))}
+          <tbody>
+            <S.HeaderRow>
+              <S.HeaderCell style={{ textAlign: "left" }}>업체명</S.HeaderCell>
+              <S.HeaderCell>정복</S.HeaderCell>
+              <S.HeaderCell>폐업 추정</S.HeaderCell>
+              <S.HeaderCell>폐업</S.HeaderCell>
+              <S.HeaderCell>접근 불가</S.HeaderCell>
+            </S.HeaderRow>
+            {building.places.map((place) => (
+              <PlaceRow place={place} questId={questId} key={place.placeId} />
+            ))}
+          </tbody>
         </S.PlaceTable>
       </S.TableWrapper>
     </BottomSheet>
