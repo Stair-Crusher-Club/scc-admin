@@ -31,7 +31,10 @@ export default function QuestList() {
 
   function share(quests: QuestSummary[]) {
     const [groupName] = quests[0].name.split(" - ")
-    const questList = quests.map((q) => `- ${q.name.split(" - ")[1]}: ${window.location.origin}/public/quest/${q.id}`)
+    const questList = quests.map((q) => {
+      const url = q.shortenedUrl || `${window.location.origin}/public/quest/${q.id}`
+      return `- ${q.name.split(" - ")[1]}: ${url}`
+    })
 
     navigator.clipboard.writeText(`${groupName}\n${questList.join("\n")}`)
     toast.success("공개 URL 목록이 클립보드에 복사되었습니다.")
