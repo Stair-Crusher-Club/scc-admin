@@ -45,9 +45,13 @@ export async function updateQuestStatus({ questId, ...params }: UpdateQuestStatu
   }
 }
 
+export type ClubQuestCreateRegionType = 'CIRCLE' | 'POLYGON'
+
 type PreviewDivisionsParams = {
-  centerLocation: { lng: number; lat: number }
-  clusterCount: number
+  regionType: ClubQuestCreateRegionType
+  centerLocation?: { lng: number; lat: number }
+  clusterCount?: number
+  points?: { lng: number; lat: number }[]
   maxPlaceCountPerQuest: number
   radiusMeters: number
 }
