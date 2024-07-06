@@ -6,12 +6,14 @@ type PolygonStyle = Omit<kakao.maps.PolygonOptions, "map" | "path">
 
 interface Props {
   points: { lat: number; lng: number }[]
+  label?: string
   style?: PolygonStyle
 }
 
-export default function Polygon({ points, style }: Props) {
+export default function Polygon({ points, label, style }: Props) {
   const { map } = useContext(MapContext)
   const polygon = useRef<kakao.maps.Polygon>()
+  const labelOverlay = useRef<kakao.maps.CustomOverlay>()
 
   useEffect(() => {
     if (!map) return
@@ -26,9 +28,20 @@ export default function Polygon({ points, style }: Props) {
       ...stylesOverridden,
     })
 
+    if (label) {
+      const center = getCenterOf(points)
+      labelOverlay.current = new kakao.maps.CustomOverlay({
+        map: map,
+        content: `<div style="padding:5px;background:rgba(255,255,255,0.5)"><b>${label}</b></div>`,
+        position: center,
+        zIndex: 3,
+      })
+    }
+
     // unmount 되면 map에서 polygon을 제거.
     return () => {
       polygon.current?.setMap(null)
+      labelOverlay.current?.setMap(null)
     }
   }, [map, points])
 
@@ -42,4 +55,12 @@ const defaultStyle: PolygonStyle = {
   strokeStyle: "solid", // 선의 스타일 입니다
   fillColor: "#CFE7FF", // 채우기 색깔입니다
   fillOpacity: 0.3, // 채우기 불투명도 입니다
+}
+
+function getCenterOf(vertices: { lat: number; lng: number }[]) {
+  const bounds = new kakao.maps.LatLngBounds()
+  vertices.forEach((v) => bounds.extend(new kakao.maps.LatLng(v.lat, v.lng)))
+  const centerLat = (bounds.getNorthEast().getLat() + bounds.getSouthWest().getLat()) / 2
+  const centerLng = (bounds.getNorthEast().getLng() + bounds.getSouthWest().getLng()) / 2
+  return new kakao.maps.LatLng(centerLat, centerLng)
 }

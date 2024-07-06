@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
 import { createRegion, useRegions } from "@/lib/apis/api"
@@ -9,12 +10,10 @@ import { Polygon } from "@/components/Map/components"
 import { Contents, Header } from "@/components/layout"
 import { useModal } from "@/hooks/useModal"
 
-import { FIXED_REGIONS } from "./data"
-import * as S from "./page.style"
+import { FIXED_REGIONS } from "../data"
 
-export default function Page() {
-  const mapRef = useRef<kakao.maps.Map>()
-  const newShape = useRef<kakao.maps.Polygon>()
+export default function RegionDraw() {
+  const router = useRouter()
   const { data, refetch } = useRegions()
   const regions = data ?? []
   const { openModal } = useModal()
@@ -31,6 +30,24 @@ export default function Page() {
     intialized.current = true
   }, [regions.length, map])
 
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [drawingPoints])
+
+  function handleKeyDown(e: KeyboardEvent) {
+    console.log("e.metaKey", e.metaKey, "e.key", e.key)
+    if (e.metaKey && e.key === "z") {
+      console.log("undo")
+      undo()
+    }
+  }
+  function undo() {
+    console.log(drawingPoints.length)
+    if (drawingPoints.length === 0) return
+    setDrawingPoints((prev) => [...prev.slice(0, -1)])
+  }
+
   function initializeMap(map: kakao.maps.Map) {
     // 전체 영역이 전부 표시되도록
     const bounds = new kakao.maps.LatLngBounds()
@@ -38,39 +55,37 @@ export default function Page() {
       r.boundaryVertices.forEach((v) => bounds.extend(new kakao.maps.LatLng(v.lat, v.lng))),
     )
     map.setBounds(bounds)
+
+    kakao.maps.event.addListener(map, "click", (e: kakao.maps.event.MouseEvent) => handleClick(e.latLng))
   }
 
-  function selectHowToCreateRegion() {
-    openModal({ type: "RegionDraw", props: { onSelect: handleNewRegionSelected } })
-  }
-  async function createNewRegion({ name, vertices }: { name: string; vertices: { lat: number; lng: number }[] }) {
-    await createRegion({ name, boundaryVertices: vertices })
+  function handleClick(latLng: kakao.maps.LatLng) {
+    setDrawingPoints((prev) => [...prev, { lat: latLng.getLat(), lng: latLng.getLng() }])
   }
 
-  function handleNewRegionSelected(name: string | null, vertices: { lat: number; lng: number }[]) {
-    setDrawingPoints(vertices)
-
+  function confirmCreate() {
+    map?.panTo(getCenterOf(drawingPoints))
     openModal({
       type: "RegionCreate",
       props: {
-        defaultName: name ?? undefined,
+        defaultName: undefined,
         onConfirm: async (name) => {
-          await createNewRegion({ name, vertices })
+          await createNewRegion({ name, vertices: drawingPoints })
           refetch()
-          setDrawingPoints([])
+          router.back()
         },
       },
     })
   }
 
-  function showList() {
-    openModal({ type: "RegionList" })
+  async function createNewRegion({ name, vertices }: { name: string; vertices: { lat: number; lng: number }[] }) {
+    await createRegion({ name, boundaryVertices: vertices })
   }
 
   return (
     <>
-      <Header title="오픈 지역 관리">
-        <Header.ActionButton onClick={selectHowToCreateRegion}>오픈 지역 추가</Header.ActionButton>
+      <Header title="오픈 지역 그리기">
+        <Header.ActionButton onClick={confirmCreate}>그리기 완료</Header.ActionButton>
       </Header>
       <Contents>
         <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
@@ -87,8 +102,15 @@ export default function Page() {
             style={{ strokeWeight: 3, strokeColor: "#f43", strokeOpacity: 1, fillColor: "#f43", fillOpacity: 0.2 }}
           />
         </Map>
-        <S.ListButton onClick={showList}>목록 보기</S.ListButton>
       </Contents>
     </>
   )
+}
+
+function getCenterOf(vertices: { lat: number; lng: number }[]) {
+  const bounds = new kakao.maps.LatLngBounds()
+  vertices.forEach((v) => bounds.extend(new kakao.maps.LatLng(v.lat, v.lng)))
+  const centerLat = (bounds.getNorthEast().getLat() + bounds.getSouthWest().getLat()) / 2
+  const centerLng = (bounds.getNorthEast().getLng() + bounds.getSouthWest().getLng()) / 2
+  return new kakao.maps.LatLng(centerLat, centerLng)
 }
