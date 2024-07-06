@@ -7,16 +7,16 @@ import { useEffect, useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
-import {ClusterPreview, createQuest, previewDivisions, ClubQuestCreateRegionType} from "@/lib/apis/api"
+import { ClubQuestCreateRegionType, ClusterPreview, createQuest, previewDivisions } from "@/lib/apis/api"
 
 import Map from "@/components/Map"
-import { Circle, Polygon } from "@/components/Map/components"
+import { Circle, ClusterMarker, Polygon } from "@/components/Map/components"
 import { Contents, Header } from "@/components/layout"
 import { Flex } from "@/styles/jsx"
 
 import * as S from "./page.style"
 
-const methodOptions: { label: string, value: ClubQuestCreateRegionType }[] = [
+const methodOptions: { label: string; value: ClubQuestCreateRegionType }[] = [
   { label: "지점 - 반경", value: "CIRCLE" },
   { label: "다각형 그리기", value: "POLYGON" },
 ]
@@ -37,9 +37,8 @@ export default function QuestCreate() {
   // 프리뷰 모드 : 조 분할 미리보기 모드
   const mode = useRef<"draw" | "preview">("draw")
   const queryClient = useQueryClient()
-  const [previewChecked, setPreviewChecked] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
   const [isPreviewLoading, setPreviewLoading] = useState(false)
-  const mapRef = useRef<kakao.maps.Map>()
   const form = useForm<FormValues>({
     defaultValues: {
       method: methodOptions[0],
@@ -50,8 +49,7 @@ export default function QuestCreate() {
       maxPlacesPerQuest: 50,
     },
   })
-  const previewMarkers = useRef<kakao.maps.Marker[]>([])
-  const clusters = useRef<ClusterPreview[]>([])
+  const [clusters, setClusters] = useState<ClusterPreview[]>([])
 
   function initializeMap(map: kakao.maps.Map) {
     kakao.maps.event.addListener(map, "click", (e: kakao.maps.event.MouseEvent) => handleClick(e.latLng))
@@ -95,44 +93,16 @@ export default function QuestCreate() {
       clusterCount: form.getValues("division"),
       maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
     })
-    clusters.current = (await res.json()) as ClusterPreview[]
+    setClusters((await res.json()) as ClusterPreview[])
     setPreviewLoading(false)
 
     mode.current = "preview"
-
-    clusters.current.forEach((cluster, i) => {
-      cluster.targetBuildings.forEach((building) => {
-        const marker = new kakao.maps.Marker({
-          position: new kakao.maps.LatLng(building.location.lat, building.location.lng),
-          image: new kakao.maps.MarkerImage("/marker_cluster_sprite.png", new kakao.maps.Size(24, 36), {
-            offset: new kakao.maps.Point(12, 36),
-            spriteOrigin: new kakao.maps.Point(24 * (i % 10), 36 * Math.floor(i / 10)),
-            spriteSize: new kakao.maps.Size(24 * 10, 36 * 4),
-          }),
-        })
-        marker.setMap(mapRef.current!)
-
-        // 마커에 커서가 오버됐을 인포윈도우로 건물정보 / 장소목록을 노출합니다.
-        const iwContent = `<div style="padding:5px;">
-          <b>${cluster.questNamePostfix} ${building.name}</b> <small>(${building.places.length}개 장소)</small>
-          <br />
-          <p style="white-space:pre;">${building.places.map((p) => p.name).join("\n")}</p>
-        </div>`
-
-        const infowindow = new kakao.maps.InfoWindow({ content: iwContent })
-        kakao.maps.event.addListener(marker, "mouseover", () => infowindow.open(mapRef.current!, marker))
-        kakao.maps.event.addListener(marker, "mouseout", () => infowindow.close())
-
-        previewMarkers.current.push(marker)
-      })
-    })
-    setPreviewChecked(true)
+    setShowPreview(true)
   }
 
   function previewOff() {
     mode.current = "draw"
-    previewMarkers.current.forEach((m) => m.setMap(null))
-    setPreviewChecked(false)
+    setShowPreview(false)
   }
 
   async function onSubmit(values: FormValues) {
@@ -141,7 +111,7 @@ export default function QuestCreate() {
       form.setError("name", { type: "required", message: "퀘스트 이름을 입력해주세요." })
       return
     }
-    await createQuest({ questNamePrefix: values.name, dryRunResults: clusters.current })
+    await createQuest({ questNamePrefix: values.name, dryRunResults: clusters })
 
     toast.success("퀘스트가 생성되었습니다.")
     queryClient.invalidateQueries({ queryKey: ["@quests"], exact: true })
@@ -157,11 +127,22 @@ export default function QuestCreate() {
             <Circle center={form.watch("center")} radius={form.watch("radius")} />
           )}
           {form.watch("method").value === "POLYGON" && <Polygon points={form.watch("points")} />}
+          {showPreview &&
+            clusters.map((cluster, i) =>
+              cluster.targetBuildings.map((building) => (
+                <ClusterMarker
+                  key={building.buildingId}
+                  position={building.location}
+                  clusterIndex={i}
+                  overlayInfo={{ title: `${cluster.questNamePostfix} ${building.name}`, places: building.places }}
+                />
+              )),
+            )}
         </Map>
         {isPreviewLoading && <S.Loading>건물 정보를 불러오는 중입니다...</S.Loading>}
         <S.Form onSubmit={form.handleSubmit(onSubmit)}>
           <FormProvider {...form}>
-            <fieldset disabled={previewChecked}>
+            <fieldset disabled={showPreview}>
               <Combobox name="method" label="영역 설정 방식" options={methodOptions} isClearable={false} />
               {form.watch("method").value === "CIRCLE" && (
                 <>
@@ -195,25 +176,25 @@ export default function QuestCreate() {
             </fieldset>
 
             <Flex direction="column" gap="8px">
-              {!previewChecked && (
+              {!showPreview && (
                 <S.PreviewButton type="button" onClick={previewOn}>
                   미리보기
                 </S.PreviewButton>
               )}
-              {previewChecked && (
+              {showPreview && (
                 <S.PreviewButton type="button" onClick={previewOff}>
                   수정하기
                 </S.PreviewButton>
               )}
 
-              {previewChecked && (
+              {showPreview && (
                 <S.PreviewSummary>
                   <tr>
                     <td colSpan={3} style={{ padding: "4px 0" }}>
                       미리보기 요약
                     </td>
                   </tr>
-                  {clusters.current.map((cluster, i) => (
+                  {clusters.map((cluster, i) => (
                     <tr key={i}>
                       <td>{cluster.questNamePostfix}</td>
                       <td>{cluster.targetBuildings.length}개 건물</td>
@@ -222,8 +203,8 @@ export default function QuestCreate() {
                   ))}
                 </S.PreviewSummary>
               )}
-              {previewChecked && <TextInput name="name" label="퀘스트 이름" />}
-              {previewChecked && <S.SubmitButton type="submit">이대로 생성하기</S.SubmitButton>}
+              {showPreview && <TextInput name="name" label="퀘스트 이름" />}
+              {showPreview && <S.SubmitButton type="submit">이대로 생성하기</S.SubmitButton>}
             </Flex>
           </FormProvider>
         </S.Form>
