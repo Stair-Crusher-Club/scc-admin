@@ -1,15 +1,24 @@
-import { LatLng } from "./common"
+import {EpochMillisTimestamp, LatLng} from "./common"
+
+export type QuestPurposeType = 'CRUSHER_CLUB' | 'DAILY_CLUB' | 'COLLABO_CLUB' | 'ESG_PARTNERS'
 
 export interface QuestSummary {
   id: string
   name: string
+  purposeType: QuestPurposeType
+  startAt: EpochMillisTimestamp
+  endAt: EpochMillisTimestamp
   shortenedUrl?: string
 }
 
 export interface QuestDetail {
   id: string
   name: string
+  purposeType: QuestPurposeType
+  startAt: EpochMillisTimestamp
+  endAt: EpochMillisTimestamp
   buildings: QuestBuilding[]
+  shortenedUrl?: string
 }
 
 export interface QuestBuilding {

@@ -1,6 +1,6 @@
 "use client"
 
-import { Combobox, NumberInput, TextInput } from "@reactleaf/input/hookform"
+import {Combobox, DateInput, NumberInput, TextInput} from "@reactleaf/input/hookform"
 import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
@@ -15,6 +15,14 @@ import { Contents, Header } from "@/components/layout"
 import { Flex } from "@/styles/jsx"
 
 import * as S from "./page.style"
+import {QuestPurposeType} from "@/lib/models/quest";
+
+const purposeTypeOptions: { label: string; value: QuestPurposeType }[] = [
+  { label: "크러셔 클럽", value: "CRUSHER_CLUB" },
+  { label: "일상 퀘스트", value: "DAILY_CLUB" },
+  { label: "콜라보 클럽", value: "COLLABO_CLUB" },
+  { label: "ESG 파트너스", value: "ESG_PARTNERS" },
+]
 
 const methodOptions: { label: string; value: ClubQuestCreateRegionType }[] = [
   { label: "지점 - 반경", value: "CIRCLE" },
@@ -23,6 +31,9 @@ const methodOptions: { label: string; value: ClubQuestCreateRegionType }[] = [
 
 interface FormValues {
   name: string
+  purposeType: (typeof purposeTypeOptions)[number]
+  startDate: Date
+  endDate: Date
   method: (typeof methodOptions)[number]
   center: { lat: number; lng: number }
   points: { lat: number; lng: number }[]
@@ -41,7 +52,10 @@ export default function QuestCreate() {
   const [isPreviewLoading, setPreviewLoading] = useState(false)
   const form = useForm<FormValues>({
     defaultValues: {
+      purposeType: undefined,
       method: methodOptions[0],
+      startDate: undefined,
+      endDate: undefined,
       name: "",
       points: [],
       radius: 200,
@@ -111,7 +125,13 @@ export default function QuestCreate() {
       form.setError("name", { type: "required", message: "퀘스트 이름을 입력해주세요." })
       return
     }
-    await createQuest({ questNamePrefix: values.name, dryRunResults: clusters })
+    await createQuest({
+      questNamePrefix: values.name,
+      purposeType: values.purposeType.value,
+      startAt: { value: values.startDate.getTime() },
+      endAt: { value: plusOneDay(values.endDate).getTime() },
+      dryRunResults: clusters,
+    })
 
     toast.success("퀘스트가 생성되었습니다.")
     queryClient.invalidateQueries({ queryKey: ["@quests"], exact: true })
@@ -142,6 +162,13 @@ export default function QuestCreate() {
         {isPreviewLoading && <S.Loading>건물 정보를 불러오는 중입니다...</S.Loading>}
         <S.Form onSubmit={form.handleSubmit(onSubmit)}>
           <FormProvider {...form}>
+            <fieldset>
+              <Combobox name="purposeType" label="퀘스트 용도" options={purposeTypeOptions} isClearable={false} />
+              <Flex>
+                <DateInput name="startDate" label="퀘스트 시작" dateFormat="yyyy-MM-dd" />
+                <DateInput name="endDate" label="퀘스트 종료" dateFormat="yyyy-MM-dd"/>
+              </Flex>
+            </fieldset>
             <fieldset disabled={showPreview}>
               <Combobox name="method" label="영역 설정 방식" options={methodOptions} isClearable={false} />
               {form.watch("method").value === "CIRCLE" && (
@@ -211,4 +238,10 @@ export default function QuestCreate() {
       </Contents.Columns>
     </>
   )
+}
+
+function plusOneDay(date: Date): Date {
+  const newDate = new Date(date); // 원본 date 객체를 변경하지 않기 위해 새로운 Date 객체 생성
+  newDate.setDate(newDate.getDate() + 1);
+  return newDate;
 }
