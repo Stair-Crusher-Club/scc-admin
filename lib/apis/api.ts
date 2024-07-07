@@ -5,8 +5,9 @@ import { AccessibilitySummary } from "@/lib/models/accessibility"
 
 import { http } from "../http"
 import { Challenge } from "../models/challenge"
-import { QuestBuilding, QuestDetail, QuestSummary } from "../models/quest"
+import {QuestBuilding, QuestDetail, QuestPurposeType, QuestSummary} from "../models/quest"
 import { Region } from "../models/region"
+import {EpochMillisTimestamp} from "@/lib/models/common";
 
 export function useQuests() {
   return useQuery({
@@ -69,6 +70,9 @@ export async function previewDivisions(params: PreviewDivisionsParams) {
 
 type CreateQuestPayload = {
   questNamePrefix: string
+  purposeType: QuestPurposeType
+  startAt: EpochMillisTimestamp
+  endAt: EpochMillisTimestamp
   dryRunResults: ClusterPreview[]
 }
 export async function createQuest(payload: CreateQuestPayload) {
