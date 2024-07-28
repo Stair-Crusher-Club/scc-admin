@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-import { stringify } from "querystring"
 
 import { AccessibilitySummary } from "@/lib/models/accessibility"
 
@@ -8,13 +7,6 @@ import { Challenge } from "../models/challenge"
 import {QuestBuilding, QuestDetail, QuestPurposeType, QuestSummary} from "../models/quest"
 import { Region } from "../models/region"
 import {EpochMillisTimestamp} from "@/lib/models/common";
-
-export function useQuests() {
-  return useQuery({
-    queryKey: ["@quests"],
-    queryFn: () => http("/admin/clubQuests").then((res) => res.json() as Promise<QuestSummary[]>),
-  })
-}
 
 export function useQuest({ id }: { id: string }) {
   return useQuery({
