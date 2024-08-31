@@ -47,6 +47,7 @@ type PreviewDivisionsParams = {
   points?: { lng: number; lat: number }[]
   maxPlaceCountPerQuest: number
   radiusMeters: number
+  useAlreadyCrawledPlace: boolean
 }
 export interface ClusterPreview {
   questNamePostfix: string
