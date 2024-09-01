@@ -1,6 +1,6 @@
 "use client"
 
-import {Combobox, DateInput, NumberInput, TextInput} from "@reactleaf/input/hookform"
+import { Combobox, DateInput, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
@@ -8,6 +8,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
 import { ClubQuestCreateRegionType, ClusterPreview, createQuest, previewDivisions } from "@/lib/apis/api"
+import { QuestPurposeType } from "@/lib/models/quest"
 
 import Map from "@/components/Map"
 import { Circle, ClusterMarker, Polygon } from "@/components/Map/components"
@@ -15,7 +16,6 @@ import { Contents, Header } from "@/components/layout"
 import { Flex } from "@/styles/jsx"
 
 import * as S from "./page.style"
-import {QuestPurposeType} from "@/lib/models/quest";
 
 const purposeTypeOptions: { label: string; value: QuestPurposeType }[] = [
   { label: "크러셔 클럽", value: "CRUSHER_CLUB" },
@@ -155,7 +155,7 @@ export default function QuestCreate() {
           {form.watch("method").value === "CIRCLE" && (
             <Circle center={form.watch("center")} radius={form.watch("radius")} />
           )}
-          {form.watch("method").value === "POLYGON" && <Polygon points={form.watch("points")} />}
+          {form.watch("method").value === "POLYGON" && <Polygon forDrawing points={form.watch("points")} />}
           {showPreview &&
             clusters.map((cluster, i) =>
               cluster.targetBuildings.map((building) => (
@@ -175,7 +175,7 @@ export default function QuestCreate() {
               <Combobox name="purposeType" label="퀘스트 용도" options={purposeTypeOptions} isClearable={false} />
               <Flex>
                 <DateInput name="startDate" label="퀘스트 시작" dateFormat="yyyy-MM-dd" />
-                <DateInput name="endDate" label="퀘스트 종료" dateFormat="yyyy-MM-dd"/>
+                <DateInput name="endDate" label="퀘스트 종료" dateFormat="yyyy-MM-dd" />
               </Flex>
               <Flex>
                 <Combobox name="placeSearchMethod" label="장소 검색 방식" options={placeSearchMethodOptions} isClearable={false} />
@@ -253,7 +253,7 @@ export default function QuestCreate() {
 }
 
 function plusOneDay(date: Date): Date {
-  const newDate = new Date(date); // 원본 date 객체를 변경하지 않기 위해 새로운 Date 객체 생성
-  newDate.setDate(newDate.getDate() + 1);
-  return newDate;
+  const newDate = new Date(date) // 원본 date 객체를 변경하지 않기 위해 새로운 Date 객체 생성
+  newDate.setDate(newDate.getDate() + 1)
+  return newDate
 }

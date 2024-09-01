@@ -1,16 +1,19 @@
 import { useContext, useEffect, useRef } from "react"
 
+import { LatLng } from "@/lib/models/common"
+
 import { MapContext } from "../Map"
 
 type PolygonStyle = Omit<kakao.maps.PolygonOptions, "map" | "path">
 
 interface Props {
-  points: { lat: number; lng: number }[]
+  points: LatLng[]
   label?: string
   style?: PolygonStyle
+  forDrawing?: boolean
 }
 
-export default function Polygon({ points, label, style }: Props) {
+export default function Polygon({ points, label, forDrawing, style }: Props) {
   const { map } = useContext(MapContext)
   const firstPoint = useRef<kakao.maps.Circle>()
   const lastPoint = useRef<kakao.maps.Circle>()
@@ -49,6 +52,7 @@ export default function Polygon({ points, label, style }: Props) {
 
   // 처음에 클릭한 점에 표시 추가
   useEffect(() => {
+    if (!forDrawing) return
     if (!map) return
     if (points.length < 1) return
 
@@ -72,6 +76,7 @@ export default function Polygon({ points, label, style }: Props) {
 
   // 마지막에 클릭한 점에 표시 추가
   useEffect(() => {
+    if (!forDrawing) return
     if (!map) return
     if (points.length < 1) return
 

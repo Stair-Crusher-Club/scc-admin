@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
 
 import { AccessibilitySummary } from "@/lib/models/accessibility"
-import { EpochMillisTimestamp } from "@/lib/models/common"
+import { EpochMillisTimestamp, LatLng } from "@/lib/models/common"
 
 import { http } from "../http"
 import { Challenge } from "../models/challenge"
 import { QuestBuilding, QuestDetail, QuestPurposeType, QuestSummary } from "../models/quest"
 import { Region } from "../models/region"
-
-export type LatLng = { lat: number; lng: number }
 
 export function useQuest({ id }: { id: string }) {
   return useQuery({
