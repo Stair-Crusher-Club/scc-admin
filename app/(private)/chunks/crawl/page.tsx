@@ -11,6 +11,8 @@ import Map from "@/components/Map"
 import { Polygon } from "@/components/Map/components"
 import { Contents, Header } from "@/components/layout"
 
+import { useCrawling } from "../query"
+
 interface Chunk {
   polygon: clip.Polygon
   status: "WAITING" | "CRAWLING" | "DONE"
@@ -23,6 +25,7 @@ export default function CrawlPage() {
   const [isCrawling, setCrawling] = useState(false)
   const [chunks, setChunks] = useState<Chunk[]>([])
   const form = useForm<FormValues>({ defaultValues: { points: [] } })
+  const crawling = useCrawling()
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown)
@@ -35,6 +38,7 @@ export default function CrawlPage() {
       e.preventDefault()
       if (form.watch("points").length === 0) return
       form.setValue("points", [...form.watch("points").slice(0, -1)])
+      makeChunks()
     }
   }
 
@@ -45,9 +49,10 @@ export default function CrawlPage() {
   function handleClick(latLng: kakao.maps.LatLng) {
     if (isCrawling) return
     form.setValue("points", [...form.getValues("points"), { lat: latLng.getLat(), lng: latLng.getLng() }])
+    makeChunks()
   }
 
-  function startCrawl() {
+  function makeChunks() {
     const points = form.watch("points")
     const polygon: clip.Polygon = [points.map((p) => [p.lng, p.lat] as clip.Pair)]
     const chunks = chunkify(points)
@@ -57,11 +62,35 @@ export default function CrawlPage() {
       return intersection.length > 0
     })
 
-    setCrawling(true)
     setChunks(validChunks.map((p) => ({ polygon: p, status: "WAITING" })))
-    setCrawling(false)
+  }
 
-    console.log(chunks.length, validChunks.length)
+  async function startCrawl() {
+    setCrawling(true)
+    for (const chunk of chunks) {
+      const boundary = chunk.polygon[0].map((c) => ({ lng: c[0], lat: c[1] }))
+      setChunks((prevChunks) =>
+        prevChunks.map((prevChunk) =>
+          prevChunk.polygon === chunk.polygon ? { ...prevChunk, status: "CRAWLING" } : prevChunk,
+        ),
+      )
+      // await crawling.mutateAsync(boundary)
+      await sleep(1000)
+
+      // update chunk status
+      setChunks((prevChunks) =>
+        prevChunks.map((prevChunk) =>
+          prevChunk.polygon === chunk.polygon ? { ...prevChunk, status: "DONE" } : prevChunk,
+        ),
+      )
+    }
+    setCrawling(false)
+    cleanup()
+  }
+
+  function cleanup() {
+    setChunks([])
+    form.setValue("points", [])
   }
 
   return (
@@ -76,7 +105,13 @@ export default function CrawlPage() {
             <Polygon
               key={i}
               points={c.polygon[0].map((p) => ({ lat: p[1], lng: p[0] }))}
-              style={{ fillOpacity: 0, strokeColor: "#000", strokeStyle: "dashed", strokeOpacity: 0.4 }}
+              style={{
+                fillColor: c.status === "CRAWLING" ? "yellow" : "green",
+                fillOpacity: c.status === "WAITING" ? 0 : 0.3,
+                strokeColor: "#000",
+                strokeStyle: "dashed",
+                strokeOpacity: isCrawling ? 0.4 : 0.1,
+              }}
             />
           ))}
         </Map>
@@ -129,4 +164,8 @@ function chunkify(points: LatLng[]): clip.Polygon[] {
   }
 
   return chunks
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
