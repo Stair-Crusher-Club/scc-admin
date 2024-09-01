@@ -78,8 +78,7 @@ export default function CrawlPage() {
           prevChunk.polygon === chunk.polygon ? { ...prevChunk, status: "CRAWLING" } : prevChunk,
         ),
       )
-      // await crawling.mutateAsync(boundary)
-      await sleep(1000)
+      await crawling.mutateAsync(boundary)
 
       // update chunk status
       setChunks((prevChunks) =>
@@ -134,8 +133,8 @@ function chunkify(points: LatLng[]): clip.Polygon[] {
   const boundHeight = (ne.getLat() - sw.getLat()) * 111000
   const boundWidth = (ne.getLng() - sw.getLng()) * 88000
 
-  const rowCount = Math.round(boundHeight / 120)
-  const colCount = Math.round(boundWidth / 120)
+  const rowCount = boundHeight < 120 * 2 ? Math.ceil(boundHeight / 120) : Math.round(boundHeight / 120)
+  const colCount = boundWidth < 120 * 2 ? Math.ceil(boundWidth / 120) : Math.round(boundWidth / 120)
 
   const chunkHeight = boundHeight / rowCount
   const chunkWidth = boundWidth / colCount
