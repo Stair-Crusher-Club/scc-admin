@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query"
 
 import { AccessibilitySummary } from "@/lib/models/accessibility"
+import { EpochMillisTimestamp } from "@/lib/models/common"
 
 import { http } from "../http"
 import { Challenge } from "../models/challenge"
-import {QuestBuilding, QuestDetail, QuestPurposeType, QuestSummary} from "../models/quest"
+import { QuestBuilding, QuestDetail, QuestPurposeType, QuestSummary } from "../models/quest"
 import { Region } from "../models/region"
-import {EpochMillisTimestamp} from "@/lib/models/common";
+
+export type LatLng = { lat: number; lng: number }
 
 export function useQuest({ id }: { id: string }) {
   return useQuery({
@@ -38,13 +40,13 @@ export async function updateQuestStatus({ questId, ...params }: UpdateQuestStatu
   }
 }
 
-export type ClubQuestCreateRegionType = 'CIRCLE' | 'POLYGON'
+export type ClubQuestCreateRegionType = "CIRCLE" | "POLYGON"
 
 type PreviewDivisionsParams = {
   regionType: ClubQuestCreateRegionType
-  centerLocation?: { lng: number; lat: number }
+  centerLocation?: LatLng
   clusterCount?: number
-  points?: { lng: number; lat: number }[]
+  points?: LatLng[]
   maxPlaceCountPerQuest: number
   radiusMeters: number
   useAlreadyCrawledPlace: boolean
@@ -133,13 +135,7 @@ export function useRegions() {
   })
 }
 
-export function createRegion({
-  name,
-  boundaryVertices,
-}: {
-  name: string
-  boundaryVertices: { lat: number; lng: number }[]
-}) {
+export function createRegion({ name, boundaryVertices }: { name: string; boundaryVertices: LatLng[] }) {
   return http(`/admin/accessibilityAllowedRegions`, {
     method: "POST",
     body: JSON.stringify({ name, boundaryVertices }),
@@ -172,5 +168,12 @@ export function deletePlaceAccessibility({ id }: { id: string }) {
 export function deleteBuildingAccessibility({ id }: { id: string }) {
   return http(`/admin/building-accessibilities/${id}`, {
     method: "DELETE",
+  })
+}
+
+export function crawlChunk({ boundary }: { boundary: LatLng[] }) {
+  return http("/admin/places/startCrawling", {
+    method: "POST",
+    body: JSON.stringify({ boundaryVertices: boundary }),
   })
 }

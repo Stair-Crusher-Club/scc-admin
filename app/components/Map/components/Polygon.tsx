@@ -12,6 +12,8 @@ interface Props {
 
 export default function Polygon({ points, label, style }: Props) {
   const { map } = useContext(MapContext)
+  const firstPoint = useRef<kakao.maps.Circle>()
+  const lastPoint = useRef<kakao.maps.Circle>()
   const polygon = useRef<kakao.maps.Polygon>()
   const labelOverlay = useRef<kakao.maps.CustomOverlay>()
 
@@ -42,6 +44,52 @@ export default function Polygon({ points, label, style }: Props) {
     return () => {
       polygon.current?.setMap(null)
       labelOverlay.current?.setMap(null)
+    }
+  }, [map, points])
+
+  // 처음에 클릭한 점에 표시 추가
+  useEffect(() => {
+    if (!map) return
+    if (points.length < 1) return
+
+    const firstPin = points[0]
+    if (!firstPin) return
+    const latlng = new kakao.maps.LatLng(firstPin.lat, firstPin.lng)
+
+    firstPoint.current = new kakao.maps.Circle({
+      map,
+      center: latlng,
+      radius: 5,
+      strokeColor: "#c33f3b", // 선의 색깔입니다
+      strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+    })
+
+    // unmount 되면 map에서 제거.
+    return () => {
+      firstPoint.current?.setMap(null)
+    }
+  }, [map, points[0]])
+
+  // 마지막에 클릭한 점에 표시 추가
+  useEffect(() => {
+    if (!map) return
+    if (points.length < 1) return
+
+    const lastPin = points.at(-1)
+    if (!lastPin) return
+    const latlng = new kakao.maps.LatLng(lastPin.lat, lastPin.lng)
+
+    lastPoint.current = new kakao.maps.Circle({
+      map,
+      center: latlng,
+      radius: 5,
+      strokeColor: "#3b7fc3", // 선의 색깔입니다
+      strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+    })
+
+    // unmount 되면 map에서 제거.
+    return () => {
+      lastPoint.current?.setMap(null)
     }
   }, [map, points])
 
