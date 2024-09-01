@@ -51,6 +51,7 @@ export default function Sidebar() {
           <Logo color="white" height={40} />
         </S.Title>
         <S.Menu>
+          <MenuItem href="/chunks">장소 청크 관리</MenuItem>
           <MenuItem href="/quest">퀘스트 관리</MenuItem>
           <MenuItem href="/challenge">챌린지 관리</MenuItem>
           <MenuItem href="/region">오픈 지역 관리</MenuItem>

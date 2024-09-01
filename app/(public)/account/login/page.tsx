@@ -38,14 +38,14 @@ export default function Page() {
   }
 
   return (
-    <main>
+    <S.LoginPage>
       <FormProvider {...form}>
-        <form style={{ width: 200 }} onSubmit={form.handleSubmit(onSubmit)}>
+        <S.Form onSubmit={form.handleSubmit(onSubmit)}>
           <TextInput name="username" label="아이디" />
           <PasswordInput name="password" label="비밀번호" onEnter={() => {}} />
           <S.LoginButton type="submit">로그인</S.LoginButton>
-        </form>
+        </S.Form>
       </FormProvider>
-    </main>
+    </S.LoginPage>
   )
 }
