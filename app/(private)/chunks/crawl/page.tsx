@@ -13,16 +13,17 @@ import { Contents, Header } from "@/components/layout"
 
 import { useCrawling } from "../query"
 
+type CrawlingStatus = "WAITING" | "CRAWLING" | "DONE"
 interface Chunk {
   polygon: clip.Polygon
-  status: "WAITING" | "CRAWLING" | "DONE"
+  status: CrawlingStatus
 }
 
 interface FormValues {
   points: { lat: number; lng: number }[]
 }
 export default function CrawlPage() {
-  const [isCrawling, setCrawling] = useState(false)
+  const [status, setCrawlingStatus] = useState<CrawlingStatus>("WAITING")
   const [chunks, setChunks] = useState<Chunk[]>([])
   const form = useForm<FormValues>({ defaultValues: { points: [] } })
   const crawling = useCrawling()
@@ -33,7 +34,7 @@ export default function CrawlPage() {
   }, [])
 
   function handleKeyDown(e: KeyboardEvent) {
-    if (isCrawling) return
+    if (status === "CRAWLING") return
     if ((e.metaKey || e.ctrlKey) && e.key === "z") {
       e.preventDefault()
       if (form.watch("points").length === 0) return
@@ -47,7 +48,10 @@ export default function CrawlPage() {
   }
 
   function handleClick(latLng: kakao.maps.LatLng) {
-    if (isCrawling) return
+    if (status === "CRAWLING") return
+    if (status === "DONE") {
+      setChunks([])
+    }
     form.setValue("points", [...form.getValues("points"), { lat: latLng.getLat(), lng: latLng.getLng() }])
     makeChunks()
   }
@@ -66,7 +70,7 @@ export default function CrawlPage() {
   }
 
   async function startCrawl() {
-    setCrawling(true)
+    setCrawlingStatus("CRAWLING")
     for (const chunk of chunks) {
       const boundary = chunk.polygon[0].map((c) => ({ lng: c[0], lat: c[1] }))
       setChunks((prevChunks) =>
@@ -84,12 +88,7 @@ export default function CrawlPage() {
         ),
       )
     }
-    setCrawling(false)
-    cleanup()
-  }
-
-  function cleanup() {
-    setChunks([])
+    setCrawlingStatus("DONE")
     form.setValue("points", [])
   }
 
@@ -110,7 +109,7 @@ export default function CrawlPage() {
                 fillOpacity: c.status === "WAITING" ? 0 : 0.3,
                 strokeColor: "#000",
                 strokeStyle: "dashed",
-                strokeOpacity: isCrawling ? 0.4 : 0.1,
+                strokeOpacity: status === "WAITING" ? 0.1 : 0.4,
               }}
             />
           ))}
