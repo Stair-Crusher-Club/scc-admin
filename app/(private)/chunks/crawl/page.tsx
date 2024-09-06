@@ -71,6 +71,7 @@ export default function CrawlPage() {
     }
     if (mode.current == "CIRCLE_CENTER") {
       mode.current = "CIRCLE_RADIUS"
+      setChunks([])
       return
     }
     if (mode.current == "CIRCLE_RADIUS") {
@@ -81,6 +82,12 @@ export default function CrawlPage() {
       form.setValue("points", [])
       makeChunksFromCircle()
       mode.current = "CIRCLE_COMPLETE"
+      return
+    }
+    if (mode.current == "CIRCLE_COMPLETE") {
+      form.setValue("points", [{ lat: e.latLng.getLat(), lng: e.latLng.getLng() }])
+      mode.current = "POLYGON"
+      return
     }
   }
 
