@@ -1,19 +1,23 @@
 import { useContext, useEffect, useRef } from "react"
 
+import { LatLng } from "@/lib/models/common"
+
 import { MapContext } from "../Map"
 
 type CircleStyle = Omit<kakao.maps.CircleOptions, "map" | "center" | "radius">
 
 interface Props {
-  center: { lat: number; lng: number } | undefined
+  center: LatLng | undefined
   radius: number
   circleStyle?: CircleStyle
+  showRadius?: boolean
 }
 
-export default function Circle({ center, radius, circleStyle }: Props) {
+export default function Circle({ center, radius, circleStyle, showRadius }: Props) {
   const { map } = useContext(MapContext)
   const circle = useRef<kakao.maps.Circle>()
   const centerMarker = useRef<kakao.maps.Marker>()
+  const radiusOverlay = useRef<kakao.maps.CustomOverlay>()
 
   useEffect(() => {
     if (!map) return
@@ -37,12 +41,22 @@ export default function Circle({ center, radius, circleStyle }: Props) {
       }),
     })
 
+    if (showRadius && radius) {
+      radiusOverlay.current = new kakao.maps.CustomOverlay({
+        map,
+        position: latlng,
+        zIndex: 1,
+        content: '<div class="radius">반경 ' + radius.toFixed(1) + "m</div>",
+      })
+    }
+
     // unmount 되면 map에서 circle을 제거.
     return () => {
       circle.current?.setMap(null)
       centerMarker.current?.setMap(null)
+      radiusOverlay.current?.setMap(null)
     }
-  }, [map, center, radius, circleStyle])
+  }, [map, center?.lat, center?.lng, radius, circleStyle, showRadius])
 
   return null
 }

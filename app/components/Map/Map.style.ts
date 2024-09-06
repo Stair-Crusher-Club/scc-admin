@@ -4,6 +4,11 @@ export const Map = styled("div", {
   base: {
     width: "full",
     height: "full",
+    "& .radius": {
+      backgroundColor: "white",
+      padding: "2px 4px",
+      fontWeight: 600,
+    },
   },
 })
 
