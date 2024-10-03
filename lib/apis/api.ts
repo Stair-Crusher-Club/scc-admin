@@ -39,7 +39,7 @@ export async function updateQuestStatus({ questId, ...params }: UpdateQuestStatu
 }
 
 export type ClubQuestCreateRegionType = "CIRCLE" | "POLYGON"
-
+export type ClubQuestTargetPlaceCategory = "RESTAURANT" | "CAFE" | "MARKET" | "HOSPITAL" | "PHARMACY" | "CONVENIENCE_STORE"
 type PreviewDivisionsParams = {
   regionType: ClubQuestCreateRegionType
   centerLocation?: LatLng
@@ -48,6 +48,7 @@ type PreviewDivisionsParams = {
   maxPlaceCountPerQuest: number
   radiusMeters: number
   useAlreadyCrawledPlace: boolean
+  questTargetPlaceCategories: ClubQuestTargetPlaceCategory[]
 }
 export interface ClusterPreview {
   questNamePostfix: string

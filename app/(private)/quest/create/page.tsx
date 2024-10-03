@@ -24,6 +24,15 @@ const purposeTypeOptions: { label: string; value: QuestPurposeType }[] = [
   { label: "ESG 파트너스", value: "ESG_PARTNERS" },
 ]
 
+const questTargetPlaceCategoryOptions = [
+  { label: "음식점", value: "RESTAURANT" } as const,
+  { label: "카페", value: "CAFE" } as const,
+  { label: "편의점", value: "CONVENIENCE_STORE" } as const,
+  { label: "대형마트", value: "MARKET" } as const,
+  { label: "병원", value: "HOSPITAL" } as const,
+  { label: "약국", value: "PHARMACY" } as const,
+]
+
 type PlaceSearchMethod = 'SEARCH_NOW' | 'USE_ALREADY_CRAWLED_PLACES';
 const placeSearchMethodOptions: { label: string; value: PlaceSearchMethod }[] = [
   { label: "지금 크롤링하기", value: "SEARCH_NOW" },
@@ -40,6 +49,7 @@ interface FormValues {
   purposeType: (typeof purposeTypeOptions)[number]
   startDate: Date
   endDate: Date
+  questTargetPlaceCategories: (typeof questTargetPlaceCategoryOptions)
   method: (typeof methodOptions)[number]
   placeSearchMethod: (typeof placeSearchMethodOptions)[number]
   center: { lat: number; lng: number }
@@ -60,6 +70,7 @@ export default function QuestCreate() {
   const form = useForm<FormValues>({
     defaultValues: {
       purposeType: purposeTypeOptions[0],
+      questTargetPlaceCategories: questTargetPlaceCategoryOptions,
       placeSearchMethod: placeSearchMethodOptions[0],
       method: methodOptions[0],
       startDate: undefined,
@@ -114,7 +125,8 @@ export default function QuestCreate() {
       points: form.getValues("points"),
       clusterCount: form.getValues("division"),
       maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
-      useAlreadyCrawledPlace: form.getValues('placeSearchMethod').value === 'USE_ALREADY_CRAWLED_PLACES',
+      useAlreadyCrawledPlace: form.getValues("placeSearchMethod").value === 'USE_ALREADY_CRAWLED_PLACES',
+      questTargetPlaceCategories: form.getValues("questTargetPlaceCategories").map(it => it.value),
     })
     setClusters((await res.json()) as ClusterPreview[])
     setPreviewLoading(false)
@@ -172,10 +184,23 @@ export default function QuestCreate() {
         <S.Form onSubmit={form.handleSubmit(onSubmit)}>
           <FormProvider {...form}>
             <fieldset>
-              <Combobox name="purposeType" label="퀘스트 용도" options={purposeTypeOptions} isClearable={false} />
+              <Flex>
+                <Combobox name="purposeType" label="퀘스트 용도" options={purposeTypeOptions} isClearable={false} />
+              </Flex>
               <Flex>
                 <DateInput name="startDate" label="퀘스트 시작" dateFormat="yyyy-MM-dd" />
                 <DateInput name="endDate" label="퀘스트 종료" dateFormat="yyyy-MM-dd" />
+              </Flex>
+              <Flex>
+                <Combobox
+                  isMulti
+                  name="questTargetPlaceCategories"
+                  label="장소 카테고리"
+                  placeholder=""
+                  closeMenuOnSelect={false}
+                  rules={{ required: { value: true, message: "1개 이상의 카테고리를 선택해주세요." } }}
+                  options={questTargetPlaceCategoryOptions}
+                />
               </Flex>
               <Flex>
                 <Combobox name="placeSearchMethod" label="장소 검색 방식" options={placeSearchMethodOptions} isClearable={false} />
