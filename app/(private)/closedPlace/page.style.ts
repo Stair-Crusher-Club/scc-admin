@@ -20,6 +20,17 @@ export const LoadNextPageButton = styled("button", {
   },
 })
 
+export const ExternalMap = styled("button", {
+  base: {
+    width: "20px",
+    height: "20px",
+    border: "1px solid #ccc",
+    verticalAlign: "middle",
+    marginLeft: 4,
+    cursor: "pointer",
+  },
+})
+
 export const TableWrapper = styled("div", {
   base: {
     padding: "20px 20px",

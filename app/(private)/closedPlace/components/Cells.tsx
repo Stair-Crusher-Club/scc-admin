@@ -2,7 +2,7 @@ import { toast } from "react-toastify"
 
 import * as S from "./Cells.style"
 import { ClosedPlaceCandidate } from "@/lib/models/place"
-import { acceptClosedPlaceCandidate, ignoreClosedPlaceCandidate, ListClosedPlaceCandidatesResult } from "../query"
+import { acceptClosedPlaceCandidate, ignoreClosedPlaceCandidate } from "../query"
 
 export function ActionsCell({
   closedPlaceCandidate,
@@ -25,8 +25,8 @@ export function ActionsCell({
 
   return (
     <S.Actions>
-      <S.AcceptButton onClick={handleAcceptClosedPlaceCandidate}>폐업 처리</S.AcceptButton>
-      <S.DeleteButton onClick={handleIgnoreClosedPlaceCandidate}>무시하기</S.DeleteButton>
+      <S.AcceptButton disabled={closedPlaceCandidate.acceptedAt !== undefined} onClick={handleAcceptClosedPlaceCandidate}>폐업 처리</S.AcceptButton>
+      <S.IgnoreButton disabled={closedPlaceCandidate.ignoredAt !== undefined} onClick={handleIgnoreClosedPlaceCandidate}>무시하기</S.IgnoreButton>
     </S.Actions>
   )
 }

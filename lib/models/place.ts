@@ -5,6 +5,7 @@ export interface ClosedPlaceCandidate {
   placeId: string
   name: string
   address: string
-  acceptedAt: EpochMillisTimestamp
-  ignoredAt: EpochMillisTimestamp
+  createdAt: EpochMillisTimestamp
+  acceptedAt?: EpochMillisTimestamp
+  ignoredAt?: EpochMillisTimestamp
 }

@@ -13,7 +13,7 @@ export function useClosedPlaceCandidates() {
   return useInfiniteQuery({
     queryKey: ["@closedPlaceCandidates"],
     queryFn: ({ pageParam }) =>
-      http(`/admin/closedPlaceCandidates/?${qs.stringify({ cursor: pageParam, limit: 10 }, { skipNull: true })}`).then(
+      http(`/admin/closed-place-candidates?${qs.stringify({ cursor: pageParam, limit: 10 }, { skipNull: true })}`).then(
         (res) => res.json() as Promise<ListClosedPlaceCandidatesResult>,
       ),
     initialPageParam: null as string | null,

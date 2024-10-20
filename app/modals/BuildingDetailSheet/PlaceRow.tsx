@@ -9,7 +9,7 @@ import { QuestPlace } from "@/lib/models/quest"
 import Checkbox from "@/components/Checkbox"
 
 import * as S from "./PlaceRow.style"
-import naverMapIcon from "./assets/naver_map.jpg"
+import naverMapIcon from "../../../public/naver_map.jpg"
 
 interface Props {
   place: QuestPlace
