@@ -29,8 +29,15 @@ export const http = returnFetch({
       if (`${url}`.includes("/login")) {
         return [url, config]
       }
+
+      if (config.credentials === 'omit') {
+        return [url, config]
+      }
+
       const token = storage.get("token")
-      if (!token) return [url, config]
+      if (!token) {
+        return [url, config]
+      }
 
       const newHeaders = new Headers(config.headers)
       newHeaders.set("Authorization", `Bearer ${token}`)

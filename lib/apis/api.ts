@@ -176,3 +176,33 @@ export function crawlChunk({ boundary }: { boundary: LatLng[] }) {
     body: JSON.stringify({ boundaryVertices: boundary }),
   })
 }
+
+
+export type ImageUploadPurposeType = 'BANNER';
+export function getImageUploadUrls({
+  purposeType,
+  count,
+  filenameExtension,
+} : {
+  purposeType: ImageUploadPurposeType,
+  count: number,
+  filenameExtension: string,
+}): Promise<GetImageUploadUrlsResult> {
+  return http("/admin/image-upload-urls", {
+    method: "POST",
+    body: JSON.stringify({
+      purposeType,
+      count,
+      filenameExtension,
+    })
+  })
+    .then((res) => {
+      return res.json() as Promise<GetImageUploadUrlsResult>
+    })
+}
+export interface GetImageUploadUrlsResult {
+  urls: ImageUploadUrl[]
+}
+export interface ImageUploadUrl {
+  url: string
+}
