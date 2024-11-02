@@ -39,7 +39,13 @@ export async function updateQuestStatus({ questId, ...params }: UpdateQuestStatu
 }
 
 export type ClubQuestCreateRegionType = "CIRCLE" | "POLYGON"
-export type ClubQuestTargetPlaceCategory = "RESTAURANT" | "CAFE" | "MARKET" | "HOSPITAL" | "PHARMACY" | "CONVENIENCE_STORE"
+export type ClubQuestTargetPlaceCategory =
+  | "RESTAURANT"
+  | "CAFE"
+  | "MARKET"
+  | "HOSPITAL"
+  | "PHARMACY"
+  | "CONVENIENCE_STORE"
 type PreviewDivisionsParams = {
   regionType: ClubQuestCreateRegionType
   centerLocation?: LatLng

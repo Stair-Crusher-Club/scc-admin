@@ -56,6 +56,7 @@ export default function Sidebar() {
           <MenuItem href="/challenge">챌린지 관리</MenuItem>
           <MenuItem href="/region">오픈 지역 관리</MenuItem>
           <MenuItem href="/accessibility">등록된 정보 관리</MenuItem>
+          <MenuItem href="/closedPlace">폐업 추정 장소 관리</MenuItem>
           <MenuItem href="/banner">배너 관리</MenuItem>
         </S.Menu>
         <Spacer />
