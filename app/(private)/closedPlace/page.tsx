@@ -39,7 +39,7 @@ export default function AccessibilityList() {
                 {closedPlaceCandidates.map((candidate) => (
                   <S.RowWrapper key={candidate.id}>
                     <p>
-                      {candidate.name}({candidate.address}), {dayjs(candidate.createdAt.value).format("YYYY-MM-DD")} 폐업 추정
+                      {candidate.name}({candidate.address}), {dayjs(candidate.closedAt.value).format("YYYY-MM-DD")} 폐업 추정
                     </p>
                     <S.ExternalMap onClick={() => openNaverMap(candidate)}>
                       <Image src={naverMapIcon} alt="네이버 지도" />
