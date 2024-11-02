@@ -1,7 +1,7 @@
 "use client"
 
 import { useQueryClient } from "@tanstack/react-query"
-import { formatDate } from "date-fns"
+import { format as formatDate } from "date-fns"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 
