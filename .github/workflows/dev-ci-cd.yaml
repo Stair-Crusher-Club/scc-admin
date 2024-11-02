@@ -59,6 +59,10 @@ jobs:
           version: "v1.24.1"
         id: install-kubectl
 
+      - name: Notify CD start to slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data "{\"attachments\":[{\"color\":\"#46AE74\",\"title\":\"[DEV] scc-admin-frontend Deploy Started\", \"text\":\"version - latest\"}]}" ${{ secrets.SLACK_URL_SCC_SERVER_CHANNEL }} -v
+
       - name: Upgrade scc-admin-frontend helm chart
         working-directory: helm-chart/scc-admin-frontend
         run: |
@@ -72,10 +76,10 @@ jobs:
         if: failure()
         run: |
           CURRENT_GITHUB_ACTION_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"[DEV] scc-admin-frontend deployment failed. (<$CURRENT_GITHUB_ACTION_RUN_URL|github action run url>)\"}" ${{ secrets.SLACK_URL_SCC_SERVER_CHANNEL }} -v
+          curl -X POST -H 'Content-type: application/json' --data "{\"attachments\":[{\"color\":\"#FF0000\",\"title\":\"[DEV] scc-admin-frontend Deployment Failed (<$CURRENT_GITHUB_ACTION_RUN_URL|github action run url>)\"}]}" ${{ secrets.SLACK_URL_SCC_SERVER_CHANNEL }} -v
 
       - name: Notify CD success to slack
         if: success()
         run: |
           CURRENT_GITHUB_ACTION_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"[DEV] scc-admin-frontend with latest version is deployed!\"}" ${{ secrets.SLACK_URL_SCC_SERVER_CHANNEL }} -v
+          curl -X POST -H 'Content-type: application/json' --data "{\"attachments\":[{\"color\":\"#0000FF\",\"title\":\"[DEV] scc-admin-frontend Deploy Success\"}]}" ${{ secrets.SLACK_URL_SCC_SERVER_CHANNEL }} -v
