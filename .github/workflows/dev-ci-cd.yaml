@@ -73,6 +73,7 @@ jobs:
           kubectl rollout restart deploy/scc-admin-frontend -n dev
 
       - name: Wait for scc-admin-frontend rollout
+        timeout-minutes: 10
         run: |
           kubectl rollout status deployment scc-admin-frontend -n dev
 
