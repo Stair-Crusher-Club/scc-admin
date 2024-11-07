@@ -72,6 +72,10 @@ jobs:
         run: |
           kubectl rollout restart deploy/scc-admin-frontend -n dev
 
+      - name: Wait for scc-admin-frontend rollout
+        run: |
+          kubectl rollout status deployment scc-admin-frontend -n dev
+
       - name: Notify CD failure to slack
         if: failure()
         run: |
