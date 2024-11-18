@@ -15,7 +15,7 @@ export default function Me({ updateInterval = 1000 }: Props) {
       clearInterval(interval)
       me.current?.setMap(null)
     }
-  }, [])
+  }, [map])
 
   async function getMyLocation() {
     if (!navigator.geolocation) return null
