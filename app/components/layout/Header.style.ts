@@ -9,7 +9,7 @@ export const DesktopHeader = styled("header", {
     flexShrink: 0,
     display: "flex",
     width: "full",
-    height: "48px",
+    minHeight: "48px",
     alignItems: "center",
     justifyContent: "space-between",
     paddingInline: "16px",

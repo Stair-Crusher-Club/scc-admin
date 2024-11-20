@@ -28,20 +28,27 @@ export default function QuestMarker({ building, buildingIndex, questId, markerSt
     if (!building) return
 
     const latlng = new kakao.maps.LatLng(building.location.lat, building.location.lng)
-    const buildingImage = building.places.every((p) => p.isConquered || p.isClosed || p.isNotAccessible)
-      ? `/marker_sprite_done.png`
-      : `/marker_sprite.png`
 
-    marker.current = new kakao.maps.Marker({
-      map,
+    const conqueredMarker = new kakao.maps.Marker({
       position: latlng,
-      image: new kakao.maps.MarkerImage(buildingImage, new kakao.maps.Size(24, 36), {
+      image: new kakao.maps.MarkerImage("/marker_conquered.png", new kakao.maps.Size(32, 32), {
+        offset: new kakao.maps.Point(8, 32),
+      }),
+    })
+    const notConqueredMarker = new kakao.maps.Marker({
+      position: latlng,
+      image: new kakao.maps.MarkerImage(`/marker_sprite.png`, new kakao.maps.Size(24, 36), {
         offset: new kakao.maps.Point(12, 36),
         spriteOrigin: new kakao.maps.Point(24 * (buildingIndex % 10), 36 * Math.floor(buildingIndex / 10)),
         spriteSize: new kakao.maps.Size(24 * 10, 36 * 4),
       }),
-      ...markerStyle,
     })
+    const buildingMarker = building.places.every((p) => p.isConquered || p.isClosed || p.isNotAccessible)
+      ? conqueredMarker
+      : notConqueredMarker
+
+    buildingMarker.setMap(map)
+    marker.current = buildingMarker
 
     kakao.maps.event.addListener(marker.current, "click", () => onMarkerClick(building))
 

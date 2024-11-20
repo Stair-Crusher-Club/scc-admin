@@ -11,7 +11,7 @@ import { Flex } from "@/styles/jsx"
 import * as S from "./Header.style"
 
 interface Props {
-  title: string | undefined
+  title: React.ReactNode | undefined
   hidden?: boolean
   hideMenu?: boolean
 }

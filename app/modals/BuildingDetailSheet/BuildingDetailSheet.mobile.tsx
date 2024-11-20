@@ -7,8 +7,7 @@ import { QuestBuilding } from "@/lib/models/quest"
 
 import BottomSheet from "@/modals/_template/BottomSheet"
 
-import * as S from "./BuildingDetailSheet.style"
-import PlaceRow from "./PlaceRow"
+import PlaceCard from "./PlaceCard"
 
 interface Props extends BasicModalProps {
   building: QuestBuilding
@@ -26,31 +25,23 @@ export default function BuildingDetailSheet({ building, questId, visible, close 
     }
   }, [])
 
+  const conquered = building.places.filter((place) => place.isConquered)
+  const notConquered = building.places.filter((place) => !place.isConquered)
+  const title = (
+    <>
+      {building.name}
+      <br />
+      <small>
+        정복 완료 {conquered.length} / {building.places.length}
+      </small>
+    </>
+  )
+
   return (
-    <BottomSheet visible={visible} close={close} title={building.name} style={{ height: "calc(100vh - 300px)" }}>
-      <S.TableWrapper>
-        <S.PlaceTable>
-          <colgroup>
-            <col />
-            <col width="54px" />
-            <col width="54px" />
-            <col width="54px" />
-            <col width="54px" />
-          </colgroup>
-          <tbody>
-            <S.HeaderRow>
-              <S.HeaderCell style={{ textAlign: "left" }}>업체명</S.HeaderCell>
-              <S.HeaderCell>정복</S.HeaderCell>
-              <S.HeaderCell>폐업 추정</S.HeaderCell>
-              <S.HeaderCell>폐업</S.HeaderCell>
-              <S.HeaderCell>접근 불가</S.HeaderCell>
-            </S.HeaderRow>
-            {building.places.map((place) => (
-              <PlaceRow place={place} questId={questId} key={place.placeId} />
-            ))}
-          </tbody>
-        </S.PlaceTable>
-      </S.TableWrapper>
+    <BottomSheet visible={visible} close={close} title={title} style={{ height: "calc(100vh - 300px)" }}>
+      {[...notConquered, ...conquered].map((place) => (
+        <PlaceCard place={place} questId={questId} key={place.placeId} />
+      ))}
     </BottomSheet>
   )
 }

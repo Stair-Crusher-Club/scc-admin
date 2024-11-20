@@ -6,7 +6,7 @@ import * as S from "./BottomSheet.style"
 
 export interface BottomSheetProps extends BasicModalProps {
   children: React.ReactNode
-  title?: string
+  title?: React.ReactNode
   style?: React.CSSProperties
   actionButton?: React.ReactNode
 }

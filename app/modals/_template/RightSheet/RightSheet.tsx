@@ -6,7 +6,7 @@ import * as S from "./RightSheet.style"
 
 export interface RightSheetProps extends BasicModalProps {
   children: React.ReactNode
-  title?: string
+  title?: React.ReactNode
   style?: React.CSSProperties
   actionButton?: React.ReactNode
 }

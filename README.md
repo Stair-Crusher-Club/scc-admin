@@ -25,6 +25,11 @@ pnpm dev
 
 `.env` 파일 혹은 환경변수에 `NEXT_PUBLIC_DEPLOY_TYPE`을 `dev` | `live`로 설정하여 연결되는 엔드포인트를 변경할 수 있습니다.
 
+```sh
+# live 서버로 연결하기
+NEXT_PUBLIC_DEPLOY_TYPE=live pnpm dev
+```
+
 ### 로컬 실행
 
 `pnpm dev`를 통해 로컬에서 실행한 경우, 3066 포트를 사용합니다. [http://localhost:3066](http://localhost:3066)

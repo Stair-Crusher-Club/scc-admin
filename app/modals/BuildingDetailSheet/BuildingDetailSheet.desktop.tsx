@@ -3,8 +3,7 @@ import { BasicModalProps } from "@reactleaf/modal"
 import { QuestBuilding } from "@/lib/models/quest"
 
 import RightSheet from "../_template/RightSheet"
-import * as S from "./BuildingDetailSheet.style"
-import PlaceRow from "./PlaceRow"
+import PlaceCard from "./PlaceCard"
 
 interface Props extends BasicModalProps {
   building: QuestBuilding
@@ -13,31 +12,25 @@ interface Props extends BasicModalProps {
 
 export const defaultOverlayOptions = { closeDelay: 200, dim: false }
 export default function BuildingDetailSheet({ building, questId, visible, close }: Props) {
+  const conquered = building.places.filter((place) => place.isConquered || place.isClosed || place.isNotAccessible)
+  const notConquered = building.places.filter(
+    (place) => !place.isConquered && !place.isClosed && !place.isNotAccessible,
+  )
+  const title = (
+    <>
+      {building.name}
+      <br />
+      <small>
+        정복 완료 {conquered.length} / {building.places.length}
+      </small>
+    </>
+  )
+
   return (
-    <RightSheet visible={visible} close={close} title={building.name} style={{ width: "360px" }}>
-      <S.TableWrapper>
-        <S.PlaceTable>
-          <colgroup>
-            <col />
-            <col width="54px" />
-            <col width="54px" />
-            <col width="54px" />
-            <col width="54px" />
-          </colgroup>
-          <tbody>
-            <S.HeaderRow>
-              <S.HeaderCell style={{ textAlign: "left" }}>업체명</S.HeaderCell>
-              <S.HeaderCell>정복</S.HeaderCell>
-              <S.HeaderCell>폐업 추정</S.HeaderCell>
-              <S.HeaderCell>폐업</S.HeaderCell>
-              <S.HeaderCell>접근 불가</S.HeaderCell>
-            </S.HeaderRow>
-            {building.places.map((place) => (
-              <PlaceRow place={place} questId={questId} key={place.placeId} />
-            ))}
-          </tbody>
-        </S.PlaceTable>
-      </S.TableWrapper>
+    <RightSheet visible={visible} close={close} title={title} style={{ width: "360px" }}>
+      {[...notConquered, ...conquered].map((place) => (
+        <PlaceCard place={place} questId={questId} key={place.placeId} />
+      ))}
     </RightSheet>
   )
 }

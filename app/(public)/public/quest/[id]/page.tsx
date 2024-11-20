@@ -77,7 +77,19 @@ export default function QuestDetail() {
     <>
       {/* public page 이므로 메뉴를 제공하지 않는 커스텀 헤더 사용 */}
       <Header
-        title={quest ? `${quest?.name} (${buildingCount}개 건물 / ${placeCount}개 장소)` : ""}
+        title={
+          quest ? (
+            <>
+              {quest?.name}
+              <br />
+              <small>
+                {buildingCount}개 건물 / {placeCount}개 장소
+              </small>
+            </>
+          ) : (
+            ""
+          )
+        }
         hidden={isHeaderHidden}
         hideMenu
       >

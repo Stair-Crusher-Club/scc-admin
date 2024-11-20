@@ -34,21 +34,31 @@ export const BottomSheetHeader = styled("div", {
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    flex: "0 0 64px",
+    flex: "1 0 fit-content",
+    minHeight: 64,
+    padding: "8px 0",
   },
 })
 
 export const SheetTitle = styled("h5", {
   base: {
+    textAlign: "center",
     fontSize: 20,
     fontWeight: 700,
+    "& small": {
+      display: "block",
+      fontWeight: 400,
+      fontSize: 14,
+      lineHeight: 18 / 14,
+    },
   },
 })
 
 export const CloseButton = styled("button", {
   base: {
     position: "absolute",
-    top: 16,
+    top: "50%",
+    transform: "translateY(-50%)",
     left: 16,
     display: "flex",
     alignItems: "center",
@@ -71,6 +81,7 @@ export const ActionButtonWrapper = styled("div", {
 export const BottomSheetBody = styled("div", {
   base: {
     height: "100%",
+    paddingBottom: 48,
     overflow: "auto",
   },
 })

@@ -34,14 +34,24 @@ export const RightSheetHeader = styled("div", {
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    flex: "0 0 64px",
+    flex: "1 0 fit-content",
+    minHeight: 64,
+    padding: "8px 0",
+    borderBottom: "1px solid #ccc",
   },
 })
 
 export const SheetTitle = styled("h5", {
   base: {
+    textAlign: "center",
     fontSize: 20,
     fontWeight: 700,
+    "& small": {
+      display: "block",
+      fontWeight: 400,
+      fontSize: 14,
+      lineHeight: 18 / 14,
+    },
   },
 })
 
@@ -71,6 +81,7 @@ export const ActionButtonWrapper = styled("div", {
 export const RightSheetBody = styled("div", {
   base: {
     height: "100%",
+    paddingBottom: 48,
     overflow: "auto",
   },
 })
