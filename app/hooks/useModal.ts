@@ -1,9 +1,10 @@
 import { createModalHook } from "@reactleaf/modal"
+import { ModalContextType } from "@reactleaf/modal/dist/context"
+import { OpenModalPayload } from "@reactleaf/modal/dist/types"
+import { atom, useAtom } from "jotai"
+import { useEffect, useRef } from "react"
 
 import register from "@/modals/register"
-import {OpenModalPayload} from "@reactleaf/modal/dist/types";
-import {ModalContextType} from "@reactleaf/modal/dist/context";
-import {useRef} from "react";
 
 // Android back button을 눌렀을 때 이전 페이지로 가는 것이 아니라 modal close로 취급하기 위한 custom hook.
 // 기본적으로는 modal open = 새로운 페이지로 이동하는 것과 같이 취급하는 것이 목적이다.
@@ -18,10 +19,15 @@ import {useRef} from "react";
 //   -> modal이 닫혀버린다.
 // 이러한 문제를 막기 위해, modal close ~ history.back() 사이에 modal open 요청이 오면 이를 저장해뒀다가 history.back() 이후의 콜백으로 실행한다.
 const originalUseModal = createModalHook<typeof register>()
+
+// pendingModal 은 전역적으로 관리되어야 한다.
+// useRef는 useModal 실행 시마다 생기는 값이므로, 로컬한 값이다.
+const pendingModalOpenAtom = atom<() => void>()
+
 export const useModal: () => ModalContextType<typeof register> = () => {
   // modal close ~ history.back() 사이에 modal open 요청이 오면 이를 저장해뒀다가 history.back() 이후의 콜백으로 실행하기 위한 ref들.
   const isModalClosingRef = useRef<boolean>(false)
-  const pendingModalOpenRef = useRef<() => void>()
+  const [pendingModalOpenRef, setPendingModal] = useAtom(pendingModalOpenAtom)
   const originalOnCloseRef = useRef<() => void>()
   function doOriginalOnCloseAndClear() {
     if (originalOnCloseRef.current) {
@@ -30,14 +36,14 @@ export const useModal: () => ModalContextType<typeof register> = () => {
     }
   }
 
-  const {
-    openedModals,
-    defaultOverlayOptions,
-    openModal,
-    closeModal,
-    closeAll,
-    closeSelf,
-  } = originalUseModal()
+  useEffect(() => {
+    window.addEventListener("popstate", handlePopstate)
+    return () => {
+      window.removeEventListener("popstate", handlePopstate)
+    }
+  }, [pendingModalOpenRef])
+
+  const { openedModals, defaultOverlayOptions, openModal, closeModal, closeAll, closeSelf } = originalUseModal()
 
   const newOpenModal = (payload: OpenModalPayload<typeof register, keyof typeof register>) => {
     function doOpenModal() {
@@ -51,8 +57,8 @@ export const useModal: () => ModalContextType<typeof register> = () => {
               originalOnClose()
             }
             onModalClose()
-          }
-        }
+          },
+        },
       })
       originalOnCloseRef.current = originalOnClose
       onModalOpen()
@@ -60,14 +66,14 @@ export const useModal: () => ModalContextType<typeof register> = () => {
     }
 
     if (isModalClosingRef.current) {
-      pendingModalOpenRef.current = doOpenModal
+      setPendingModal(() => doOpenModal)
     } else {
       doOpenModal()
     }
 
     // openModal()이 delay 될 수 있으므로, modalId를 모르는 경우가 생길 수 있다.
     // 그래서 openModal()시에는 그냥 무의미한 id를 건내주고, closeModal()은 closeAll()을 해준다.
-    return 'modal'
+    return "modal"
   }
 
   const newCloseModal = (payload: { id: string }) => {
@@ -91,8 +97,7 @@ export const useModal: () => ModalContextType<typeof register> = () => {
   }
 
   function onModalOpen() {
-    history.pushState({ isModalOpen: true }, '', window.location.pathname)
-    window.addEventListener("popstate", handlePopstate)
+    history.pushState({ isModalOpen: true }, "", window.location.pathname)
   }
 
   function onModalClose() {
@@ -121,9 +126,9 @@ export const useModal: () => ModalContextType<typeof register> = () => {
     isModalClosingRef.current = false
     window.removeEventListener("popstate", handlePopstate)
 
-    if (pendingModalOpenRef.current) {
-      pendingModalOpenRef.current()
-      pendingModalOpenRef.current = undefined
+    if (pendingModalOpenRef) {
+      pendingModalOpenRef()
+      setPendingModal(undefined)
     }
   }
 

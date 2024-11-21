@@ -61,9 +61,8 @@ export default function QuestMarker({ building, buildingIndex, questId, markerSt
   function onMarkerClick(building: QuestBuilding) {
     if (!map) return
 
-    if (openedModal.current) {
-      closeModal({ id: openedModal.current })
-    }
+    // 이미 열린 모달이 있다면 강제로 닫습니다.
+    closeAll()
 
     if (isMobile) {
       // 지도 중앙에 마커를 위치시킵니다.
