@@ -57,6 +57,7 @@ export const SheetTitle = styled("h5", {
 export const CloseButton = styled("button", {
   base: {
     position: "absolute",
+    zIndex: 1,
     top: "50%",
     transform: "translateY(-50%)",
     left: 16,

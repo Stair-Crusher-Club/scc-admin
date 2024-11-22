@@ -12,11 +12,11 @@ import * as S from "./PlaceCard.style"
 interface Props {
   place: QuestPlace
   questId: string
+  onUpdate?: (place: QuestPlace) => void
 }
-export default function PlaceCard({ place, questId }: Props) {
+export default function PlaceCard({ place, questId, onUpdate }: Props) {
   const [isClosed, setClosed] = useState(place.isClosed)
   const [isNotAccessible, setNotAccessible] = useState(place.isNotAccessible)
-  const noInfo = !place.isConquered && !isClosed && !isNotAccessible
   const visited = place.isConquered || isClosed || isNotAccessible
   const isReversible = !place.isConquered && (isClosed || isNotAccessible)
 
@@ -53,6 +53,7 @@ export default function PlaceCard({ place, questId }: Props) {
       placeId: place.placeId,
       isClosed,
     })
+    onUpdate?.({ ...place, isClosed })
     setClosed(isClosed)
   }
 
@@ -63,6 +64,7 @@ export default function PlaceCard({ place, questId }: Props) {
       placeId: place.placeId,
       isNotAccessible,
     })
+    onUpdate?.({ ...place, isNotAccessible })
     setNotAccessible(isNotAccessible)
   }
 
@@ -81,7 +83,9 @@ export default function PlaceCard({ place, questId }: Props) {
         <S.PlaceName>
           {place.name}
           {place.isConquered && <S.PlaceStatusBadge status="good">정복</S.PlaceStatusBadge>}
-          {!isClosed && place.isClosedExpected && <S.PlaceStatusBadge status="warn">폐업추정</S.PlaceStatusBadge>}
+          {!place.isConquered && !isClosed && place.isClosedExpected && (
+            <S.PlaceStatusBadge status="warn">폐업추정</S.PlaceStatusBadge>
+          )}
           {isClosed && <S.PlaceStatusBadge status="bad">폐업확인</S.PlaceStatusBadge>}
           {isNotAccessible && <S.PlaceStatusBadge status="bad">접근불가</S.PlaceStatusBadge>}
         </S.PlaceName>

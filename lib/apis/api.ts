@@ -13,7 +13,15 @@ export function useQuest({ id }: { id: string }) {
     queryKey: ["@quests", id],
     queryFn: ({ queryKey }) =>
       http(`/admin/clubQuests/${queryKey[1]}`).then((res) => res.json() as Promise<QuestDetail>),
+    staleTime: 10 * 1000,
   })
+}
+
+// 특정 빌딩 정보만 가져오기
+export function useQuestBuilding({ questId, buildingId }: { questId: string; buildingId: string }) {
+  const { data, ...others } = useQuest({ id: questId })
+  const building = data?.buildings.find((b) => b.buildingId === buildingId)
+  return { data: building, ...others }
 }
 
 type UpdateQuestStatusParams = {
@@ -183,16 +191,15 @@ export function crawlChunk({ boundary }: { boundary: LatLng[] }) {
   })
 }
 
-
-export type ImageUploadPurposeType = 'BANNER';
+export type ImageUploadPurposeType = "BANNER"
 export function getImageUploadUrls({
   purposeType,
   count,
   filenameExtension,
-} : {
-  purposeType: ImageUploadPurposeType,
-  count: number,
-  filenameExtension: string,
+}: {
+  purposeType: ImageUploadPurposeType
+  count: number
+  filenameExtension: string
 }): Promise<GetImageUploadUrlsResult> {
   return http("/admin/image-upload-urls", {
     method: "POST",
@@ -200,11 +207,10 @@ export function getImageUploadUrls({
       purposeType,
       count,
       filenameExtension,
-    })
+    }),
+  }).then((res) => {
+    return res.json() as Promise<GetImageUploadUrlsResult>
   })
-    .then((res) => {
-      return res.json() as Promise<GetImageUploadUrlsResult>
-    })
 }
 export interface GetImageUploadUrlsResult {
   urls: ImageUploadUrl[]

@@ -26,7 +26,7 @@ export default function QuestDetail() {
   useEffect(() => {
     const interval = setInterval(() => {
       queryClient.invalidateQueries({ queryKey: ["@quests", id] })
-    }, 5 * 1000)
+    }, 10 * 1000)
     return () => clearInterval(interval)
   }, [quest?.id])
 

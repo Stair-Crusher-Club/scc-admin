@@ -1,12 +1,16 @@
 import { BasicModalProps } from "@reactleaf/modal"
+import { useQueryClient } from "@tanstack/react-query"
 import { useAtom } from "jotai"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 
+import { useQuestBuilding } from "@/lib/apis/api"
 import { AppState } from "@/lib/globalAtoms"
-import { QuestBuilding } from "@/lib/models/quest"
+import { QuestBuilding, QuestPlace } from "@/lib/models/quest"
 
+import Reload from "@/icons/Reload"
 import BottomSheet from "@/modals/_template/BottomSheet"
 
+import * as S from "./BuildingDetailSheet.style"
 import PlaceCard from "./PlaceCard"
 
 interface Props extends BasicModalProps {
@@ -15,8 +19,10 @@ interface Props extends BasicModalProps {
 }
 
 export const defaultOverlayOptions = { closeDelay: 200, dim: false }
-export default function BuildingDetailSheet({ building, questId, visible, close }: Props) {
+export default function BuildingDetailSheet({ building: initialData, questId, visible, close }: Props) {
+  const { data: building } = useQuestBuilding({ questId, buildingId: initialData.buildingId })
   const [appState, setAppState] = useAtom(AppState)
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     setAppState((prev) => ({ ...prev, isHeaderHidden: true }))
@@ -25,21 +31,38 @@ export default function BuildingDetailSheet({ building, questId, visible, close 
     }
   }, [])
 
-  const conquered = building.places.filter((place) => place.isConquered)
-  const notConquered = building.places.filter((place) => !place.isConquered)
+  function reloadQuest() {
+    queryClient.invalidateQueries({ queryKey: ["@quests", questId] })
+  }
+
+  const isConquered = (place: QuestPlace) => place.isConquered || place.isNotAccessible || place.isClosed
+
+  // 활동 중 장소 순서가 바뀌는 것을 막습니다.
+  const sortedPlaces = useMemo(() => {
+    if (!building) return []
+    const conquered = initialData.places.filter(isConquered)
+    const notConquered = initialData.places.filter((p) => !isConquered(p))
+    return [...notConquered, ...conquered].map((p) => building.places.find((b) => b.placeId === p.placeId) || p)
+  }, [initialData, building])
+
+  if (!building) return null
+
+  const conquered = building.places.filter(isConquered)
   const title = (
-    <>
-      {building.name}
-      <br />
+    <S.CustomTitle>
+      <h5>{building.name}</h5>
       <small>
         정복 완료 {conquered.length} / {building.places.length}
       </small>
-    </>
+      <S.ReloadButton onClick={reloadQuest}>
+        <Reload size={24} />
+      </S.ReloadButton>
+    </S.CustomTitle>
   )
 
   return (
     <BottomSheet visible={visible} close={close} title={title} style={{ height: "calc(100vh - 300px)" }}>
-      {[...notConquered, ...conquered].map((place) => (
+      {sortedPlaces.map((place) => (
         <PlaceCard place={place} questId={questId} key={place.placeId} />
       ))}
     </BottomSheet>

@@ -20,8 +20,8 @@ export const Header = styled("div", {
 
 export const PlaceName = styled("h3", {
   base: {
-    fontSize: 18,
-    fontWeight: 700,
+    fontSize: 16,
+    fontWeight: 600,
   },
 })
 

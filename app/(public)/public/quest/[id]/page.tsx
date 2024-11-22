@@ -24,12 +24,11 @@ export default function QuestDetail() {
   const queryClient = useQueryClient()
   const [map, setMap] = useState<kakao.maps.Map>()
   const intialized = useRef(false)
-
   // 10초마다 퀘스트 진행 상황을 갱신합니다.
   useEffect(() => {
     const interval = setInterval(() => {
       queryClient.invalidateQueries({ queryKey: ["@quests", id] })
-    }, 5 * 1000)
+    }, 10 * 1000)
     return () => clearInterval(interval)
   }, [quest?.id])
 
@@ -49,14 +48,6 @@ export default function QuestDetail() {
     if (sawGuide) return
     openGuide()
   }, [])
-
-  // 10초마다 퀘스트 진행 상황을 갱신합니다.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ["@quests", id] })
-    }, 10 * 1000)
-    return () => clearInterval(interval)
-  }, [quest?.id])
 
   function getCenterOf(buildings: QuestBuilding[]) {
     const coords = buildings.map((b) => b.location)
