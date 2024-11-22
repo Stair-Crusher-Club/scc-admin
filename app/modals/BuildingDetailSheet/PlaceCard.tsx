@@ -12,9 +12,10 @@ import * as S from "./PlaceCard.style"
 interface Props {
   place: QuestPlace
   questId: string
+  view: "card" | "list"
   onUpdate?: (place: QuestPlace) => void
 }
-export default function PlaceCard({ place, questId, onUpdate }: Props) {
+export default function PlaceCard({ place, questId, view, onUpdate }: Props) {
   const [isClosed, setClosed] = useState(place.isClosed)
   const [isNotAccessible, setNotAccessible] = useState(place.isNotAccessible)
   const visited = place.isConquered || isClosed || isNotAccessible
@@ -75,6 +76,35 @@ export default function PlaceCard({ place, questId, onUpdate }: Props) {
     if (isClosed) {
       updateClosed(false)
     }
+  }
+
+  if (view === "list") {
+    return (
+      <S.PlaceCard style={{ margin: 0, padding: "4px 20px", boxShadow: "none" }}>
+        <S.Header>
+          <S.PlaceName>
+            {place.name}
+            {place.isConquered && <S.PlaceStatusBadge status="good">정복</S.PlaceStatusBadge>}
+            {!place.isConquered && !isClosed && place.isClosedExpected && (
+              <S.PlaceStatusBadge status="warn">폐업추정</S.PlaceStatusBadge>
+            )}
+            {isClosed && <S.PlaceStatusBadge status="bad">폐업확인</S.PlaceStatusBadge>}
+            {isNotAccessible && <S.PlaceStatusBadge status="bad">접근불가</S.PlaceStatusBadge>}
+          </S.PlaceName>
+          <S.Buttons>
+            <S.Button onClick={openNaverMap}>
+              <Image src={naverMapIcon} alt="네이버 지도" style={{ width: 32, height: 32 }} />
+            </S.Button>
+            <S.Button onClick={copyPlaceName}>
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="11" y="5" width="16" height="16" rx="4" stroke="#777" stroke-width="2" />
+                <rect x="5" y="11" width="16" height="16" rx="4" fill="white" stroke="#777" stroke-width="2" />
+              </svg>
+            </S.Button>
+          </S.Buttons>
+        </S.Header>
+      </S.PlaceCard>
+    )
   }
 
   return (

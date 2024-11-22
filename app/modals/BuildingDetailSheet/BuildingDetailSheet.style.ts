@@ -34,3 +34,19 @@ export const ReloadButton = styled("button", {
     },
   },
 })
+
+export const ViewToggle = styled("button", {
+  base: {
+    position: "absolute",
+    top: "50%",
+    right: 60,
+    transform: "translateY(-50%)",
+    padding: 4,
+    backgroundColor: "transparent",
+    border: "none",
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: "rgba(0, 0, 0, 0.1)",
+    },
+  },
+})

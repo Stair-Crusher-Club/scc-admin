@@ -53,7 +53,7 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
   return (
     <RightSheet visible={visible} close={close} title={title} style={{ width: "360px" }}>
       {sortedPlaces.map((place) => (
-        <PlaceCard place={place} questId={questId} key={place.placeId} />
+        <PlaceCard place={place} questId={questId} key={place.placeId} view="card" />
       ))}
     </RightSheet>
   )

@@ -113,7 +113,7 @@ export const NotAccessible = styled(ActionButton, {
 
 export const ConquerButton = styled(ActionButton, {
   base: {
-    background: "var(--leaf-primary-60)",
+    background: "var(--leaf-primary-90)",
     color: "white",
   },
 })

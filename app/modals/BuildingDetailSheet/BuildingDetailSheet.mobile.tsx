@@ -1,12 +1,14 @@
 import { BasicModalProps } from "@reactleaf/modal"
 import { useQueryClient } from "@tanstack/react-query"
 import { useAtom } from "jotai"
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { useQuestBuilding } from "@/lib/apis/api"
 import { AppState } from "@/lib/globalAtoms"
 import { QuestBuilding, QuestPlace } from "@/lib/models/quest"
 
+import CardView from "@/icons/CardView"
+import ListView from "@/icons/ListView"
 import Reload from "@/icons/Reload"
 import BottomSheet from "@/modals/_template/BottomSheet"
 
@@ -22,6 +24,7 @@ export const defaultOverlayOptions = { closeDelay: 200, dim: false }
 export default function BuildingDetailSheet({ building: initialData, questId, visible, close }: Props) {
   const { data: building } = useQuestBuilding({ questId, buildingId: initialData.buildingId })
   const [appState, setAppState] = useAtom(AppState)
+  const [view, setView] = useState<"list" | "card">("card")
   const queryClient = useQueryClient()
 
   useEffect(() => {
@@ -45,6 +48,10 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
     return [...notConquered, ...conquered].map((p) => building.places.find((b) => b.placeId === p.placeId) || p)
   }, [initialData, building])
 
+  function toggleView() {
+    setView((prev) => (prev === "card" ? "list" : "card"))
+  }
+
   if (!building) return null
 
   const conquered = building.places.filter(isConquered)
@@ -54,6 +61,9 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
       <small>
         정복 완료 {conquered.length} / {building.places.length}
       </small>
+      <S.ViewToggle onClick={toggleView}>
+        {view === "card" ? <ListView size={24} color="#666" /> : <CardView size={24} color="#666" />}
+      </S.ViewToggle>
       <S.ReloadButton onClick={reloadQuest}>
         <Reload size={24} />
       </S.ReloadButton>
@@ -63,7 +73,7 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
   return (
     <BottomSheet visible={visible} close={close} title={title} style={{ height: "calc(100vh - 300px)" }}>
       {sortedPlaces.map((place) => (
-        <PlaceCard place={place} questId={questId} key={place.placeId} />
+        <PlaceCard place={place} questId={questId} key={place.placeId} view={view} />
       ))}
     </BottomSheet>
   )
