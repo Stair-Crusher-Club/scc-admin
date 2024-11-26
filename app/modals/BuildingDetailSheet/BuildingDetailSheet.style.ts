@@ -29,7 +29,7 @@ export const ReloadButton = styled("button", {
     backgroundColor: "transparent",
     border: "none",
     cursor: "pointer",
-    "&:hover": {
+    "&:active": {
       backgroundColor: "rgba(0, 0, 0, 0.1)",
     },
   },

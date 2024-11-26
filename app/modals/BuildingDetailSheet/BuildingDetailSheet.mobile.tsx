@@ -25,7 +25,6 @@ export const defaultOverlayOptions = { closeDelay: 200, dim: false }
 export default function BuildingDetailSheet({ building: initialData, questId, visible, close }: Props) {
   const { data: building } = useQuestBuilding({ questId, buildingId: initialData.buildingId })
   const [appState, setAppState] = useAtom(AppState)
-  const [view, setView] = useState<"list" | "card">("card")
   const queryClient = useQueryClient()
 
   useEffect(() => {
@@ -48,10 +47,6 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
     const notConquered = initialData.places.filter((p) => !isConquered(p))
     return [...notConquered, ...conquered].map((p) => building.places.find((b) => b.placeId === p.placeId) || p)
   }, [initialData, building])
-
-  function toggleView() {
-    setView((prev) => (prev === "card" ? "list" : "card"))
-  }
 
   if (!building) return null
 
@@ -84,7 +79,7 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
             <>
               퀘스트 상태 <b>{conquered.length}</b>/{building.places.length}
               <br />
-              <small>*정복여부는 계단정복지도 앱에 장소 등록 시 자동으로 반영됩니다.</small>
+              <small>*앱에서 장소 등록 시, '정복대상'이 '정복완료'로 자동 반영됩니다.</small>
             </>
           )}
         </S.Status>
@@ -94,7 +89,7 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
         <S.ChcekcboxLabel>접근불가</S.ChcekcboxLabel>
       </S.Header>
       {sortedPlaces.map((place) => (
-        <PlaceCard place={place} questId={questId} key={place.placeId} view={view} />
+        <PlaceCard key={place.placeId} place={place} questId={questId} />
       ))}
     </BottomSheet>
   )

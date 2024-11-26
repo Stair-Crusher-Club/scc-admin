@@ -14,10 +14,9 @@ import * as S from "./PlaceCard.style"
 interface Props {
   place: QuestPlace
   questId: string
-  view: "card" | "list"
   onUpdate?: (place: QuestPlace) => void
 }
-export default function PlaceCard({ place, questId, view, onUpdate }: Props) {
+export default function PlaceCard({ place, questId, onUpdate }: Props) {
   const [isClosed, setClosed] = useState(place.isClosed)
   const [isNotAccessible, setNotAccessible] = useState(place.isNotAccessible)
 
@@ -48,7 +47,7 @@ export default function PlaceCard({ place, questId, view, onUpdate }: Props) {
   }
 
   const updateClosed = async (isClosed: boolean) => {
-    console.log("updateClosed", isClosed)
+    console.log({ name: place.name, placeId: place.placeId, isClosed, isNotAccessible })
     await updateStatus.mutateAsync({
       questId,
       buildingId: place.buildingId,
@@ -66,6 +65,7 @@ export default function PlaceCard({ place, questId, view, onUpdate }: Props) {
       placeId: place.placeId,
       isNotAccessible,
     })
+    console.log({ name: place.name, placeId: place.placeId, isClosed, isNotAccessible })
     onUpdate?.({ ...place, isNotAccessible })
     setNotAccessible(isNotAccessible)
   }
@@ -100,7 +100,7 @@ export default function PlaceCard({ place, questId, view, onUpdate }: Props) {
       <S.ActionsColumn>
         <S.CheckboxWrapper>
           <Checkbox
-            id="closed"
+            id={`closed-${place.placeId}`}
             checked={isClosed}
             disabled={place.isConquered || isNotAccessible}
             onChange={updateClosed}
@@ -108,7 +108,7 @@ export default function PlaceCard({ place, questId, view, onUpdate }: Props) {
         </S.CheckboxWrapper>
         <S.CheckboxWrapper>
           <Checkbox
-            id="notAccessible"
+            id={`notAccessible-${place.placeId}`}
             checked={isNotAccessible}
             disabled={place.isConquered || isClosed}
             onChange={updateNotAccessible}

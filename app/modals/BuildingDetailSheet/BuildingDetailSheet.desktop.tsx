@@ -1,5 +1,6 @@
 import { BasicModalProps } from "@reactleaf/modal"
 import { useQueryClient } from "@tanstack/react-query"
+import Image from "next/image"
 import { useMemo } from "react"
 
 import { useQuestBuilding } from "@/lib/apis/api"
@@ -41,9 +42,6 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
   const title = (
     <S.CustomTitle>
       <h5>{building.name}</h5>
-      <small>
-        정복 완료 {conquered.length} / {building.places.length}
-      </small>
       <S.ReloadButton onClick={reloadQuest}>
         <Reload size={24} />
       </S.ReloadButton>
@@ -52,8 +50,34 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
 
   return (
     <RightSheet visible={visible} close={close} title={title} style={{ width: "360px" }}>
+      <S.GuideMessage style={{ marginTop: 24 }}>
+        <S.Status>
+          {conquered.length === building.places.length ? (
+            <>
+              <b>정복 완료 </b>
+              <Image
+                src="/marker_conquered.png"
+                alt="flag"
+                width={16}
+                height={16}
+                style={{ display: "inline-block" }}
+              />
+            </>
+          ) : (
+            <>
+              퀘스트 상태 <b>{conquered.length}</b>/{building.places.length}
+              <br />
+              <small>*앱에서 장소 등록 시, '정복대상'이 '정복완료'로 자동 반영됩니다.</small>
+            </>
+          )}
+        </S.Status>
+      </S.GuideMessage>
+      <S.Header>
+        <S.ChcekcboxLabel>폐업</S.ChcekcboxLabel>
+        <S.ChcekcboxLabel>접근불가</S.ChcekcboxLabel>
+      </S.Header>
       {sortedPlaces.map((place) => (
-        <PlaceCard place={place} questId={questId} key={place.placeId} view="card" />
+        <PlaceCard place={place} questId={questId} key={place.placeId} />
       ))}
     </RightSheet>
   )
