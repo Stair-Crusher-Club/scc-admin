@@ -18,7 +18,7 @@ export default function RightSheet({ title, actionButton, style, children, visib
           <S.CloseButton onClick={close}>
             <Close size={28} color="black" />
           </S.CloseButton>
-          <S.SheetTitle>{title}</S.SheetTitle>
+          {typeof title == "string" ? <S.SheetTitle>{title}</S.SheetTitle> : title}
           <S.ActionButtonWrapper>{actionButton}</S.ActionButtonWrapper>
         </S.RightSheetHeader>
       )}

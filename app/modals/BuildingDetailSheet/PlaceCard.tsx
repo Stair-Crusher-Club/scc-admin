@@ -6,6 +6,8 @@ import { toast } from "react-toastify"
 import { updateQuestStatus } from "@/lib/apis/api"
 import { QuestPlace } from "@/lib/models/quest"
 
+import Checkbox from "@/components/Checkbox"
+
 import naverMapIcon from "../../../public/naver_map.jpg"
 import * as S from "./PlaceCard.style"
 
@@ -18,8 +20,6 @@ interface Props {
 export default function PlaceCard({ place, questId, view, onUpdate }: Props) {
   const [isClosed, setClosed] = useState(place.isClosed)
   const [isNotAccessible, setNotAccessible] = useState(place.isNotAccessible)
-  const visited = place.isConquered || isClosed || isNotAccessible
-  const isReversible = !place.isConquered && (isClosed || isNotAccessible)
 
   const queryClient = useQueryClient()
   const updateStatus = useMutation({
@@ -48,6 +48,7 @@ export default function PlaceCard({ place, questId, view, onUpdate }: Props) {
   }
 
   const updateClosed = async (isClosed: boolean) => {
+    console.log("updateClosed", isClosed)
     await updateStatus.mutateAsync({
       questId,
       buildingId: place.buildingId,
@@ -69,76 +70,51 @@ export default function PlaceCard({ place, questId, view, onUpdate }: Props) {
     setNotAccessible(isNotAccessible)
   }
 
-  const revertUpdate = () => {
-    if (isNotAccessible) {
-      updateNotAccessible(false)
-    }
-    if (isClosed) {
-      updateClosed(false)
-    }
-  }
-
-  if (view === "list") {
-    return (
-      <S.PlaceCard style={{ margin: 0, padding: "4px 20px", boxShadow: "none" }}>
-        <S.Header>
-          <S.PlaceName>
-            {place.name}
-            {place.isConquered && <S.PlaceStatusBadge status="good">정복</S.PlaceStatusBadge>}
-            {!place.isConquered && !isClosed && place.isClosedExpected && (
-              <S.PlaceStatusBadge status="warn">폐업추정</S.PlaceStatusBadge>
-            )}
-            {isClosed && <S.PlaceStatusBadge status="bad">폐업확인</S.PlaceStatusBadge>}
-            {isNotAccessible && <S.PlaceStatusBadge status="bad">접근불가</S.PlaceStatusBadge>}
-          </S.PlaceName>
-          <S.Buttons>
-            <S.Button onClick={openNaverMap}>
-              <Image src={naverMapIcon} alt="네이버 지도" style={{ width: 32, height: 32 }} />
-            </S.Button>
-            <S.Button onClick={copyPlaceName}>
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="11" y="5" width="16" height="16" rx="4" stroke="#777" stroke-width="2" />
-                <rect x="5" y="11" width="16" height="16" rx="4" fill="white" stroke="#777" stroke-width="2" />
-              </svg>
-            </S.Button>
-          </S.Buttons>
-        </S.Header>
-      </S.PlaceCard>
-    )
-  }
-
   return (
     <S.PlaceCard>
-      <S.Header>
-        <S.PlaceName>
-          {place.name}
-          {place.isConquered && <S.PlaceStatusBadge status="good">정복</S.PlaceStatusBadge>}
-          {!place.isConquered && !isClosed && place.isClosedExpected && (
-            <S.PlaceStatusBadge status="warn">폐업추정</S.PlaceStatusBadge>
+      <S.NameColumn>
+        <S.Badges>
+          {!place.isConquered && !isClosed && !isNotAccessible && (
+            <S.PlaceStatusBadge status="normal">정복대상</S.PlaceStatusBadge>
           )}
-          {isClosed && <S.PlaceStatusBadge status="bad">폐업확인</S.PlaceStatusBadge>}
-          {isNotAccessible && <S.PlaceStatusBadge status="bad">접근불가</S.PlaceStatusBadge>}
-        </S.PlaceName>
-        <S.Buttons>
-          <S.Button onClick={openNaverMap}>
-            <Image src={naverMapIcon} alt="네이버 지도" style={{ width: 32, height: 32 }} />
-          </S.Button>
-          <S.Button onClick={copyPlaceName}>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {place.isConquered && <S.PlaceStatusBadge status="good">정복완료</S.PlaceStatusBadge>}
+          {isClosed && <S.PlaceStatusBadge status="warn">폐업확인</S.PlaceStatusBadge>}
+          {isNotAccessible && <S.PlaceStatusBadge status="warn">접근불가</S.PlaceStatusBadge>}
+          {!place.isConquered && !isClosed && place.isClosedExpected && (
+            <S.PlaceStatusBadge status="unknown">폐업추정</S.PlaceStatusBadge>
+          )}
+        </S.Badges>
+        <S.PlaceName>
+          <span>{place.name}</span>
+          <S.Button onClick={copyPlaceName} style={{ border: "none" }}>
+            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="11" y="5" width="16" height="16" rx="4" stroke="#777" stroke-width="2" />
               <rect x="5" y="11" width="16" height="16" rx="4" fill="white" stroke="#777" stroke-width="2" />
             </svg>
           </S.Button>
-        </S.Buttons>
-      </S.Header>
-      {(isReversible || !visited) && (
-        <S.Body>
-          {isReversible && <S.RevertButton onClick={revertUpdate}>다시 입력할게요</S.RevertButton>}
-          {!visited && <S.ConquerButton onClick={openInApp}>정복하기</S.ConquerButton>}
-          {!visited && <S.ClosedConfirm onClick={() => updateClosed(true)}>폐업했어요</S.ClosedConfirm>}
-          {!visited && <S.NotAccessible onClick={() => updateNotAccessible(true)}>접근불가</S.NotAccessible>}
-        </S.Body>
-      )}
+          <S.Button onClick={openNaverMap}>
+            <Image src={naverMapIcon} alt="네이버 지도" style={{ width: 24, height: 24 }} />
+          </S.Button>
+        </S.PlaceName>
+      </S.NameColumn>
+      <S.ActionsColumn>
+        <S.CheckboxWrapper>
+          <Checkbox
+            id="closed"
+            checked={isClosed}
+            disabled={place.isConquered || isNotAccessible}
+            onChange={updateClosed}
+          />
+        </S.CheckboxWrapper>
+        <S.CheckboxWrapper>
+          <Checkbox
+            id="notAccessible"
+            checked={isNotAccessible}
+            disabled={place.isConquered || isClosed}
+            onChange={updateNotAccessible}
+          />
+        </S.CheckboxWrapper>
+      </S.ActionsColumn>
     </S.PlaceCard>
   )
 }

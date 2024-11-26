@@ -2,127 +2,98 @@ import { styled } from "@/styles/jsx"
 
 export const PlaceCard = styled("div", {
   base: {
-    margin: "8px 16px",
-    padding: "16px 20px",
-    boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.2)",
-    borderRadius: 4,
+    display: "flex",
+    gap: 16,
+    margin: "0 16px 24px",
+    alignItems: "flex-end",
   },
 })
 
-export const Header = styled("div", {
+export const NameColumn = styled("div", {
   base: {
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 8,
+    flexDirection: "column",
+    width: "calc(100% - 148px)",
+    flex: 1,
+  },
+})
+
+export const Badges = styled("div", {
+  base: {
+    display: "flex",
+    gap: 4,
+    marginBottom: 4,
+  },
+})
+
+export const ActionsColumn = styled("div", {
+  base: {
+    display: "flex",
+    flex: "0 0 100px",
+    gap: 4,
+    lineHeight: 1,
   },
 })
 
 export const PlaceName = styled("h3", {
   base: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
     fontSize: 16,
-    fontWeight: 600,
+    fontWeight: 500,
+    "& span": {
+      whiteSpace: "pre",
+      textOverflow: "ellipsis",
+      overflow: "hidden",
+    },
+  },
+})
+
+export const CheckboxWrapper = styled("div", {
+  base: {
+    width: 48,
+    textAlign: "center",
   },
 })
 
 export const PlaceStatusBadge = styled("span", {
   base: {
     display: "inline-block",
-    marginLeft: 4,
-    padding: "2px 4px",
-    fontSize: 12,
-    color: "white",
+    padding: "6px 7px",
     borderRadius: 4,
+    fontSize: 12,
+    lineHeight: 1,
+    color: "white",
     verticalAlign: "bottom",
   },
   variants: {
     status: {
+      normal: {
+        backgroundColor: "var(--leaf-primary-95)",
+        color: "var(--leaf-primary-60)",
+      },
       good: {
         backgroundColor: "var(--leaf-primary-60)",
       },
-      bad: {
-        backgroundColor: "#cf3c3b",
-      },
       warn: {
-        backgroundColor: "#da952e",
+        backgroundColor: "#FF9202",
       },
       unknown: {
-        backgroundColor: "#6dd1ad",
+        backgroundColor: "var(--leaf-grey-95)",
+        color: "var(--leaf-grey-70)",
       },
     },
   },
 })
 
-export const Buttons = styled("div", {
-  base: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 4,
-    flexShrink: 0,
-  },
-})
-
 export const Button = styled("button", {
   base: {
+    flexShrink: 0,
     border: "1px solid #ccc",
     borderRadius: 4,
     background: "white",
     overflow: "hidden",
     cursor: "pointer",
-  },
-})
-
-export const Body = styled("div", {
-  base: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 8,
-    paddingTop: 16,
-  },
-})
-
-export const ActionButton = styled("button", {
-  base: {
-    width: "50%",
-    height: 36,
-    borderRadius: 4,
-    fontSize: 14,
-    cursor: "pointer",
-    fontWeight: 500,
-  },
-})
-
-export const ClosedConfirm = styled(ActionButton, {
-  base: {
-    border: "1px solid #861500",
-    color: "#861500",
-    background: "white",
-    fontSize: 12,
-  },
-})
-
-export const NotAccessible = styled(ActionButton, {
-  base: {
-    border: "1px solid #861500",
-    color: "#861500",
-    background: "white",
-    fontSize: 12,
-  },
-})
-
-export const ConquerButton = styled(ActionButton, {
-  base: {
-    background: "var(--leaf-primary-90)",
-    color: "white",
-  },
-})
-
-export const RevertButton = styled(ActionButton, {
-  base: {
-    width: "100%",
-    background: "white",
-    border: "1px solid var(--leaf-grey-70)",
-    color: "var(--leaf-grey-10)",
   },
 })

@@ -1,6 +1,7 @@
 import { BasicModalProps } from "@reactleaf/modal"
 import { useQueryClient } from "@tanstack/react-query"
 import { useAtom } from "jotai"
+import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
 
 import { useQuestBuilding } from "@/lib/apis/api"
@@ -58,12 +59,6 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
   const title = (
     <S.CustomTitle>
       <h5>{building.name}</h5>
-      <small>
-        정복 완료 {conquered.length} / {building.places.length}
-      </small>
-      <S.ViewToggle onClick={toggleView}>
-        {view === "card" ? <ListView size={24} color="#666" /> : <CardView size={24} color="#666" />}
-      </S.ViewToggle>
       <S.ReloadButton onClick={reloadQuest}>
         <Reload size={24} />
       </S.ReloadButton>
@@ -72,6 +67,32 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
 
   return (
     <BottomSheet visible={visible} close={close} title={title} style={{ height: "calc(100vh - 300px)" }}>
+      <S.GuideMessage>
+        <S.Status>
+          {conquered.length === building.places.length ? (
+            <>
+              <b>정복 완료 </b>
+              <Image
+                src="/marker_conquered.png"
+                alt="flag"
+                width={16}
+                height={16}
+                style={{ display: "inline-block" }}
+              />
+            </>
+          ) : (
+            <>
+              퀘스트 상태 <b>{conquered.length}</b>/{building.places.length}
+              <br />
+              <small>*정복여부는 계단정복지도 앱에 장소 등록 시 자동으로 반영됩니다.</small>
+            </>
+          )}
+        </S.Status>
+      </S.GuideMessage>
+      <S.Header>
+        <S.ChcekcboxLabel>폐업</S.ChcekcboxLabel>
+        <S.ChcekcboxLabel>접근불가</S.ChcekcboxLabel>
+      </S.Header>
       {sortedPlaces.map((place) => (
         <PlaceCard place={place} questId={questId} key={place.placeId} view={view} />
       ))}
