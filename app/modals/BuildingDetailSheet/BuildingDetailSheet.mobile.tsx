@@ -2,14 +2,12 @@ import { BasicModalProps } from "@reactleaf/modal"
 import { useQueryClient } from "@tanstack/react-query"
 import { useAtom } from "jotai"
 import Image from "next/image"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 
 import { useQuestBuilding } from "@/lib/apis/api"
 import { AppState } from "@/lib/globalAtoms"
 import { QuestBuilding, QuestPlace } from "@/lib/models/quest"
 
-import CardView from "@/icons/CardView"
-import ListView from "@/icons/ListView"
 import Reload from "@/icons/Reload"
 import BottomSheet from "@/modals/_template/BottomSheet"
 
@@ -79,7 +77,7 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
             <>
               퀘스트 상태 <b>{conquered.length}</b>/{building.places.length}
               <br />
-              <small>*앱에서 장소 등록 시, '정복대상'이 '정복완료'로 자동 반영됩니다.</small>
+              <small>{`*앱에서 장소 등록 시, '정복대상'이 '정복완료'로 자동 반영됩니다.`}</small>
             </>
           )}
         </S.Status>
