@@ -181,6 +181,10 @@ export function ActionsCell({
         toast.error("층수를 입력해주세요.")
         return
       }
+      if (formValues.floorNumber === 0 || Number.isInteger(formValues.floorNumber) === false) {
+        toast.error("층수는 0이 아닌 정수여야 합니다.")
+        return
+      }
       floors = [formValues.floorNumber]
     }
 
