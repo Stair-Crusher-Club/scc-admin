@@ -1,18 +1,18 @@
 "use client"
 
-import { TextInput, DateInput } from "@reactleaf/input/hookform"
-import dayjs from "dayjs"
+import { DateInput, TextInput } from "@reactleaf/input/hookform"
 import { format } from "date-fns"
+import dayjs from "dayjs"
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
-import { AccessibilitySummary } from "@/lib/models/accessibility"
-import { SearchAccessibilitiesPayload } from "@/lib/apis/api";
+import { SearchAccessibilitiesPayload } from "@/lib/apis/api"
+import { AccessibilitySummary, BuildingAccessibility } from "@/lib/models/accessibility"
 
 import Table, { makeTypedColumn } from "@/components/Table"
 import { Contents, Header } from "@/components/layout"
-
 import { Flex } from "@/styles/jsx"
+
 import { ActionsCell, ImagesCell } from "./components/Cells"
 import * as S from "./page.style"
 import { useAccessibilities } from "./query"
@@ -30,8 +30,12 @@ export default function AccessibilityList() {
   const updateFormInput = (payload: SearchAccessibilitiesPayload) => {
     setFormInput({
       ...payload,
-      createdAtFromLocalDate: payload.createdAtFromLocalDate ? format(new Date(payload.createdAtFromLocalDate), "yyyy-MM-dd") : '',
-      createdAtToLocalDate: payload.createdAtToLocalDate ? format(new Date(payload.createdAtToLocalDate), "yyyy-MM-dd") : ''
+      createdAtFromLocalDate: payload.createdAtFromLocalDate
+        ? format(new Date(payload.createdAtFromLocalDate), "yyyy-MM-dd")
+        : "",
+      createdAtToLocalDate: payload.createdAtToLocalDate
+        ? format(new Date(payload.createdAtToLocalDate), "yyyy-MM-dd")
+        : "",
     })
   }
 
@@ -84,7 +88,7 @@ const columns = [
   col({
     title: "건물 사진",
     field: "buildingAccessibility",
-    render: (buildingAccessibility) => <ImagesCell images={buildingAccessibility?.imageUrls ?? []} />,
+    render: (buildingAccessibility) => <ImagesCell images={mergeBuildingAccessibilityImages(buildingAccessibility)} />,
   }),
   col({
     title: "촬영 정보",
@@ -101,3 +105,21 @@ const columns = [
   }),
   col({ field: "_", render: (_, row, ctx) => <ActionsCell accessibility={row} ctx={ctx} /> }),
 ]
+
+const mergeBuildingAccessibilityImages = (buildingAccessibility?: BuildingAccessibility) => {
+  const imageUrls: string[] = []
+  if (buildingAccessibility == null) return imageUrls
+
+  if (buildingAccessibility.entranceImages.length > 0) {
+    buildingAccessibility.entranceImages.forEach((image) => {
+      imageUrls.push(image.thumbnailUrl ?? image.imageUrl)
+    })
+  }
+  if (buildingAccessibility.elevatorImages.length > 0) {
+    buildingAccessibility.elevatorImages.forEach((image) => {
+      imageUrls.push(image.thumbnailUrl ?? image.imageUrl)
+    })
+  }
+
+  return imageUrls
+}

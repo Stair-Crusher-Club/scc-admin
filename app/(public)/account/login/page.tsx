@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
-import { http } from "@/lib/http"
+import { NetworkError, http } from "@/lib/http"
 import { storage } from "@/lib/storage"
 
 import * as S from "./page.style"
@@ -24,16 +24,20 @@ export default function Page() {
         method: "POST",
         body: JSON.stringify(values),
       })
-      if (!res.ok) {
-        toast.error("아이디 혹은 비밀번호가 틀립니다.")
-        return
-      }
       const token = res.headers.get("X-Scc-Access-Key")
       if (!token) return
       storage.set("token", token)
       router.replace("/")
     } catch (e) {
-      toast.error("네트워크 에러")
+      if (e instanceof NetworkError) {
+        if (e.response.status === 401) {
+          toast.error("아이디나 비밀번호가 틀렸습니다.")
+        } else {
+          toast.error("네트워크 에러")
+        }
+      } else {
+        toast.error("알 수 없는 에러")
+      }
     }
   }
 
