@@ -115,7 +115,7 @@ export function ActionsCell({
     })
   }
 
-  const convertFloorOptions = (floors?: number[]) => {
+  const convertToFloorOptions = (floors?: number[]) => {
     if (!floors || floors.length === 0) return undefined
     if (floors.length === 2 && floors.includes(1) && floors.includes(2))
       return floorOptions.find((v) => v.value === FLOORS.MULTIPLE_INCLUDING_FIRST)
@@ -127,10 +127,13 @@ export function ActionsCell({
   useEffect(() => {
     if (!selectedAccessibility || !isPlaceAccessibilityModalOpen) return
 
+    const floorsWatch = editPlaceAccessibilityForm.watch("floors")
+
     editPlaceAccessibilityForm.reset({
       isFirstFloor: booleanOptions.find((v) => v.value === selectedAccessibility.placeAccessibility?.isFirstFloor),
-      floors: convertFloorOptions(selectedAccessibility.placeAccessibility?.floors),
-      floorNumber: selectedAccessibility.placeAccessibility?.floors?.[0],
+      floors: convertToFloorOptions(selectedAccessibility.placeAccessibility?.floors),
+      floorNumber:
+        floorsWatch?.value === FLOORS.NOT_FIRST ? selectedAccessibility.placeAccessibility.floors?.[0] : undefined,
       isStairOnlyOption: booleanOptions.find(
         (v) => v.value === selectedAccessibility.placeAccessibility?.isStairOnlyOption,
       ),

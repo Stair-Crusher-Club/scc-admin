@@ -95,7 +95,6 @@ export const EditPlaceAccessibilityModal: React.FC<EditPlaceAccessibilityModalPr
   if (!isOpen) return null
 
   const floors = form.watch("floors")
-  console.log(floors)
   const stairs = form.watch("stairInfo")
   return (
     <S.ModalOverlay onClick={onClose}>
