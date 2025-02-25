@@ -103,7 +103,7 @@ export const EditPlaceAccessibilityModal: React.FC<EditPlaceAccessibilityModalPr
         <S.ModalHeader>
           <S.ModalHeaderTitle>장소 정보 수정</S.ModalHeaderTitle>
           <S.ModalHeaderBody>
-            {placeAccessibility?.placeName} ({placeAccessibility?.registeredUserName})
+            {placeAccessibility?.placeName} 정복자: {placeAccessibility?.registeredUserName}
           </S.ModalHeaderBody>
         </S.ModalHeader>
         <FormProvider {...form}>
@@ -166,19 +166,49 @@ export const EditBuildingAccessibilityModal: React.FC<EditBuildingAccessibilityM
 }) => {
   if (!isOpen) return null
 
+  const entranceStairs = form.watch("entranceStairInfo")
+  const hasElevator = form.watch("hasElevator")
+  const elevatorStairs = form.watch("elevatorStairInfo")
+
   return (
     <S.ModalOverlay onClick={onClose}>
       <S.ModalContent onClick={(e) => e.stopPropagation()}>
         <S.CloseButton onClick={onClose}>x</S.CloseButton>
         <S.ModalHeader>
-          <div>건물 정보 수정</div>
-          {/* <div>{buildingAccessibility?.buildingName}</div>
-          <div>{buildingAccessibility?.registeredUserName}</div> */}
+          <S.ModalHeaderTitle>건물 정보 수정</S.ModalHeaderTitle>
+          <S.ModalHeaderBody>
+            {buildingAccessibility?.buildingName} 정복자: {buildingAccessibility?.registeredUserName}
+          </S.ModalHeaderBody>
         </S.ModalHeader>
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <S.ModalBody>
-              <DateInput name="createdAtMillis" label="촬영 시각" dateFormat="yyyy-MM-dd HH:mm" />
+              <Combobox name="hasSlope" label="입구에 경사로가 있나요?" options={booleanOptions} />
+              <S.ModalBodyRow>
+                <Combobox name="entranceStairInfo" label="입구에 계단이 있나요?" options={stairInfoOptions} />
+                <Combobox
+                  name="entranceStairHeightLevel"
+                  label="입구 계단 1칸의 높이"
+                  options={stairHeightLevelOptions}
+                  isDisabled={!entranceStairs || entranceStairs.value != "ONE"}
+                />
+              </S.ModalBodyRow>
+              <Combobox isMulti={true} name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} />
+              <Combobox name="hasElevator" label="엘리베이터가 있나요?" options={booleanOptions} />
+              <S.ModalBodyRow>
+                <Combobox
+                  name="elevatorStairInfo"
+                  label="엘리베이터까지의 계단 정보"
+                  options={stairInfoOptions}
+                  isDisabled={!hasElevator || hasElevator.value == false}
+                />
+                <Combobox
+                  name="elevatorStairHeightLevel"
+                  label="엘리베이터까지의 계단 1칸 높이"
+                  options={stairHeightLevelOptions}
+                  isDisabled={!elevatorStairs || elevatorStairs.value != "ONE"}
+                />
+              </S.ModalBodyRow>
             </S.ModalBody>
             <S.ModalFooter>
               <S.CancelButton type="button" onClick={onClose}>

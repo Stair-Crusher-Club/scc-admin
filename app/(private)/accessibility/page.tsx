@@ -83,7 +83,9 @@ const columns = [
   col({
     title: "장소 사진",
     field: "placeAccessibility",
-    render: (placeAccessibility) => <ImagesCell images={placeAccessibility.imageUrls} />,
+    render: (placeAccessibility) => (
+      <ImagesCell images={placeAccessibility.images.map((item) => item.thumbnailUrl ?? item.imageUrl)} />
+    ),
   }),
   col({
     title: "건물 사진",

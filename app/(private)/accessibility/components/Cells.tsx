@@ -11,6 +11,7 @@ import {
   UpdatePlaceAccessibilityPayload,
   deleteBuildingAccessibility,
   deletePlaceAccessibility,
+  updateBuildingAccessibility,
   updatePlaceAccessibility,
 } from "@/lib/apis/api"
 import { NetworkError } from "@/lib/http"
@@ -127,13 +128,13 @@ export function ActionsCell({
   useEffect(() => {
     if (!selectedAccessibility || !isPlaceAccessibilityModalOpen) return
 
-    const floorsWatch = editPlaceAccessibilityForm.watch("floors")
-
     editPlaceAccessibilityForm.reset({
       isFirstFloor: booleanOptions.find((v) => v.value === selectedAccessibility.placeAccessibility?.isFirstFloor),
       floors: convertToFloorOptions(selectedAccessibility.placeAccessibility?.floors),
       floorNumber:
-        floorsWatch?.value === FLOORS.NOT_FIRST ? selectedAccessibility.placeAccessibility.floors?.[0] : undefined,
+        convertToFloorOptions(selectedAccessibility.placeAccessibility?.floors)?.value === FLOORS.NOT_FIRST
+          ? selectedAccessibility.placeAccessibility.floors?.[0]
+          : undefined,
       isStairOnlyOption: booleanOptions.find(
         (v) => v.value === selectedAccessibility.placeAccessibility?.isStairOnlyOption,
       ),
@@ -152,15 +153,25 @@ export function ActionsCell({
   useEffect(() => {
     if (!selectedAccessibility || !isBuildingAccessibilityModalOpen) return
 
-    // editBuildingAccessibilityForm.reset({
-    //   hasElevator: selectedAccessibility.buildingAccessibility?.hasElevator,
-    //   hasSlope: selectedAccessibility.buildingAccessibility?.hasSlope,
-    //   entranceStairInfo: selectedAccessibility.buildingAccessibility?.entranceStairInfo,
-    //   entranceStairHeightLevel: selectedAccessibility.buildingAccessibility?.entranceStairHeightLevel,
-    //   entranceDoorTypes: selectedAccessibility.buildingAccessibility?.entranceDoorTypes,
-    //   elevatorStairInfo: selectedAccessibility.buildingAccessibility?.elevatorStairInfo,
-    //   elevatorStairHeightLevel: selectedAccessibility.buildingAccessibility?.elevatorStairHeightLevel,
-    // })
+    editBuildingAccessibilityForm.reset({
+      hasElevator: booleanOptions.find((v) => v.value === selectedAccessibility.buildingAccessibility?.hasElevator),
+      hasSlope: booleanOptions.find((v) => v.value === selectedAccessibility.buildingAccessibility?.hasSlope),
+      entranceStairInfo: stairInfoOptions.find(
+        (v) => v.value === selectedAccessibility.buildingAccessibility?.entranceStairInfo,
+      ),
+      entranceStairHeightLevel: stairHeightLevelOptions.find(
+        (v) => v.value === selectedAccessibility.buildingAccessibility?.entranceStairHeightLevel,
+      ),
+      entranceDoorTypes: entranceDoorTypeOptions.filter((v) =>
+        selectedAccessibility.buildingAccessibility?.entranceDoorTypes?.includes(v.value),
+      ),
+      elevatorStairInfo: stairInfoOptions.find(
+        (v) => v.value === selectedAccessibility.buildingAccessibility?.elevatorStairInfo,
+      ),
+      elevatorStairHeightLevel: stairHeightLevelOptions.find(
+        (v) => v.value === selectedAccessibility.buildingAccessibility?.elevatorStairHeightLevel,
+      ),
+    })
   }, [selectedAccessibility])
 
   async function handleUpdatePlaceAccessibility(formValues: EditPlaceAccessibilityFormValues) {
@@ -177,6 +188,8 @@ export function ActionsCell({
     let floors: number[] | undefined
     if (formValues.floors === undefined) {
       floors = undefined
+    } else if (formValues.floors.value === FLOORS.FIRST) {
+      floors = [1]
     } else if (formValues.floors.value === FLOORS.MULTIPLE_INCLUDING_FIRST) {
       floors = [1, 2]
     } else {
@@ -198,7 +211,7 @@ export function ActionsCell({
       entranceDoorTypes = formValues.entranceDoorTypes.map((v) => v.value)
     }
 
-    const data: UpdatePlaceAccessibilityPayload = {
+    const payload: UpdatePlaceAccessibilityPayload = {
       isFirstFloor: isFirstFloor,
       floors: floors,
       isStairOnlyOption: formValues.isStairOnlyOption?.value,
@@ -209,8 +222,29 @@ export function ActionsCell({
     }
 
     try {
-      await updatePlaceAccessibility({ id, payload: data })
+      await updatePlaceAccessibility({ id, payload })
+
+      // Refresh 하지는 않고 client 데이터에서 수정
+      queryClient.setQueryData(["@accessibilities", ctx], (data: InfiniteData<SearchAccessibilitiesResult>) => {
+        const newPages = data.pages.map((page) => ({
+          ...page,
+          items: page.items.map((it) =>
+            it.placeAccessibility.id === id
+              ? {
+                  ...it,
+                  placeAccessibility: {
+                    ...it.placeAccessibility,
+                    ...payload,
+                  },
+                }
+              : it,
+          ),
+        }))
+        return { ...data, pages: newPages }
+      })
+
       toast.success(`[${placeName}]의 장소 정보가 수정되었습니다.`)
+      setIsPlaceAccessibilityModalOpen(false)
     } catch (e) {
       if (e instanceof NetworkError) {
         const error = await e.response.json()
@@ -222,10 +256,61 @@ export function ActionsCell({
     }
   }
 
-  const handleUpdateBuildingAccessibility = (formValues: EditBuildingAccessibilityFormValues) => {
-    // Implement save logic here
-    console.log("Updated Building Accessibility:", formValues)
-    // You can add logic to update the accessibility list or make an API call to save the changes
+  async function handleUpdateBuildingAccessibility(formValues: EditBuildingAccessibilityFormValues) {
+    if (!selectedAccessibility) return
+    if (!selectedAccessibility.buildingAccessibility) return
+    const { id, buildingName } = selectedAccessibility.buildingAccessibility
+
+    let entranceDoorTypes
+    if (!formValues.entranceDoorTypes || formValues.entranceDoorTypes.length === 0) {
+      entranceDoorTypes = undefined
+    } else {
+      entranceDoorTypes = formValues.entranceDoorTypes.map((v) => v.value)
+    }
+
+    const payload: UpdateBuildingAccessibilityPayload = {
+      hasElevator: formValues.hasElevator.value,
+      hasSlope: formValues.hasSlope.value,
+      entranceStairInfo: formValues.entranceStairInfo.value,
+      entranceStairHeightLevel: formValues.entranceStairHeightLevel?.value,
+      entranceDoorTypes: entranceDoorTypes,
+      elevatorStairInfo: formValues.elevatorStairInfo.value,
+      elevatorStairHeightLevel: formValues.elevatorStairHeightLevel?.value,
+    }
+
+    try {
+      await updateBuildingAccessibility({ id, payload })
+
+      // Refresh 하지는 않고 client 데이터에서 수정
+      queryClient.setQueryData(["@accessibilities", ctx], (data: InfiniteData<SearchAccessibilitiesResult>) => {
+        const newPages = data.pages.map((page) => ({
+          ...page,
+          items: page.items.map((it) =>
+            it.buildingAccessibility?.id === id
+              ? {
+                  ...it,
+                  buildingAccessibility: {
+                    ...it.buildingAccessibility,
+                    ...payload,
+                  },
+                }
+              : it,
+          ),
+        }))
+        return { ...data, pages: newPages }
+      })
+
+      toast.success(`[${buildingName}]의 건물 정보가 수정되었습니다.`)
+      setIsBuildingAccessibilityModalOpen(false)
+    } catch (e) {
+      if (e instanceof NetworkError) {
+        const error = await e.response.json()
+        toast.error(`[${buildingName}]의 건물 정보 수정에 실패했습니다.`)
+        toast.error(`${error.msg}`)
+      } else {
+        toast.error("네트워크 에러가 발생했습니다.")
+      }
+    }
   }
 
   return (
