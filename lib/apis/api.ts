@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { AccessibilitySummary } from "@/lib/models/accessibility"
+import { AccessibilitySummary, ENTRANCE_DOOR_TYPE, STAIR_HEIGHT_LEVEL, STAIR_INFO } from "@/lib/models/accessibility"
 import { EpochMillisTimestamp, LatLng } from "@/lib/models/common"
 
 import { http } from "../http"
@@ -181,6 +181,46 @@ export function deletePlaceAccessibility({ id }: { id: string }) {
 export function deleteBuildingAccessibility({ id }: { id: string }) {
   return http(`/admin/building-accessibilities/${id}`, {
     method: "DELETE",
+  })
+}
+
+export interface UpdatePlaceAccessibilityPayload {
+  isFirstFloor: boolean
+  floors?: number[]
+  isStairOnlyOption?: boolean
+  stairInfo: STAIR_INFO
+  stairHeightLevel?: STAIR_HEIGHT_LEVEL
+  hasSlope: boolean
+  entranceDoorTypes?: ENTRANCE_DOOR_TYPE[]
+}
+
+export interface UpdateBuildingAccessibilityPayload {
+  hasElevator: boolean
+  hasSlope: boolean
+  entranceStairInfo: STAIR_INFO
+  entranceStairHeightLevel?: STAIR_HEIGHT_LEVEL
+  entranceDoorTypes?: ENTRANCE_DOOR_TYPE[]
+  elevatorStairInfo: STAIR_INFO
+  elevatorStairHeightLevel?: STAIR_HEIGHT_LEVEL
+}
+
+export function updatePlaceAccessibility({ id, payload }: { id: string; payload: UpdatePlaceAccessibilityPayload }) {
+  return http(`/admin/place-accessibilities/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  })
+}
+
+export function updateBuildingAccessibility({
+  id,
+  payload,
+}: {
+  id: string
+  payload: UpdateBuildingAccessibilityPayload
+}) {
+  return http(`/admin/building-accessibilities/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
   })
 }
 
