@@ -1,5 +1,3 @@
-import { wrap } from "module"
-
 import { styled } from "@/styles/jsx"
 
 export const ModalOverlay = styled("div", {

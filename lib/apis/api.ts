@@ -258,3 +258,21 @@ export interface GetImageUploadUrlsResult {
 export interface ImageUploadUrl {
   url: string
 }
+
+export interface SendPushNotificationPayload {
+  userIds: string[]
+  notification: PushNotification
+}
+
+export interface PushNotification {
+  title?: string
+  body: string
+  deepLink?: string
+}
+
+export function sendPushNotification(payload: SendPushNotificationPayload) {
+  return http("/admin/user/sendPushNotification", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  })
+}
