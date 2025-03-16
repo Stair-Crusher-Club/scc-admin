@@ -20,7 +20,7 @@ interface Option {
 
 const deepLinkOptions: Option[] = [
   { label: "홈", value: "stair-crusher://", isArgumentRequired: false },
-  { label: "내 정보", value: "stair-crusher://setting", isArgumentRequired: false },
+  { label: "설정", value: "stair-crusher://setting", isArgumentRequired: false },
   { label: "장소", value: "stair-crusher://place", isArgumentRequired: true },
   { label: "챌린지", value: "stair-crusher://challenge", isArgumentRequired: true },
 ]
