@@ -103,7 +103,9 @@ export default function NotificationPage() {
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(handleSendPushNotification)}>
             <Flex direction={"column"}>
-              <S.InputTitle>유저 ID (여러명의 경우 쉼표(,)로 구분해주세요):</S.InputTitle>
+              <S.InputTitle>유저 ID</S.InputTitle>
+              <S.InputDescription>* scc_user 테이블의 user_id 혹은 user_account 테이블의 id 값</S.InputDescription>
+              <S.InputDescription>* 여러 명에게 보내려면 쉼표(,)로 구분해주세요</S.InputDescription>
               <S.Textarea
                 placeholder="타겟 유저 ID"
                 {...form.register("userIds", { required: "푸시 알림 수신자를 입력하세요." })}
@@ -111,16 +113,16 @@ export default function NotificationPage() {
               <S.ErrorMessage>{form.formState.errors?.userIds?.message}</S.ErrorMessage>
             </Flex>
 
-            <S.InputTitle>제목:</S.InputTitle>
+            <S.InputTitle>제목</S.InputTitle>
             <TextInput type="text" name="title" placeholder="푸시 알림 제목" />
 
-            <S.InputTitle>본문:</S.InputTitle>
+            <S.InputTitle>본문</S.InputTitle>
             <TextInput type="text" name="body" placeholder="푸시 알림 본문" required={true} />
 
-            <S.InputTitle>딥링크:</S.InputTitle>
+            <S.InputTitle>딥링크</S.InputTitle>
             <Combobox name="deepLink" options={deepLinkOptions} placeholder="딥링크" />
 
-            <S.InputTitle>딥링크 상세 (Ex. 장소 ID, 챌린지 ID):</S.InputTitle>
+            <S.InputTitle>딥링크 상세 (Ex. 장소 ID, 챌린지 ID)</S.InputTitle>
             <TextInput
               type="text"
               name="deepLinkArgument"

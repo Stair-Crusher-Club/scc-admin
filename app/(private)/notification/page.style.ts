@@ -2,8 +2,16 @@ import { styled } from "@/styles/jsx"
 
 export const InputTitle = styled("span", {
   base: {
+    fontSize: "1rem",
     textWrap: "nowrap",
-    margin: "auto 8px auto 0",
+    margin: "0 0 0.5rem",
+  },
+})
+
+export const InputDescription = styled("span", {
+  base: {
+    margin: "auto 0",
+    color: "grey",
   },
 })
 
