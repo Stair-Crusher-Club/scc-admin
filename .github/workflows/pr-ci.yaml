@@ -1,0 +1,28 @@
+name: pr-ci
+on:
+  pull_request:
+    on:
+      - open
+      - synchronize
+  workflow_dispatch: # for manual trigger
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".node-version"
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm i
+      - name: Run lint
+        run: pnpm lint
