@@ -71,6 +71,7 @@ export default function AccessibilityList() {
           rowKey={(row) => row.placeAccessibility.id}
           columns={columns}
           context={formInput}
+          disabledSticky={true}
         />
         {hasNextPage && <S.LoadNextPageButton onClick={() => fetchNextPage()}>더 불러오기</S.LoadNextPageButton>}
       </Contents.Normal>
