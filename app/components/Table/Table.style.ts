@@ -11,6 +11,7 @@ export const HeadingRow = styled("tr", {
   base: {
     backgroundColor: "#f9f9f9",
     position: "sticky",
+    top: 48,
   },
   variants: {
     isZIndexApplied: {
