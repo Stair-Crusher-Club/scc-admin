@@ -10,10 +10,11 @@ export const Table = styled("table", {
 export const HeadingRow = styled("tr", {
   base: {
     backgroundColor: "#f9f9f9",
+    position: "sticky",
   },
   variants: {
-    disabledSticky: {
-      false: { position: "sticky", top: 0, zIndex: 99 },
+    isZIndexApplied: {
+      false: { zIndex: 99 },
     },
   },
 })

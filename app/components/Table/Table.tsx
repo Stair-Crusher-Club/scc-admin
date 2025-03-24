@@ -8,7 +8,7 @@ interface Props<Data, Context> {
   isLoading?: boolean
   emptyMessasge?: string
   context?: Context
-  disabledSticky?: boolean
+  isZIndexApplied?: boolean
 }
 
 export default function Table<T extends Record<string, any>, Context>({
@@ -18,7 +18,7 @@ export default function Table<T extends Record<string, any>, Context>({
   isLoading,
   emptyMessasge,
   context,
-  disabledSticky = false,
+  isZIndexApplied = false,
 }: Props<T, Context>) {
   function renderCell<T>(row: T, col: Column<T, Context>) {
     if (col.render) return col.render(row[col.field], row, context)
@@ -28,7 +28,7 @@ export default function Table<T extends Record<string, any>, Context>({
   return (
     <S.Table>
       <thead>
-        <S.HeadingRow disabledSticky={disabledSticky}>
+        <S.HeadingRow isZIndexApplied={isZIndexApplied}>
           {columns.map((col, key) => (
             <S.HeadingCell key={key}>{col.title}</S.HeadingCell>
           ))}
