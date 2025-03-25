@@ -1,6 +1,8 @@
 import { BasicModalProps } from "@reactleaf/modal"
+import { toPng } from "html-to-image"
 import Lottie from "lottie-react"
 import Image from "next/image"
+import { useRef } from "react"
 
 import Close from "@/icons/Close"
 import Download from "@/icons/Download"
@@ -9,11 +11,27 @@ import questCompletionStampAnimation from "../../../public/lottie/quest_completi
 import * as S from "./QuestCompletion.style"
 
 export default function QuestGuide({ close }: BasicModalProps) {
+  const captureRef = useRef<HTMLDivElement | null>(null)
+
+  const handleCapture = async () => {
+    if (captureRef.current) {
+      const filter = (node: Element) => {
+        return node.id !== "quest-completion-modal-close-button"
+      }
+
+      const dataUrl = await toPng(captureRef.current, { cacheBust: true, includeQueryParams: true, filter })
+      const link = document.createElement("a")
+      link.href = dataUrl
+      link.download = "퀘스트_클리어.png"
+      link.click()
+    }
+  }
+
   return (
     <S.ModalContainer>
-      <S.ModalWrapper>
+      <S.ModalWrapper ref={captureRef}>
         <S.Modal>
-          <S.CloseButtonWrapper onClick={close}>
+          <S.CloseButtonWrapper onClick={close} id="quest-completion-modal-close-button">
             <Close size={24} color="#197AEC" />
           </S.CloseButtonWrapper>
           <div>
@@ -43,7 +61,7 @@ export default function QuestGuide({ close }: BasicModalProps) {
         </S.ModalBackground>
       </S.ModalWrapper>
 
-      <S.ImageDownloadButton>
+      <S.ImageDownloadButton onClick={handleCapture}>
         이미지 저장하기
         <Download size={16} color="white" />
       </S.ImageDownloadButton>
