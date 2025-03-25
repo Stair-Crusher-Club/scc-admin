@@ -1,6 +1,7 @@
 "use client"
 
 import { useQueryClient } from "@tanstack/react-query"
+import { format } from "date-fns"
 import { useAtomValue } from "jotai"
 import { useParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
@@ -64,6 +65,25 @@ export default function QuestDetail() {
 
   const placeCount = quest?.buildings.reduce((acc, building) => acc + building.places.length, 0) ?? 0
   const buildingCount = quest?.buildings.length ?? 0
+
+  useEffect(() => {
+    if (quest) {
+      const isAllConquered = quest.buildings.every((building) =>
+        building.places.some(
+          (place) =>
+            place.isConquered || // 정복
+            place.isNotAccessible || // 접근불가
+            place.isClosed, // 폐업
+        ),
+      )
+
+      if (isAllConquered) {
+        const today = format(new Date(), "yyyy.MM.dd")
+        openModal({ type: "QuestCompletion", props: { questName: quest.name, questClearDate: today } })
+      }
+    }
+  }, [quest])
+
   return (
     <>
       {/* public page 이므로 메뉴를 제공하지 않는 커스텀 헤더 사용 */}

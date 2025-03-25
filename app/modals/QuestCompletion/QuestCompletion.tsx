@@ -10,7 +10,12 @@ import Download from "@/icons/Download"
 import questCompletionStampAnimation from "../../../public/lottie/quest_completion_stamp.json"
 import * as S from "./QuestCompletion.style"
 
-export default function QuestGuide({ close }: BasicModalProps) {
+interface Props extends BasicModalProps {
+  questName: string
+  questClearDate?: string
+}
+
+export default function QuestCompletion({ close, questName, questClearDate }: Props) {
   const captureRef = useRef<HTMLDivElement | null>(null)
 
   const handleCapture = async () => {
@@ -46,11 +51,11 @@ export default function QuestGuide({ close }: BasicModalProps) {
           <S.QuestInfoList>
             <S.QuestInfoItem>
               <h4>퀘스트 명</h4>
-              <p>워밍업 #2 - K조</p>
+              <p>{questName}</p>
             </S.QuestInfoItem>
             <S.QuestInfoItem>
               <h4>클리어 날짜</h4>
-              <p>2025.03.29</p>
+              <p>{questClearDate}</p>
             </S.QuestInfoItem>
           </S.QuestInfoList>
           <Image src="/SCC_logo.png" width={109} height={17} alt="계단뿌셔클럽 로고" />
