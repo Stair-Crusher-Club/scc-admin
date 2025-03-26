@@ -66,23 +66,21 @@ export default function QuestDetail() {
   const placeCount = quest?.buildings.reduce((acc, building) => acc + building.places.length, 0) ?? 0
   const buildingCount = quest?.buildings.length ?? 0
 
-  useEffect(() => {
-    if (quest) {
-      const isAllConquered = quest.buildings.every((building) =>
-        building.places.some(
-          (place) =>
-            place.isConquered || // 정복
-            place.isNotAccessible || // 접근불가
-            place.isClosed, // 폐업
-        ),
-      )
+  const isAllConquered = quest?.buildings.every((building) =>
+    building.places.some(
+      (place) =>
+        place.isConquered || // 정복
+        place.isNotAccessible || // 접근불가
+        place.isClosed, // 폐업
+    ),
+  )
 
-      if (isAllConquered) {
-        const today = format(new Date(), "yyyy.MM.dd")
-        openModal({ type: "QuestCompletion", props: { questName: quest.name, questClearDate: today } })
-      }
+  useEffect(() => {
+    if (quest && isAllConquered) {
+      const today = format(new Date(), "yyyy.MM.dd")
+      openModal({ type: "QuestCompletion", props: { questName: quest.name, questClearDate: today } })
     }
-  }, [quest])
+  }, [isAllConquered])
 
   return (
     <>
