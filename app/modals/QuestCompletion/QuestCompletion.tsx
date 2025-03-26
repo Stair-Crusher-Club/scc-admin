@@ -12,7 +12,7 @@ import * as S from "./QuestCompletion.style"
 
 interface Props extends BasicModalProps {
   questName: string
-  questClearDate?: string
+  questClearDate: string
 }
 
 export default function QuestCompletion({ close, questName, questClearDate }: Props) {
@@ -27,7 +27,7 @@ export default function QuestCompletion({ close, questName, questClearDate }: Pr
       const dataUrl = await toPng(captureRef.current, { cacheBust: true, includeQueryParams: true, filter })
       const link = document.createElement("a")
       link.href = dataUrl
-      link.download = "퀘스트_클리어.png"
+      link.download = `${questClearDate.replaceAll(".", "")}_정복완료.png`
       link.click()
     }
   }
