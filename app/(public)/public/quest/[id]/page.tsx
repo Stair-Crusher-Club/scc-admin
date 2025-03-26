@@ -67,7 +67,7 @@ export default function QuestDetail() {
   const buildingCount = quest?.buildings.length ?? 0
 
   const isAllConquered = quest?.buildings.every((building) =>
-    building.places.some(
+    building.places.every(
       (place) =>
         place.isConquered || // 정복
         place.isNotAccessible || // 접근불가
