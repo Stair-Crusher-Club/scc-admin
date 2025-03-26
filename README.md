@@ -36,5 +36,5 @@ NEXT_PUBLIC_DEPLOY_TYPE=live pnpm dev
 
 ### 배포
 
-- DEV - `dev` 브랜치에 커밋될 때마다 자동으로 배포됩니다.
-- PROD - `live` 브랜치에 커밋될 때마다 자동으로 배포됩니다.
+- DEV - `main` 브랜치에 커밋될 때마다 자동으로 배포됩니다.
+- PROD - semantic versioning 을 따르는 이름의 태그가 push 되면 배포가 시작됩니다.
