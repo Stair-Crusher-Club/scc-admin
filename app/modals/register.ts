@@ -8,6 +8,7 @@ const register = {
   RegionSelector: () => import("./RegionSelector"),
   QuestGuide: () => import("./QuestGuide"),
   QuestSummarySheet: () => import("./QuestSummarySheet"),
+  QuestCompletion: () => import("./QuestCompletion"),
 }
 
 export default register
