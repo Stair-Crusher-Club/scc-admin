@@ -1,6 +1,6 @@
 import { BasicModalProps } from "@reactleaf/modal"
-import { toPng } from "html-to-image"
 import Lottie from "lottie-react"
+import { domToPng } from "modern-screenshot"
 import Image from "next/image"
 import { useRef } from "react"
 
@@ -20,11 +20,14 @@ export default function QuestCompletion({ close, questName, questClearDate }: Pr
 
   const handleCapture = async () => {
     if (captureRef.current) {
-      const filter = (node: Element) => {
-        return node.id !== "quest-completion-modal-close-button"
+      const filter = (node: Node) => {
+        if (node instanceof Element) {
+          return node.id !== "quest-completion-modal-close-button"
+        }
+        return true
       }
 
-      const dataUrl = await toPng(captureRef.current, { cacheBust: true, includeQueryParams: true, filter })
+      const dataUrl = await domToPng(captureRef.current, { scale: 2, filter })
       const link = document.createElement("a")
       link.href = dataUrl
       link.download = `${questClearDate.replaceAll(".", "")}_정복완료.png`
