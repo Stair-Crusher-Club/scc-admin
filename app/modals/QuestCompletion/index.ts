@@ -1,1 +1,1 @@
-export { default } from "./QuestCompletion"
+export { default } from "./QuestCompletionWrapper"

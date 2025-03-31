@@ -1,4 +1,3 @@
-import { BasicModalProps } from "@reactleaf/modal"
 import Lottie from "lottie-react"
 import { domToPng } from "modern-screenshot"
 import Image from "next/image"
@@ -10,12 +9,13 @@ import Download from "@/icons/Download"
 import questCompletionStampAnimation from "../../../public/lottie/quest_completion_stamp.json"
 import * as S from "./QuestCompletion.style"
 
-interface Props extends BasicModalProps {
+export interface QuestCompletionProps {
   questName: string
   questClearDate: string
+  close: () => void
 }
 
-export default function QuestCompletion({ close, questName, questClearDate }: Props) {
+export default function QuestCompletion({ close, questName, questClearDate }: QuestCompletionProps) {
   const captureRef = useRef<HTMLDivElement | null>(null)
 
   const handleCapture = async () => {
@@ -36,7 +36,7 @@ export default function QuestCompletion({ close, questName, questClearDate }: Pr
   }
 
   return (
-    <S.ModalContainer>
+    <S.ModalContainer onClick={(e) => e.stopPropagation()}>
       <S.ModalWrapper ref={captureRef}>
         <S.Modal>
           <S.CloseButtonWrapper onClick={close} id="quest-completion-modal-close-button">
