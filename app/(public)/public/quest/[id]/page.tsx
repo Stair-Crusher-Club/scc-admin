@@ -15,6 +15,7 @@ import Map from "@/components/Map"
 import { Me, QuestMarker } from "@/components/Map/components"
 import { Contents, Header } from "@/components/layout"
 import { useModal } from "@/hooks/useModal"
+import QuestCompletionModal from "@/modals/QuestCompletion"
 
 export default function QuestDetail() {
   const { id } = useParams<{ id: string }>()
@@ -75,10 +76,15 @@ export default function QuestDetail() {
     ),
   )
 
+  // 퀘스트 완료 모달 상태
+  const [openQuestionCompletionModal, setOpenQuestionCompletionModal] = useState(false)
+  function closeQuestionCompletionModal() {
+    setOpenQuestionCompletionModal(false)
+  }
+
   useEffect(() => {
     if (quest && isAllConquered) {
-      const today = format(new Date(), "yyyy.MM.dd")
-      openModal({ type: "QuestCompletion", props: { questName: quest.name, questClearDate: today } })
+      setOpenQuestionCompletionModal(true)
     }
   }, [isAllConquered])
 
@@ -112,6 +118,13 @@ export default function QuestDetail() {
           <Me />
         </Map>
       </Contents>
+
+      <QuestCompletionModal
+        open={openQuestionCompletionModal}
+        close={closeQuestionCompletionModal}
+        questName={quest?.name ?? ""}
+        questClearDate={format(new Date(), "yyyy.MM.dd")}
+      />
     </>
   )
 }

@@ -1,5 +1,20 @@
 import { styled } from "@/styles/jsx"
 
+export const QuestCompletionWrapper = styled("article", {
+  base: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    zIndex: 1001,
+  },
+})
+
 export const ModalContainer = styled("div", {
   base: {
     width: "full",
