@@ -46,7 +46,7 @@ export const Modal = styled("div", {
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
-    gap: "14px",
+    gap: "0",
     padding: "30px 16px 16px 16px",
     zIndex: 2,
   },
@@ -70,9 +70,19 @@ export const CloseButtonWrapper = styled("button", {
   },
 })
 
+export const QuestClearWrapper = styled("div", {
+  base: {
+    display: "flex",
+    flexDir: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+})
+
 export const QuestStampWrapper = styled("div", {
   base: {
     position: "relative",
+    marginTop: "-20px",
   },
 })
 
@@ -96,6 +106,7 @@ export const QuestInfoList = styled("ul", {
     display: "flex",
     flexDir: "column",
     gap: "12px",
+    marginBottom: "14px",
   },
 })
 
