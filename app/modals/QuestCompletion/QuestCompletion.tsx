@@ -42,15 +42,15 @@ export default function QuestCompletion({ close, questName, questClearDate }: Qu
           <S.CloseButtonWrapper onClick={close} id="quest-completion-modal-close-button">
             <Close size={24} color="#197AEC" />
           </S.CloseButtonWrapper>
-          <div>
+          <S.QuestClearWrapper>
             <Image src="/quest_completion.png" width={196} height={68} alt="퀘스트 클리어 문구" />
             <S.QuestStampWrapper>
               <S.QuestStampLottie>
                 <Lottie animationData={questCompletionStampAnimation} loop={false} autoPlay={true} />
               </S.QuestStampLottie>
-              <Image src="/quest_completion_stamp_before.png" width={191} height={191} alt="퀘스트 스탬프" />
+              <Image src="/quest_completion_stamp_before.png" width={225} height={225} alt="퀘스트 스탬프" />
             </S.QuestStampWrapper>
-          </div>
+          </S.QuestClearWrapper>
           <S.QuestInfoList>
             <S.QuestInfoItem>
               <h4>퀘스트 명</h4>
@@ -65,7 +65,7 @@ export default function QuestCompletion({ close, questName, questClearDate }: Qu
         </S.Modal>
 
         <S.ModalBackground>
-          <Image src="/quest_completion_bg.png" width={375} height={372} alt="배경" />
+          <Image priority={true} src="/quest_completion_bg.png" width={375} height={372} alt="배경" />
         </S.ModalBackground>
       </S.ModalWrapper>
 
