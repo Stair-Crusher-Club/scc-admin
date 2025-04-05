@@ -35,6 +35,22 @@ export const ReloadButton = styled("button", {
   },
 })
 
+export const DeleteButton = styled("button", {
+  base: {
+    position: "absolute",
+    top: "50%",
+    right: 48,
+    transform: "translateY(-50%)",
+    padding: 4,
+    backgroundColor: "transparent",
+    border: "none",
+    cursor: "pointer",
+    "&:active": {
+      backgroundColor: "rgba(0, 0, 0, 0.1)",
+    },
+  },
+})
+
 export const GuideMessage = styled("div", {
   base: {
     padding: "12px 20px",
