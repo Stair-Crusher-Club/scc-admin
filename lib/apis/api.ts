@@ -5,7 +5,7 @@ import { EpochMillisTimestamp, LatLng } from "@/lib/models/common"
 
 import { http } from "../http"
 import { Challenge } from "../models/challenge"
-import { QuestBuilding, QuestDetail, QuestPurposeType, QuestSummary } from "../models/quest"
+import { QuestBuilding, QuestDetail, QuestPlace, QuestPurposeType, QuestSummary } from "../models/quest"
 import { Region } from "../models/region"
 
 export function useQuest({ id }: { id: string }) {
@@ -95,6 +95,18 @@ type DeleteQuestPayload = {
 }
 export async function deleteQuest(payload: DeleteQuestPayload) {
   return http(`/admin/clubQuests/${payload.questId}`, {
+    method: "DELETE",
+  })
+}
+
+export async function deleteQuestTargetPlace(questId: string, place: QuestPlace) {
+  return http(`/admin/clubQuests/${questId}/targetPlaces?placeId=${encodeURIComponent(place.placeId)}`, {
+    method: "DELETE",
+  })
+}
+
+export async function deleteQuestTargetBuilding(questId: string, building: QuestBuilding) {
+  return http(`/admin/clubQuests/${questId}/targetBuildings?buildingId=${encodeURIComponent(building.buildingId)}`, {
     method: "DELETE",
   })
 }

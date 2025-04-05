@@ -1,9 +1,9 @@
 import { BasicModalProps } from "@reactleaf/modal"
 import { useQueryClient } from "@tanstack/react-query"
 import Image from "next/image"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 
-import { useQuestBuilding } from "@/lib/apis/api"
+import { deleteQuestTargetBuilding, useQuestBuilding } from "@/lib/apis/api"
 import { QuestBuilding, QuestPlace } from "@/lib/models/quest"
 
 import Reload from "@/icons/Reload"
@@ -11,6 +11,9 @@ import Reload from "@/icons/Reload"
 import RightSheet from "../_template/RightSheet"
 import * as S from "./BuildingDetailSheet.style"
 import PlaceCard from "./PlaceCard"
+import { storage } from "@/lib/storage"
+
+import deleteIcon from "../../../public/delete_button.png"
 
 interface Props extends BasicModalProps {
   building: QuestBuilding
@@ -19,21 +22,52 @@ interface Props extends BasicModalProps {
 
 export const defaultOverlayOptions = { closeDelay: 200, dim: false }
 export default function BuildingDetailSheet({ building: initialData, questId, visible, close }: Props) {
+  const [sortedPlaces, setSortedPlaces] = useState<QuestPlace[]>([]);
   const { data: building } = useQuestBuilding({ questId, buildingId: initialData.buildingId })
   const queryClient = useQueryClient()
-
-  const isConquered = (place: QuestPlace) => place.isConquered || place.isNotAccessible || place.isClosed
+  const [authenticated, setAuthenticated] = useState<boolean>()
+  useEffect(() => {
+    const token = storage.get("token")
+    if (token) {
+      setAuthenticated(true)
+    } else {
+      setAuthenticated(false)
+    }
+  }, [])
 
   function reloadQuest() {
     queryClient.invalidateQueries({ queryKey: ["@quests", questId] })
   }
 
-  // 활동 중 장소 순서가 바뀌는 것을 막습니다.
-  const sortedPlaces = useMemo(() => {
+  async function deleteBuilding() {
+    if (building) {
+      if (!confirm(`[${building.name}] 건물을 정말 삭제하시겠습니까?`)) return
+      await deleteQuestTargetBuilding(questId, building!);
+      reloadQuest();
+      close();
+    }
+  }
+
+  const isConquered = (place: QuestPlace) => place.isConquered || place.isNotAccessible || place.isClosed
+
+  function getSortedPlaces() {
     if (!building) return []
-    const conquered = initialData.places.filter(isConquered)
-    const notConquered = initialData.places.filter((p) => !isConquered(p))
+    const conquered = building.places.filter(isConquered)
+    const notConquered = building.places.filter((p) => !isConquered(p))
     return [...notConquered, ...conquered].map((p) => building.places.find((b) => b.placeId === p.placeId) || p)
+  }
+
+  // 활동 중 장소 순서가 바뀌는 것을 막습니다.
+  useMemo(() => {
+    setSortedPlaces(getSortedPlaces())
+  }, [initialData, building])
+
+  // 다만 place가 삭제된 경우에만 장소를 다시 렌더링 해줍니다.
+  useEffect(() => {
+    const newSortedPlaces = getSortedPlaces()
+    if (sortedPlaces.length !== newSortedPlaces.length) {
+      setSortedPlaces(newSortedPlaces)
+    }
   }, [initialData, building])
 
   if (!building) return null
@@ -45,6 +79,15 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
       <S.ReloadButton onClick={reloadQuest}>
         <Reload size={24} />
       </S.ReloadButton>
+      {
+        authenticated
+          ? (
+            <S.DeleteButton onClick={deleteBuilding}>
+              <Image src={deleteIcon} alt="삭제" style={{ width: 24, height: 24 }} />
+            </S.DeleteButton>
+          )
+          : null
+      }
     </S.CustomTitle>
   )
 
@@ -77,7 +120,7 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
         <S.ChcekcboxLabel>접근불가</S.ChcekcboxLabel>
       </S.Header>
       {sortedPlaces.map((place) => (
-        <PlaceCard place={place} questId={questId} key={place.placeId} />
+        <PlaceCard place={place} questId={questId} key={place.placeId} onDelete={reloadQuest} />
       ))}
     </RightSheet>
   )

@@ -29,6 +29,8 @@ export default function QuestMarker({ building, buildingIndex, questId, markerSt
 
     const latlng = new kakao.maps.LatLng(building.location.lat, building.location.lng)
 
+    const buildingIconIndex = building.name.match(/\d+번/) ? (parseInt(building.name.match(/(\d+)번/)![0]) - 1) : buildingIndex
+
     const conqueredMarker = new kakao.maps.Marker({
       position: latlng,
       image: new kakao.maps.MarkerImage("/marker_conquered.png", new kakao.maps.Size(32, 32), {
@@ -39,7 +41,7 @@ export default function QuestMarker({ building, buildingIndex, questId, markerSt
       position: latlng,
       image: new kakao.maps.MarkerImage(`/marker_sprite.png`, new kakao.maps.Size(24, 36), {
         offset: new kakao.maps.Point(12, 36),
-        spriteOrigin: new kakao.maps.Point(24 * (buildingIndex % 10), 36 * Math.floor(buildingIndex / 10)),
+        spriteOrigin: new kakao.maps.Point(24 * (buildingIconIndex % 10), 36 * Math.floor(buildingIconIndex / 10)),
         spriteSize: new kakao.maps.Size(24 * 10, 36 * 4),
       }),
     })
