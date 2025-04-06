@@ -1,7 +1,7 @@
 FROM node:20-slim as base
 # https://vercel.com/guides/corepack-errors-github-actions
 RUN npm i -g corepack@latest
-RUN corepack enable pnpm
+RUN corepack enable pnpm@latest-10
 # panda codegen 을 위해 필요
 RUN npm i -g @pandacss/dev
 
@@ -12,7 +12,7 @@ COPY . /app
 WORKDIR /app
 
 FROM base AS prod-deps
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --prod --frozen-lockfile 
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --prod --frozen-lockfile
 
 FROM base AS build
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --frozen-lockfile
