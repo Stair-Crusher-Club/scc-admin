@@ -9,7 +9,8 @@
 ### 이 프로젝트는 pnpm을 사용합니다.
 
 ```bash
-curl -fsSL https://get.pnpm.io/install.sh | sh -
+npm i -g corepack@latest
+corepack enable pnpm
 ```
 
 ```bash
