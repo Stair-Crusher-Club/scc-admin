@@ -10,6 +10,7 @@
 
 ```bash
 npm i -g corepack@latest
+corepack use pnpm@latest-10
 corepack enable pnpm
 ```
 
