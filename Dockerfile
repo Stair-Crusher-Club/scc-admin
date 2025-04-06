@@ -1,7 +1,8 @@
 FROM node:20-slim as base
 # https://vercel.com/guides/corepack-errors-github-actions
 RUN npm i -g corepack@latest
-RUN corepack enable pnpm@latest-10
+RUN corepack enable pnpm
+RUN corepack use pnpm@latest-10
 # panda codegen 을 위해 필요
 RUN npm i -g @pandacss/dev
 
