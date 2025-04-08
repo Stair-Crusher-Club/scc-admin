@@ -1,18 +1,21 @@
 "use client"
 
-import { Contents, Header } from "@/components/layout"
-import Image from "next/image"
 import dayjs from "dayjs"
+import Image from "next/image"
+import { useState } from "react"
 
-import { ActionsCell } from "./components/Cells"
-import * as S from "./page.style"
-import naverMapIcon from "../../../public/naver_map.jpg"
-
-import { useClosedPlaceCandidates } from "./query"
 import { ClosedPlaceCandidate } from "@/lib/models/place"
 
+import { Contents, Header } from "@/components/layout"
+
+import naverMapIcon from "../../../public/naver_map.jpg"
+import { ActionsCell } from "./components/Cells"
+import * as S from "./page.style"
+import { useClosedPlaceCandidates } from "./query"
+
 export default function AccessibilityList() {
-  const { data, fetchNextPage, hasNextPage, refetch } = useClosedPlaceCandidates()
+  const [activeTab, setActiveTab] = useState<"all" | "registered">("all")
+  const { data, fetchNextPage, hasNextPage, refetch } = useClosedPlaceCandidates(activeTab === "registered")
   const closedPlaceCandidates = data?.pages.flatMap((p) => p.items) ?? []
 
   function openNaverMap(closedPlaceCandidate: ClosedPlaceCandidate) {
@@ -24,12 +27,18 @@ export default function AccessibilityList() {
     }
   }
 
-  console.log(closedPlaceCandidates)
-
   return (
     <>
       <Header title="폐업 추정 장소 관리" />
       <Contents.Normal>
+        <S.TabContainer>
+          <S.Tab active={activeTab === "all"} onClick={() => setActiveTab("all")}>
+            전체
+          </S.Tab>
+          <S.Tab active={activeTab === "registered"} onClick={() => setActiveTab("registered")}>
+            접근성 등록된 장소
+          </S.Tab>
+        </S.TabContainer>
         <S.TableWrapper>
           <div>
             {closedPlaceCandidates.length === 0 ? (
@@ -38,9 +47,9 @@ export default function AccessibilityList() {
               <>
                 {closedPlaceCandidates.map((candidate) => (
                   <S.RowWrapper key={candidate.id}>
-                    <p>
+                    <S.TextContent>
                       {candidate.name}({candidate.address}), {dayjs(candidate.closedAt.value).format("YYYY-MM-DD")} 폐업 추정
-                    </p>
+                    </S.TextContent>
                     <S.ExternalMap onClick={() => openNaverMap(candidate)}>
                       <Image src={naverMapIcon} alt="네이버 지도" />
                     </S.ExternalMap>
