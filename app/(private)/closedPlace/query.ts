@@ -9,13 +9,20 @@ export interface ListClosedPlaceCandidatesResult {
   cursor: string | null
 }
 
-export function useClosedPlaceCandidates() {
+export function useClosedPlaceCandidates(isAccessibilityRegistered: boolean) {
   return useInfiniteQuery({
-    queryKey: ["@closedPlaceCandidates"],
+    queryKey: ["@closedPlaceCandidates", isAccessibilityRegistered],
     queryFn: ({ pageParam }) =>
-      http(`/admin/closed-place-candidates?${qs.stringify({ cursor: pageParam, limit: 10 }, { skipNull: true })}`).then(
-        (res) => res.json() as Promise<ListClosedPlaceCandidatesResult>,
-      ),
+      http(
+        `/admin/closed-place-candidates?${qs.stringify(
+          {
+            cursor: pageParam,
+            limit: 10,
+            isAccessibilityRegistered,
+          },
+          { skipNull: true },
+        )}`,
+      ).then((res) => res.json() as Promise<ListClosedPlaceCandidatesResult>),
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => lastPage.cursor,
   })
