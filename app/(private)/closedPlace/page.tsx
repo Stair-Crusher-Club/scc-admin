@@ -36,7 +36,7 @@ export default function AccessibilityList() {
             전체
           </S.Tab>
           <S.Tab active={activeTab === "registered"} onClick={() => setActiveTab("registered")}>
-            접근성 등록된 장소
+            접근성 정보가 등록된 장소
           </S.Tab>
         </S.TabContainer>
         <S.TableWrapper>
