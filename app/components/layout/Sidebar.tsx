@@ -8,8 +8,8 @@ import { useEffect } from "react"
 import { useMediaQuery } from "react-responsive"
 
 import { AppState } from "@/lib/globalAtoms"
-import { storage } from "@/lib/storage"
 
+import { useAuth } from "@/hooks/useAuth"
 import Logo from "@/icons/Logo"
 import { Spacer } from "@/styles/jsx"
 
@@ -20,6 +20,7 @@ export default function Sidebar() {
   const router = useRouter()
   const isMobile = useMediaQuery({ maxWidth: 800 })
   const [appState, setAppState] = useAtom(AppState)
+  const { clearToken } = useAuth()
 
   // 윈도우 사이즈가 변할 때마다 열림 상태 초기화
   useEffect(() => {
@@ -32,11 +33,10 @@ export default function Sidebar() {
   }
 
   function logout() {
-    storage.remove("token")
+    clearToken()
     if (isMobile) {
       setAppState((s) => ({ ...s, isSidebarOpened: false }))
     }
-    router.replace("/account/login")
   }
 
   return (
