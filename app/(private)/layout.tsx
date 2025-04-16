@@ -13,7 +13,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const { isAuthenticated } = useAuth()
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isAuthenticated === false) {
       router.replace("/account/login?redirect=" + pathname)
     }
   }, [isAuthenticated])
