@@ -6,7 +6,8 @@ import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
 import { NetworkError, http } from "@/lib/http"
-import { storage } from "@/lib/storage"
+
+import { useAuth } from "@/hooks/useAuth"
 
 import * as S from "./page.style"
 
@@ -17,6 +18,7 @@ interface FormValues {
 export default function Page() {
   const router = useRouter()
   const form = useForm<FormValues>({ defaultValues: { username: "", password: "" } })
+  const { updateToken } = useAuth()
 
   async function onSubmit(values: FormValues) {
     try {
@@ -26,7 +28,7 @@ export default function Page() {
       })
       const token = res.headers.get("X-Scc-Access-Key")
       if (!token) return
-      storage.set("token", token)
+      updateToken(token)
       router.replace("/")
     } catch (e) {
       if (e instanceof NetworkError) {

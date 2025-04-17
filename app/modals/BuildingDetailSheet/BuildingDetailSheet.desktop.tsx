@@ -6,14 +6,13 @@ import { useEffect, useMemo, useState } from "react"
 import { deleteQuestTargetBuilding, useQuestBuilding } from "@/lib/apis/api"
 import { QuestBuilding, QuestPlace } from "@/lib/models/quest"
 
+import { useAuth } from "@/hooks/useAuth"
 import Reload from "@/icons/Reload"
 
+import deleteIcon from "../../../public/delete_button.png"
 import RightSheet from "../_template/RightSheet"
 import * as S from "./BuildingDetailSheet.style"
 import PlaceCard from "./PlaceCard"
-import { storage } from "@/lib/storage"
-
-import deleteIcon from "../../../public/delete_button.png"
 
 interface Props extends BasicModalProps {
   building: QuestBuilding
@@ -22,18 +21,10 @@ interface Props extends BasicModalProps {
 
 export const defaultOverlayOptions = { closeDelay: 200, dim: false }
 export default function BuildingDetailSheet({ building: initialData, questId, visible, close }: Props) {
-  const [sortedPlaces, setSortedPlaces] = useState<QuestPlace[]>([]);
+  const [sortedPlaces, setSortedPlaces] = useState<QuestPlace[]>([])
   const { data: building } = useQuestBuilding({ questId, buildingId: initialData.buildingId })
   const queryClient = useQueryClient()
-  const [authenticated, setAuthenticated] = useState<boolean>()
-  useEffect(() => {
-    const token = storage.get("token")
-    if (token) {
-      setAuthenticated(true)
-    } else {
-      setAuthenticated(false)
-    }
-  }, [])
+  const { isAuthenticated } = useAuth()
 
   function reloadQuest() {
     queryClient.invalidateQueries({ queryKey: ["@quests", questId] })
@@ -42,9 +33,9 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
   async function deleteBuilding() {
     if (building) {
       if (!confirm(`[${building.name}] 건물을 정말 삭제하시겠습니까?`)) return
-      await deleteQuestTargetBuilding(questId, building!);
-      reloadQuest();
-      close();
+      await deleteQuestTargetBuilding(questId, building!)
+      reloadQuest()
+      close()
     }
   }
 
@@ -79,15 +70,11 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
       <S.ReloadButton onClick={reloadQuest}>
         <Reload size={24} />
       </S.ReloadButton>
-      {
-        authenticated
-          ? (
-            <S.DeleteButton onClick={deleteBuilding}>
-              <Image src={deleteIcon} alt="삭제" style={{ width: 24, height: 24 }} />
-            </S.DeleteButton>
-          )
-          : null
-      }
+      {isAuthenticated && (
+        <S.DeleteButton onClick={deleteBuilding}>
+          <Image src={deleteIcon} alt="삭제" style={{ width: 24, height: 24 }} />
+        </S.DeleteButton>
+      )}
     </S.CustomTitle>
   )
 
