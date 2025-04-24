@@ -46,7 +46,13 @@ type UpdateQuestStatusParams = {
   isClosed?: boolean
   isNotAccessible?: boolean
 }
-export async function updateQuestStatus({ questId, placeId, buildingId, isClosed, isNotAccessible }: UpdateQuestStatusParams) {
+export async function updateQuestStatus({
+  questId,
+  placeId,
+  buildingId,
+  isClosed,
+  isNotAccessible,
+}: UpdateQuestStatusParams) {
   if (typeof isClosed == "boolean") {
     await api.clubQuestsClubQuestIdIsClosedPut(questId, { placeId, buildingId, isClosed })
   }
@@ -82,8 +88,9 @@ export async function previewDivisions(params: PreviewDivisionsParams) {
   return api.clubQuestsCreateDryRunPost({
     ...params,
     clusterCount: params.clusterCount ?? 0,
-    maxPlaceCountPerQuest: params.maxPlaceCountPerQuest
-  })
+      maxPlaceCountPerQuest: params.maxPlaceCountPerQuest,
+    })
+    .then((res) => res.data)
 }
 
 type CreateQuestPayload = {
@@ -97,7 +104,7 @@ export async function createQuest(payload: CreateQuestPayload) {
   return api.clubQuestsCreateDryRunPost({
     ...payload,
     clusterCount: 0,
-    maxPlaceCountPerQuest: 0
+    maxPlaceCountPerQuest: 0,
   })
 }
 
@@ -120,7 +127,7 @@ export function useChallenges() {
   const api = new ChallengeApi()
   return useQuery({
     queryKey: ["@challenges"],
-    queryFn: () => api.challengesGet(),
+    queryFn: () => api.challengesGet().then((res) => res.data),
   })
 }
 
@@ -128,7 +135,7 @@ export function useChallenge({ id }: { id: string }) {
   const api = new ChallengeApi()
   return useQuery({
     queryKey: ["@challenges", id] as const,
-    queryFn: ({ queryKey }) => api.challengesChallengeIdGet(queryKey[1]),
+    queryFn: ({ queryKey }) => api.challengesChallengeIdGet(queryKey[1]).then((res) => res.data),
   })
 }
 
@@ -150,13 +157,13 @@ type CreateChallengeParams = {
 export function createChallenge(payload: CreateChallengeParams) {
   return api.challengesPost({
     ...payload,
-    conditions: payload.conditions.map(condition => ({
+    conditions: payload.conditions.map((condition) => ({
       ...condition,
       actionCondition: {
         ...condition.actionCondition,
-        types: condition.actionCondition.types as any[]
-      }
-    }))
+        types: condition.actionCondition.types as any[],
+      },
+    })),
   })
 }
 
@@ -167,7 +174,7 @@ export function deleteChallenge({ id }: { id: string }) {
 export function useRegions() {
   return useQuery({
     queryKey: ["@regions"],
-    queryFn: () => api.accessibilityAllowedRegionsGet(),
+    queryFn: () => api.accessibilityAllowedRegionsGet().then((res) => res.data),
   })
 }
 
@@ -246,11 +253,13 @@ export function getImageUploadUrls({
   count: number
   filenameExtension: string
 }): Promise<GetImageUploadUrlsResult> {
-  return api.adminCreateImageUploadUrls({
-    purposeType,
-    count,
-    filenameExtension,
-  }).then(res => res.data)
+  return api
+    .adminCreateImageUploadUrls({
+      purposeType,
+      count,
+      filenameExtension,
+    })
+    .then((res) => res.data)
 }
 export interface GetImageUploadUrlsResult {
   urls: ImageUploadUrl[]

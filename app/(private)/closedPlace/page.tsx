@@ -4,7 +4,7 @@ import dayjs from "dayjs"
 import Image from "next/image"
 import { useState } from "react"
 
-import { ClosedPlaceCandidate } from "@/lib/models/place"
+import { AdminClosedPlaceCandidateDTO } from "@/lib/generated-sources/openapi"
 
 import { Contents, Header } from "@/components/layout"
 
@@ -16,9 +16,10 @@ import { useClosedPlaceCandidates } from "./query"
 export default function AccessibilityList() {
   const [activeTab, setActiveTab] = useState<"all" | "registered">("all")
   const { data, fetchNextPage, hasNextPage, refetch } = useClosedPlaceCandidates(activeTab === "registered")
-  const closedPlaceCandidates = data?.pages.flatMap((p) => p.items) ?? []
+  const closedPlaceCandidates: AdminClosedPlaceCandidateDTO[] =
+    data?.pages.flatMap((p) => p.items)?.filter((it) => it !== undefined) ?? []
 
-  function openNaverMap(closedPlaceCandidate: ClosedPlaceCandidate) {
+  function openNaverMap(closedPlaceCandidate: AdminClosedPlaceCandidateDTO) {
     const isMobile = false
     if (isMobile) {
       window.open(`nmap://search?query=${closedPlaceCandidate.name}`)
@@ -48,7 +49,8 @@ export default function AccessibilityList() {
                 {closedPlaceCandidates.map((candidate) => (
                   <S.RowWrapper key={candidate.id}>
                     <S.TextContent>
-                      {candidate.name}({candidate.address}), {dayjs(candidate.closedAt.value).format("YYYY-MM-DD")} 폐업 추정
+                      {candidate.name}({candidate.address}), {dayjs(candidate.closedAt?.value).format("YYYY-MM-DD")}{" "}
+                      폐업 추정
                     </S.TextContent>
                     <S.ExternalMap onClick={() => openNaverMap(candidate)}>
                       <Image src={naverMapIcon} alt="네이버 지도" />

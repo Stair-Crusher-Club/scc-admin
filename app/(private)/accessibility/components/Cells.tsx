@@ -14,6 +14,7 @@ import {
   updateBuildingAccessibility,
   updatePlaceAccessibility,
 } from "@/lib/apis/api"
+import { AdminAccessibilityDTO } from "@/lib/generated-sources/openapi"
 import { NetworkError } from "@/lib/http"
 import { AccessibilitySummary, FLOORS } from "@/lib/models/accessibility"
 
@@ -72,13 +73,13 @@ export function ActionsCell({
   accessibility,
   ctx,
 }: {
-  accessibility: AccessibilitySummary
+  accessibility: AdminAccessibilityDTO
   ctx?: SearchAccessibilitiesPayload
 }) {
   const queryClient = useQueryClient()
   const [isPlaceAccessibilityModalOpen, setIsPlaceAccessibilityModalOpen] = useState(false)
   const [isBuildingAccessibilityModalOpen, setIsBuildingAccessibilityModalOpen] = useState(false)
-  const [selectedAccessibility, setSelectedAccessibility] = useState<AccessibilitySummary | null>(null)
+  const [selectedAccessibility, setSelectedAccessibility] = useState<AdminAccessibilityDTO | null>(null)
 
   async function handleDeletePlaceAccessibility() {
     const { id, placeName } = accessibility.placeAccessibility

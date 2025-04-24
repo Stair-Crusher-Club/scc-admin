@@ -1,15 +1,15 @@
-import { Combobox, DateInput, NumberInput } from "@reactleaf/input/hookform"
+import { Combobox, NumberInput } from "@reactleaf/input/hookform"
 import React from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
 
 import {
-  BuildingAccessibility,
-  ENTRANCE_DOOR_TYPE,
-  FLOORS,
-  PlaceAccessibility,
-  STAIR_HEIGHT_LEVEL,
-} from "@/lib/models/accessibility"
-import { STAIR_INFO } from "@/lib/models/accessibility"
+  AdminBuildingAccessibilityDTO,
+  AdminEntranceDoorType,
+  AdminPlaceAccessibilityDTO,
+  AdminStairHeightLevel,
+  AdminStairInfoDTO,
+} from "@/lib/generated-sources/openapi"
+import { FLOORS } from "@/lib/models/accessibility"
 
 import * as S from "./EditAccessibility.style"
 
@@ -27,25 +27,25 @@ export const floorOptions = [
 ]
 
 export const stairInfoOptions = [
-  { label: "없음", value: STAIR_INFO.NONE } as const,
-  { label: "1개", value: STAIR_INFO.ONE } as const,
-  { label: "2~5개", value: STAIR_INFO.TWO_TO_FIVE } as const,
-  { label: "6개 이상", value: STAIR_INFO.OVER_SIX } as const,
+  { label: "없음", value: AdminStairInfoDTO.None } as const,
+  { label: "1개", value: AdminStairInfoDTO.One } as const,
+  { label: "2~5개", value: AdminStairInfoDTO.TwoToFive } as const,
+  { label: "6개 이상", value: AdminStairInfoDTO.OverSix } as const,
 ]
 
 export const stairHeightLevelOptions = [
-  { label: "엄지 반 마디", value: STAIR_HEIGHT_LEVEL.HALF_THUMB } as const,
-  { label: "엄지 한 마디", value: STAIR_HEIGHT_LEVEL.THUMB } as const,
-  { label: "한 마디 이상", value: STAIR_HEIGHT_LEVEL.OVER_THUMB } as const,
+  { label: "엄지 반 마디", value: AdminStairHeightLevel.HalfThumb } as const,
+  { label: "엄지 한 마디", value: AdminStairHeightLevel.Thumb } as const,
+  { label: "한 마디 이상", value: AdminStairHeightLevel.OverThumb } as const,
 ]
 
 export const entranceDoorTypeOptions = [
-  { label: "여닫이문", value: ENTRANCE_DOOR_TYPE.HINGED } as const,
-  { label: "미닫이문", value: ENTRANCE_DOOR_TYPE.SLIDING } as const,
-  { label: "자동문", value: ENTRANCE_DOOR_TYPE.AUTOMATIC } as const,
-  { label: "회전문", value: ENTRANCE_DOOR_TYPE.REVOLVING } as const,
-  { label: "기타", value: ENTRANCE_DOOR_TYPE.ETC } as const,
-  { label: "문 없음", value: ENTRANCE_DOOR_TYPE.NONE } as const,
+  { label: "여닫이문", value: AdminEntranceDoorType.Hinged } as const,
+  { label: "미닫이문", value: AdminEntranceDoorType.Sliding } as const,
+  { label: "자동문", value: AdminEntranceDoorType.Automatic } as const,
+  { label: "회전문", value: AdminEntranceDoorType.Revolving } as const,
+  { label: "기타", value: AdminEntranceDoorType.Etc } as const,
+  { label: "문 없음", value: AdminEntranceDoorType.None } as const,
 ]
 
 export interface EditPlaceAccessibilityFormValues {
@@ -62,7 +62,7 @@ export interface EditPlaceAccessibilityFormValues {
 interface EditPlaceAccessibilityModalProps {
   isOpen: boolean
   onClose: () => void
-  placeAccessibility: PlaceAccessibility | null
+  placeAccessibility: AdminPlaceAccessibilityDTO | null
   form: UseFormReturn<EditPlaceAccessibilityFormValues>
   onSubmit: (values: EditPlaceAccessibilityFormValues) => void
 }
@@ -80,7 +80,7 @@ export interface EditBuildingAccessibilityFormValues {
 interface EditBuildingAccessibilityModalProps {
   isOpen: boolean
   onClose: () => void
-  buildingAccessibility: BuildingAccessibility | null
+  buildingAccessibility: AdminBuildingAccessibilityDTO | null
   form: UseFormReturn<EditBuildingAccessibilityFormValues>
   onSubmit: (values: EditBuildingAccessibilityFormValues) => void
 }

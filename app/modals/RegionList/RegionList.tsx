@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "react-toastify"
 
 import { deleteRegion, useRegions } from "@/lib/apis/api"
-import { Region } from "@/lib/models/region"
+import { AccessibilityAllowedRegionDTO } from "@/lib/generated-sources/openapi"
 
 import { FIXED_REGIONS } from "@/(private)/region/data"
 import RightSheet from "@/modals/_template/RightSheet"
@@ -16,7 +16,7 @@ export default function RegionList({ visible, close }: Props) {
   const regions = data ? [...FIXED_REGIONS, ...data] : FIXED_REGIONS
   const queryClient = useQueryClient()
 
-  async function _deleteRegion(region: Region) {
+  async function _deleteRegion(region: AccessibilityAllowedRegionDTO) {
     await deleteRegion({ id: region.id })
     queryClient.invalidateQueries({ queryKey: ["@regions"], exact: true })
     toast.success("오픈 지역에서 삭제되었습니다.")
