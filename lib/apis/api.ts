@@ -3,16 +3,19 @@ import { useQuery } from "@tanstack/react-query"
 import { AccessibilitySummary, ENTRANCE_DOOR_TYPE, STAIR_HEIGHT_LEVEL, STAIR_INFO } from "@/lib/models/accessibility"
 import { EpochMillisTimestamp, LatLng } from "@/lib/models/common"
 
+import { ChallengeApi, DefaultApi } from "../../src/generated-sources/openapi"
 import { http } from "../http"
-import { Challenge } from "../models/challenge"
-import { QuestBuilding, QuestDetail, QuestPlace, QuestPurposeType, QuestSummary } from "../models/quest"
+import { QuestBuilding, QuestDetail, QuestPlace, QuestPurposeType } from "../models/quest"
 import { Region } from "../models/region"
 
 export function useQuest({ id }: { id: string }) {
+  const api = new DefaultApi()
   return useQuery({
     queryKey: ["@quests", id],
-    queryFn: ({ queryKey }) =>
-      http(`/admin/clubQuests/${queryKey[1]}`).then((res) => res.json() as Promise<QuestDetail>),
+    queryFn: ({ queryKey }) => {
+      const result = await api.clubQuestsClubQuestIdGet(queryKey[1])
+      return result.
+    },
     staleTime: 10 * 1000,
   })
 }
@@ -112,16 +115,18 @@ export async function deleteQuestTargetBuilding(questId: string, building: Quest
 }
 
 export function useChallenges() {
+  const api = new ChallengeApi()
   return useQuery({
     queryKey: ["@challenges"],
-    queryFn: () => http(`/admin/challenges`).then((res) => res.json() as Promise<Challenge[]>),
+    queryFn: () => api.challengesGet(),
   })
 }
 
 export function useChallenge({ id }: { id: string }) {
+  const api = new ChallengeApi()
   return useQuery({
     queryKey: ["@challenges", id] as const,
-    queryFn: ({ queryKey }) => http(`/admin/challenges/${queryKey[1]}`).then((res) => res.json() as Promise<Challenge>),
+    queryFn: ({ queryKey }) => api.challengesChallengeIdGet(queryKey[1]),
   })
 }
 
