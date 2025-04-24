@@ -3,21 +3,31 @@ import { useQuery } from "@tanstack/react-query"
 import { AccessibilitySummary, ENTRANCE_DOOR_TYPE, STAIR_HEIGHT_LEVEL, STAIR_INFO } from "@/lib/models/accessibility"
 import { EpochMillisTimestamp, LatLng } from "@/lib/models/common"
 
-import { AccessibilityApi, BannerApi, ChallengeApi, DefaultApi } from "../../lib/generated-sources/openapi"
+import {
+  AccessibilityApi,
+  BannerApi,
+  ChallengeApi,
+  Configuration,
+  DefaultApi,
+} from "../../lib/generated-sources/openapi"
 import { QuestBuilding, QuestPlace, QuestPurposeType } from "../models/quest"
-import { Region } from "../models/region"
 
-const defaultApi = new DefaultApi()
-const challengeApi = new ChallengeApi()
-const bannerApi = new BannerApi()
-const accessibilityApi = new AccessibilityApi()
+const baseURL =
+  process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
+    ? "https://api.staircrusher.club/"
+    : "https://api.dev.staircrusher.club/"
+const config = new Configuration({ basePath: baseURL })
+const defaultApi = new DefaultApi(config)
+const challengeApi = new ChallengeApi(config)
+const bannerApi = new BannerApi(config)
+const accessibilityApi = new AccessibilityApi(config)
 
-export const api: DefaultApi & ChallengeApi & BannerApi & AccessibilityApi = {
-  ...defaultApi,
-  ...challengeApi,
-  ...bannerApi,
-  ...accessibilityApi,
-} as DefaultApi & ChallengeApi & BannerApi & AccessibilityApi
+export const api: DefaultApi & ChallengeApi & BannerApi & AccessibilityApi = Object.assign(
+  defaultApi,
+  challengeApi,
+  bannerApi,
+  accessibilityApi,
+) as DefaultApi & ChallengeApi & BannerApi & AccessibilityApi
 
 export { accessibilityApi }
 
@@ -85,9 +95,10 @@ export interface ClusterPreview {
 }
 
 export async function previewDivisions(params: PreviewDivisionsParams) {
-  return api.clubQuestsCreateDryRunPost({
-    ...params,
-    clusterCount: params.clusterCount ?? 0,
+  return api
+    .clubQuestsCreateDryRunPost({
+      ...params,
+      clusterCount: params.clusterCount ?? 0,
       maxPlaceCountPerQuest: params.maxPlaceCountPerQuest,
     })
     .then((res) => res.data)

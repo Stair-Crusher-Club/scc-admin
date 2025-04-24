@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
-import { NetworkError, http } from "@/lib/http"
+import { api } from "@/lib/apis/api"
+import { NetworkError } from "@/lib/http"
 import { storage } from "@/lib/storage"
 
 import * as S from "./page.style"
@@ -20,11 +21,8 @@ export default function Page() {
 
   async function onSubmit(values: FormValues) {
     try {
-      const res = await http("/admin/login", {
-        method: "POST",
-        body: JSON.stringify(values),
-      })
-      const token = res.headers.get("X-Scc-Access-Key")
+      const res = await api.loginPost(values)
+      const token = res.headers["X-Scc-Access-Key"]
       if (!token) return
       storage.set("token", token)
       router.replace("/")
