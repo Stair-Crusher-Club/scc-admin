@@ -14,8 +14,8 @@ import { QuestBuilding, QuestPlace, QuestPurposeType } from "../models/quest"
 
 const baseURL =
   process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
-    ? "https://api.staircrusher.club/"
-    : "https://api.dev.staircrusher.club/"
+    ? "https://api.staircrusher.club/admin"
+    : "https://api.dev.staircrusher.club/admin"
 const config = new Configuration({ basePath: baseURL })
 const defaultApi = new DefaultApi(config)
 const challengeApi = new ChallengeApi(config)
@@ -27,9 +27,7 @@ export const api: DefaultApi & ChallengeApi & BannerApi & AccessibilityApi = Obj
   challengeApi,
   bannerApi,
   accessibilityApi,
-) as DefaultApi & ChallengeApi & BannerApi & AccessibilityApi
-
-export { accessibilityApi }
+)
 
 export function useQuest({ id }: { id: string }) {
   return useQuery({
@@ -135,7 +133,6 @@ export async function deleteQuestTargetBuilding(questId: string, building: Quest
 }
 
 export function useChallenges() {
-  const api = new ChallengeApi()
   return useQuery({
     queryKey: ["@challenges"],
     queryFn: () => api.challengesGet().then((res) => res.data),
@@ -143,7 +140,6 @@ export function useChallenges() {
 }
 
 export function useChallenge({ id }: { id: string }) {
-  const api = new ChallengeApi()
   return useQuery({
     queryKey: ["@challenges", id] as const,
     queryFn: ({ queryKey }) => api.challengesChallengeIdGet(queryKey[1]).then((res) => res.data),

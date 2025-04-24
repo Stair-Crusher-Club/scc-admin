@@ -22,7 +22,7 @@ export default function Page() {
   async function onSubmit(values: FormValues) {
     try {
       const res = await api.loginPost(values)
-      const token = res.headers["X-Scc-Access-Key"]
+      const token = res.headers["x-scc-access-key"]
       if (!token) return
       storage.set("token", token)
       router.replace("/")
