@@ -1,7 +1,6 @@
 import { BasicModalProps } from "@reactleaf/modal"
 
 import { useQuest } from "@/lib/apis/api"
-import { QuestBuilding } from "@/lib/models/quest"
 
 import { css } from "@/styles/css"
 

@@ -6,7 +6,7 @@ import { format } from "date-fns"
 import { ChangeEventHandler, useState } from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
 
-import { getImageUploadUrls } from "@/lib/apis/api"
+import { api, getImageUploadUrls } from "@/lib/apis/api"
 import { http } from "@/lib/http"
 
 import RemoteImage from "@/components/RemoteImage"
@@ -67,13 +67,13 @@ export default function BannerForm({ form, id, disabled, onSubmit }: Props) {
 
         const removeQueryParamFromUrl = (url: string) => {
           const urlObj = new URL(url)
-          urlObj.search = ''
+          urlObj.search = ""
           return urlObj.toString()
         }
 
         const uploadedImageUrl = removeQueryParamFromUrl(uploadUrl)
         setImageUrl(uploadedImageUrl)
-        form.setValue("imageUrl", uploadedImageUrl);
+        form.setValue("imageUrl", uploadedImageUrl)
       })
     }
   }

@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "codegen": "openapi-generator-cli generate --generator-key dev"
+    "codegen": "openapi-generator-cli generate --generator-key dev",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.19.1",

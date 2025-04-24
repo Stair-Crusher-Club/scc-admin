@@ -533,6 +533,13 @@ paths:
                 $ref: '#/components/schemas/AdminListClosedPlaceCandidatesResponseDTO'
 
   /closed-place-candidates/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+
     get:
       operationId: getClosedPlaceCandidate
       summary: 폐업이 추정되는 장소를 조회한다.
@@ -544,6 +551,12 @@ paths:
                 $ref: '#/components/schemas/AdminClosedPlaceCandidateDTO'
 
   /closed-place-candidates/{id}/accept:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
     put:
       operationId: acceptClosedPlaceCandidate
       summary: 해당 장소를 폐업 상태로 변경한다.
@@ -555,6 +568,13 @@ paths:
                 $ref: '#/components/schemas/AdminClosedPlaceCandidateDTO'
 
   /closed-place-candidates/{id}/ignore:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+
     put:
       operationId: ignoreClosedPlaceCandidate
       summary: 해당 장소를 폐업의 폐업 추정을 무시한다.

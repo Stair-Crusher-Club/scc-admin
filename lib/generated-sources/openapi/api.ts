@@ -2554,11 +2554,15 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary 해당 장소를 폐업 상태로 변경한다.
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        acceptClosedPlaceCandidate: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/closed-place-candidates/{id}/accept`;
+        acceptClosedPlaceCandidate: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('acceptClosedPlaceCandidate', 'id', id)
+            const localVarPath = `/closed-place-candidates/{id}/accept`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3128,11 +3132,15 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary 폐업이 추정되는 장소를 조회한다.
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getClosedPlaceCandidate: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/closed-place-candidates/{id}`;
+        getClosedPlaceCandidate: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getClosedPlaceCandidate', 'id', id)
+            const localVarPath = `/closed-place-candidates/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3198,11 +3206,15 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary 해당 장소를 폐업의 폐업 추정을 무시한다.
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ignoreClosedPlaceCandidate: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/closed-place-candidates/{id}/ignore`;
+        ignoreClosedPlaceCandidate: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('ignoreClosedPlaceCandidate', 'id', id)
+            const localVarPath = `/closed-place-candidates/{id}/ignore`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3355,11 +3367,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 해당 장소를 폐업 상태로 변경한다.
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async acceptClosedPlaceCandidate(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminClosedPlaceCandidateDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.acceptClosedPlaceCandidate(options);
+        async acceptClosedPlaceCandidate(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminClosedPlaceCandidateDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.acceptClosedPlaceCandidate(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3533,11 +3546,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 폐업이 추정되는 장소를 조회한다.
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getClosedPlaceCandidate(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminClosedPlaceCandidateDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getClosedPlaceCandidate(options);
+        async getClosedPlaceCandidate(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminClosedPlaceCandidateDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getClosedPlaceCandidate(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3555,11 +3569,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 해당 장소를 폐업의 폐업 추정을 무시한다.
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async ignoreClosedPlaceCandidate(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminClosedPlaceCandidateDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.ignoreClosedPlaceCandidate(options);
+        async ignoreClosedPlaceCandidate(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminClosedPlaceCandidateDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ignoreClosedPlaceCandidate(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3610,11 +3625,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 
          * @summary 해당 장소를 폐업 상태로 변경한다.
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        acceptClosedPlaceCandidate(options?: any): AxiosPromise<AdminClosedPlaceCandidateDTO> {
-            return localVarFp.acceptClosedPlaceCandidate(options).then((request) => request(axios, basePath));
+        acceptClosedPlaceCandidate(id: string, options?: any): AxiosPromise<AdminClosedPlaceCandidateDTO> {
+            return localVarFp.acceptClosedPlaceCandidate(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3772,11 +3788,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 
          * @summary 폐업이 추정되는 장소를 조회한다.
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getClosedPlaceCandidate(options?: any): AxiosPromise<AdminClosedPlaceCandidateDTO> {
-            return localVarFp.getClosedPlaceCandidate(options).then((request) => request(axios, basePath));
+        getClosedPlaceCandidate(id: string, options?: any): AxiosPromise<AdminClosedPlaceCandidateDTO> {
+            return localVarFp.getClosedPlaceCandidate(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 퀘스트 목록을 커서링 방식으로 조회한다.
@@ -3792,11 +3809,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 
          * @summary 해당 장소를 폐업의 폐업 추정을 무시한다.
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ignoreClosedPlaceCandidate(options?: any): AxiosPromise<AdminClosedPlaceCandidateDTO> {
-            return localVarFp.ignoreClosedPlaceCandidate(options).then((request) => request(axios, basePath));
+        ignoreClosedPlaceCandidate(id: string, options?: any): AxiosPromise<AdminClosedPlaceCandidateDTO> {
+            return localVarFp.ignoreClosedPlaceCandidate(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3843,12 +3861,13 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 해당 장소를 폐업 상태로 변경한다.
+     * @param {string} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public acceptClosedPlaceCandidate(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).acceptClosedPlaceCandidate(options).then((request) => request(this.axios, this.basePath));
+    public acceptClosedPlaceCandidate(id: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).acceptClosedPlaceCandidate(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4037,12 +4056,13 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 폐업이 추정되는 장소를 조회한다.
+     * @param {string} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getClosedPlaceCandidate(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getClosedPlaceCandidate(options).then((request) => request(this.axios, this.basePath));
+    public getClosedPlaceCandidate(id: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getClosedPlaceCandidate(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4061,12 +4081,13 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 해당 장소를 폐업의 폐업 추정을 무시한다.
+     * @param {string} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public ignoreClosedPlaceCandidate(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).ignoreClosedPlaceCandidate(options).then((request) => request(this.axios, this.basePath));
+    public ignoreClosedPlaceCandidate(id: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).ignoreClosedPlaceCandidate(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

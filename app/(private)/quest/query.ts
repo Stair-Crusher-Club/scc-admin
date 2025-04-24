@@ -1,19 +1,13 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
-import qs from "query-string"
+import { useInfiniteQuery } from "@tanstack/react-query"
 
-import { http } from "@/lib/http"
+import { api } from "@/lib/apis/api"
 import { QuestSummary } from "@/lib/models/quest"
 
 export function useClubQuestSummaries() {
   return useInfiniteQuery({
     queryKey: ["@clubQuestSummaries"],
     queryFn: ({ pageParam }) =>
-      http(
-        `/admin/clubQuestSummaries/cursored?${qs.stringify(
-          { cursor: pageParam, limit: 100 },
-          { skipNull: true },
-        )}`,
-      ).then((res) => res.json() as Promise<GetCursoredClubQuestSummariesResult>),
+      api.getCursoredClubQuestSummaries(pageParam ?? undefined, "100").then((res) => res.data),
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => lastPage.cursor,
   })
