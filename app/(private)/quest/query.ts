@@ -7,7 +7,7 @@ export function useClubQuestSummaries() {
   return useInfiniteQuery({
     queryKey: ["@clubQuestSummaries"],
     queryFn: ({ pageParam }) =>
-      api.getCursoredClubQuestSummaries(pageParam ?? undefined, "100").then((res) => res.data),
+      api.default.getCursoredClubQuestSummaries(pageParam ?? undefined, "100").then((res) => res.data),
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => lastPage.cursor,
   })

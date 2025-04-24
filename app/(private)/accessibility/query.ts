@@ -7,7 +7,7 @@ export function useAccessibilities(payload: SearchAccessibilitiesPayload) {
   return useInfiniteQuery({
     queryKey: ["@accessibilities", payload],
     queryFn: ({ pageParam }) =>
-      api
+      api.accessibility
         .searchAccessibilities(
           payload.placeName,
           payload.createdAtFromLocalDate,

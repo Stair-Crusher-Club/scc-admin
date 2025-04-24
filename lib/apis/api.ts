@@ -22,18 +22,23 @@ const challengeApi = new ChallengeApi(config)
 const bannerApi = new BannerApi(config)
 const accessibilityApi = new AccessibilityApi(config)
 
-export const api: DefaultApi & ChallengeApi & BannerApi & AccessibilityApi = Object.assign(
-  defaultApi,
-  challengeApi,
-  bannerApi,
-  accessibilityApi,
-)
+export const api: {
+  default: DefaultApi
+  challenge: ChallengeApi
+  banner: BannerApi
+  accessibility: AccessibilityApi
+} = {
+  default: defaultApi,
+  challenge: challengeApi,
+  banner: bannerApi,
+  accessibility: accessibilityApi,
+}
 
 export function useQuest({ id }: { id: string }) {
   return useQuery({
     queryKey: ["@quests", id],
     queryFn: async ({ queryKey }) => {
-      const result = await api.clubQuestsClubQuestIdGet(queryKey[1])
+      const result = await api.default.clubQuestsClubQuestIdGet(queryKey[1])
       return result.data
     },
     staleTime: 10 * 1000,
@@ -62,10 +67,10 @@ export async function updateQuestStatus({
   isNotAccessible,
 }: UpdateQuestStatusParams) {
   if (typeof isClosed == "boolean") {
-    await api.clubQuestsClubQuestIdIsClosedPut(questId, { placeId, buildingId, isClosed })
+    await api.default.clubQuestsClubQuestIdIsClosedPut(questId, { placeId, buildingId, isClosed })
   }
   if (typeof isNotAccessible == "boolean") {
-    await api.clubQuestsClubQuestIdIsNotAccessiblePut(questId, { placeId, buildingId, isNotAccessible })
+    await api.default.clubQuestsClubQuestIdIsNotAccessiblePut(questId, { placeId, buildingId, isNotAccessible })
   }
 }
 
@@ -93,7 +98,7 @@ export interface ClusterPreview {
 }
 
 export async function previewDivisions(params: PreviewDivisionsParams) {
-  return api
+  return api.default
     .clubQuestsCreateDryRunPost({
       ...params,
       clusterCount: params.clusterCount ?? 0,
@@ -110,7 +115,7 @@ type CreateQuestPayload = {
   dryRunResults: ClusterPreview[]
 }
 export async function createQuest(payload: CreateQuestPayload) {
-  return api.clubQuestsCreateDryRunPost({
+  return api.default.clubQuestsCreateDryRunPost({
     ...payload,
     clusterCount: 0,
     maxPlaceCountPerQuest: 0,
@@ -121,28 +126,28 @@ type DeleteQuestPayload = {
   questId: string
 }
 export async function deleteQuest(payload: DeleteQuestPayload) {
-  return api.clubQuestsClubQuestIdDelete(payload.questId)
+  return api.default.clubQuestsClubQuestIdDelete(payload.questId)
 }
 
 export async function deleteQuestTargetPlace(questId: string, place: QuestPlace) {
-  return api.clubQuestsClubQuestIdTargetPlacesDelete(questId, place.placeId)
+  return api.default.clubQuestsClubQuestIdTargetPlacesDelete(questId, place.placeId)
 }
 
 export async function deleteQuestTargetBuilding(questId: string, building: QuestBuilding) {
-  return api.clubQuestsClubQuestIdTargetBuildingsDelete(questId, building.buildingId)
+  return api.default.clubQuestsClubQuestIdTargetBuildingsDelete(questId, building.buildingId)
 }
 
 export function useChallenges() {
   return useQuery({
     queryKey: ["@challenges"],
-    queryFn: () => api.challengesGet().then((res) => res.data),
+    queryFn: () => api.challenge.challengesGet().then((res) => res.data),
   })
 }
 
 export function useChallenge({ id }: { id: string }) {
   return useQuery({
     queryKey: ["@challenges", id] as const,
-    queryFn: ({ queryKey }) => api.challengesChallengeIdGet(queryKey[1]).then((res) => res.data),
+    queryFn: ({ queryKey }) => api.challenge.challengesChallengeIdGet(queryKey[1]).then((res) => res.data),
   })
 }
 
@@ -162,7 +167,7 @@ type CreateChallengeParams = {
   description: string
 }
 export function createChallenge(payload: CreateChallengeParams) {
-  return api.challengesPost({
+  return api.challenge.challengesPost({
     ...payload,
     conditions: payload.conditions.map((condition) => ({
       ...condition,
@@ -175,22 +180,22 @@ export function createChallenge(payload: CreateChallengeParams) {
 }
 
 export function deleteChallenge({ id }: { id: string }) {
-  return api.challengesChallengeIdDelete(id)
+  return api.challenge.challengesChallengeIdDelete(id)
 }
 
 export function useRegions() {
   return useQuery({
     queryKey: ["@regions"],
-    queryFn: () => api.accessibilityAllowedRegionsGet().then((res) => res.data),
+    queryFn: () => api.default.accessibilityAllowedRegionsGet().then((res) => res.data),
   })
 }
 
 export function createRegion({ name, boundaryVertices }: { name: string; boundaryVertices: LatLng[] }) {
-  return api.accessibilityAllowedRegionsPost({ name, boundaryVertices })
+  return api.default.accessibilityAllowedRegionsPost({ name, boundaryVertices })
 }
 
 export function deleteRegion({ id }: { id: string }) {
-  return api.accessibilityAllowedRegionsRegionIdDelete(id)
+  return api.default.accessibilityAllowedRegionsRegionIdDelete(id)
 }
 
 export interface SearchAccessibilitiesPayload {
@@ -247,7 +252,7 @@ export function updateBuildingAccessibility({
 }
 
 export function crawlChunk({ boundary }: { boundary: LatLng[] }) {
-  return api.startPlaceCrawling({ boundaryVertices: boundary })
+  return api.default.startPlaceCrawling({ boundaryVertices: boundary })
 }
 
 export type ImageUploadPurposeType = "BANNER"
@@ -260,7 +265,7 @@ export function getImageUploadUrls({
   count: number
   filenameExtension: string
 }): Promise<GetImageUploadUrlsResult> {
-  return api
+  return api.default
     .adminCreateImageUploadUrls({
       purposeType,
       count,
@@ -287,5 +292,5 @@ export interface PushNotification {
 }
 
 export function sendPushNotification(payload: SendPushNotificationPayload) {
-  return api.adminSendPushNotification(payload)
+  return api.default.adminSendPushNotification(payload)
 }

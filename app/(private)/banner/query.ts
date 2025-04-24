@@ -6,14 +6,14 @@ import { EpochMillisTimestamp } from "@/lib/models/common"
 export function useAllBanners() {
   return useQuery({
     queryKey: ["@allBanners"],
-    queryFn: () => api.adminAllListBanners().then(res => res.data),
+    queryFn: () => api.banner.adminAllListBanners().then(res => res.data),
   })
 }
 
 export function useHomeBanners() {
   return useQuery({
     queryKey: ["@homeBanners"],
-    queryFn: () => api.adminListHomeBanners().then(res => res.data),
+    queryFn: () => api.banner.adminListHomeBanners().then(res => res.data),
   })
 }
 
@@ -27,11 +27,11 @@ export interface CreateBannerParam {
   displayOrder: number
 }
 export function createBanner(payload: CreateBannerParam) {
-  return api.adminCreateBanner(payload)
+  return api.banner.adminCreateBanner(payload)
 }
 
 export function deleteBanner(banner: Banner) {
-  return api.adminDeleteBanner(banner.id)
+  return api.banner.adminDeleteBanner(banner.id)
 }
 
 export interface GetAllBannersResult {
