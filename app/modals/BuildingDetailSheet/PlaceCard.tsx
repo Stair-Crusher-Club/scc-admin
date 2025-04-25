@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { useMediaQuery } from "react-responsive"
-import { toast } from "react-toastify"
 
 import { deleteQuestTargetPlace, updateQuestStatus } from "@/lib/apis/api"
 import { QuestPlace } from "@/lib/models/quest"
@@ -51,11 +50,6 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
     } else {
       window.open(`https://map.naver.com/p/search/${place.name}`)
     }
-  }
-
-  async function copyPlaceName() {
-    await navigator.clipboard.writeText(place.name)
-    toast.success("장소명을 복사했습니다.")
   }
 
   function openInApp() {
@@ -112,18 +106,12 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
           )}
         </S.Badges>
         <S.PlaceName>
-          <a onClick={openInApp}>{place.name}</a>
-          <S.Button onClick={copyPlaceName} style={{ border: "none" }}>
-            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="11" y="5" width="16" height="16" rx="4" stroke="#777" stroke-width="2" />
-              <rect x="5" y="11" width="16" height="16" rx="4" fill="white" stroke="#777" stroke-width="2" />
-            </svg>
+          <span>{place.name}</span>
+          <S.Button onClick={openInApp}>
+            <Image src={stairCrusherIcon} alt="계단뿌셔클럽" style={{ width: 24, height: 24 }} />
           </S.Button>
           <S.Button onClick={openNaverMap}>
             <Image src={naverMapIcon} alt="네이버 지도" style={{ width: 24, height: 24 }} />
-          </S.Button>
-          <S.Button onClick={openInApp}>
-            <Image src={stairCrusherIcon} alt="계단뿌셔클럽" style={{ width: 24, height: 24 }} />
           </S.Button>
           {authenticated ? (
             <S.Button onClick={deletePlace}>
