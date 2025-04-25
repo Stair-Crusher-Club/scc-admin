@@ -5,12 +5,12 @@ import { toast } from "react-toastify"
 
 import { deleteQuestTargetPlace, updateQuestStatus } from "@/lib/apis/api"
 import { QuestPlace } from "@/lib/models/quest"
+import { storage } from "@/lib/storage"
 
 import Checkbox from "@/components/Checkbox"
 
-import { storage } from "@/lib/storage"
-import naverMapIcon from "../../../public/naver_map.jpg"
 import deleteIcon from "../../../public/delete_button.png"
+import naverMapIcon from "../../../public/naver_map.jpg"
 import * as S from "./PlaceCard.style"
 
 interface Props {
@@ -56,7 +56,7 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
   }
 
   function openInApp() {
-    toast.info("앱에서 열기 : 준비중입니다.")
+    window.location.href = `stair-crusher://place/${place.placeId}`
   }
 
   const updateClosed = async (isClosed: boolean) => {
@@ -85,7 +85,7 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
 
   const deletePlace = async () => {
     if (!confirm(`[${place.name}] 장소를 정말 삭제하시겠습니까?`)) return
-    await deleteQuestTargetPlace(questId, place);
+    await deleteQuestTargetPlace(questId, place)
     onDelete?.(place)
   }
 
@@ -104,7 +104,7 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
           )}
         </S.Badges>
         <S.PlaceName>
-          <span>{place.name}</span>
+          <a onClick={openInApp}>{place.name}</a>
           <S.Button onClick={copyPlaceName} style={{ border: "none" }}>
             <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="11" y="5" width="16" height="16" rx="4" stroke="#777" stroke-width="2" />
@@ -114,13 +114,11 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
           <S.Button onClick={openNaverMap}>
             <Image src={naverMapIcon} alt="네이버 지도" style={{ width: 24, height: 24 }} />
           </S.Button>
-          {
-            authenticated ?
-              <S.Button onClick={deletePlace}>
-                <Image src={deleteIcon} alt="삭제 " style={{ width: 24, height: 24 }} />
-              </S.Button>
-              : null
-          }
+          {authenticated ? (
+            <S.Button onClick={deletePlace}>
+              <Image src={deleteIcon} alt="삭제 " style={{ width: 24, height: 24 }} />
+            </S.Button>
+          ) : null}
         </S.PlaceName>
       </S.NameColumn>
       <S.ActionsColumn>
