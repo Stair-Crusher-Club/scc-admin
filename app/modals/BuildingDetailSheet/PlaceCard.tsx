@@ -12,6 +12,7 @@ import Checkbox from "@/components/Checkbox"
 
 import deleteIcon from "../../../public/delete_button.png"
 import naverMapIcon from "../../../public/naver_map.jpg"
+import stairCrusherIcon from "../../../public/scc_button.png"
 import * as S from "./PlaceCard.style"
 
 interface Props {
@@ -120,6 +121,9 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
           </S.Button>
           <S.Button onClick={openNaverMap}>
             <Image src={naverMapIcon} alt="네이버 지도" style={{ width: 24, height: 24 }} />
+          </S.Button>
+          <S.Button onClick={openInApp}>
+            <Image src={stairCrusherIcon} alt="계단뿌셔클럽" style={{ width: 24, height: 24 }} />
           </S.Button>
           {authenticated ? (
             <S.Button onClick={deletePlace}>
