@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Image from "next/image"
 import { useEffect, useState } from "react"
+import { useMediaQuery } from "react-responsive"
 import { toast } from "react-toastify"
 
 import { deleteQuestTargetPlace, updateQuestStatus } from "@/lib/apis/api"
@@ -23,6 +24,7 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
   const [isClosed, setClosed] = useState(place.isClosed)
   const [isNotAccessible, setNotAccessible] = useState(place.isNotAccessible)
   const [authenticated, setAuthenticated] = useState<boolean>()
+  const isMobile = useMediaQuery({ maxWidth: 800 })
 
   useEffect(() => {
     const token = storage.get("token")
@@ -56,7 +58,12 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
   }
 
   function openInApp() {
-    window.location.href = `stair-crusher://place/${place.placeId}`
+    if (isMobile) {
+      window.location.href = `stair-crusher://place/${place.placeId}`
+    } else {
+      // FIXME: 유니버셜 링크로 연동해두기
+      // window.open(`https://stair-crusher.com/place/${place.placeId}`)
+    }
   }
 
   const updateClosed = async (isClosed: boolean) => {
