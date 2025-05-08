@@ -100,7 +100,7 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
           )}
           {place.isConquered && <S.PlaceStatusBadge status="good">정복완료</S.PlaceStatusBadge>}
           {isClosed && <S.PlaceStatusBadge status="warn">폐업확인</S.PlaceStatusBadge>}
-          {isNotAccessible && <S.PlaceStatusBadge status="warn">접근불가</S.PlaceStatusBadge>}
+          {isNotAccessible && <S.PlaceStatusBadge status="warn">건너뛰기</S.PlaceStatusBadge>}
           {!place.isConquered && !isClosed && place.isClosedExpected && (
             <S.PlaceStatusBadge status="unknown">폐업추정</S.PlaceStatusBadge>
           )}
