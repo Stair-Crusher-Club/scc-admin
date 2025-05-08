@@ -10,6 +10,7 @@ export const Header = styled("header", {
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
+    zIndex: 999,
   },
 })
 
