@@ -1,8 +1,8 @@
-import Lottie from "lottie-react"
 import Image from "next/image"
 
 import { GuideSlideContent } from "@/constants/guide"
 
+import TriggeredLottie from "../TriggeredLottie"
 import * as S from "./GuideSliderItem.style"
 
 export type GuideSlideItemProps = GuideSlideContent & {
@@ -46,7 +46,7 @@ export default function GuideSliderItem({
             {sourceType === "image" ? (
               <Image src={source} alt="이미지" width={335} height={217} />
             ) : (
-              <Lottie animationData={source} loop={false} autoPlay={true} />
+              <TriggeredLottie source={source} isActive={isActive} />
             )}
           </div>
           {!hiddenNextButton && (
