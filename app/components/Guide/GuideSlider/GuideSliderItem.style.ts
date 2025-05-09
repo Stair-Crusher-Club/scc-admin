@@ -82,7 +82,7 @@ export const DescriptionItem = styled("div", {
   base: { textAlign: "center", display: "flex", flexDirection: "column", gap: 4 },
 })
 
-export const Depth = styled("p", {
+export const Title = styled("h4", {
   base: {
     color: "#0E64D3",
     fontSize: "14px",

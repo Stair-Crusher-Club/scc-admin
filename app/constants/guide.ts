@@ -7,6 +7,7 @@ import placeConquerGuide05 from "../../public/guide/register/placeConquerGuide/p
 import filterSearchGuide03 from "../../public/guide/search/filterSearchGuide/filterSearchGuide03.json"
 import filterSearchGuide04 from "../../public/guide/search/filterSearchGuide/filterSearchGuide04.json"
 import filterSearchGuide05 from "../../public/guide/search/filterSearchGuide/filterSearchGuide05.json"
+import sccRoadGuide04 from "../../public/guide/search/sccRoadGuide/sccRoadGuide04.json"
 
 type GuideSlideContentBase = {
   title?: string
@@ -182,7 +183,7 @@ export const buildingConquerGuide: GuideSlideContent[] = [
 //#region 정보 조회하기
 export const locationSearchGuide: GuideSlideContent[] = [
   {
-    description: ["지도 아이콘을 클릭해서, 지도 화면으로 진입해주세요."],
+    description: ["지도 아이콘을 클릭해서,", "지도 화면으로 진입해주세요."],
     source: "/guide/search/locationSearchGuide/locationSearchGuide01.png",
     sourceType: "image",
   },
@@ -259,7 +260,7 @@ export const sccRoadGuide: GuideSlideContent[] = [
     sourceType: "image",
   },
   {
-    description: ["[뿌클로드: 이동약자를 위한 진짜 리뷰] 항목을 선택해요."],
+    description: ["[뿌클로드: 이동약자를 위한 진짜 리뷰]", "항목을 선택해요."],
     source: "/guide/search/sccRoadGuide/sccRoadGuide02.png",
     sourceType: "image",
   },
@@ -270,7 +271,7 @@ export const sccRoadGuide: GuideSlideContent[] = [
   },
   {
     description: ["휠체어 유형, 화장실 유무 등", "장소 방문 전 꼭 필요한 정보를 확인해보세요."],
-    source: filterSearchGuide04,
+    source: sccRoadGuide04,
     sourceType: "lottie",
   },
 ]

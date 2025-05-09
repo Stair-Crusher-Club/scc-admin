@@ -6,7 +6,7 @@ import { buildingConquerGuide, multipleConquerGuide, placeConquerGuide, singleCo
 export default function RegisterGuidePage() {
   return (
     <GuideLayout active="register">
-      <div
+      <section
         style={{
           padding: "40px 0 80px",
         }}
@@ -36,9 +36,9 @@ export default function RegisterGuidePage() {
         </div>
 
         <GuideSlider items={multipleConquerGuide} name="multipleConquerGuide" />
-      </div>
+      </section>
 
-      <div
+      <section
         style={{
           padding: "40px 0 80px",
         }}
@@ -70,7 +70,7 @@ export default function RegisterGuidePage() {
         </div>
 
         <GuideSlider items={buildingConquerGuide} name="buildingConquerGuide" />
-      </div>
+      </section>
     </GuideLayout>
   )
 }

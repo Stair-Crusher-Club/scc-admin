@@ -26,6 +26,7 @@ export default function GuideSliderItem({
   stepNumber,
   source,
   sourceType,
+  title,
   description,
   extraDescription,
   hiddenPrevButton = false,
@@ -69,7 +70,7 @@ export default function GuideSliderItem({
 
           {/* Description */}
           <S.DescriptionItem>
-            <S.Depth>{stepNumber}단계</S.Depth>
+            <S.Title>{title ? title : `${stepNumber}단계`}</S.Title>
             {description.map((desc, idx) => (
               <S.Description key={`${name}-desc-${idx}`}>{desc}</S.Description>
             ))}
