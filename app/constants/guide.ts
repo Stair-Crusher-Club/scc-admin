@@ -4,8 +4,12 @@ import buildingConquerGuide04 from "../../public/guide/register/buildingConquerG
 import placeConquerGuide03 from "../../public/guide/register/placeConquerGuide/placeConquerGuide03.json"
 import placeConquerGuide04 from "../../public/guide/register/placeConquerGuide/placeConquerGuide04.json"
 import placeConquerGuide05 from "../../public/guide/register/placeConquerGuide/placeConquerGuide05.json"
+import filterSearchGuide03 from "../../public/guide/search/filterSearchGuide/filterSearchGuide03.json"
+import filterSearchGuide04 from "../../public/guide/search/filterSearchGuide/filterSearchGuide04.json"
+import filterSearchGuide05 from "../../public/guide/search/filterSearchGuide/filterSearchGuide05.json"
 
 type GuideSlideContentBase = {
+  title?: string
   description: string[]
   extraDescription?: {
     title: string
@@ -171,6 +175,103 @@ export const buildingConquerGuide: GuideSlideContent[] = [
       ],
       descriptionStyle: "disc",
     },
+  },
+]
+//#endregion
+
+//#region 정보 조회하기
+export const locationSearchGuide: GuideSlideContent[] = [
+  {
+    description: ["지도 아이콘을 클릭해서, 지도 화면으로 진입해주세요."],
+    source: "/guide/search/locationSearchGuide/locationSearchGuide01.png",
+    sourceType: "image",
+  },
+  {
+    description: ["원하는 지역으로 지도를 이동 시킨 후", "음식점/카페/편의점 등 카테고리를 선택해주세요."],
+    source: "/guide/search/locationSearchGuide/locationSearchGuide02.png",
+    sourceType: "image",
+  },
+  {
+    description: ["지도의 마커를 통해", "한눈에 접근성을 확인할 수 있어요."],
+    source: "/guide/search/locationSearchGuide/locationSearchGuide03.png",
+    sourceType: "image",
+  },
+  {
+    description: ["장소 상세페이지에 들어가면", "사진과 함께 자세한 접근성 정보를 볼 수 있어요."],
+    source: "/guide/search/locationSearchGuide/locationSearchGuide04.png",
+    sourceType: "image",
+  },
+]
+
+export const placeSearchGuide: GuideSlideContent[] = [
+  {
+    description: ["검색창을 눌러, 검색 화면으로 들어가세요."],
+    source: "/guide/search/placeSearchGuide/placeSearchGuide01.png",
+    sourceType: "image",
+  },
+  {
+    description: ["장소 이름을 입력하고,", "검색 결과에서 원하는 매장을 선택하세요."],
+    source: "/guide/search/placeSearchGuide/placeSearchGuide02.png",
+    sourceType: "image",
+  },
+  {
+    description: ["장소 상세페이지에서 사진과 함께 접근성 정보를 확인할 수 있어요."],
+    source: "/guide/search/placeSearchGuide/placeSearchGuide03.png",
+    sourceType: "image",
+  },
+]
+
+export const filterSearchGuide: GuideSlideContent[] = [
+  {
+    description: ["카테고리나 장소를 검색해", "지도 화면으로 이동해주세요."],
+    source: "/guide/search/filterSearchGuide/filterSearchGuide01.png",
+    sourceType: "image",
+  },
+  {
+    description: ["상단의 검색 필터를 사용해", "조건에 맞는 장소만 골라볼 수 있어요."],
+    source: "/guide/search/filterSearchGuide/filterSearchGuide02.png",
+    sourceType: "image",
+  },
+  {
+    title: "접근 레벨",
+    description: ["접근 레벨에 따라", "원하는 수준만 골라볼 수 있어요."],
+    source: filterSearchGuide03,
+    sourceType: "lottie",
+  },
+  {
+    title: "경사로 유무",
+    description: ["접근레벨 0이거나,", "경사로가 있는 곳만 모아볼 수 있어요."],
+    source: filterSearchGuide04,
+    sourceType: "lottie",
+  },
+  {
+    title: "정복 유무",
+    description: ["정보가 등록된 곳만", "따로 모아서 볼 수 있어요."],
+    source: filterSearchGuide05,
+    sourceType: "lottie",
+  },
+]
+
+export const sccRoadGuide: GuideSlideContent[] = [
+  {
+    description: ["앱 하단에서 ‘메뉴' 탭을 클릭해요"],
+    source: "/guide/search/sccRoadGuide/sccRoadGuide01.png",
+    sourceType: "image",
+  },
+  {
+    description: ["[뿌클로드: 이동약자를 위한 진짜 리뷰] 항목을 선택해요."],
+    source: "/guide/search/sccRoadGuide/sccRoadGuide02.png",
+    sourceType: "image",
+  },
+  {
+    description: ["이동약자와 친구로 구성된 에디터가 직접 다녀온 카페, 식당, 관광지 후기를 모아볼 수 있어요."],
+    source: "/guide/search/sccRoadGuide/sccRoadGuide03.png",
+    sourceType: "image",
+  },
+  {
+    description: ["휠체어 유형, 화장실 유무 등", "장소 방문 전 꼭 필요한 정보를 확인해보세요."],
+    source: filterSearchGuide04,
+    sourceType: "lottie",
   },
 ]
 //#endregion
