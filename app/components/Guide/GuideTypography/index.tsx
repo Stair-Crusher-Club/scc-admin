@@ -1,14 +1,16 @@
+import { SystemStyleObject } from "@pandacss/dev"
 import { PropsWithChildren } from "react"
 
 import { styled } from "@/styles/jsx"
 
 interface GuideTypographyProps extends PropsWithChildren {
   variant: "title" | "subtitle" | "description"
+  css?: SystemStyleObject
 }
 
-export default function GuideTypography({ children, variant }: GuideTypographyProps) {
+export default function GuideTypography({ children, variant, css }: GuideTypographyProps) {
   const Component = variants[variant]
-  return <Component>{children}</Component>
+  return <Component css={css}>{children}</Component>
 }
 
 const variants = {
