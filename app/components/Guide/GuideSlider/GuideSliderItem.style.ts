@@ -79,7 +79,7 @@ export const Dot = styled("div", {
 
 // Description
 export const DescriptionItem = styled("div", {
-  base: { textAlign: "center", display: "flex", flexDirection: "column", gap: 4 },
+  base: { textAlign: "center" },
 })
 
 export const Title = styled("h4", {
@@ -87,6 +87,7 @@ export const Title = styled("h4", {
     color: "#0E64D3",
     fontSize: "14px",
     fontWeight: "bold",
+    marginBottom: 4,
   },
 })
 
