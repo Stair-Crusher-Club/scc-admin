@@ -23,6 +23,7 @@ export const ArrowButton = styled("button", {
     top: "50%",
     zIndex: 1,
     transform: "translateY(-50%)",
+    willChange: "transform",
   },
   variants: {
     position: {

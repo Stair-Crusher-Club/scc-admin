@@ -43,13 +43,13 @@ export default function GuideSliderItem({
               <Image src="/arrow-prev.png" alt="이전 버튼" width={24} height={24} />
             </S.ArrowButton>
           )}
-          <div>
-            {sourceType === "image" ? (
-              <Image src={source} alt="이미지" width={335} height={217} />
-            ) : (
-              <TriggeredLottie source={source} isActive={isActive} delay={800} />
-            )}
-          </div>
+
+          {sourceType === "image" ? (
+            <Image src={source} alt="이미지" width={335} height={217} />
+          ) : (
+            <TriggeredLottie width={335} height={217} animationData={source} isActive={isActive} delay={800} />
+          )}
+
           {!hiddenNextButton && (
             <S.ArrowButton onClick={onClickNext} disabled={!isActive} position="next">
               <Image src="/arrow-next.png" alt="다음 버튼" width={24} height={24} />

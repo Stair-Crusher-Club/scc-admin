@@ -1,13 +1,12 @@
-import Lottie, { LottieRefCurrentProps } from "lottie-react"
+import Lottie, { LottieComponentProps, LottieRefCurrentProps } from "lottie-react"
 import { useEffect, useRef } from "react"
 
-interface TriggeredLottieProps {
+interface TriggeredLottieProps extends LottieComponentProps {
   isActive: boolean
-  source: object
   delay?: number
 }
 
-export default function TriggeredLottie({ isActive, source, delay }: TriggeredLottieProps) {
+export default function TriggeredLottie({ isActive, animationData, delay }: TriggeredLottieProps) {
   const lottieRef = useRef<LottieRefCurrentProps>(null)
 
   useEffect(() => {
@@ -21,7 +20,6 @@ export default function TriggeredLottie({ isActive, source, delay }: TriggeredLo
           lottieRef.current?.play()
         }, delay)
       } else {
-        lottieRef.current.play()
       }
     }
 
@@ -32,5 +30,5 @@ export default function TriggeredLottie({ isActive, source, delay }: TriggeredLo
     }
   }, [isActive, delay])
 
-  return <Lottie lottieRef={lottieRef} animationData={source} loop={false} autoPlay={false} />
+  return <Lottie lottieRef={lottieRef} animationData={animationData} loop={false} autoPlay={false} />
 }
