@@ -1,7 +1,12 @@
 import { SystemStyleObject } from "@pandacss/dev"
+import localFont from "next/font/local"
 import { PropsWithChildren } from "react"
 
 import { styled } from "@/styles/jsx"
+
+const pretendard = localFont({
+  src: "../../../../public/fonts/Pretendard.ttf",
+})
 
 interface GuideTypographyProps extends PropsWithChildren {
   variant: "title" | "subtitle" | "description"
@@ -10,7 +15,11 @@ interface GuideTypographyProps extends PropsWithChildren {
 
 export default function GuideTypography({ children, variant, css }: GuideTypographyProps) {
   const Component = variants[variant]
-  return <Component css={css}>{children}</Component>
+  return (
+    <Component className={pretendard.className} css={css}>
+      {children}
+    </Component>
+  )
 }
 
 const variants = {
