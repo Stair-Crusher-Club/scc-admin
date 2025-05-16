@@ -1,11 +1,10 @@
-import GuideLayout from "@/components/Guide/GuideLayout"
 import GuideSlider from "@/components/Guide/GuideSlider/GuideSlider"
 import GuideTypography from "@/components/Guide/GuideTypography"
 import { buildingConquerGuide, multipleConquerGuide, placeConquerGuide, singleConquerGuide } from "@/constants/guide"
 
-export default function RegisterGuidePage() {
+export default function RegisterGuideView() {
   return (
-    <GuideLayout active="register">
+    <>
       <section
         style={{
           padding: "40px 0 80px",
@@ -71,6 +70,6 @@ export default function RegisterGuidePage() {
 
         <GuideSlider items={buildingConquerGuide} name="buildingConquerGuide" />
       </section>
-    </GuideLayout>
+    </>
   )
 }

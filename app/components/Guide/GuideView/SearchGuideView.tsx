@@ -1,12 +1,11 @@
-import GuideLayout from "@/components/Guide/GuideLayout"
 import GuideSlider from "@/components/Guide/GuideSlider/GuideSlider"
 import * as S from "@/components/Guide/GuideSlider/GuideSliderItem.style"
 import GuideTypography from "@/components/Guide/GuideTypography"
 import { filterSearchGuide, locationSearchGuide, placeSearchGuide, sccRoadGuide } from "@/constants/guide"
 
-export default function SearchGuidePage() {
+export default function SearchGuideView() {
   return (
-    <GuideLayout active="search">
+    <>
       <section
         style={{
           padding: "40px 0 80px",
@@ -92,6 +91,6 @@ export default function SearchGuidePage() {
         </div>
         <GuideSlider items={sccRoadGuide} name="sccRoadGuide" />
       </section>
-    </GuideLayout>
+    </>
   )
 }

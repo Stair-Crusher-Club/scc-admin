@@ -28,7 +28,7 @@ export const Nav = styled("nav", {
   },
 })
 
-export const Menu = styled("a", {
+export const MenuButton = styled("button", {
   base: {
     width: "full",
     display: "block",
@@ -56,5 +56,6 @@ export const Main = styled("main", {
     maxWidth: "640px",
     width: "full",
     margin: "60px auto 0",
+    overflow: "auto",
   },
 })

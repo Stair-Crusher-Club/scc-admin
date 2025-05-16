@@ -1,26 +1,42 @@
-import { PropsWithChildren } from "react"
+import { PropsWithChildren, useRef } from "react"
 
 import * as S from "./GuideLayout.style"
 
+export type GuideTab = "register" | "search"
+
 interface GuideLayoutProps extends PropsWithChildren {
-  active: "register" | "search"
+  activeTab: GuideTab
+  changeActiveTab: (tab: GuideTab) => void
 }
 
-export default function GuideLayout({ children, active }: GuideLayoutProps) {
+export default function GuideLayout({ activeTab, changeActiveTab, children }: GuideLayoutProps) {
+  const mainRef = useRef<HTMLElement | null>(null)
   return (
     <>
       <S.Header>
         <S.Nav>
-          <S.Menu active={active === "register"} href="/public/guide/register">
+          <S.MenuButton
+            active={activeTab === "register"}
+            onClick={() => {
+              changeActiveTab("register")
+              mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+            }}
+          >
             정보 등록하기
-          </S.Menu>
-          <S.Menu active={active === "search"} href="/public/guide/search">
+          </S.MenuButton>
+          <S.MenuButton
+            active={activeTab === "search"}
+            onClick={() => {
+              changeActiveTab("search")
+              mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+            }}
+          >
             정보 조회하기
-          </S.Menu>
+          </S.MenuButton>
         </S.Nav>
       </S.Header>
 
-      <S.Main>{children}</S.Main>
+      <S.Main ref={mainRef}>{children}</S.Main>
     </>
   )
 }
