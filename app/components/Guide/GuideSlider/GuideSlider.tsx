@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react"
 
 import { GuideSlideContent } from "@/constants/guide"
+import { useSwipe } from "@/hooks/useSwipe"
 
 import GuideSliderItem from "./GuideSliderItem"
 
@@ -17,18 +18,17 @@ export default function GuideSlider({ name, items = [], slideItemWidth = 335, sl
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const onClickPrev = useCallback(() => {
-    if (currentIndex <= 0) {
-      return
-    }
-    setCurrentIndex((idx) => idx - 1)
+    setCurrentIndex((idx) => Math.max(idx - 1, 0))
   }, [currentIndex])
 
   const onClickNext = useCallback(() => {
-    if (currentIndex >= items.length - 1) {
-      return
-    }
-    setCurrentIndex((idx) => idx + 1)
+    setCurrentIndex((idx) => Math.min(idx + 1, items.length - 1))
   }, [currentIndex])
+
+  const { onTouchStart, onTouchEnd } = useSwipe<HTMLDivElement>({
+    onSwipeLeft: onClickNext,
+    onSwipeRight: onClickPrev,
+  })
 
   return (
     <div
@@ -38,6 +38,8 @@ export default function GuideSlider({ name, items = [], slideItemWidth = 335, sl
         justifyContent: "center",
         overflow: "hidden",
       }}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       <div
         style={{
