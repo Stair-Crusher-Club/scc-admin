@@ -33,7 +33,7 @@ const variants = {
   subtitle: styled("h3", {
     base: {
       fontSize: 18,
-      fontWeight: "semibold",
+      fontWeight: 600,
       lineHeight: "140%",
     },
   }),
