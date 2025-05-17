@@ -1,13 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 
 import GuideLayout, { GuideTab } from "@/components/Guide/GuideLayout"
 import RegisterGuideView from "@/components/Guide/GuideView/RegisterGuideView"
 import SearchGuideView from "@/components/Guide/GuideView/SearchGuideView"
 
 export default function GuidePage() {
-  const [activeTab, setActiveTab] = useState<GuideTab>("register")
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const queryString = searchParams.get("tab")
+
+  const [activeTab, setActiveTab] = useState<GuideTab>(
+    queryString === "register" || queryString === "search" ? queryString : "register",
+  )
 
   const renderView = () => {
     switch (activeTab) {
@@ -19,6 +26,10 @@ export default function GuidePage() {
         return null
     }
   }
+
+  useEffect(() => {
+    router.replace(`?tab=${activeTab}`, { scroll: false })
+  }, [activeTab])
 
   return (
     <GuideLayout activeTab={activeTab} changeActiveTab={setActiveTab}>
