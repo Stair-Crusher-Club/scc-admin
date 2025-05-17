@@ -1,6 +1,7 @@
 import buildingConquerGuide02 from "../../public/guide/register/buildingConquerGuide/buildingConquerGuide02.json"
 import buildingConquerGuide03 from "../../public/guide/register/buildingConquerGuide/buildingConquerGuide03.json"
 import buildingConquerGuide04 from "../../public/guide/register/buildingConquerGuide/buildingConquerGuide04.json"
+import buildingConquerGuide05 from "../../public/guide/register/buildingConquerGuide/buildingConquerGuide05.json"
 import placeConquerGuide03 from "../../public/guide/register/placeConquerGuide/placeConquerGuide03.json"
 import placeConquerGuide04 from "../../public/guide/register/placeConquerGuide/placeConquerGuide04.json"
 import placeConquerGuide05 from "../../public/guide/register/placeConquerGuide/placeConquerGuide05.json"
@@ -166,8 +167,8 @@ export const buildingConquerGuide: GuideSlideContent[] = [
   },
   {
     description: ["더 도움이 될 정보가 있다면,", "의견을 남겨주세요."],
-    source: "/guide/register/buildingConquerGuide/buildingConquerGuide05.png",
-    sourceType: "image",
+    source: buildingConquerGuide05,
+    sourceType: "lottie",
     extraDescription: {
       title: "🍀 코멘트는 접근성을 판단하는 데 큰 도움이 돼요.",
       description: [
