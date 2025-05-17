@@ -24,6 +24,7 @@ export const ArrowButton = styled("button", {
     zIndex: 1,
     transform: "translateY(-50%)",
     willChange: "transform",
+    padding: 6,
   },
   variants: {
     position: {
@@ -138,6 +139,6 @@ export const ExtraDescriptionDot = styled("span", {
 export const ExtraDescription = styled("p", {
   base: {
     fontSize: 13,
-    lineHeight: "150%",
+    lineHeight: "160%",
   },
 })
