@@ -1,7 +1,6 @@
 import { BasicModalProps } from "@reactleaf/modal"
 
 import { useQuest } from "@/lib/apis/api"
-import { QuestBuilding } from "@/lib/models/quest"
 
 import { css } from "@/styles/css"
 
@@ -33,7 +32,7 @@ export default function QuestSummarySheet({ questId, visible, close }: Props) {
               <S.HeaderCell style={{ textAlign: "left" }}>건불 번호</S.HeaderCell>
               <S.HeaderCell>장소 수</S.HeaderCell>
               <S.HeaderCell>정복</S.HeaderCell>
-              <S.HeaderCell>폐업 및 접근 불가</S.HeaderCell>
+              <S.HeaderCell>폐업 및 건너뛰기</S.HeaderCell>
             </S.HeaderRow>
             {quest?.buildings.map((building) => (
               <tr key={building.buildingId} className={css({ _hover: { backgroundColor: "var(--leaf-primary-98)" } })}>
