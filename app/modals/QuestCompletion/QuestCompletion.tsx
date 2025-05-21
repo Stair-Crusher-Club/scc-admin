@@ -17,6 +17,7 @@ export interface QuestCompletionProps {
 
 export default function QuestCompletion({ close, questName, questClearDate }: QuestCompletionProps) {
   const captureRef = useRef<HTMLDivElement | null>(null)
+  const [loading, setLoading] = useState(false)
   const [openIosImageSaveModal, setOpenIosImageSaveModal] = useState(false)
   const imageUrlRef = useRef("")
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
@@ -31,7 +32,9 @@ export default function QuestCompletion({ close, questName, questClearDate }: Qu
           return true
         }
 
+        setLoading(true)
         const dataUrl = await domToPng(captureRef.current, { scale: 2, filter })
+        setLoading(false)
 
         if (isIOS) {
           imageUrlRef.current = dataUrl
@@ -82,9 +85,15 @@ export default function QuestCompletion({ close, questName, questClearDate }: Qu
         </S.ModalBackground>
       </S.ModalWrapper>
 
-      <S.ImageDownloadButton onClick={handleCapture}>
-        이미지 저장하기
-        <Download size={16} color="white" />
+      <S.ImageDownloadButton disabled={loading} onClick={handleCapture}>
+        {loading ? (
+          "이미지 저장중..."
+        ) : (
+          <>
+            이미지 저장하기
+            <Download size={16} color="white" />
+          </>
+        )}
       </S.ImageDownloadButton>
 
       {openIosImageSaveModal && (
