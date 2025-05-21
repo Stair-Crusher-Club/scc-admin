@@ -140,3 +140,35 @@ export const ImageDownloadButton = styled("button", {
     gap: "6px",
   },
 })
+
+//#region iOS용 이미지 저장 UI
+export const IOSImageSaveView = styled("article", {
+  base: {
+    position: "fixed",
+    inset: 0,
+    backgroundColor: "#19212B",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "16px",
+    zIndex: 1002,
+    flexDirection: "column",
+    userSelect: "none",
+    gap: 20,
+  },
+})
+
+export const IOSImageSaveDescription = styled("div", {
+  base: { color: "white", display: "flex", flexDirection: "column", gap: 4, alignItems: "center" },
+})
+
+export const IOSImageWrapper = styled("div", {
+  base: {
+    position: "relative",
+    width: "full",
+    maxWidth: "375px",
+    height: "100%",
+    maxHeight: "430px",
+  },
+})
+//#endregion

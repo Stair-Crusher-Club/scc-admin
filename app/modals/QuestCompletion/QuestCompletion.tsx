@@ -1,7 +1,7 @@
 import Lottie from "lottie-react"
 import { domToPng } from "modern-screenshot"
 import Image from "next/image"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 
 import Close from "@/icons/Close"
 import Download from "@/icons/Download"
@@ -17,21 +17,34 @@ export interface QuestCompletionProps {
 
 export default function QuestCompletion({ close, questName, questClearDate }: QuestCompletionProps) {
   const captureRef = useRef<HTMLDivElement | null>(null)
+  const [openIosImageSaveModal, setOpenIosImageSaveModal] = useState(false)
+  const imageUrlRef = useRef("")
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
 
   const handleCapture = async () => {
-    if (captureRef.current) {
-      const filter = (node: Node) => {
-        if (node instanceof Element) {
-          return node.id !== "quest-completion-modal-close-button"
+    try {
+      if (captureRef.current) {
+        const filter = (node: Node) => {
+          if (node instanceof Element) {
+            return node.id !== "quest-completion-modal-close-button"
+          }
+          return true
         }
-        return true
-      }
 
-      const dataUrl = await domToPng(captureRef.current, { scale: 2, filter })
-      const link = document.createElement("a")
-      link.href = dataUrl
-      link.download = `${questClearDate.replaceAll(".", "")}_정복완료.png`
-      link.click()
+        const dataUrl = await domToPng(captureRef.current, { scale: 2, filter })
+
+        if (isIOS) {
+          imageUrlRef.current = dataUrl
+          setOpenIosImageSaveModal(true)
+        } else {
+          const link = document.createElement("a")
+          link.href = dataUrl
+          link.download = `${questClearDate.replaceAll(".", "")}_정복완료.png`
+          link.click()
+        }
+      }
+    } catch (err) {
+      window.alert("이미지 저장에 실패했어요. 잠시후 다시 시도해주세요.")
     }
   }
 
@@ -73,6 +86,24 @@ export default function QuestCompletion({ close, questName, questClearDate }: Qu
         이미지 저장하기
         <Download size={16} color="white" />
       </S.ImageDownloadButton>
+
+      {openIosImageSaveModal && (
+        <S.IOSImageSaveView>
+          <S.IOSImageSaveDescription>
+            <h2>이미지를 꾹 눌러서 저장하기!</h2>
+            <p>아래 이미지를 꾹 누르면 저장할 수 있어요</p>
+          </S.IOSImageSaveDescription>
+
+          <S.IOSImageWrapper>
+            <Image
+              src={imageUrlRef.current}
+              alt={`${questClearDate.replaceAll(".", "")}_정복완료_인증_이미지`}
+              fill
+              style={{ objectFit: "contain" }}
+            />
+          </S.IOSImageWrapper>
+        </S.IOSImageSaveView>
+      )}
     </S.ModalContainer>
   )
 }
