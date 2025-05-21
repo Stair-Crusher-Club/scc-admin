@@ -51,8 +51,8 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
 
   function getSortedPlaces() {
     if (!building) return []
-    const conquered = building.places.filter(isConquered)
-    const notConquered = building.places.filter((p) => !isConquered(p))
+    const conquered = building.places.filter(isConquered).toSorted((a, b) => a.name.localeCompare(b.name))
+    const notConquered = building.places.filter((p) => !isConquered(p)).toSorted((a, b) => a.name.localeCompare(b.name))
     return [...notConquered, ...conquered].map((p) => building.places.find((b) => b.placeId === p.placeId) || p)
   }
 
