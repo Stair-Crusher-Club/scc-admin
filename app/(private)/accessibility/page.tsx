@@ -7,7 +7,11 @@ import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 import { SearchAccessibilitiesPayload } from "@/lib/apis/api"
-import { AccessibilitySummary, BuildingAccessibility } from "@/lib/models/accessibility"
+import {
+  AdminAccessibilityDTO,
+  AdminBuildingAccessibilityDTO,
+  AdminPlaceAccessibilityDTO,
+} from "@/lib/generated-sources/openapi"
 
 import Table, { makeTypedColumn } from "@/components/Table"
 import { Contents, Header } from "@/components/layout"
@@ -79,7 +83,7 @@ export default function AccessibilityList() {
   )
 }
 
-const col = makeTypedColumn<AccessibilitySummary, SearchAccessibilitiesPayload>()
+const col = makeTypedColumn<AdminAccessibilityDTO, SearchAccessibilitiesPayload>()
 const columns = [
   col({
     title: "장소 사진",
@@ -109,7 +113,7 @@ const columns = [
   col({ field: "_", render: (_, row, ctx) => <ActionsCell accessibility={row} ctx={ctx} /> }),
 ]
 
-const mergeBuildingAccessibilityImages = (buildingAccessibility?: BuildingAccessibility) => {
+const mergeBuildingAccessibilityImages = (buildingAccessibility?: AdminBuildingAccessibilityDTO) => {
   const imageUrls: string[] = []
   if (buildingAccessibility == null) return imageUrls
 
