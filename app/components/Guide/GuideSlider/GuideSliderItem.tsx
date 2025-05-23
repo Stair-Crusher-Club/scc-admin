@@ -72,7 +72,7 @@ export default function GuideSliderItem({
           <S.DescriptionItem>
             <S.Title>{title ? title : `${stepNumber}단계`}</S.Title>
             {description.map((desc, idx) => (
-              <S.Description key={`${name}-desc-${idx}`}>{desc}</S.Description>
+              <S.Description key={`${name}-desc-${idx}`} dangerouslySetInnerHTML={{ __html: desc }} />
             ))}
           </S.DescriptionItem>
         </S.DetailSection>
@@ -84,10 +84,10 @@ export default function GuideSliderItem({
             {extraDescription.description.map((desc, idx) => (
               <S.ExtraDescriptionItem
                 key={`${name}-extra-desc-${idx}`}
-                hasStyle={extraDescription.descriptionStyle !== "none"}
+                hasStyle={extraDescription.descriptionStyle && extraDescription.descriptionStyle !== "none"}
               >
                 {extraDescription.descriptionStyle === "disc" && <S.ExtraDescriptionDot />}
-                <S.ExtraDescription>{desc}</S.ExtraDescription>
+                <S.ExtraDescription dangerouslySetInnerHTML={{ __html: desc }} />
               </S.ExtraDescriptionItem>
             ))}
           </ul>

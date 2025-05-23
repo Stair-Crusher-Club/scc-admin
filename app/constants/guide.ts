@@ -34,17 +34,17 @@ export type GuideSlideContent =
 // 장소 하나 정복하기
 export const singleConquerGuide: GuideSlideContent[] = [
   {
-    description: ["검색창에 장소이름을 검색 후,", "검색결과에 나오는 가게를 선택해주세요."],
+    description: ["검색창을 눌러, ", "정복하고 싶은 장소를 찾아보세요."],
     source: "/guide/register/singleConquerGuide/singleConquerGuide01.png",
     sourceType: "image",
   },
   {
-    description: ["검색창을 클릭하여, 검색 창으로 진입해주세요."],
+    description: ["장소 이름을 입력하고,", "검색 결과에서 해당 장소를 선택해요."],
     source: "/guide/register/singleConquerGuide/singleConquerGuide02.png",
     sourceType: "image",
   },
   {
-    description: ["등록하기 버튼을 클릭해서", "장소 정보 등록을 시작해주세요."],
+    description: ["<strong>[등록하기]</strong> 버튼을 눌러", "정보 등록을 시작해요."],
     source: "/guide/register/singleConquerGuide/singleConquerGuide03.png",
     sourceType: "image",
   },
@@ -53,22 +53,22 @@ export const singleConquerGuide: GuideSlideContent[] = [
 // 여러 곳 정복하기
 export const multipleConquerGuide: GuideSlideContent[] = [
   {
-    description: ["지도 버튼을 클릭해서, 지도 화면에 진입해주세요."],
+    description: ["<strong>[지도]</strong> 아이콘을 눌러,", "지도 화면으로 이동해요."],
     source: "/guide/register/multipleConquerGuide/multipleConquerGuide01.png",
     sourceType: "image",
   },
   {
-    description: ["원하는 지역으로 지도를 이동 시킨 후", "음식점/카페/편의점 등 카테고리를 선택해주세요."],
+    description: ["지도를 원하는 지역으로 옮기고,", "음식점·카페·편의점 등 카테고리를 선택해요."],
     source: "/guide/register/multipleConquerGuide/multipleConquerGuide02.png",
     sourceType: "image",
   },
   {
-    description: ["원하는 지역으로 지도를 이동 시킨 후", "음식점/카페/편의점 등 카테고리를 선택해주세요."],
+    description: ["<strong>[정복 여부]</strong> 필터에서", "'정복 안된 곳만 보기'를 선택해요."],
     source: "/guide/register/multipleConquerGuide/multipleConquerGuide03.png",
     sourceType: "image",
   },
   {
-    description: ["등록하기 버튼을 클릭해서", "장소 정보 등록을 시작해주세요."],
+    description: ["정복하고 싶은 장소를 골라,", "<strong>[등록하기]</strong> 버튼을 눌러 등록을 시작해요."],
     source: "/guide/register/multipleConquerGuide/multipleConquerGuide04.png",
     sourceType: "image",
   },
@@ -81,7 +81,7 @@ export const placeConquerGuide: GuideSlideContent[] = [
     source: "/guide/register/placeConquerGuide/placeConquerGuide01.png",
     sourceType: "image",
     extraDescription: {
-      title: "💡 주의사항️",
+      title: "💡주의사항️",
       description: ["1-2층을 모두 포함해요:", "단독건물이거나, 1층을 포함해서 여러층을 사용하는 경우에 선택해주세요."],
     },
   },
@@ -90,8 +90,8 @@ export const placeConquerGuide: GuideSlideContent[] = [
     source: "/guide/register/placeConquerGuide/placeConquerGuide02.png",
     sourceType: "image",
     extraDescription: {
-      title: "💡 주의사항️",
-      description: ["매장이 1층이 아닌 경우", "해당 층에서 매장의 입구 사진을 촬영해주세요!"],
+      title: "💡주의사항️",
+      description: ["매장이 1층이 아닌 경우", "해당 층에서 <strong>매장의 입구 사진</strong>을 촬영해주세요!"],
     },
   },
   {
@@ -99,7 +99,7 @@ export const placeConquerGuide: GuideSlideContent[] = [
     source: placeConquerGuide03,
     sourceType: "lottie",
     extraDescription: {
-      title: "💡 계단 높이 정보가 필요한 이유?",
+      title: "💡계단 높이 정보가 필요한 이유?",
       description: ["이용자의 상황에 따라 접근 가능한 턱 높이가 다를 수 있어요."],
     },
   },
@@ -113,10 +113,10 @@ export const placeConquerGuide: GuideSlideContent[] = [
     source: placeConquerGuide05,
     sourceType: "lottie",
     extraDescription: {
-      title: "🍀 코멘트는 접근성을 판단하는 데 큰 도움이 돼요.",
+      title: "💡코멘트는 접근성을 판단하는 데 큰 도움이 돼요. (예시)",
       description: [
-        "예: “이 사진은 경사로가 있는 후문 기준입니다.”",
-        "“경사로가 있지만 좁고 가파른 편이라 전동휠체어 이용자는 사진을 꼭 확인해주세요.”",
+        "이 사진은 경사로가 있는 후문 기준입니다.",
+        "경사로가 있지만 좁고 가파른 편이라 전동휠체어 이용자는 사진을 꼭 확인해주세요.",
       ],
       descriptionStyle: "disc",
     },
@@ -130,11 +130,11 @@ export const buildingConquerGuide: GuideSlideContent[] = [
     source: "/guide/register/buildingConquerGuide/buildingConquerGuide01.png",
     sourceType: "image",
     extraDescription: {
-      title: "💡 건물 입구가 여러개인 경우라면?",
+      title: "💡건물 입구가 여러개인 경우라면?",
       description: [
-        "건물 입구가 여러 개인 경우, 이동약자가 접근할 수 있는 문을 기준으로 촬영해주세요.",
+        "이동약자가 접근할 수 있는 문을 기준으로 촬영해주세요.",
         "확인이 어려운 경우에는 정문을 촬영하면 됩니다.",
-        "어떤 문을 기준으로 찍었는지 의견란에 적어주시면, 큰 도움이 됩니다.",
+        "<strong>어떤 문을 기준으로 찍었는지 의견란에 적어주시면,</strong> 큰 도움이 됩니다.",
       ],
       descriptionStyle: "disc",
     },
@@ -144,7 +144,7 @@ export const buildingConquerGuide: GuideSlideContent[] = [
     source: buildingConquerGuide02,
     sourceType: "lottie",
     extraDescription: {
-      title: "💡 계단 높이 정보가 필요한 이유?",
+      title: "💡계단 높이 정보가 필요한 이유?",
       description: ["이용자의 상황에 따라 접근 가능한 턱 높이가 다를 수 있어요."],
     },
   },
@@ -158,10 +158,11 @@ export const buildingConquerGuide: GuideSlideContent[] = [
     source: buildingConquerGuide04,
     sourceType: "lottie",
     extraDescription: {
-      title: "💡 엘리베이터 탑승하러 가는 길 정보도 필요해요.",
+      title: "💡엘리베이터 탑승하러 가는 길 정보도 필요해요.",
       description: [
-        "엘리베이터 유무뿐 아니라, 탑승하러 가는 길의 정보도 필요해요.",
-        "그 길에 계단이나 경사로가 있다면 꼭 함께 입력해주세요.",
+        "엘리베이터 유무뿐 아니라, ",
+        "탑승하러 가는 길의 정보도 필요해요.",
+        "그 길에 <strong>계단이나 경사로가 있다면</strong> 꼭 함께 입력해주세요.",
       ],
     },
   },
@@ -170,10 +171,10 @@ export const buildingConquerGuide: GuideSlideContent[] = [
     source: buildingConquerGuide05,
     sourceType: "lottie",
     extraDescription: {
-      title: "🍀 코멘트는 접근성을 판단하는 데 큰 도움이 돼요.",
+      title: "💡코멘트는 접근성을 판단하는 데 큰 도움이 돼요. (예시)",
       description: [
-        "예: “건물에 여러 입구가 있습니다. 후문 쪽이 훨씬 평평하고, 경사로도 있어서 추천해요.”",
-        "“지하 주차장에서 연결되는 엘리베이터를 이용하면 편리합니다.”",
+        "건물에 여러 입구가 있습니다. 후문 쪽이 훨씬 평평하고, 경사로도 있어서 추천해요.",
+        "지하 주차장에서 연결되는 엘리베이터를 이용하면 편리합니다.",
       ],
       descriptionStyle: "disc",
     },
@@ -184,12 +185,12 @@ export const buildingConquerGuide: GuideSlideContent[] = [
 //#region 정보 조회하기
 export const locationSearchGuide: GuideSlideContent[] = [
   {
-    description: ["지도 아이콘을 클릭해서,", "지도 화면으로 진입해주세요."],
+    description: ["지도 아이콘을 눌러,", "지도 화면으로 이동해요."],
     source: "/guide/search/locationSearchGuide/locationSearchGuide01.png",
     sourceType: "image",
   },
   {
-    description: ["원하는 지역으로 지도를 이동 시킨 후", "음식점/카페/편의점 등 카테고리를 선택해주세요."],
+    description: ["지도를 원하는 지역으로 옮기고,", "음식점·카페·편의점 등 카테고리를 선택해요."],
     source: "/guide/search/locationSearchGuide/locationSearchGuide02.png",
     sourceType: "image",
   },
@@ -256,12 +257,12 @@ export const filterSearchGuide: GuideSlideContent[] = [
 
 export const sccRoadGuide: GuideSlideContent[] = [
   {
-    description: ["앱 하단에서 ‘메뉴' 탭을 클릭해요"],
+    description: ["앱 하단에서 ‘메뉴' 탭을 클릭해요."],
     source: "/guide/search/sccRoadGuide/sccRoadGuide01.png",
     sourceType: "image",
   },
   {
-    description: ["[뿌클로드: 이동약자를 위한 진짜 리뷰]", "항목을 선택해요."],
+    description: ["<strong>[뿌클로드: 이동약자를 위한 진짜 리뷰]</strong>", "항목을 선택해요."],
     source: "/guide/search/sccRoadGuide/sccRoadGuide02.png",
     sourceType: "image",
   },

@@ -121,7 +121,7 @@ export const ExtraDescriptionTitle = styled("h4", {
 export const ExtraDescriptionItem = styled("li", {
   variants: {
     hasStyle: {
-      true: { position: "relative", paddingLeft: 8 },
+      true: { position: "relative", paddingLeft: 20 },
     },
   },
 })
@@ -129,7 +129,7 @@ export const ExtraDescriptionItem = styled("li", {
 export const ExtraDescriptionDot = styled("span", {
   base: {
     position: "absolute",
-    left: 0,
+    left: 10,
     top: 9,
     width: 3,
     height: 3,
