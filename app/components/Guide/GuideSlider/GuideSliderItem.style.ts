@@ -14,6 +14,8 @@ export const ImageSection = styled("div", {
     position: "relative",
     display: "flex",
     alignItems: "end",
+    justifyContent: "center",
+    backgroundColor: "#FAFAFA",
   },
 })
 
