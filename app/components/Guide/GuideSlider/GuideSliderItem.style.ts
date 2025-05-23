@@ -24,15 +24,15 @@ export const ArrowButton = styled("button", {
     zIndex: 1,
     transform: "translateY(-50%)",
     willChange: "transform",
-    padding: 6,
+    padding: 8,
   },
   variants: {
     position: {
       prev: {
-        left: 12,
+        left: 0,
       },
       next: {
-        right: 12,
+        right: 0,
       },
     },
   },
