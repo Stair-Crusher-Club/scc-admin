@@ -139,12 +139,41 @@ type CreateChallengeParams = {
     actionCondition: { types: string[] }
   }[]
   description: string
+  crusherGroup?: CrusherGroup
 }
 export function createChallenge(payload: CreateChallengeParams) {
   return http(`/admin/challenges`, {
     method: "POST",
     body: JSON.stringify(payload),
   })
+}
+
+type UpdateChallengeParams = {
+  name: string
+  isPublic: boolean
+  invitationCode?: string
+  passcode?: string
+  startsAtMillis: number
+  endsAtMillis?: number
+  goal: number
+  milestones: number[]
+  conditions: {
+    addressCondition: { rawEupMyeonDongs: string[] }
+    actionCondition: { types: string[] }
+  }[]
+  description: string
+  crusherGroup?: CrusherGroup
+}
+export function updateChallenge({ id, payload }: { id: string; payload: UpdateChallengeParams }) {
+  return http(`/admin/challenges/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  })
+}
+
+export interface CrusherGroup {
+  name: string
+  icon?: ImageDto
 }
 
 export function deleteChallenge({ id }: { id: string }) {
@@ -243,7 +272,7 @@ export function crawlChunk({ boundary }: { boundary: LatLng[] }) {
   })
 }
 
-export type ImageUploadPurposeType = "BANNER"
+export type ImageUploadPurposeType = "BANNER" | "CRUSHER_LABEL"
 export function getImageUploadUrls({
   purposeType,
   count,
@@ -269,6 +298,12 @@ export interface GetImageUploadUrlsResult {
 }
 export interface ImageUploadUrl {
   url: string
+}
+
+export interface ImageDto {
+  url: string
+  width: number
+  height: number
 }
 
 export interface SendPushNotificationPayload {

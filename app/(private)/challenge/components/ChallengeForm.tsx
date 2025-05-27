@@ -1,10 +1,15 @@
 "use client"
 
-import { Autocomplete, Combobox, DateInput, TextInput } from "@reactleaf/input/hookform"
+import { FileInput } from "@reactleaf/input"
+import { Autocomplete, Combobox, DateInput, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import { format } from "date-fns"
-import { useEffect } from "react"
+import { ChangeEventHandler, useEffect, useState } from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
 
+import { getImageUploadUrls } from "@/lib/apis/api"
+import { http } from "@/lib/http"
+
+import RemoteImage from "@/components/RemoteImage"
 import { css } from "@/styles/css"
 import { Flex } from "@/styles/jsx"
 
@@ -32,6 +37,10 @@ export interface ChallengeFormValues {
   questActions: Option[]
   questRegions: Option[]
   description: string
+  crusherGroupName?: string
+  imageUrl?: string
+  imageWidth?: number
+  imageHeight?: number
 }
 
 export const defaultValues: Partial<ChallengeFormValues> = {
@@ -41,6 +50,10 @@ export const defaultValues: Partial<ChallengeFormValues> = {
   startDate: format(new Date(), "yyyy-MM-dd HH:mm"),
   questActions: actionOptions,
   description: "",
+  crusherGroupName: "",
+  imageUrl: "",
+  imageWidth: undefined,
+  imageHeight: undefined,
 }
 
 interface Props {
@@ -61,8 +74,44 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
     const milestones = form.getValues("milestones")
     const sortedValues = milestones?.sort((a, b) => parseInt(a.value) - parseInt(b.value))
     if (stringifiedMilestones === sortedValues?.map((o) => o.value).toString()) return
-    form.setValue("milestones", milestones?.sort((a, b) => parseInt(a.value) - parseInt(b.value)))
+    form.setValue(
+      "milestones",
+      milestones?.sort((a, b) => parseInt(a.value) - parseInt(b.value)),
+    )
   }, [stringifiedMilestones])
+
+  const [imageUrl, setImageUrl] = useState(form.getValues("imageUrl") || "")
+  const handleFileChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (!e?.target?.files) {
+      return
+    }
+    const selectedFile = e.target.files[0]
+    if (selectedFile) {
+      getImageUploadUrls({
+        purposeType: "CRUSHER_LABEL",
+        count: 1,
+        filenameExtension: selectedFile.name.split(".").pop()!,
+      }).then(async (result) => {
+        const uploadUrl = result.urls[0].url
+        await http(uploadUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": selectedFile.type,
+            "x-amz-acl": "public-read",
+          },
+          body: selectedFile,
+          credentials: "omit", // presigned URL에 요청을 보낼 때는 이미 URL에 인증 정보가 담겨 있으므로 별도로 인증 정보를 담아서 보내면 안 된다.
+        })
+        const removeQueryParamFromUrl = (url: string) => {
+          const urlObj = new URL(url)
+          urlObj.search = ""
+          return urlObj.toString()
+        }
+        const uploadedImageUrl = removeQueryParamFromUrl(uploadUrl)
+        setImageUrl(uploadedImageUrl)
+      })
+    }
+  }
 
   return (
     <FormProvider {...form}>
@@ -130,6 +179,48 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
           options={actionOptions}
         />
         <TextInput name="description" label="설명" disabled={disabled} />
+        <Flex gap={16}>
+          <TextInput
+            name="crusherGroupName"
+            label="파트너 라벨 이름"
+            placeholder="파트너 라벨로 사용하고 싶은 이름을 입력하세요"
+            disabled={disabled}
+          />
+          <FileInput label="파트너 라벨 이미지" accept="image/*" onChange={handleFileChange} disabled={disabled} />
+          {imageUrl ? <RemoteImage src={imageUrl} width={200} /> : null}
+        </Flex>
+        <Flex gap={16}>
+          <NumberInput
+            name="imageWidth"
+            label="이미지 넓이(px)"
+            disabled={disabled}
+            placeholder="이미지의 넓이(px)를 입력하세요"
+            rules={{
+              validate: (value) => {
+                const url = form.getValues("imageUrl")
+                if (url && url !== "" && (!value || value <= 0)) {
+                  return "이미지의 넓이를 입력하세요"
+                }
+                return true
+              },
+            }}
+          />
+          <NumberInput
+            name="imageHeight"
+            label="이미지 높이(px)"
+            disabled={disabled}
+            placeholder="이미지의 높이(px)를 입력하세요"
+            rules={{
+              validate: (value) => {
+                const url = form.getValues("imageUrl")
+                if (url && url !== "" && (!value || value <= 0)) {
+                  return "이미지의 높이를 입력하세요"
+                }
+                return true
+              },
+            }}
+          />
+        </Flex>
       </form>
     </FormProvider>
   )
