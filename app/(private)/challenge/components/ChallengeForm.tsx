@@ -80,7 +80,19 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
     )
   }, [stringifiedMilestones])
 
-  const [imageUrl, setImageUrl] = useState(form.getValues("imageUrl") || "")
+  const [imageUrl, setImageUrl] = useState("")
+  const [showImage, setShowImage] = useState(false)
+  const formImageUrl = form.watch("imageUrl")
+  useEffect(() => {
+    if (formImageUrl && formImageUrl !== "") {
+      setImageUrl(formImageUrl)
+      setShowImage(true)
+    } else {
+      setImageUrl("")
+      setShowImage(false)
+    }
+  }, [formImageUrl])
+
   const handleFileChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     if (!e?.target?.files) {
       return
@@ -189,7 +201,7 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
             disabled={disabled}
           />
           <FileInput label="파트너 라벨 이미지" accept="image/*" onChange={handleFileChange} disabled={disabled} />
-          {imageUrl ? <RemoteImage src={imageUrl} width={200} /> : null}
+          {showImage ? <RemoteImage src={imageUrl} width={200} /> : null}
         </Flex>
         <Flex gap={16}>
           <NumberInput
