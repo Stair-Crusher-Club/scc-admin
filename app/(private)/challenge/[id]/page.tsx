@@ -34,6 +34,10 @@ export default function ChallengeDetail() {
       milestones: challenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
       questActions: actionOptions.filter((v) => challenge.conditions[0].actionCondition.types.includes(v.value)),
       description: challenge.description,
+      crusherGroupName: challenge.crusherGroup?.name || "",
+      imageUrl: challenge.crusherGroup?.icon?.url || "",
+      imageWidth: challenge.crusherGroup?.icon?.width,
+      imageHeight: challenge.crusherGroup?.icon?.height,
     })
   }, [challenge])
 
