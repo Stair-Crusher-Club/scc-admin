@@ -85,7 +85,8 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
     if (!e?.target?.files) {
       return
     }
-    const selectedFile = e.target.files[0]
+    const selectedFile = e!.target.files[0]
+
     if (selectedFile) {
       getImageUploadUrls({
         purposeType: "CRUSHER_LABEL",
@@ -109,6 +110,7 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
         }
         const uploadedImageUrl = removeQueryParamFromUrl(uploadUrl)
         setImageUrl(uploadedImageUrl)
+        form.setValue("imageUrl", uploadedImageUrl)
       })
     }
   }
