@@ -200,11 +200,11 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
             placeholder="파트너 라벨로 사용하고 싶은 이름을 입력하세요"
             disabled={disabled}
           />
-          <div style={{ width: "100%" }}>
+          <div className={css({ width: "100%" })}>
             <FileInput label="파트너 라벨 이미지" accept="image/*" onChange={handleFileChange} disabled={disabled} />
             {showImage && (
               <div
-                style={{
+                className={css({
                   border: "1px solid #b3b8be",
                   display: "flex",
                   justifyContent: "center",
@@ -213,15 +213,15 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
                   marginBottom: 12,
                   backgroundColor: "#ffffff",
                   position: "relative",
-                }}
+                })}
               >
                 <RemoteImage
                   src={imageUrl}
                   height={28}
-                  style={{
+                  className={css({
                     height: 28,
                     objectFit: "contain",
-                  }}
+                  })}
                 />
               </div>
             )}
