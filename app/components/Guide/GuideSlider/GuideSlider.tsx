@@ -16,7 +16,8 @@ interface GuildSliderProps {
 
 export default function GuideSlider({ name, items = [], slideGap = 12 }: GuildSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [slideItemWidth, setSlideItemWidth] = useState(0)
+  // 탭이 바뀌면서 width가 재조정될 때 깨지지 않게 기본값 지정
+  const [slideItemWidth, setSlideItemWidth] = useState(320)
 
   const onClickPrev = useCallback(() => {
     setCurrentIndex((idx) => Math.max(idx - 1, 0))
@@ -32,9 +33,7 @@ export default function GuideSlider({ name, items = [], slideGap = 12 }: GuildSl
   })
 
   useEffect(() => {
-    if (slideItemWidth === 0) {
-      setSlideItemWidth(Math.min(window.innerWidth - 40, 600))
-    }
+    setSlideItemWidth(Math.min(window.innerWidth - 40, 600))
 
     function handleResize() {
       setSlideItemWidth(Math.min(window.innerWidth - 40, 600))
