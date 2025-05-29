@@ -75,6 +75,7 @@ export default function GuideSlider({ name, items = [], slideGap = 12 }: GuildSl
             <GuideSliderItem
               name={name}
               index={idx}
+              width={slideItemWidth}
               isActive={currentIndex === idx}
               stepNumber={idx + 1}
               slideCount={items.length}

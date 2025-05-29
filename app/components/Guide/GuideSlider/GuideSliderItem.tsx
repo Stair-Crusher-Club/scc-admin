@@ -8,6 +8,7 @@ import * as S from "./GuideSliderItem.style"
 export type GuideSlideItemProps = GuideSlideContent & {
   name?: string
   index: number
+  width?: number
   slideCount: number
   onClickPrev: () => void
   onClickNext: () => void
@@ -20,6 +21,7 @@ export type GuideSlideItemProps = GuideSlideContent & {
 export default function GuideSliderItem({
   name = "guide-slide-item",
   index,
+  width = 335,
   slideCount = 3,
   onClickPrev,
   onClickNext,
@@ -45,9 +47,9 @@ export default function GuideSliderItem({
           )}
 
           {sourceType === "image" ? (
-            <Image src={source} alt="이미지" width={335} height={217} />
+            <Image src={source} alt="이미지" width={width} height={217} />
           ) : (
-            <TriggeredLottie width={335} height={217} animationData={source} isActive={isActive} delay={800} />
+            <TriggeredLottie width={width} height={217} animationData={source} isActive={isActive} delay={800} />
           )}
 
           {!hiddenNextButton && (
