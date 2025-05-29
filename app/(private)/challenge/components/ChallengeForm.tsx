@@ -93,6 +93,15 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
     }
   }, [formImageUrl])
 
+  async function getImageSize(url: string): Promise<number[]> {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.src = url
+      img.onload = () => resolve([img.width, img.height])
+      img.onerror = reject
+    })
+  }
+
   const handleFileChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     if (!e?.target?.files) {
       return
@@ -123,6 +132,10 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
         const uploadedImageUrl = removeQueryParamFromUrl(uploadUrl)
         setImageUrl(uploadedImageUrl)
         form.setValue("imageUrl", uploadedImageUrl)
+
+        const [imageWidth, imageHeight]: number[] = await getImageSize(uploadedImageUrl)
+        form.setValue("imageWidth", imageWidth)
+        form.setValue("imageHeight", imageHeight)
       })
     }
   }
@@ -202,38 +215,6 @@ export default function ChallengeForm({ form, id, disabled, onSubmit }: Props) {
           />
           <FileInput label="파트너 라벨 이미지" accept="image/*" onChange={handleFileChange} disabled={disabled} />
           {showImage ? <RemoteImage src={imageUrl} width={200} /> : null}
-        </Flex>
-        <Flex gap={16}>
-          <NumberInput
-            name="imageWidth"
-            label="이미지 넓이(px)"
-            disabled={disabled}
-            placeholder="이미지의 넓이(px)를 입력하세요"
-            rules={{
-              validate: (value) => {
-                const url = form.getValues("imageUrl")
-                if (url && url !== "" && (!value || value <= 0)) {
-                  return "이미지의 넓이를 입력하세요"
-                }
-                return true
-              },
-            }}
-          />
-          <NumberInput
-            name="imageHeight"
-            label="이미지 높이(px)"
-            disabled={disabled}
-            placeholder="이미지의 높이(px)를 입력하세요"
-            rules={{
-              validate: (value) => {
-                const url = form.getValues("imageUrl")
-                if (url && url !== "" && (!value || value <= 0)) {
-                  return "이미지의 높이를 입력하세요"
-                }
-                return true
-              },
-            }}
-          />
         </Flex>
       </form>
     </FormProvider>
