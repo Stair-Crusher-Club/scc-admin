@@ -98,6 +98,9 @@ export default function QuestCompletion({ close, questName, questClearDate }: Qu
 
       {openIosImageSaveModal && (
         <S.IOSImageSaveView>
+          <S.CloseButtonWrapper onClick={close} id="quest-completion-modal-close-button">
+            <Close size={24} color="#ffffff" />
+          </S.CloseButtonWrapper>
           <S.IOSImageSaveDescription>
             <h2>이미지를 꾹 눌러서 저장하기!</h2>
             <p>아래 이미지를 꾹 누르면 저장할 수 있어요</p>
