@@ -18,9 +18,43 @@ export default function CreateChallenge() {
   const form = useForm<ChallengeFormValues>({ defaultValues })
 
   async function onSubmit(values: ChallengeFormValues) {
-    const { name, inviteCode, joinCode, startDate, endDate, milestones, questActions, questRegions, description } =
-      values
+    const {
+      name,
+      inviteCode,
+      joinCode,
+      startDate,
+      endDate,
+      milestones,
+      questActions,
+      questRegions,
+      description,
+      crusherGroupName,
+      imageUrl,
+      imageWidth,
+      imageHeight,
+    } = values
+
     const milestoneNumbers = milestones.map((v) => parseInt(v.value))
+    let icon
+    if (imageUrl && imageUrl.trim() !== "") {
+      icon = {
+        url: imageUrl,
+        width: imageWidth!!,
+        height: imageHeight!!,
+      }
+    } else {
+      icon = undefined
+    }
+
+    let crusherGroup
+    if (crusherGroupName == null || crusherGroupName === "") {
+      crusherGroup = undefined
+    } else {
+      crusherGroup = {
+        name: crusherGroupName,
+        icon: icon,
+      }
+    }
 
     const res = await createChallenge({
       name: name,
@@ -38,6 +72,7 @@ export default function CreateChallenge() {
         },
       ],
       description: description,
+      crusherGroup: crusherGroup,
     })
 
     if (res.status !== 200) {

@@ -1,3 +1,5 @@
+import { CrusherGroup } from "../apis/api"
+
 export const ChallengeActionMap = {
   BUILDING_ACCESSIBILITY: "건물 정보 등록",
   BUILDING_ACCESSIBILITY_COMMENT: "건물 코멘트 등록",
@@ -13,6 +15,7 @@ export interface Challenge {
   isPublic: true
   passcode?: string
   invitationCode?: string
+  crusherGroup?: CrusherGroup
   isComplete: false
   startsAtMillis: number
   goal: number
