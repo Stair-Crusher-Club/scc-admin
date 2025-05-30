@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import { GuideSlideContent } from "@/constants/guide"
 import { useSwipe } from "@/hooks/useSwipe"
@@ -14,8 +14,10 @@ interface GuildSliderProps {
   slideGap?: number
 }
 
-export default function GuideSlider({ name, items = [], slideItemWidth = 335, slideGap = 12 }: GuildSliderProps) {
+export default function GuideSlider({ name, items = [], slideGap = 12 }: GuildSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
+  // 탭이 바뀌면서 width가 재조정될 때 깨지지 않게 기본값 지정
+  const [slideItemWidth, setSlideItemWidth] = useState(320)
 
   const onClickPrev = useCallback(() => {
     setCurrentIndex((idx) => Math.max(idx - 1, 0))
@@ -29,6 +31,17 @@ export default function GuideSlider({ name, items = [], slideItemWidth = 335, sl
     onSwipeLeft: onClickNext,
     onSwipeRight: onClickPrev,
   })
+
+  useEffect(() => {
+    setSlideItemWidth(Math.min(window.innerWidth - 40, 600))
+
+    function handleResize() {
+      setSlideItemWidth(Math.min(window.innerWidth - 40, 600))
+    }
+
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   return (
     <div
@@ -62,6 +75,7 @@ export default function GuideSlider({ name, items = [], slideItemWidth = 335, sl
             <GuideSliderItem
               name={name}
               index={idx}
+              width={slideItemWidth}
               isActive={currentIndex === idx}
               stepNumber={idx + 1}
               slideCount={items.length}
