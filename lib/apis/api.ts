@@ -3,16 +3,44 @@ import { useQuery } from "@tanstack/react-query"
 import { AccessibilitySummary, ENTRANCE_DOOR_TYPE, STAIR_HEIGHT_LEVEL, STAIR_INFO } from "@/lib/models/accessibility"
 import { EpochMillisTimestamp, LatLng } from "@/lib/models/common"
 
-import { http } from "../http"
-import { Challenge } from "../models/challenge"
-import { QuestBuilding, QuestDetail, QuestPlace, QuestPurposeType, QuestSummary } from "../models/quest"
-import { Region } from "../models/region"
+import {
+  AccessibilityApi,
+  BannerApi,
+  ChallengeApi,
+  Configuration,
+  DefaultApi,
+} from "../../lib/generated-sources/openapi"
+import { QuestBuilding, QuestPlace, QuestPurposeType } from "../models/quest"
+
+const baseURL =
+  process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
+    ? "https://api.staircrusher.club/admin"
+    : "https://api.dev.staircrusher.club/admin"
+const config = new Configuration({ basePath: baseURL })
+const defaultApi = new DefaultApi(config)
+const challengeApi = new ChallengeApi(config)
+const bannerApi = new BannerApi(config)
+const accessibilityApi = new AccessibilityApi(config)
+
+export const api: {
+  default: DefaultApi
+  challenge: ChallengeApi
+  banner: BannerApi
+  accessibility: AccessibilityApi
+} = {
+  default: defaultApi,
+  challenge: challengeApi,
+  banner: bannerApi,
+  accessibility: accessibilityApi,
+}
 
 export function useQuest({ id }: { id: string }) {
   return useQuery({
     queryKey: ["@quests", id],
-    queryFn: ({ queryKey }) =>
-      http(`/admin/clubQuests/${queryKey[1]}`).then((res) => res.json() as Promise<QuestDetail>),
+    queryFn: async ({ queryKey }) => {
+      const result = await api.default.clubQuestsClubQuestIdGet(queryKey[1])
+      return result.data
+    },
     staleTime: 10 * 1000,
   })
 }
@@ -31,18 +59,18 @@ type UpdateQuestStatusParams = {
   isClosed?: boolean
   isNotAccessible?: boolean
 }
-export async function updateQuestStatus({ questId, ...params }: UpdateQuestStatusParams) {
-  if (typeof params.isClosed == "boolean") {
-    await http(`/admin/clubQuests/${questId}/isClosed`, {
-      method: "PUT",
-      body: JSON.stringify(params),
-    })
+export async function updateQuestStatus({
+  questId,
+  placeId,
+  buildingId,
+  isClosed,
+  isNotAccessible,
+}: UpdateQuestStatusParams) {
+  if (typeof isClosed == "boolean") {
+    await api.default.clubQuestsClubQuestIdIsClosedPut(questId, { placeId, buildingId, isClosed })
   }
-  if (typeof params.isNotAccessible == "boolean") {
-    await http(`/admin/clubQuests/${questId}/isNotAccessible`, {
-      method: "PUT",
-      body: JSON.stringify(params),
-    })
+  if (typeof isNotAccessible == "boolean") {
+    await api.default.clubQuestsClubQuestIdIsNotAccessiblePut(questId, { placeId, buildingId, isNotAccessible })
   }
 }
 
@@ -70,10 +98,13 @@ export interface ClusterPreview {
 }
 
 export async function previewDivisions(params: PreviewDivisionsParams) {
-  return http(`/admin/clubQuests/create/dryRun`, {
-    method: "POST",
-    body: JSON.stringify(params),
-  })
+  return api.default
+    .clubQuestsCreateDryRunPost({
+      ...params,
+      clusterCount: params.clusterCount ?? 0,
+      maxPlaceCountPerQuest: params.maxPlaceCountPerQuest,
+    })
+    .then((res) => res.data)
 }
 
 type CreateQuestPayload = {
@@ -84,9 +115,10 @@ type CreateQuestPayload = {
   dryRunResults: ClusterPreview[]
 }
 export async function createQuest(payload: CreateQuestPayload) {
-  return http(`/admin/clubQuests/create`, {
-    method: "POST",
-    body: JSON.stringify(payload),
+  return api.default.clubQuestsCreateDryRunPost({
+    ...payload,
+    clusterCount: 0,
+    maxPlaceCountPerQuest: 0,
   })
 }
 
@@ -94,34 +126,28 @@ type DeleteQuestPayload = {
   questId: string
 }
 export async function deleteQuest(payload: DeleteQuestPayload) {
-  return http(`/admin/clubQuests/${payload.questId}`, {
-    method: "DELETE",
-  })
+  return api.default.clubQuestsClubQuestIdDelete(payload.questId)
 }
 
 export async function deleteQuestTargetPlace(questId: string, place: QuestPlace) {
-  return http(`/admin/clubQuests/${questId}/targetPlaces?placeId=${encodeURIComponent(place.placeId)}`, {
-    method: "DELETE",
-  })
+  return api.default.clubQuestsClubQuestIdTargetPlacesDelete(questId, place.placeId)
 }
 
 export async function deleteQuestTargetBuilding(questId: string, building: QuestBuilding) {
-  return http(`/admin/clubQuests/${questId}/targetBuildings?buildingId=${encodeURIComponent(building.buildingId)}`, {
-    method: "DELETE",
-  })
+  return api.default.clubQuestsClubQuestIdTargetBuildingsDelete(questId, building.buildingId)
 }
 
 export function useChallenges() {
   return useQuery({
     queryKey: ["@challenges"],
-    queryFn: () => http(`/admin/challenges`).then((res) => res.json() as Promise<Challenge[]>),
+    queryFn: () => api.challenge.challengesGet().then((res) => res.data),
   })
 }
 
 export function useChallenge({ id }: { id: string }) {
   return useQuery({
     queryKey: ["@challenges", id] as const,
-    queryFn: ({ queryKey }) => http(`/admin/challenges/${queryKey[1]}`).then((res) => res.json() as Promise<Challenge>),
+    queryFn: ({ queryKey }) => api.challenge.challengesChallengeIdGet(queryKey[1]).then((res) => res.data),
   })
 }
 
@@ -142,9 +168,15 @@ type CreateChallengeParams = {
   crusherGroup?: CrusherGroup
 }
 export function createChallenge(payload: CreateChallengeParams) {
-  return http(`/admin/challenges`, {
-    method: "POST",
-    body: JSON.stringify(payload),
+  return api.challenge.challengesPost({
+    ...payload,
+    conditions: payload.conditions.map((condition) => ({
+      ...condition,
+      actionCondition: {
+        ...condition.actionCondition,
+        types: condition.actionCondition.types as any[],
+      },
+    })),
   })
 }
 
@@ -177,29 +209,22 @@ export interface CrusherGroup {
 }
 
 export function deleteChallenge({ id }: { id: string }) {
-  return http(`/admin/challenges/${id}`, {
-    method: "DELETE",
-  })
+  return api.challenge.challengesChallengeIdDelete(id)
 }
 
 export function useRegions() {
   return useQuery({
     queryKey: ["@regions"],
-    queryFn: () => http(`/admin/accessibilityAllowedRegions`).then((res) => res.json() as Promise<Region[]>),
+    queryFn: () => api.default.accessibilityAllowedRegionsGet().then((res) => res.data),
   })
 }
 
 export function createRegion({ name, boundaryVertices }: { name: string; boundaryVertices: LatLng[] }) {
-  return http(`/admin/accessibilityAllowedRegions`, {
-    method: "POST",
-    body: JSON.stringify({ name, boundaryVertices }),
-  })
+  return api.default.accessibilityAllowedRegionsPost({ name, boundaryVertices })
 }
 
 export function deleteRegion({ id }: { id: string }) {
-  return http(`/admin/accessibilityAllowedRegions/${id}`, {
-    method: "DELETE",
-  })
+  return api.default.accessibilityAllowedRegionsRegionIdDelete(id)
 }
 
 export interface SearchAccessibilitiesPayload {
@@ -214,15 +239,11 @@ export interface SearchAccessibilitiesResult {
 }
 
 export function deletePlaceAccessibility({ id }: { id: string }) {
-  return http(`/admin/place-accessibilities/${id}`, {
-    method: "DELETE",
-  })
+  return accessibilityApi.deletePlaceAccessibility(id)
 }
 
 export function deleteBuildingAccessibility({ id }: { id: string }) {
-  return http(`/admin/building-accessibilities/${id}`, {
-    method: "DELETE",
-  })
+  return accessibilityApi.deleteBuildingAccessibility(id)
 }
 
 export interface UpdatePlaceAccessibilityPayload {
@@ -246,10 +267,7 @@ export interface UpdateBuildingAccessibilityPayload {
 }
 
 export function updatePlaceAccessibility({ id, payload }: { id: string; payload: UpdatePlaceAccessibilityPayload }) {
-  return http(`/admin/place-accessibilities/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-  })
+  return accessibilityApi.updatePlaceAccessibility(id, payload)
 }
 
 export function updateBuildingAccessibility({
@@ -259,17 +277,11 @@ export function updateBuildingAccessibility({
   id: string
   payload: UpdateBuildingAccessibilityPayload
 }) {
-  return http(`/admin/building-accessibilities/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-  })
+  return accessibilityApi.updateBuildingAccessibility(id, payload)
 }
 
 export function crawlChunk({ boundary }: { boundary: LatLng[] }) {
-  return http("/admin/places/startCrawling", {
-    method: "POST",
-    body: JSON.stringify({ boundaryVertices: boundary }),
-  })
+  return api.default.startPlaceCrawling({ boundaryVertices: boundary })
 }
 
 export type ImageUploadPurposeType = "BANNER" | "CRUSHER_LABEL"
@@ -282,16 +294,13 @@ export function getImageUploadUrls({
   count: number
   filenameExtension: string
 }): Promise<GetImageUploadUrlsResult> {
-  return http("/admin/image-upload-urls", {
-    method: "POST",
-    body: JSON.stringify({
+  return api.default
+    .adminCreateImageUploadUrls({
       purposeType,
       count,
       filenameExtension,
-    }),
-  }).then((res) => {
-    return res.json() as Promise<GetImageUploadUrlsResult>
-  })
+    })
+    .then((res) => res.data)
 }
 export interface GetImageUploadUrlsResult {
   urls: ImageUploadUrl[]
@@ -318,8 +327,5 @@ export interface PushNotification {
 }
 
 export function sendPushNotification(payload: SendPushNotificationPayload) {
-  return http("/admin/user/sendPushNotification", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  })
+  return api.default.adminSendPushNotification(payload)
 }

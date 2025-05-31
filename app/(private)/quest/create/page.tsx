@@ -33,7 +33,7 @@ const questTargetPlaceCategoryOptions = [
   { label: "약국", value: "PHARMACY" } as const,
 ]
 
-type PlaceSearchMethod = 'SEARCH_NOW' | 'USE_ALREADY_CRAWLED_PLACES';
+type PlaceSearchMethod = "SEARCH_NOW" | "USE_ALREADY_CRAWLED_PLACES"
 const placeSearchMethodOptions: { label: string; value: PlaceSearchMethod }[] = [
   { label: "지금 크롤링하기", value: "SEARCH_NOW" },
   { label: "이미 크롤링된 장소 사용하기", value: "USE_ALREADY_CRAWLED_PLACES" },
@@ -49,7 +49,7 @@ interface FormValues {
   purposeType: (typeof purposeTypeOptions)[number]
   startDate: Date
   endDate: Date
-  questTargetPlaceCategories: (typeof questTargetPlaceCategoryOptions)
+  questTargetPlaceCategories: typeof questTargetPlaceCategoryOptions
   method: (typeof methodOptions)[number]
   placeSearchMethod: (typeof placeSearchMethodOptions)[number]
   center: { lat: number; lng: number }
@@ -125,10 +125,10 @@ export default function QuestCreate() {
       points: form.getValues("points"),
       clusterCount: form.getValues("division"),
       maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
-      useAlreadyCrawledPlace: form.getValues("placeSearchMethod").value === 'USE_ALREADY_CRAWLED_PLACES',
-      questTargetPlaceCategories: form.getValues("questTargetPlaceCategories").map(it => it.value),
+      useAlreadyCrawledPlace: form.getValues("placeSearchMethod").value === "USE_ALREADY_CRAWLED_PLACES",
+      questTargetPlaceCategories: form.getValues("questTargetPlaceCategories").map((it) => it.value),
     })
-    setClusters((await res.json()) as ClusterPreview[])
+    setClusters(res)
     setPreviewLoading(false)
 
     mode.current = "preview"
@@ -203,7 +203,12 @@ export default function QuestCreate() {
                 />
               </Flex>
               <Flex>
-                <Combobox name="placeSearchMethod" label="장소 검색 방식" options={placeSearchMethodOptions} isClearable={false} />
+                <Combobox
+                  name="placeSearchMethod"
+                  label="장소 검색 방식"
+                  options={placeSearchMethodOptions}
+                  isClearable={false}
+                />
               </Flex>
             </fieldset>
             <fieldset disabled={showPreview}>

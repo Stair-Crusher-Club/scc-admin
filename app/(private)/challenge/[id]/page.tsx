@@ -32,7 +32,7 @@ export default function ChallengeDetail() {
       startDate: format(challenge.startsAtMillis, "yyyy-MM-dd HH:mm"),
       endDate: challenge.endsAtMillis ? format(challenge.endsAtMillis, "yyyy-MM-dd HH:mm") : "",
       milestones: challenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
-      questActions: actionOptions.filter((v) => challenge.conditions[0].actionCondition.types.includes(v.value)),
+      questActions: actionOptions.filter((v) => challenge.conditions[0]?.actionCondition?.types?.includes(v.value)),
       description: challenge.description,
       crusherGroupName: challenge.crusherGroup?.name || "",
       imageUrl: challenge.crusherGroup?.icon?.url || "",
