@@ -71,7 +71,7 @@ export default function QuestDetail() {
     building.places.every(
       (place) =>
         place.isConquered || // 정복
-        place.isNotAccessible || // 접근불가
+        place.isNotAccessible || // 건너뛰기
         place.isClosed, // 폐업
     ),
   )
