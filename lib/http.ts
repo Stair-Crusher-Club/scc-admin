@@ -1,4 +1,5 @@
-import returnFetch, { FetchArgs } from "return-fetch"
+import globalAxios from "axios"
+import returnFetch from "return-fetch"
 
 import { storage } from "./storage"
 
@@ -12,50 +13,42 @@ export class NetworkError extends Error {
   }
 }
 
-const isLive = process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
-
 export const internal = returnFetch({
   baseUrl: typeof window === "undefined" ? "" : location.origin,
 })
 
-export const http = returnFetch({
-  baseUrl: isLive ? "https://api.staircrusher.club/" : "https://api.dev.staircrusher.club/",
-  headers: { "Content-Type": "application/json" },
-  interceptors: {
-    request: async ([url, config]: FetchArgs) => {
-      config = config || {}
+globalAxios.interceptors.request.use(
+  (config) => {
+    // Skip adding Authorization header for login requests
+    if (config.url?.includes("/login")) {
+      return config
+    }
 
-      // 로그인 요청에는 Authorization 헤더를 설정하지 않는다.
-      if (`${url}`.includes("/login")) {
-        return [url, config]
-      }
+    // Skip adding Authorization header if credentials are omitted
+    if (config.withCredentials === false) {
+      return config
+    }
 
-      if (config.credentials === 'omit') {
-        return [url, config]
-      }
+    const token = storage.get("token")
+    if (!token) {
+      return config
+    }
 
-      const token = storage.get("token")
-      if (!token) {
-        return [url, config]
-      }
-
-      const newHeaders = new Headers(config.headers)
-      newHeaders.set("Authorization", `Bearer ${token}`)
-
-      const newConfig: RequestInit = { ...config, headers: newHeaders }
-      return [url, newConfig]
-    },
-    response: async (response) => {
-      if (response.status === 401) {
-        storage.remove("token")
-        history.pushState(null, '', "/account/login?redirect=" + window.location.pathname)
-        throw new NetworkError(response)
-      }
-      if (response.status >= 400) {
-        throw new NetworkError(response)
-      }
-
-      return response
-    },
+    config.headers.Authorization = `Bearer ${token}`
+    return config
   },
-})
+  (error) => {
+    return Promise.reject(error)
+  },
+)
+
+globalAxios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      storage.remove("token")
+      history.pushState(null, "", "/account/login?redirect=" + window.location.pathname)
+    }
+    return Promise.reject(error)
+  },
+)

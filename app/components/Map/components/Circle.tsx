@@ -1,13 +1,13 @@
 import { useContext, useEffect, useRef } from "react"
 
-import { LatLng } from "@/lib/models/common"
+import { LocationDTO } from "@/lib/generated-sources/openapi"
 
 import { MapContext } from "../Map"
 
 type CircleStyle = Omit<kakao.maps.CircleOptions, "map" | "center" | "radius">
 
 interface Props {
-  center: LatLng | undefined
+  center: LocationDTO | undefined
   radius: number
   circleStyle?: CircleStyle
   showRadius?: boolean

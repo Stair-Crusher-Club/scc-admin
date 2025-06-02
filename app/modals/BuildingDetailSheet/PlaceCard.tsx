@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useMediaQuery } from "react-responsive"
 
 import { deleteQuestTargetPlace, updateQuestStatus } from "@/lib/apis/api"
-import { QuestPlace } from "@/lib/models/quest"
+import { ClubQuestTargetPlaceDTO } from "@/lib/generated-sources/openapi"
 import { storage } from "@/lib/storage"
 
 import Checkbox from "@/components/Checkbox"
@@ -15,10 +15,10 @@ import stairCrusherIcon from "../../../public/scc_button.png"
 import * as S from "./PlaceCard.style"
 
 interface Props {
-  place: QuestPlace
+  place: ClubQuestTargetPlaceDTO
   questId: string
-  onUpdate?: (place: QuestPlace) => void
-  onDelete?: (place: QuestPlace) => void
+  onUpdate?: (place: ClubQuestTargetPlaceDTO) => void
+  onDelete?: (place: ClubQuestTargetPlaceDTO) => void
 }
 export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props) {
   const [isClosed, setClosed] = useState(place.isClosed)

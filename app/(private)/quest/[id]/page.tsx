@@ -5,7 +5,7 @@ import { useParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
 import { useQuest } from "@/lib/apis/api"
-import { QuestBuilding } from "@/lib/models/quest"
+import { ClubQuestTargetBuildingDTO} from "@/lib/generated-sources/openapi"
 
 import Map from "@/components/Map"
 import { Me, QuestMarker } from "@/components/Map/components"
@@ -40,7 +40,7 @@ export default function QuestDetail() {
     intialized.current = true
   }, [quest, map])
 
-  function getCenterOf(buildings: QuestBuilding[]) {
+  function getCenterOf(buildings: ClubQuestTargetBuildingDTO[]) {
     const coords = buildings.map((b) => b.location)
     const center = {
       lat: coords.reduce((acc, c) => acc + c.lat, 0) / coords.length,

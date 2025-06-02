@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { http } from "@/lib/http"
-import { EpochMillisTimestamp } from "@/lib/models/common"
+import { api } from "@/lib/apis/api"
+import { EpochMillisTimestamp } from "@/lib/generated-sources/openapi"
 
 export function useAllBanners() {
   return useQuery({
     queryKey: ["@allBanners"],
-    queryFn: () => http("/admin/banners").then((res) => res.json() as Promise<GetAllBannersResult>),
+    queryFn: () => api.banner.adminAllListBanners().then(res => res.data),
   })
 }
 
 export function useHomeBanners() {
   return useQuery({
     queryKey: ["@homeBanners"],
-    queryFn: () => http("/admin/banners/home-banner").then((res) => res.json() as Promise<GetHomeBannersResult>),
+    queryFn: () => api.banner.adminListHomeBanners().then(res => res.data),
   })
 }
 
@@ -27,16 +27,11 @@ export interface CreateBannerParam {
   displayOrder: number
 }
 export function createBanner(payload: CreateBannerParam) {
-  return http("/admin/banners", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  })
+  return api.banner.adminCreateBanner(payload)
 }
 
 export function deleteBanner(banner: Banner) {
-  return http(`/admin/banners/${banner.id}`, {
-    method: "DELETE",
-  })
+  return api.banner.adminDeleteBanner(banner.id)
 }
 
 export interface GetAllBannersResult {
