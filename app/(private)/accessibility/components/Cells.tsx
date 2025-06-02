@@ -16,7 +16,6 @@ import {
 } from "@/lib/apis/api"
 import { AdminAccessibilityDTO } from "@/lib/generated-sources/openapi"
 import { NetworkError } from "@/lib/http"
-import { AccessibilitySummary, FLOORS } from "@/lib/models/accessibility"
 
 import { useModal } from "@/hooks/useModal"
 
@@ -120,9 +119,9 @@ export function ActionsCell({
   const convertToFloorOptions = (floors?: number[]) => {
     if (!floors || floors.length === 0) return undefined
     if (floors.length === 2 && floors.includes(1) && floors.includes(2))
-      return floorOptions.find((v) => v.value === FLOORS.MULTIPLE_INCLUDING_FIRST)
-    if (floors.length === 1 && floors[0] === 1) return floorOptions.find((v) => v.value === FLOORS.FIRST)
-    return floorOptions.find((v) => v.value === FLOORS.NOT_FIRST)
+      return floorOptions.find((v) => v.value === "multiple_including_first")
+    if (floors.length === 1 && floors[0] === 1) return floorOptions.find((v) => v.value === "first")
+    return floorOptions.find((v) => v.value === "not_first")
   }
 
   const editPlaceAccessibilityForm = useForm<EditPlaceAccessibilityFormValues>()
@@ -133,7 +132,7 @@ export function ActionsCell({
       isFirstFloor: booleanOptions.find((v) => v.value === selectedAccessibility.placeAccessibility?.isFirstFloor),
       floors: convertToFloorOptions(selectedAccessibility.placeAccessibility?.floors),
       floorNumber:
-        convertToFloorOptions(selectedAccessibility.placeAccessibility?.floors)?.value === FLOORS.NOT_FIRST
+        convertToFloorOptions(selectedAccessibility.placeAccessibility?.floors)?.value === "not_first"
           ? selectedAccessibility.placeAccessibility.floors?.[0]
           : undefined,
       isStairOnlyOption: booleanOptions.find(
@@ -181,7 +180,7 @@ export function ActionsCell({
 
     let isFirstFloor: boolean
     if (formValues.floors !== undefined) {
-      isFirstFloor = formValues.floors.value === FLOORS.FIRST
+      isFirstFloor = formValues.floors.value === "first"
     } else {
       isFirstFloor = formValues.isFirstFloor.value
     }
@@ -189,9 +188,9 @@ export function ActionsCell({
     let floors: number[] | undefined
     if (formValues.floors === undefined) {
       floors = undefined
-    } else if (formValues.floors.value === FLOORS.FIRST) {
+    } else if (formValues.floors.value === "first") {
       floors = [1]
-    } else if (formValues.floors.value === FLOORS.MULTIPLE_INCLUDING_FIRST) {
+    } else if (formValues.floors.value === "multiple_including_first") {
       floors = [1, 2]
     } else {
       if (formValues.floorNumber === undefined) {

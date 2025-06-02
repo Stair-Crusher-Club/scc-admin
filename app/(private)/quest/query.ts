@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 
 import { api } from "@/lib/apis/api"
-import { QuestSummary } from "@/lib/models/quest"
+import { ClubQuestSummaryDTO } from "@/lib/generated-sources/openapi"
 
 export function useClubQuestSummaries() {
   return useInfiniteQuery({
@@ -14,6 +14,6 @@ export function useClubQuestSummaries() {
 }
 
 export interface GetCursoredClubQuestSummariesResult {
-  list: QuestSummary[]
+  list: ClubQuestSummaryDTO[]
   cursor: string | null
 }

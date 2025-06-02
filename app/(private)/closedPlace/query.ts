@@ -1,10 +1,10 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 
 import { api } from "@/lib/apis/api"
-import { ClosedPlaceCandidate } from "@/lib/models/place"
+import { AdminClosedPlaceCandidateDTO } from "@/lib/generated-sources/openapi"
 
 export interface ListClosedPlaceCandidatesResult {
-  items: ClosedPlaceCandidate[]
+  items: AdminClosedPlaceCandidateDTO[]
   cursor: string | null
 }
 

@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query"
 
 import { api } from "@/lib/apis/api"
-import { LatLng } from "@/lib/models/common"
+import { LocationDTO } from "@/lib/generated-sources/openapi"
 
 export function useCrawling() {
   return useMutation({
-    mutationFn: (boundaryVertices: LatLng[]) => api.default.startPlaceCrawling({ boundaryVertices }),
+    mutationFn: (boundaryVertices: LocationDTO[]) => api.default.startPlaceCrawling({ boundaryVertices }),
   })
 }

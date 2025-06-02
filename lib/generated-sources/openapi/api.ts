@@ -370,6 +370,12 @@ export interface AdminChallengeDTO {
      * @memberof AdminChallengeDTO
      */
     'description': string;
+    /**
+     * 
+     * @type {AdminCrusherGroupDto}
+     * @memberof AdminChallengeDTO
+     */
+    'crusherGroup'?: AdminCrusherGroupDto;
 }
 /**
  * 
@@ -535,6 +541,12 @@ export interface AdminCreateChallengeRequestDTO {
      * @memberof AdminCreateChallengeRequestDTO
      */
     'description': string;
+    /**
+     * 
+     * @type {AdminCrusherGroupDto}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'crusherGroup'?: AdminCrusherGroupDto;
 }
 /**
  * 
@@ -573,6 +585,50 @@ export interface AdminCreateImageUploadUrlsResponseDTO {
      * @memberof AdminCreateImageUploadUrlsResponseDTO
      */
     'urls': Array<AdminImageUploadUrlDTO>;
+}
+/**
+ * 
+ * @export
+ * @interface AdminCrusherGroupDto
+ */
+export interface AdminCrusherGroupDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCrusherGroupDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {AdminCrusherGroupDtoIcon}
+     * @memberof AdminCrusherGroupDto
+     */
+    'icon'?: AdminCrusherGroupDtoIcon;
+}
+/**
+ * 
+ * @export
+ * @interface AdminCrusherGroupDtoIcon
+ */
+export interface AdminCrusherGroupDtoIcon {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCrusherGroupDtoIcon
+     */
+    'url': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminCrusherGroupDtoIcon
+     */
+    'width': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminCrusherGroupDtoIcon
+     */
+    'height': number;
 }
 /**
  * 
@@ -618,7 +674,8 @@ export interface AdminImageDTO {
  */
 
 export const AdminImageUploadPurposeTypeDTO = {
-    Banner: 'BANNER'
+    Banner: 'BANNER',
+    CrusherLabel: 'CRUSHER_LABEL'
 } as const;
 
 export type AdminImageUploadPurposeTypeDTO = typeof AdminImageUploadPurposeTypeDTO[keyof typeof AdminImageUploadPurposeTypeDTO];
@@ -917,6 +974,79 @@ export interface AdminUpdateBuildingAccessibilityRequestDTO {
      * @memberof AdminUpdateBuildingAccessibilityRequestDTO
      */
     'elevatorStairHeightLevel'?: AdminStairHeightLevel;
+}
+/**
+ * 
+ * @export
+ * @interface AdminUpdateChallengeRequestDTO
+ */
+export interface AdminUpdateChallengeRequestDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'name': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'isPublic': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'invitationCode'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'passcode'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'startsAtMillis': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'endsAtMillis'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'goal': number;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'milestones': Array<number>;
+    /**
+     * 
+     * @type {Array<AdminChallengeConditionDTO>}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'conditions': Array<AdminChallengeConditionDTO>;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'description': string;
+    /**
+     * 
+     * @type {AdminCrusherGroupDto}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'crusherGroup'?: AdminCrusherGroupDto;
 }
 /**
  * 
@@ -2320,6 +2450,46 @@ export const ChallengeApiAxiosParamCreator = function (configuration?: Configura
         },
         /**
          * 
+         * @summary 챌린지를 업데이트한다.
+         * @param {string} challengeId 
+         * @param {AdminUpdateChallengeRequestDTO} adminUpdateChallengeRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        challengesChallengeIdPut: async (challengeId: string, adminUpdateChallengeRequestDTO: AdminUpdateChallengeRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'challengeId' is not null or undefined
+            assertParamExists('challengesChallengeIdPut', 'challengeId', challengeId)
+            // verify required parameter 'adminUpdateChallengeRequestDTO' is not null or undefined
+            assertParamExists('challengesChallengeIdPut', 'adminUpdateChallengeRequestDTO', adminUpdateChallengeRequestDTO)
+            const localVarPath = `/challenges/{challengeId}`
+                .replace(`{${"challengeId"}}`, encodeURIComponent(String(challengeId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminUpdateChallengeRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 챌린지 목록을 조회한다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2418,6 +2588,18 @@ export const ChallengeApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 챌린지를 업데이트한다.
+         * @param {string} challengeId 
+         * @param {AdminUpdateChallengeRequestDTO} adminUpdateChallengeRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async challengesChallengeIdPut(challengeId: string, adminUpdateChallengeRequestDTO: AdminUpdateChallengeRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.challengesChallengeIdPut(challengeId, adminUpdateChallengeRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 챌린지 목록을 조회한다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2466,6 +2648,17 @@ export const ChallengeApiFactory = function (configuration?: Configuration, base
          */
         challengesChallengeIdGet(challengeId: string, options?: any): AxiosPromise<AdminChallengeDTO> {
             return localVarFp.challengesChallengeIdGet(challengeId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 챌린지를 업데이트한다.
+         * @param {string} challengeId 
+         * @param {AdminUpdateChallengeRequestDTO} adminUpdateChallengeRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        challengesChallengeIdPut(challengeId: string, adminUpdateChallengeRequestDTO: AdminUpdateChallengeRequestDTO, options?: any): AxiosPromise<void> {
+            return localVarFp.challengesChallengeIdPut(challengeId, adminUpdateChallengeRequestDTO, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2518,6 +2711,19 @@ export class ChallengeApi extends BaseAPI {
      */
     public challengesChallengeIdGet(challengeId: string, options?: AxiosRequestConfig) {
         return ChallengeApiFp(this.configuration).challengesChallengeIdGet(challengeId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 챌린지를 업데이트한다.
+     * @param {string} challengeId 
+     * @param {AdminUpdateChallengeRequestDTO} adminUpdateChallengeRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ChallengeApi
+     */
+    public challengesChallengeIdPut(challengeId: string, adminUpdateChallengeRequestDTO: AdminUpdateChallengeRequestDTO, options?: AxiosRequestConfig) {
+        return ChallengeApiFp(this.configuration).challengesChallengeIdPut(challengeId, adminUpdateChallengeRequestDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

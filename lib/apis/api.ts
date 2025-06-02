@@ -1,7 +1,14 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { AccessibilitySummary, ENTRANCE_DOOR_TYPE, STAIR_HEIGHT_LEVEL, STAIR_INFO } from "@/lib/models/accessibility"
-import { EpochMillisTimestamp, LatLng } from "@/lib/models/common"
+import {
+  AdminAccessibilityDTO,
+  AdminEntranceDoorType,
+  AdminImageUploadPurposeTypeDTO,
+  AdminStairHeightLevel,
+  AdminStairInfoDTO,
+  AdminUpdateChallengeRequestDTO,
+  EpochMillisTimestamp,
+} from "@/lib/generated-sources/openapi"
 
 import {
   AccessibilityApi,
@@ -10,7 +17,12 @@ import {
   Configuration,
   DefaultApi,
 } from "../../lib/generated-sources/openapi"
-import { QuestBuilding, QuestPlace, QuestPurposeType } from "../models/quest"
+import {
+  ClubQuestPurposeTypeEnumDTO,
+  ClubQuestTargetBuildingDTO,
+  ClubQuestTargetPlaceDTO,
+  LocationDTO,
+} from "../generated-sources/openapi"
 
 const baseURL =
   process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
@@ -84,9 +96,9 @@ export type ClubQuestTargetPlaceCategory =
   | "CONVENIENCE_STORE"
 type PreviewDivisionsParams = {
   regionType: ClubQuestCreateRegionType
-  centerLocation?: LatLng
+  centerLocation?: LocationDTO
   clusterCount?: number
-  points?: LatLng[]
+  points?: LocationDTO[]
   maxPlaceCountPerQuest: number
   radiusMeters: number
   useAlreadyCrawledPlace: boolean
@@ -94,7 +106,7 @@ type PreviewDivisionsParams = {
 }
 export interface ClusterPreview {
   questNamePostfix: string
-  targetBuildings: QuestBuilding[]
+  targetBuildings: ClubQuestTargetBuildingDTO[]
 }
 
 export async function previewDivisions(params: PreviewDivisionsParams) {
@@ -109,7 +121,7 @@ export async function previewDivisions(params: PreviewDivisionsParams) {
 
 type CreateQuestPayload = {
   questNamePrefix: string
-  purposeType: QuestPurposeType
+  purposeType: ClubQuestPurposeTypeEnumDTO
   startAt: EpochMillisTimestamp
   endAt: EpochMillisTimestamp
   dryRunResults: ClusterPreview[]
@@ -129,11 +141,11 @@ export async function deleteQuest(payload: DeleteQuestPayload) {
   return api.default.clubQuestsClubQuestIdDelete(payload.questId)
 }
 
-export async function deleteQuestTargetPlace(questId: string, place: QuestPlace) {
+export async function deleteQuestTargetPlace(questId: string, place: ClubQuestTargetPlaceDTO) {
   return api.default.clubQuestsClubQuestIdTargetPlacesDelete(questId, place.placeId)
 }
 
-export async function deleteQuestTargetBuilding(questId: string, building: QuestBuilding) {
+export async function deleteQuestTargetBuilding(questId: string, building: ClubQuestTargetBuildingDTO) {
   return api.default.clubQuestsClubQuestIdTargetBuildingsDelete(questId, building.buildingId)
 }
 
@@ -196,11 +208,8 @@ type UpdateChallengeParams = {
   description: string
   crusherGroup?: CrusherGroup
 }
-export function updateChallenge({ id, payload }: { id: string; payload: UpdateChallengeParams }) {
-  return http(`/admin/challenges/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-  })
+export function updateChallenge({ id, payload }: { id: string; payload: AdminUpdateChallengeRequestDTO}) {
+  return api.challenge.challengesChallengeIdPut(id, payload)
 }
 
 export interface CrusherGroup {
@@ -219,7 +228,7 @@ export function useRegions() {
   })
 }
 
-export function createRegion({ name, boundaryVertices }: { name: string; boundaryVertices: LatLng[] }) {
+export function createRegion({ name, boundaryVertices }: { name: string; boundaryVertices: LocationDTO[] }) {
   return api.default.accessibilityAllowedRegionsPost({ name, boundaryVertices })
 }
 
@@ -234,7 +243,7 @@ export interface SearchAccessibilitiesPayload {
 }
 
 export interface SearchAccessibilitiesResult {
-  items: AccessibilitySummary[]
+  items: AdminAccessibilityDTO[]
   cursor: string | null
 }
 
@@ -250,20 +259,20 @@ export interface UpdatePlaceAccessibilityPayload {
   isFirstFloor: boolean
   floors?: number[]
   isStairOnlyOption?: boolean
-  stairInfo: STAIR_INFO
-  stairHeightLevel?: STAIR_HEIGHT_LEVEL
+  stairInfo: AdminStairInfoDTO
+  stairHeightLevel?: AdminStairHeightLevel
   hasSlope: boolean
-  entranceDoorTypes?: ENTRANCE_DOOR_TYPE[]
+  entranceDoorTypes?: AdminEntranceDoorType[]
 }
 
 export interface UpdateBuildingAccessibilityPayload {
   hasElevator: boolean
   hasSlope: boolean
-  entranceStairInfo: STAIR_INFO
-  entranceStairHeightLevel?: STAIR_HEIGHT_LEVEL
-  entranceDoorTypes?: ENTRANCE_DOOR_TYPE[]
-  elevatorStairInfo: STAIR_INFO
-  elevatorStairHeightLevel?: STAIR_HEIGHT_LEVEL
+  entranceStairInfo: AdminStairInfoDTO
+  entranceStairHeightLevel?: AdminStairHeightLevel
+  entranceDoorTypes?: AdminEntranceDoorType[]
+  elevatorStairInfo: AdminStairInfoDTO
+  elevatorStairHeightLevel?: AdminStairHeightLevel
 }
 
 export function updatePlaceAccessibility({ id, payload }: { id: string; payload: UpdatePlaceAccessibilityPayload }) {
@@ -280,17 +289,16 @@ export function updateBuildingAccessibility({
   return accessibilityApi.updateBuildingAccessibility(id, payload)
 }
 
-export function crawlChunk({ boundary }: { boundary: LatLng[] }) {
+export function crawlChunk({ boundary }: { boundary: LocationDTO[] }) {
   return api.default.startPlaceCrawling({ boundaryVertices: boundary })
 }
 
-export type ImageUploadPurposeType = "BANNER" | "CRUSHER_LABEL"
 export function getImageUploadUrls({
   purposeType,
   count,
   filenameExtension,
 }: {
-  purposeType: ImageUploadPurposeType
+  purposeType: AdminImageUploadPurposeTypeDTO
   count: number
   filenameExtension: string
 }): Promise<GetImageUploadUrlsResult> {

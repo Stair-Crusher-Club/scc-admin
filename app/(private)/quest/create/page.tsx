@@ -8,7 +8,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
 import { ClubQuestCreateRegionType, ClusterPreview, createQuest, previewDivisions } from "@/lib/apis/api"
-import { QuestPurposeType } from "@/lib/models/quest"
+import { ClubQuestPurposeTypeEnumDTO } from "@/lib/generated-sources/openapi"
 
 import Map from "@/components/Map"
 import { Circle, ClusterMarker, Polygon } from "@/components/Map/components"
@@ -17,7 +17,7 @@ import { Flex } from "@/styles/jsx"
 
 import * as S from "./page.style"
 
-const purposeTypeOptions: { label: string; value: QuestPurposeType }[] = [
+const purposeTypeOptions: { label: string; value: ClubQuestPurposeTypeEnumDTO }[] = [
   { label: "크러셔 클럽", value: "CRUSHER_CLUB" },
   { label: "일상 퀘스트", value: "DAILY_CLUB" },
   { label: "콜라보 클럽", value: "COLLABO_CLUB" },

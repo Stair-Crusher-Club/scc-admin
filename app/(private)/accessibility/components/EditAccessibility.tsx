@@ -9,7 +9,6 @@ import {
   AdminStairHeightLevel,
   AdminStairInfoDTO,
 } from "@/lib/generated-sources/openapi"
-import { FLOORS } from "@/lib/models/accessibility"
 
 import * as S from "./EditAccessibility.style"
 
@@ -21,9 +20,9 @@ interface Option {
 export const booleanOptions = [{ label: "예", value: true } as const, { label: "아니오", value: false } as const]
 
 export const floorOptions = [
-  { label: "1층에 있어요", value: FLOORS.FIRST } as const,
-  { label: "1층이 아니에요", value: FLOORS.NOT_FIRST } as const,
-  { label: "1~2층을 포함한 여러층이에요", value: FLOORS.MULTIPLE_INCLUDING_FIRST } as const,
+  { label: "1층에 있어요", value: "first" } as const,
+  { label: "1층이 아니에요", value: "not_first" } as const,
+  { label: "1~2층을 포함한 여러층이에요", value: "multiple_including_first" } as const,
 ]
 
 export const stairInfoOptions = [
@@ -122,13 +121,13 @@ export const EditPlaceAccessibilityModal: React.FC<EditPlaceAccessibilityModalPr
                 <NumberInput
                   name="floorNumber"
                   label="몇 층에 있는 장소인가요? (지하는 음수로 입력해주세요)"
-                  disabled={!floors || floors.value != FLOORS.NOT_FIRST}
+                  disabled={!floors || floors.value != "not_first"}
                 />
                 <Combobox
                   name="isStairOnlyOption"
                   label="2층 매장으로 가는 방법이 계단 뿐인가요?"
                   options={booleanOptions}
-                  isDisabled={!floors || floors.value != FLOORS.MULTIPLE_INCLUDING_FIRST}
+                  isDisabled={!floors || floors.value != "multiple_including_first"}
                 />
               </S.ModalBodyRow>
 

@@ -8,6 +8,10 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { deleteChallenge, updateChallenge, useChallenge } from "@/lib/apis/api"
+import {
+  AdminChallengeActionConditionTypeEnumDTO,
+  AdminUpdateChallengeRequestDTO,
+} from "@/lib/generated-sources/openapi"
 
 import { Contents, Header } from "@/components/layout"
 
@@ -72,7 +76,7 @@ export default function ChallengeDetail() {
       }
     }
 
-    const payload = {
+    const payload: AdminUpdateChallengeRequestDTO = {
       name: values.name,
       isPublic: values.inviteCode === "",
       invitationCode: values.inviteCode ? values.inviteCode : undefined,
@@ -86,7 +90,9 @@ export default function ChallengeDetail() {
           addressCondition: {
             rawEupMyeonDongs: values.questRegions?.map((v) => v.label.split(" ").at(-1) ?? "") || [],
           },
-          actionCondition: { types: values.questActions.map((v) => v.value) },
+          actionCondition: {
+            types: values.questActions.map((v) => v.value as AdminChallengeActionConditionTypeEnumDTO),
+          },
         },
       ],
       description: values.description,
@@ -131,8 +137,8 @@ export default function ChallengeDetail() {
                       ? format(originalChallenge.endsAtMillis, "yyyy-MM-dd HH:mm")
                       : "",
                     milestones: originalChallenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
-                    questActions: actionOptions.filter((v) =>
-                      originalChallenge.conditions[0].actionCondition.types.includes(v.value),
+                    questActions: actionOptions.filter(
+                      (v) => originalChallenge.conditions?.[0]?.actionCondition?.types?.includes(v.value) ?? false,
                     ),
                     description: originalChallenge.description,
                   })

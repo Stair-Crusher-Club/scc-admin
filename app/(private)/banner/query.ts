@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 
 import { api } from "@/lib/apis/api"
-import { EpochMillisTimestamp } from "@/lib/models/common"
+import { EpochMillisTimestamp } from "@/lib/generated-sources/openapi"
 
 export function useAllBanners() {
   return useQuery({
