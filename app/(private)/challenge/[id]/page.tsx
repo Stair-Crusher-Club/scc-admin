@@ -2,8 +2,7 @@
 
 import { useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
-import { useParams } from "next/navigation"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 
@@ -141,6 +140,10 @@ export default function ChallengeDetail() {
                       (v) => originalChallenge.conditions?.[0]?.actionCondition?.types?.includes(v.value) ?? false,
                     ),
                     description: originalChallenge.description,
+                    crusherGroupName: originalChallenge.crusherGroup?.name || "",
+                    imageUrl: originalChallenge.crusherGroup?.icon?.url || "",
+                    imageWidth: originalChallenge.crusherGroup?.icon?.width,
+                    imageHeight: originalChallenge.crusherGroup?.icon?.height,
                   })
                 }
               }}
