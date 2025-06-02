@@ -6,7 +6,7 @@
       "generators": {
         "dev": {
           "generatorName": "typescript-axios",
-          "glob": "api-spec.yaml",
+          "glob": "subprojects/scc-api/admin-api-spec.yaml",
           "output": "#{cwd}/lib/generated-sources/openapi",
           "additionalProperties": {
             "supportsES6": "true"
@@ -18,7 +18,7 @@
         },
         "production": {
           "generatorName": "typescript-axios",
-          "glob": "api-spec.yaml",
+          "glob": "subprojects/scc-api/admin-api-spec.yaml",
           "output": "#{cwd}/lib/generated-sources/openapi",
           "additionalProperties": {
             "supportsES6": "true"
