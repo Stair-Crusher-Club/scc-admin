@@ -18,8 +18,8 @@ export default function GuideLayout({ activeTab, changeActiveTab, children }: Gu
           <S.MenuButton
             active={activeTab === "register"}
             onClick={() => {
-              changeActiveTab("register")
               mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+              changeActiveTab("register")
             }}
           >
             정보 등록하기
@@ -27,8 +27,8 @@ export default function GuideLayout({ activeTab, changeActiveTab, children }: Gu
           <S.MenuButton
             active={activeTab === "search"}
             onClick={() => {
-              changeActiveTab("search")
               mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+              changeActiveTab("search")
             }}
           >
             정보 조회하기
