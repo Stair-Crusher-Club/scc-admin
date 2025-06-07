@@ -267,7 +267,7 @@ export const sccRoadGuide: GuideSlideContent[] = [
     sourceType: "image",
   },
   {
-    description: ["이동약자와 친구로 구성된 에디터가 직접 다녀온 카페, 식당, 관광지 후기를 모아볼 수 있어요."],
+    description: ["이동약자와 친구로 구성된 에디터가 직접 다녀온", "카페, 식당, 관광지 후기를 모아볼 수 있어요."],
     source: "/guide/search/sccRoadGuide/sccRoadGuide03.png",
     sourceType: "image",
   },

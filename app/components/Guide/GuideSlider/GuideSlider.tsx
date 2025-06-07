@@ -33,10 +33,10 @@ export default function GuideSlider({ name, items = [], slideGap = 12 }: GuildSl
   })
 
   useEffect(() => {
-    setSlideItemWidth(Math.min(window.innerWidth - 40, 600))
+    setSlideItemWidth(Math.min(window.innerWidth - 40, 400))
 
     function handleResize() {
-      setSlideItemWidth(Math.min(window.innerWidth - 40, 600))
+      setSlideItemWidth(Math.min(window.innerWidth - 40, 400))
     }
 
     window.addEventListener("resize", handleResize)

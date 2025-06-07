@@ -16,7 +16,7 @@ export const Header = styled("header", {
 
 export const Nav = styled("nav", {
   base: {
-    maxWidth: "640px",
+    maxWidth: 440,
     width: "full",
     height: 60,
     display: "flex",
@@ -53,7 +53,7 @@ export const MenuButton = styled("button", {
 
 export const Main = styled("main", {
   base: {
-    maxWidth: "640px",
+    maxWidth: 440,
     width: "full",
     margin: "60px auto 0",
     overflow: "auto",
