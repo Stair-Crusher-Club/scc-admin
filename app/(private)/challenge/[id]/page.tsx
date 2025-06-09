@@ -8,10 +8,7 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { deleteChallenge, updateChallenge, useChallenge } from "@/lib/apis/api"
-import {
-  AdminChallengeActionConditionTypeEnumDTO,
-  AdminUpdateChallengeRequestDTO,
-} from "@/lib/generated-sources/openapi"
+import { AdminUpdateChallengeRequestDTO } from "@/lib/generated-sources/openapi"
 
 import { Contents, Header } from "@/components/layout"
 
@@ -54,7 +51,6 @@ export default function ChallengeDetail() {
 
   async function confirmAndUpdateChallenge(values: ChallengeFormValues) {
     if (!confirm("정말 수정하시겠습니까?")) return
-    const milestoneNumbers = values.milestones.map((v) => parseInt(v.value))
     let icon
     if (values.imageUrl && values.imageUrl.trim() !== "") {
       icon = {
@@ -78,23 +74,7 @@ export default function ChallengeDetail() {
 
     const payload: AdminUpdateChallengeRequestDTO = {
       name: values.name,
-      isPublic: values.inviteCode === "",
-      invitationCode: values.inviteCode ? values.inviteCode : undefined,
-      passcode: values.joinCode ? values.joinCode : undefined,
-      startsAtMillis: new Date(values.startDate).getTime(),
       endsAtMillis: values.endDate ? new Date(values.endDate).getTime() : undefined,
-      goal: milestoneNumbers.at(-1) ?? 0,
-      milestones: milestoneNumbers.slice(0, -1),
-      conditions: [
-        {
-          addressCondition: {
-            rawEupMyeonDongs: values.questRegions?.map((v) => v.label.split(" ").at(-1) ?? "") || [],
-          },
-          actionCondition: {
-            types: values.questActions.map((v) => v.value as AdminChallengeActionConditionTypeEnumDTO),
-          },
-        },
-      ],
       description: values.description,
       crusherGroup: crusherGroup,
     }
@@ -117,7 +97,7 @@ export default function ChallengeDetail() {
     <>
       <Header title="챌린지 상세" />
       <Contents.Normal>
-        <ChallengeForm id="edit-challenge" form={form} onSubmit={handleFormSubmit} disabled={!editMode} />
+        <ChallengeForm id="edit-challenge" form={form} onSubmit={handleFormSubmit} isEditMode={editMode} />
         {editMode ? (
           <S.ButtonGroup>
             <S.SubmitButton type="submit" form="edit-challenge">
