@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 
 import { deleteQuest } from "@/lib/apis/api"
-import { QuestSummary } from "@/lib/models/quest"
+import { ClubQuestSummaryDTO } from "@/lib/generated-sources/openapi"
 
 import { useClubQuestSummaries } from "@/(private)/quest/query"
 import { Contents, Header } from "@/components/layout"
@@ -26,10 +26,10 @@ export default function QuestList() {
       acc[key].push(q)
       return acc
     },
-    {} as Record<string, QuestSummary[]>,
+    {} as Record<string, ClubQuestSummaryDTO[]>,
   )
 
-  function share(quests: QuestSummary[]) {
+  function share(quests: ClubQuestSummaryDTO[]) {
     const [groupName] = quests[0].name.split(" - ")
     const questList = quests.map((q) => {
       const url = q.shortenedUrl || `${window.location.origin}/public/quest/${q.id}`
@@ -40,7 +40,7 @@ export default function QuestList() {
     toast.success("공개 URL 목록이 클립보드에 복사되었습니다.")
   }
 
-  async function deleteQuests(quests: QuestSummary[]) {
+  async function deleteQuests(quests: ClubQuestSummaryDTO[]) {
     const confirm = window.confirm("정말로 삭제하시겠습니까?")
     if (!confirm) return
 

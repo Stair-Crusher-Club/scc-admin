@@ -1,15 +1,14 @@
-import { Combobox, DateInput, NumberInput } from "@reactleaf/input/hookform"
+import { Combobox, NumberInput } from "@reactleaf/input/hookform"
 import React from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
 
 import {
-  BuildingAccessibility,
-  ENTRANCE_DOOR_TYPE,
-  FLOORS,
-  PlaceAccessibility,
-  STAIR_HEIGHT_LEVEL,
-} from "@/lib/models/accessibility"
-import { STAIR_INFO } from "@/lib/models/accessibility"
+  AdminBuildingAccessibilityDTO,
+  AdminEntranceDoorType,
+  AdminPlaceAccessibilityDTO,
+  AdminStairHeightLevel,
+  AdminStairInfoDTO,
+} from "@/lib/generated-sources/openapi"
 
 import * as S from "./EditAccessibility.style"
 
@@ -21,31 +20,31 @@ interface Option {
 export const booleanOptions = [{ label: "예", value: true } as const, { label: "아니오", value: false } as const]
 
 export const floorOptions = [
-  { label: "1층에 있어요", value: FLOORS.FIRST } as const,
-  { label: "1층이 아니에요", value: FLOORS.NOT_FIRST } as const,
-  { label: "1~2층을 포함한 여러층이에요", value: FLOORS.MULTIPLE_INCLUDING_FIRST } as const,
+  { label: "1층에 있어요", value: "first" } as const,
+  { label: "1층이 아니에요", value: "not_first" } as const,
+  { label: "1~2층을 포함한 여러층이에요", value: "multiple_including_first" } as const,
 ]
 
 export const stairInfoOptions = [
-  { label: "없음", value: STAIR_INFO.NONE } as const,
-  { label: "1개", value: STAIR_INFO.ONE } as const,
-  { label: "2~5개", value: STAIR_INFO.TWO_TO_FIVE } as const,
-  { label: "6개 이상", value: STAIR_INFO.OVER_SIX } as const,
+  { label: "없음", value: AdminStairInfoDTO.None } as const,
+  { label: "1개", value: AdminStairInfoDTO.One } as const,
+  { label: "2~5개", value: AdminStairInfoDTO.TwoToFive } as const,
+  { label: "6개 이상", value: AdminStairInfoDTO.OverSix } as const,
 ]
 
 export const stairHeightLevelOptions = [
-  { label: "엄지 반 마디", value: STAIR_HEIGHT_LEVEL.HALF_THUMB } as const,
-  { label: "엄지 한 마디", value: STAIR_HEIGHT_LEVEL.THUMB } as const,
-  { label: "한 마디 이상", value: STAIR_HEIGHT_LEVEL.OVER_THUMB } as const,
+  { label: "엄지 반 마디", value: AdminStairHeightLevel.HalfThumb } as const,
+  { label: "엄지 한 마디", value: AdminStairHeightLevel.Thumb } as const,
+  { label: "한 마디 이상", value: AdminStairHeightLevel.OverThumb } as const,
 ]
 
 export const entranceDoorTypeOptions = [
-  { label: "여닫이문", value: ENTRANCE_DOOR_TYPE.HINGED } as const,
-  { label: "미닫이문", value: ENTRANCE_DOOR_TYPE.SLIDING } as const,
-  { label: "자동문", value: ENTRANCE_DOOR_TYPE.AUTOMATIC } as const,
-  { label: "회전문", value: ENTRANCE_DOOR_TYPE.REVOLVING } as const,
-  { label: "기타", value: ENTRANCE_DOOR_TYPE.ETC } as const,
-  { label: "문 없음", value: ENTRANCE_DOOR_TYPE.NONE } as const,
+  { label: "여닫이문", value: AdminEntranceDoorType.Hinged } as const,
+  { label: "미닫이문", value: AdminEntranceDoorType.Sliding } as const,
+  { label: "자동문", value: AdminEntranceDoorType.Automatic } as const,
+  { label: "회전문", value: AdminEntranceDoorType.Revolving } as const,
+  { label: "기타", value: AdminEntranceDoorType.Etc } as const,
+  { label: "문 없음", value: AdminEntranceDoorType.None } as const,
 ]
 
 export interface EditPlaceAccessibilityFormValues {
@@ -62,7 +61,7 @@ export interface EditPlaceAccessibilityFormValues {
 interface EditPlaceAccessibilityModalProps {
   isOpen: boolean
   onClose: () => void
-  placeAccessibility: PlaceAccessibility | null
+  placeAccessibility: AdminPlaceAccessibilityDTO | null
   form: UseFormReturn<EditPlaceAccessibilityFormValues>
   onSubmit: (values: EditPlaceAccessibilityFormValues) => void
 }
@@ -80,7 +79,7 @@ export interface EditBuildingAccessibilityFormValues {
 interface EditBuildingAccessibilityModalProps {
   isOpen: boolean
   onClose: () => void
-  buildingAccessibility: BuildingAccessibility | null
+  buildingAccessibility: AdminBuildingAccessibilityDTO | null
   form: UseFormReturn<EditBuildingAccessibilityFormValues>
   onSubmit: (values: EditBuildingAccessibilityFormValues) => void
 }
@@ -122,13 +121,13 @@ export const EditPlaceAccessibilityModal: React.FC<EditPlaceAccessibilityModalPr
                 <NumberInput
                   name="floorNumber"
                   label="몇 층에 있는 장소인가요? (지하는 음수로 입력해주세요)"
-                  disabled={!floors || floors.value != FLOORS.NOT_FIRST}
+                  disabled={!floors || floors.value != "not_first"}
                 />
                 <Combobox
                   name="isStairOnlyOption"
                   label="2층 매장으로 가는 방법이 계단 뿐인가요?"
                   options={booleanOptions}
-                  isDisabled={!floors || floors.value != FLOORS.MULTIPLE_INCLUDING_FIRST}
+                  isDisabled={!floors || floors.value != "multiple_including_first"}
                 />
               </S.ModalBodyRow>
 

@@ -5,7 +5,7 @@ import clip from "polygon-clipping"
 import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 
-import { LatLng } from "@/lib/models/common"
+import { LocationDTO } from "@/lib/generated-sources/openapi"
 
 import Map from "@/components/Map"
 import { Circle, Polygon } from "@/components/Map/components"
@@ -21,8 +21,8 @@ interface Chunk {
 }
 
 interface FormValues {
-  points: LatLng[]
-  circle: { center: LatLng; radius: number }
+  points: LocationDTO[]
+  circle: { center: LocationDTO; radius: number }
 }
 export default function CrawlPage() {
   const mode = useRef<InputMode>("POLYGON")
@@ -140,7 +140,7 @@ export default function CrawlPage() {
       .map((_, i) => ({
         lat: center.lat + (radius / 111000) * Math.cos((4 * i) / (2 * Math.PI)),
         lng: center.lng + (radius / 88000) * Math.sin((4 * i) / (2 * Math.PI)),
-      })) as LatLng[]
+      })) as LocationDTO[]
 
     const chunks = chunkify(points)
     // chunks 중 겹친 영역이 있는 것만 남긴다
@@ -205,7 +205,7 @@ export default function CrawlPage() {
   )
 }
 
-function chunkify(points: LatLng[]): clip.Polygon[] {
+function chunkify(points: LocationDTO[]): clip.Polygon[] {
   // 서울 기준, 약
   // 위도 0.00001도 당 1.11m : 1도에 111km
   // 경도 0.00001도 당 0.88m : 1도에 88km

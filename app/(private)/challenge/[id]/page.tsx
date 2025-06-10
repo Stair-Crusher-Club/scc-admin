@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { deleteChallenge, updateChallenge, useChallenge } from "@/lib/apis/api"
+import { AdminUpdateChallengeRequestDTO } from "@/lib/generated-sources/openapi"
 
 import { Contents, Header } from "@/components/layout"
 
@@ -32,7 +33,7 @@ export default function ChallengeDetail() {
       startDate: format(challenge.startsAtMillis, "yyyy-MM-dd HH:mm"),
       endDate: challenge.endsAtMillis ? format(challenge.endsAtMillis, "yyyy-MM-dd HH:mm") : "",
       milestones: challenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
-      questActions: actionOptions.filter((v) => challenge.conditions[0].actionCondition.types.includes(v.value)),
+      questActions: actionOptions.filter((v) => challenge.conditions[0]?.actionCondition?.types?.includes(v.value)),
       description: challenge.description,
       crusherGroupName: challenge.crusherGroup?.name || "",
       imageUrl: challenge.crusherGroup?.icon?.url || "",
@@ -50,7 +51,6 @@ export default function ChallengeDetail() {
 
   async function confirmAndUpdateChallenge(values: ChallengeFormValues) {
     if (!confirm("정말 수정하시겠습니까?")) return
-    const milestoneNumbers = values.milestones.map((v) => parseInt(v.value))
     let icon
     if (values.imageUrl && values.imageUrl.trim() !== "") {
       icon = {
@@ -72,23 +72,9 @@ export default function ChallengeDetail() {
       }
     }
 
-    const payload = {
+    const payload: AdminUpdateChallengeRequestDTO = {
       name: values.name,
-      isPublic: values.inviteCode === "",
-      invitationCode: values.inviteCode ? values.inviteCode : undefined,
-      passcode: values.joinCode ? values.joinCode : undefined,
-      startsAtMillis: new Date(values.startDate).getTime(),
       endsAtMillis: values.endDate ? new Date(values.endDate).getTime() : undefined,
-      goal: milestoneNumbers.at(-1) ?? 0,
-      milestones: milestoneNumbers.slice(0, -1),
-      conditions: [
-        {
-          addressCondition: {
-            rawEupMyeonDongs: values.questRegions?.map((v) => v.label.split(" ").at(-1) ?? "") || [],
-          },
-          actionCondition: { types: values.questActions.map((v) => v.value) },
-        },
-      ],
       description: values.description,
       crusherGroup: crusherGroup,
     }
@@ -111,7 +97,7 @@ export default function ChallengeDetail() {
     <>
       <Header title="챌린지 상세" />
       <Contents.Normal>
-        <ChallengeForm id="edit-challenge" form={form} onSubmit={handleFormSubmit} disabled={!editMode} />
+        <ChallengeForm id="edit-challenge" form={form} onSubmit={handleFormSubmit} isEditMode={editMode} />
         {editMode ? (
           <S.ButtonGroup>
             <S.SubmitButton type="submit" form="edit-challenge">
@@ -131,8 +117,8 @@ export default function ChallengeDetail() {
                       ? format(originalChallenge.endsAtMillis, "yyyy-MM-dd HH:mm")
                       : "",
                     milestones: originalChallenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
-                    questActions: actionOptions.filter((v) =>
-                      originalChallenge.conditions[0].actionCondition.types.includes(v.value),
+                    questActions: actionOptions.filter(
+                      (v) => originalChallenge.conditions?.[0]?.actionCondition?.types?.includes(v.value) ?? false,
                     ),
                     description: originalChallenge.description,
                   })

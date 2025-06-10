@@ -2,12 +2,12 @@
 
 import { FileInput } from "@reactleaf/input"
 import { DateInput, NumberInput, TextInput } from "@reactleaf/input/hookform"
+import axios from "axios"
 import { format } from "date-fns"
 import { ChangeEventHandler, useState } from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
 
 import { getImageUploadUrls } from "@/lib/apis/api"
-import { http } from "@/lib/http"
 
 import RemoteImage from "@/components/RemoteImage"
 import { css } from "@/styles/css"
@@ -55,25 +55,23 @@ export default function BannerForm({ form, id, disabled, onSubmit }: Props) {
         filenameExtension: selectedFile.name.split(".").pop()!,
       }).then(async (result) => {
         const uploadUrl = result.urls[0].url
-        await http(uploadUrl, {
-          method: "PUT",
+        await axios.put(uploadUrl, selectedFile, {
           headers: {
             "Content-Type": selectedFile.type,
             "x-amz-acl": "public-read",
           },
-          body: selectedFile,
-          credentials: "omit", // presigned URL에 요청을 보낼 때는 이미 URL에 인증 정보가 담겨 있으므로 별도로 인증 정보를 담아서 보내면 안 된다.
+          withCredentials: false,
         })
 
         const removeQueryParamFromUrl = (url: string) => {
           const urlObj = new URL(url)
-          urlObj.search = ''
+          urlObj.search = ""
           return urlObj.toString()
         }
 
         const uploadedImageUrl = removeQueryParamFromUrl(uploadUrl)
         setImageUrl(uploadedImageUrl)
-        form.setValue("imageUrl", uploadedImageUrl);
+        form.setValue("imageUrl", uploadedImageUrl)
       })
     }
   }

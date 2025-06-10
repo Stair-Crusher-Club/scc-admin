@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef } from "react"
 import { useMediaQuery } from "react-responsive"
 
-import { QuestBuilding } from "@/lib/models/quest"
+import { ClubQuestTargetBuildingDTO } from "@/lib/generated-sources/openapi"
 
 import { useModal } from "@/hooks/useModal"
 
@@ -10,7 +10,7 @@ import { MapContext } from "../Map"
 type MarkerStyle = Omit<kakao.maps.MarkerOptions, "map" | "center" | "radius">
 
 export interface Props {
-  building: QuestBuilding
+  building: ClubQuestTargetBuildingDTO
   buildingIndex: number
   questId: string
   markerStyle?: MarkerStyle
@@ -60,7 +60,7 @@ export default function QuestMarker({ building, buildingIndex, questId, markerSt
     }
   }, [map, building, markerStyle])
 
-  function onMarkerClick(building: QuestBuilding) {
+  function onMarkerClick(building: ClubQuestTargetBuildingDTO) {
     if (!map) return
 
     // 이미 열린 모달이 있다면 강제로 닫습니다.
@@ -91,7 +91,7 @@ export default function QuestMarker({ building, buildingIndex, questId, markerSt
     }
   }
 
-  function onModalClose(building: QuestBuilding) {
+  function onModalClose(building: ClubQuestTargetBuildingDTO) {
     // 모달이 닫히면 빌딩을 중앙으로 이동합니다
     const buildingCenter = new kakao.maps.LatLng(building.location.lat, building.location.lng)
     map?.panTo(buildingCenter)
@@ -103,7 +103,7 @@ export default function QuestMarker({ building, buildingIndex, questId, markerSt
    * 윗쪽 300px의 공간에 마커를 센터로 위치시키려면
    * 화면 전체를 차지하는 지도의 센터가 어디여야 하는지 계산합니다.
    */
-  function getFocusedCenter(building: QuestBuilding) {
+  function getFocusedCenter(building: ClubQuestTargetBuildingDTO) {
     if (!map) return
 
     const rect = mapElement!.getClientRects()[0]
