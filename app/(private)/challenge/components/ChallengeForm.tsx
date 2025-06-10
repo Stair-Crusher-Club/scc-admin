@@ -125,6 +125,9 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
     }
   }
 
+  const isEditableFieldDisabled = isEditMode === undefined ? false : !isEditMode
+  const isNotEditableFieldDisabled = isEditMode === undefined ? false : true
+
   return (
     <FormProvider {...form}>
       <form id={id} className={css({ width: "50rem" })} onSubmit={onSubmit ? form.handleSubmit(onSubmit) : undefined}>
@@ -132,20 +135,20 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
           name="name"
           label="이름"
           rules={{ required: { value: true, message: "챌린지 이름을 입력해주세요" } }}
-          disabled={!!isEditMode}
+          disabled={isEditableFieldDisabled}
         />
         <Flex gap={16}>
           <TextInput
             name="inviteCode"
             label="초대코드"
             placeholder="초대코드를 입력하면 비공개 챌린지가 됩니다."
-            disabled={!(isEditMode === undefined)}
+            disabled={isNotEditableFieldDisabled}
           />
           <TextInput
             name="joinCode"
             label="참여코드"
             placeholder="챌린지에 참여할 때 입력해야 하는 암호입니다."
-            disabled={!(isEditMode === undefined)}
+            disabled={isNotEditableFieldDisabled}
           />
         </Flex>
         <Flex gap={16}>
@@ -153,14 +156,14 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
             name="startDate"
             label="챌린지 시작"
             dateFormat="yyyy-MM-dd HH:mm"
-            disabled={!(isEditMode === undefined)}
+            disabled={isNotEditableFieldDisabled}
           />
           <DateInput
             name="endDate"
             label="챌린지 종료"
             dateFormat="yyyy-MM-dd HH:mm"
             placeholderText="비워두면 무기한으로 적용됩니다."
-            disabled={!!isEditMode}
+            disabled={isEditableFieldDisabled}
           />
         </Flex>
         <Autocomplete
@@ -168,7 +171,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
           name="milestones"
           label="마일스톤"
           placeholder="가장 큰 숫자가 목표로 지정됩니다."
-          isDisabled={!(isEditMode === undefined)}
+          isDisabled={isNotEditableFieldDisabled}
           rules={{ required: { value: true, message: "마일스톤을 1개 이상 입력해주세요." } }}
           options={[
             { label: "100", value: "100" },
@@ -181,7 +184,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
           name="questRegions"
           label="퀘스트 대상 지역"
           placeholder="전체 지역"
-          isDisabled={!(isEditMode === undefined)}
+          isDisabled={isNotEditableFieldDisabled}
           filterOption={(option, inputValue) => option.label.includes(inputValue)}
           options={emdOptions}
         />
@@ -191,19 +194,24 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
           label="퀘스트 대상 액션"
           placeholder="이 행동을 하면 퀘스트로 인정됩니다."
           closeMenuOnSelect={false}
-          isDisabled={!(isEditMode === undefined)}
+          isDisabled={isNotEditableFieldDisabled}
           rules={{ required: { value: true, message: "1개 이상의 조건을 선택해주세요." } }}
           options={actionOptions}
         />
-        <TextInput name="description" label="설명" disabled={!!isEditMode} />
+        <TextInput name="description" label="설명" disabled={isEditableFieldDisabled} />
         <Flex gap={16}>
           <TextInput
             name="crusherGroupName"
             label="파트너 라벨 이름"
             placeholder="파트너 라벨로 사용하고 싶은 이름을 입력하세요"
-            disabled={!!isEditMode}
+            disabled={isEditableFieldDisabled}
           />
-          <FileInput label="파트너 라벨 이미지" accept="image/*" onChange={handleFileChange} disabled={!!isEditMode} />
+          <FileInput
+            label="파트너 라벨 이미지"
+            accept="image/*"
+            onChange={handleFileChange}
+            disabled={isEditableFieldDisabled}
+          />
           {showImage ? <RemoteImage src={imageUrl} width={200} /> : null}
         </Flex>
         <Flex gap={16}>
