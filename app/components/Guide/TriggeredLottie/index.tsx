@@ -1,10 +1,7 @@
 "use client"
 
-import { LottieComponentProps, LottieRefCurrentProps } from "lottie-react"
-import dynamic from "next/dynamic"
+import Lottie, { LottieComponentProps, LottieRefCurrentProps } from "lottie-react"
 import { useEffect, useRef } from "react"
-
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false })
 
 interface TriggeredLottieProps extends LottieComponentProps {
   isActive: boolean

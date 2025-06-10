@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react"
 
 import { useQuest } from "@/lib/apis/api"
 import { AppState } from "@/lib/globalAtoms"
-import { QuestBuilding } from "@/lib/models/quest"
+import { ClubQuestTargetBuildingDTO } from "@/lib/generated-sources/openapi"
 import { storage } from "@/lib/storage"
 
 import Map from "@/components/Map"
@@ -51,7 +51,7 @@ export default function QuestDetail() {
     openGuide()
   }, [])
 
-  function getCenterOf(buildings: QuestBuilding[]) {
+  function getCenterOf(buildings: ClubQuestTargetBuildingDTO[]) {
     const coords = buildings.map((b) => b.location)
     const center = {
       lat: coords.reduce((acc, c) => acc + c.lat, 0) / coords.length,

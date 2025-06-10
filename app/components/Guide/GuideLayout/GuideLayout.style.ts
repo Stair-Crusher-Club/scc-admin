@@ -34,7 +34,7 @@ export const MenuButton = styled("button", {
     display: "block",
     padding: "10px 0 6px",
     textAlign: "center",
-    fontSize: 20,
+    fontSize: 18,
     margin: 0,
   },
   variants: {

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef } from "react"
 
-import { QuestPlace } from "@/lib/models/quest"
+import { ClubQuestTargetPlaceDTO } from "@/lib/generated-sources/openapi"
 
 import { MapContext } from "../Map"
 
@@ -11,7 +11,7 @@ export interface Props {
   clusterIndex: number
   overlayInfo: {
     title: string
-    places: QuestPlace[]
+    places: ClubQuestTargetPlaceDTO[]
   }
   markerStyle?: MarkerStyle
 }

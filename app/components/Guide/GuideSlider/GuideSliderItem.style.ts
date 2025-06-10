@@ -14,6 +14,8 @@ export const ImageSection = styled("div", {
     position: "relative",
     display: "flex",
     alignItems: "end",
+    justifyContent: "center",
+    backgroundColor: "#FAFAFA",
   },
 })
 
@@ -24,15 +26,15 @@ export const ArrowButton = styled("button", {
     zIndex: 1,
     transform: "translateY(-50%)",
     willChange: "transform",
-    padding: 6,
+    padding: 8,
   },
   variants: {
     position: {
       prev: {
-        left: 12,
+        left: 0,
       },
       next: {
-        right: 12,
+        right: 0,
       },
     },
   },
@@ -119,7 +121,7 @@ export const ExtraDescriptionTitle = styled("h4", {
 export const ExtraDescriptionItem = styled("li", {
   variants: {
     hasStyle: {
-      true: { position: "relative", paddingLeft: 8 },
+      true: { position: "relative", paddingLeft: 20 },
     },
   },
 })
@@ -127,7 +129,7 @@ export const ExtraDescriptionItem = styled("li", {
 export const ExtraDescriptionDot = styled("span", {
   base: {
     position: "absolute",
-    left: 0,
+    left: 10,
     top: 9,
     width: 3,
     height: 3,

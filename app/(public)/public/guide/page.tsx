@@ -1,6 +1,9 @@
+import dynamic from "next/dynamic"
 import { Suspense } from "react"
 
-import GuideContent from "@/components/Guide/GuideContent"
+const GuideContent = dynamic(() => import("@/components/Guide/GuideContent"), {
+  ssr: false,
+})
 
 export default function GuidePage() {
   return (

@@ -8,6 +8,7 @@ import * as S from "./GuideSliderItem.style"
 export type GuideSlideItemProps = GuideSlideContent & {
   name?: string
   index: number
+  width?: number
   slideCount: number
   onClickPrev: () => void
   onClickNext: () => void
@@ -20,6 +21,7 @@ export type GuideSlideItemProps = GuideSlideContent & {
 export default function GuideSliderItem({
   name = "guide-slide-item",
   index,
+  width = 335,
   slideCount = 3,
   onClickPrev,
   onClickNext,
@@ -45,9 +47,9 @@ export default function GuideSliderItem({
           )}
 
           {sourceType === "image" ? (
-            <Image src={source} alt="이미지" width={335} height={217} />
+            <Image src={source} alt="이미지" width={width} height={217} />
           ) : (
-            <TriggeredLottie width={335} height={217} animationData={source} isActive={isActive} delay={800} />
+            <TriggeredLottie width={width} height={217} animationData={source} isActive={isActive} delay={800} />
           )}
 
           {!hiddenNextButton && (
@@ -72,7 +74,7 @@ export default function GuideSliderItem({
           <S.DescriptionItem>
             <S.Title>{title ? title : `${stepNumber}단계`}</S.Title>
             {description.map((desc, idx) => (
-              <S.Description key={`${name}-desc-${idx}`}>{desc}</S.Description>
+              <S.Description key={`${name}-desc-${idx}`} dangerouslySetInnerHTML={{ __html: desc }} />
             ))}
           </S.DescriptionItem>
         </S.DetailSection>
@@ -84,10 +86,10 @@ export default function GuideSliderItem({
             {extraDescription.description.map((desc, idx) => (
               <S.ExtraDescriptionItem
                 key={`${name}-extra-desc-${idx}`}
-                hasStyle={extraDescription.descriptionStyle !== "none"}
+                hasStyle={extraDescription.descriptionStyle && extraDescription.descriptionStyle !== "none"}
               >
                 {extraDescription.descriptionStyle === "disc" && <S.ExtraDescriptionDot />}
-                <S.ExtraDescription>{desc}</S.ExtraDescription>
+                <S.ExtraDescription dangerouslySetInnerHTML={{ __html: desc }} />
               </S.ExtraDescriptionItem>
             ))}
           </ul>

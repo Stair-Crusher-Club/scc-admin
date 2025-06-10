@@ -1,13 +1,13 @@
 import { useContext, useEffect, useRef } from "react"
 
-import { LatLng } from "@/lib/models/common"
+import { LocationDTO } from "@/lib/generated-sources/openapi"
 
 import { MapContext } from "../Map"
 
 type PolygonStyle = Omit<kakao.maps.PolygonOptions, "map" | "path">
 
 interface Props {
-  points: LatLng[]
+  points: LocationDTO[]
   label?: string
   style?: PolygonStyle
   forDrawing?: boolean

@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react"
 
 import { deleteQuestTargetBuilding, useQuestBuilding } from "@/lib/apis/api"
 import { AppState } from "@/lib/globalAtoms"
-import { QuestBuilding, QuestPlace } from "@/lib/models/quest"
+import { ClubQuestTargetBuildingDTO, ClubQuestTargetPlaceDTO } from "@/lib/generated-sources/openapi"
 import { storage } from "@/lib/storage"
 
 import Reload from "@/icons/Reload"
@@ -17,13 +17,13 @@ import * as S from "./BuildingDetailSheet.style"
 import PlaceCard from "./PlaceCard"
 
 interface Props extends BasicModalProps {
-  building: QuestBuilding
+  building: ClubQuestTargetBuildingDTO
   questId: string
 }
 
 export const defaultOverlayOptions = { closeDelay: 200, dim: false }
 export default function BuildingDetailSheet({ building: initialData, questId, visible, close }: Props) {
-  const [sortedPlaces, setSortedPlaces] = useState<QuestPlace[]>([])
+  const [sortedPlaces, setSortedPlaces] = useState<ClubQuestTargetPlaceDTO[]>([])
   const { data: building } = useQuestBuilding({ questId, buildingId: initialData.buildingId })
   const [appState, setAppState] = useAtom(AppState)
   const queryClient = useQueryClient()
@@ -57,7 +57,7 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
     }
   }
 
-  const isConquered = (place: QuestPlace) => place.isConquered || place.isNotAccessible || place.isClosed
+  const isConquered = (place: ClubQuestTargetPlaceDTO) => place.isConquered || place.isNotAccessible || place.isClosed
 
   function getSortedPlaces() {
     if (!building) return []
