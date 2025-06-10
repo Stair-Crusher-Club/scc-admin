@@ -121,6 +121,10 @@ export default function ChallengeDetail() {
                       (v) => originalChallenge.conditions?.[0]?.actionCondition?.types?.includes(v.value) ?? false,
                     ),
                     description: originalChallenge.description,
+                    crusherGroupName: originalChallenge.crusherGroup?.name || "",
+                    imageUrl: originalChallenge.crusherGroup?.icon?.url,
+                    imageWidth: originalChallenge.crusherGroup?.icon?.width,
+                    imageHeight: originalChallenge.crusherGroup?.icon?.height,
                   })
                 }
               }}
