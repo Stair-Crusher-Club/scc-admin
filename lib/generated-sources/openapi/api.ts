@@ -989,52 +989,10 @@ export interface AdminUpdateChallengeRequestDTO {
     'name': string;
     /**
      * 
-     * @type {boolean}
-     * @memberof AdminUpdateChallengeRequestDTO
-     */
-    'isPublic': boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof AdminUpdateChallengeRequestDTO
-     */
-    'invitationCode'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AdminUpdateChallengeRequestDTO
-     */
-    'passcode'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof AdminUpdateChallengeRequestDTO
-     */
-    'startsAtMillis': number;
-    /**
-     * 
      * @type {number}
      * @memberof AdminUpdateChallengeRequestDTO
      */
     'endsAtMillis'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof AdminUpdateChallengeRequestDTO
-     */
-    'goal': number;
-    /**
-     * 
-     * @type {Array<number>}
-     * @memberof AdminUpdateChallengeRequestDTO
-     */
-    'milestones': Array<number>;
-    /**
-     * 
-     * @type {Array<AdminChallengeConditionDTO>}
-     * @memberof AdminUpdateChallengeRequestDTO
-     */
-    'conditions': Array<AdminChallengeConditionDTO>;
     /**
      * 
      * @type {string}
