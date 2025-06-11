@@ -212,44 +212,46 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
           options={actionOptions}
         />
         <TextInput name="description" label="설명" disabled={isEditableFieldDisabled} />
-        <Flex gap={16}>
-          <TextInput
-            name="crusherGroupName"
-            label="파트너 라벨 이름"
-            placeholder="파트너 라벨로 사용하고 싶은 이름을 입력하세요"
-            disabled={isEditableFieldDisabled}
-          />
-          <div className={css({ width: "100%" })}>
+        <TextInput
+          name="crusherGroupName"
+          label="파트너 라벨 이름"
+          placeholder="파트너 라벨로 사용하고 싶은 이름을 입력하세요"
+          disabled={isEditableFieldDisabled}
+        />
+        <Flex direction={showImage ? "row" : "column"}>
+          <div className={css({ width: showImage ? "50%" : "100%" })}>
             <FileInput
               label="파트너 라벨 이미지"
               accept="image/*"
               onChange={handleFileChange}
               disabled={isEditableFieldDisabled}
             />
-            {showImage && (
-              <div
-                className={css({
-                  border: "1px solid #b3b8be",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: 4,
-                  marginBottom: 12,
-                  backgroundColor: "#ffffff",
-                  position: "relative",
-                })}
-              >
-                <RemoteImage
-                  src={imageUrl}
-                  height={28}
-                  className={css({
-                    height: 28,
-                    objectFit: "contain",
-                  })}
-                />
-              </div>
-            )}
           </div>
+          {showImage && (
+            <div
+              className={css({
+                width: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 4,
+                marginBottom: 12,
+                backgroundColor: "#ffffff",
+                position: "relative",
+              })}
+            >
+              <RemoteImage
+                src={imageUrl}
+                width={(form.watch("imageWidth")!! / form.watch("imageHeight")!!) * 28}
+                height={28}
+                className={css({
+                  height: "28px",
+                  border: "1px solid #000000",
+                  objectFit: "contain",
+                })}
+              />
+            </div>
+          )}
         </Flex>
       </form>
     </FormProvider>
