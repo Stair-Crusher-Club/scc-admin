@@ -219,13 +219,37 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
             placeholder="파트너 라벨로 사용하고 싶은 이름을 입력하세요"
             disabled={isEditableFieldDisabled}
           />
-          <FileInput
-            label="파트너 라벨 이미지"
-            accept="image/*"
-            onChange={handleFileChange}
-            disabled={isEditableFieldDisabled}
-          />
-          {showImage ? <RemoteImage src={imageUrl} width={200} /> : null}
+          <div className={css({ width: "100%" })}>
+            <FileInput
+              label="파트너 라벨 이미지"
+              accept="image/*"
+              onChange={handleFileChange}
+              disabled={isEditableFieldDisabled}
+            />
+            {showImage && (
+              <div
+                className={css({
+                  border: "1px solid #b3b8be",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 4,
+                  marginBottom: 12,
+                  backgroundColor: "#ffffff",
+                  position: "relative",
+                })}
+              >
+                <RemoteImage
+                  src={imageUrl}
+                  height={28}
+                  className={css({
+                    height: 28,
+                    objectFit: "contain",
+                  })}
+                />
+              </div>
+            )}
+          </div>
         </Flex>
       </form>
     </FormProvider>

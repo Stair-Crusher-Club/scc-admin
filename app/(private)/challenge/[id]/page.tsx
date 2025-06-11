@@ -2,8 +2,7 @@
 
 import { useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
-import { useParams } from "next/navigation"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 
