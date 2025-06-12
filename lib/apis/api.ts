@@ -192,23 +192,7 @@ export function createChallenge(payload: CreateChallengeParams) {
   })
 }
 
-type UpdateChallengeParams = {
-  name: string
-  isPublic: boolean
-  invitationCode?: string
-  passcode?: string
-  startsAtMillis: number
-  endsAtMillis?: number
-  goal: number
-  milestones: number[]
-  conditions: {
-    addressCondition: { rawEupMyeonDongs: string[] }
-    actionCondition: { types: string[] }
-  }[]
-  description: string
-  crusherGroup?: CrusherGroup
-}
-export function updateChallenge({ id, payload }: { id: string; payload: AdminUpdateChallengeRequestDTO}) {
+export function updateChallenge({ id, payload }: { id: string; payload: AdminUpdateChallengeRequestDTO }) {
   return api.challenge.challengesChallengeIdPut(id, payload)
 }
 
