@@ -40,7 +40,6 @@ const headerVariantOptions: Option[] = [
   { label: "앱 내부처럼 보이도록 (상단에 뒤로가기 버튼이 있다)", value: "navigation" },
 ]
 
-// Frequently used webview deeplinks
 const predefinedWebviews: WebviewOption[] = [
   {
     label: "정보 등록/조회 가이드",
