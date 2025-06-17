@@ -7,6 +7,7 @@ import {
   AdminStairHeightLevel,
   AdminStairInfoDTO,
   AdminUpdateChallengeRequestDTO,
+  ClubQuestCreateDryRunResultItemDTO,
   EpochMillisTimestamp,
 } from "@/lib/generated-sources/openapi"
 
@@ -124,14 +125,10 @@ type CreateQuestPayload = {
   purposeType: ClubQuestPurposeTypeEnumDTO
   startAt: EpochMillisTimestamp
   endAt: EpochMillisTimestamp
-  dryRunResults: ClusterPreview[]
+  dryRunResults: ClubQuestCreateDryRunResultItemDTO[]
 }
 export async function createQuest(payload: CreateQuestPayload) {
-  return api.default.clubQuestsCreateDryRunPost({
-    ...payload,
-    clusterCount: 0,
-    maxPlaceCountPerQuest: 0,
-  })
+  return api.default.createClubQuest({ ...payload })
 }
 
 type DeleteQuestPayload = {
