@@ -7,8 +7,8 @@ import { useEffect, useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
-import { ClubQuestCreateRegionType, ClusterPreview, createQuest, previewDivisions } from "@/lib/apis/api"
-import { ClubQuestPurposeTypeEnumDTO } from "@/lib/generated-sources/openapi"
+import { ClubQuestCreateRegionType, createQuest, previewDivisions } from "@/lib/apis/api"
+import { ClubQuestCreateDryRunResultItemDTO, ClubQuestPurposeTypeEnumDTO } from "@/lib/generated-sources/openapi"
 
 import Map from "@/components/Map"
 import { Circle, ClusterMarker, Polygon } from "@/components/Map/components"
@@ -82,7 +82,7 @@ export default function QuestCreate() {
       maxPlacesPerQuest: 50,
     },
   })
-  const [clusters, setClusters] = useState<ClusterPreview[]>([])
+  const [clusters, setClusters] = useState<ClubQuestCreateDryRunResultItemDTO[]>([])
 
   function initializeMap(map: kakao.maps.Map) {
     kakao.maps.event.addListener(map, "click", (e: kakao.maps.event.MouseEvent) => handleClick(e.latLng))
