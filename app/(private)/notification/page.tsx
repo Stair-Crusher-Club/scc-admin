@@ -42,8 +42,14 @@ const headerVariantOptions: Option[] = [
 
 const predefinedWebviews: WebviewOption[] = [
   {
-    label: "정보 등록/조회 가이드",
+    label: "정보 등록 가이드",
     value: "https://admin.staircrusher.club/public/guide?tab=register",
+    fixedTitle: "정보 등록/조회 가이드",
+    headerVariant: "navigation",
+  },
+  {
+    label: "정보 조회 가이드",
+    value: "https://admin.staircrusher.club/public/guide?tab=search",
     fixedTitle: "정보 등록/조회 가이드",
     headerVariant: "navigation",
   },
