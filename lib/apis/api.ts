@@ -4,6 +4,7 @@ import {
   AdminAccessibilityDTO,
   AdminEntranceDoorType,
   AdminImageUploadPurposeTypeDTO,
+  AdminSendPushNotificationRequestDTO,
   AdminStairHeightLevel,
   AdminStairInfoDTO,
   AdminUpdateChallengeRequestDTO,
@@ -304,17 +305,6 @@ export interface ImageDto {
   height: number
 }
 
-export interface SendPushNotificationPayload {
-  userIds: string[]
-  notification: PushNotification
-}
-
-export interface PushNotification {
-  title?: string
-  body: string
-  deepLink?: string
-}
-
-export function sendPushNotification(payload: SendPushNotificationPayload) {
-  return api.default.adminSendPushNotification(payload)
+export function sendPushNotification(payload: AdminSendPushNotificationRequestDTO) {
+  return defaultApi.adminSendPushNotification(payload)
 }

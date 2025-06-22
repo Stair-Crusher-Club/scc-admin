@@ -748,6 +748,25 @@ export interface AdminListHomeBannersResponseDTO {
 /**
  * 
  * @export
+ * @interface AdminListPushNotificationSchedulesResponseDTO
+ */
+export interface AdminListPushNotificationSchedulesResponseDTO {
+    /**
+     * 
+     * @type {Array<AdminPushNotificationScheduleDTO>}
+     * @memberof AdminListPushNotificationSchedulesResponseDTO
+     */
+    'list': Array<AdminPushNotificationScheduleDTO>;
+    /**
+     * 없으면 다음 페이지가 없다는 의미.
+     * @type {string}
+     * @memberof AdminListPushNotificationSchedulesResponseDTO
+     */
+    'cursor'?: string;
+}
+/**
+ * 
+ * @export
  * @interface AdminPlaceAccessibilityDTO
  */
 export interface AdminPlaceAccessibilityDTO {
@@ -834,6 +853,55 @@ export interface AdminPlaceAccessibilityDTO {
 /**
  * 
  * @export
+ * @interface AdminPushNotificationScheduleDTO
+ */
+export interface AdminPushNotificationScheduleDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPushNotificationScheduleDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPushNotificationScheduleDTO
+     */
+    'scheduledAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPushNotificationScheduleDTO
+     */
+    'sentAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPushNotificationScheduleDTO
+     */
+    'title'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPushNotificationScheduleDTO
+     */
+    'body': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPushNotificationScheduleDTO
+     */
+    'deepLink'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminPushNotificationScheduleDTO
+     */
+    'targetUsersCount': number;
+}
+/**
+ * 
+ * @export
  * @interface AdminSearchAccessibilitiesResultDTO
  */
 export interface AdminSearchAccessibilitiesResultDTO {
@@ -853,44 +921,37 @@ export interface AdminSearchAccessibilitiesResultDTO {
 /**
  * 
  * @export
- * @interface AdminSendPushNotificationRequestDto
+ * @interface AdminSendPushNotificationRequestDTO
  */
-export interface AdminSendPushNotificationRequestDto {
+export interface AdminSendPushNotificationRequestDTO {
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminSendPushNotificationRequestDTO
+     */
+    'scheduledAt'?: EpochMillisTimestamp;
     /**
      * 
      * @type {Array<string>}
-     * @memberof AdminSendPushNotificationRequestDto
+     * @memberof AdminSendPushNotificationRequestDTO
      */
     'userIds': Array<string>;
     /**
      * 
-     * @type {AdminSendPushNotificationRequestDtoNotification}
-     * @memberof AdminSendPushNotificationRequestDto
-     */
-    'notification': AdminSendPushNotificationRequestDtoNotification;
-}
-/**
- * 
- * @export
- * @interface AdminSendPushNotificationRequestDtoNotification
- */
-export interface AdminSendPushNotificationRequestDtoNotification {
-    /**
-     * 
      * @type {string}
-     * @memberof AdminSendPushNotificationRequestDtoNotification
+     * @memberof AdminSendPushNotificationRequestDTO
      */
     'title'?: string;
     /**
      * 
      * @type {string}
-     * @memberof AdminSendPushNotificationRequestDtoNotification
+     * @memberof AdminSendPushNotificationRequestDTO
      */
     'body': string;
     /**
      * 
      * @type {string}
-     * @memberof AdminSendPushNotificationRequestDtoNotification
+     * @memberof AdminSendPushNotificationRequestDTO
      */
     'deepLink'?: string;
 }
@@ -1054,6 +1115,37 @@ export interface AdminUpdatePlaceAccessibilityRequestDTO {
      * @memberof AdminUpdatePlaceAccessibilityRequestDTO
      */
     'entranceDoorTypes'?: Array<AdminEntranceDoorType>;
+}
+/**
+ * 
+ * @export
+ * @interface AdminUpdatePushNotificationScheduleRequestDTO
+ */
+export interface AdminUpdatePushNotificationScheduleRequestDTO {
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminUpdatePushNotificationScheduleRequestDTO
+     */
+    'scheduledAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdatePushNotificationScheduleRequestDTO
+     */
+    'title'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdatePushNotificationScheduleRequestDTO
+     */
+    'body': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdatePushNotificationScheduleRequestDTO
+     */
+    'deepLink'?: string;
 }
 /**
  * 퀘스트 생성 시뮬레이션 결과. 각 퀘스트마다 1개의 아이템이 반환된다.
@@ -2920,16 +3012,56 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * 
-         * @summary 유저들에게 push notification을 보낸다.
-         * @param {AdminSendPushNotificationRequestDto} adminSendPushNotificationRequestDto 
+         * 푸시 알림 스케쥴을 커서링 방식으로 조회한다.
+         * @summary 커서링 방식의 푸시 알림 조회.
+         * @param {string} [cursor] 
+         * @param {string} [limit] default 값은 50으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminSendPushNotification: async (adminSendPushNotificationRequestDto: AdminSendPushNotificationRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'adminSendPushNotificationRequestDto' is not null or undefined
-            assertParamExists('adminSendPushNotification', 'adminSendPushNotificationRequestDto', adminSendPushNotificationRequestDto)
-            const localVarPath = `/user/sendPushNotification`;
+        adminGetPushSchedules: async (cursor?: string, limit?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/notifications/pushSchedules`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 유저들에게 push notification을 보낸다.
+         * @param {AdminSendPushNotificationRequestDTO} adminSendPushNotificationRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminSendPushNotification: async (adminSendPushNotificationRequestDTO: AdminSendPushNotificationRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminSendPushNotificationRequestDTO' is not null or undefined
+            assertParamExists('adminSendPushNotification', 'adminSendPushNotificationRequestDTO', adminSendPushNotificationRequestDTO)
+            const localVarPath = `/notifications/sendPush`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2948,7 +3080,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(adminSendPushNotificationRequestDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(adminSendPushNotificationRequestDTO, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3484,6 +3616,114 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary 푸시 알림 스케쥴을 삭제한다.
+         * @param {string} scheduleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        notificationsPushSchedulesScheduleIdDelete: async (scheduleId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'scheduleId' is not null or undefined
+            assertParamExists('notificationsPushSchedulesScheduleIdDelete', 'scheduleId', scheduleId)
+            const localVarPath = `/notifications/pushSchedules/{scheduleId}`
+                .replace(`{${"scheduleId"}}`, encodeURIComponent(String(scheduleId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 푸시 알림 스케쥴을 조회한다.
+         * @param {string} scheduleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        notificationsPushSchedulesScheduleIdGet: async (scheduleId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'scheduleId' is not null or undefined
+            assertParamExists('notificationsPushSchedulesScheduleIdGet', 'scheduleId', scheduleId)
+            const localVarPath = `/notifications/pushSchedules/{scheduleId}`
+                .replace(`{${"scheduleId"}}`, encodeURIComponent(String(scheduleId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 푸시 알림 스케쥴을 수정한다.
+         * @param {string} scheduleId 
+         * @param {AdminUpdatePushNotificationScheduleRequestDTO} adminUpdatePushNotificationScheduleRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        notificationsPushSchedulesScheduleIdPut: async (scheduleId: string, adminUpdatePushNotificationScheduleRequestDTO: AdminUpdatePushNotificationScheduleRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'scheduleId' is not null or undefined
+            assertParamExists('notificationsPushSchedulesScheduleIdPut', 'scheduleId', scheduleId)
+            // verify required parameter 'adminUpdatePushNotificationScheduleRequestDTO' is not null or undefined
+            assertParamExists('notificationsPushSchedulesScheduleIdPut', 'adminUpdatePushNotificationScheduleRequestDTO', adminUpdatePushNotificationScheduleRequestDTO)
+            const localVarPath = `/notifications/pushSchedules/{scheduleId}`
+                .replace(`{${"scheduleId"}}`, encodeURIComponent(String(scheduleId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminUpdatePushNotificationScheduleRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 지정된 지역 내의 장소를 지도 API를 통해 크롤링해서 계단정복지도 서버 DB에 캐싱한다.
          * @param {StartPlaceCrawlingRequestDTO} startPlaceCrawlingRequestDTO 
          * @param {*} [options] Override http request option.
@@ -3594,14 +3834,26 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary 유저들에게 push notification을 보낸다.
-         * @param {AdminSendPushNotificationRequestDto} adminSendPushNotificationRequestDto 
+         * 푸시 알림 스케쥴을 커서링 방식으로 조회한다.
+         * @summary 커서링 방식의 푸시 알림 조회.
+         * @param {string} [cursor] 
+         * @param {string} [limit] default 값은 50으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async adminSendPushNotification(adminSendPushNotificationRequestDto: AdminSendPushNotificationRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.adminSendPushNotification(adminSendPushNotificationRequestDto, options);
+        async adminGetPushSchedules(cursor?: string, limit?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListPushNotificationSchedulesResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminGetPushSchedules(cursor, limit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 유저들에게 push notification을 보낸다.
+         * @param {AdminSendPushNotificationRequestDTO} adminSendPushNotificationRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminSendPushNotification(adminSendPushNotificationRequestDTO: AdminSendPushNotificationRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminSendPushNotification(adminSendPushNotificationRequestDTO, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3767,6 +4019,40 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 푸시 알림 스케쥴을 삭제한다.
+         * @param {string} scheduleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async notificationsPushSchedulesScheduleIdDelete(scheduleId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.notificationsPushSchedulesScheduleIdDelete(scheduleId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 푸시 알림 스케쥴을 조회한다.
+         * @param {string} scheduleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async notificationsPushSchedulesScheduleIdGet(scheduleId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPushNotificationScheduleDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.notificationsPushSchedulesScheduleIdGet(scheduleId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 푸시 알림 스케쥴을 수정한다.
+         * @param {string} scheduleId 
+         * @param {AdminUpdatePushNotificationScheduleRequestDTO} adminUpdatePushNotificationScheduleRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async notificationsPushSchedulesScheduleIdPut(scheduleId: string, adminUpdatePushNotificationScheduleRequestDTO: AdminUpdatePushNotificationScheduleRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.notificationsPushSchedulesScheduleIdPut(scheduleId, adminUpdatePushNotificationScheduleRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 지정된 지역 내의 장소를 지도 API를 통해 크롤링해서 계단정복지도 서버 DB에 캐싱한다.
          * @param {StartPlaceCrawlingRequestDTO} startPlaceCrawlingRequestDTO 
          * @param {*} [options] Override http request option.
@@ -3846,14 +4132,25 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.adminCreateImageUploadUrls(adminCreateImageUploadUrlsRequestDTO, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary 유저들에게 push notification을 보낸다.
-         * @param {AdminSendPushNotificationRequestDto} adminSendPushNotificationRequestDto 
+         * 푸시 알림 스케쥴을 커서링 방식으로 조회한다.
+         * @summary 커서링 방식의 푸시 알림 조회.
+         * @param {string} [cursor] 
+         * @param {string} [limit] default 값은 50으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminSendPushNotification(adminSendPushNotificationRequestDto: AdminSendPushNotificationRequestDto, options?: any): AxiosPromise<void> {
-            return localVarFp.adminSendPushNotification(adminSendPushNotificationRequestDto, options).then((request) => request(axios, basePath));
+        adminGetPushSchedules(cursor?: string, limit?: string, options?: any): AxiosPromise<AdminListPushNotificationSchedulesResponseDTO> {
+            return localVarFp.adminGetPushSchedules(cursor, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 유저들에게 push notification을 보낸다.
+         * @param {AdminSendPushNotificationRequestDTO} adminSendPushNotificationRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminSendPushNotification(adminSendPushNotificationRequestDTO: AdminSendPushNotificationRequestDTO, options?: any): AxiosPromise<void> {
+            return localVarFp.adminSendPushNotification(adminSendPushNotificationRequestDTO, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4004,6 +4301,37 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary 푸시 알림 스케쥴을 삭제한다.
+         * @param {string} scheduleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        notificationsPushSchedulesScheduleIdDelete(scheduleId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.notificationsPushSchedulesScheduleIdDelete(scheduleId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 푸시 알림 스케쥴을 조회한다.
+         * @param {string} scheduleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        notificationsPushSchedulesScheduleIdGet(scheduleId: string, options?: any): AxiosPromise<AdminPushNotificationScheduleDTO> {
+            return localVarFp.notificationsPushSchedulesScheduleIdGet(scheduleId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 푸시 알림 스케쥴을 수정한다.
+         * @param {string} scheduleId 
+         * @param {AdminUpdatePushNotificationScheduleRequestDTO} adminUpdatePushNotificationScheduleRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        notificationsPushSchedulesScheduleIdPut(scheduleId: string, adminUpdatePushNotificationScheduleRequestDTO: AdminUpdatePushNotificationScheduleRequestDTO, options?: any): AxiosPromise<void> {
+            return localVarFp.notificationsPushSchedulesScheduleIdPut(scheduleId, adminUpdatePushNotificationScheduleRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 지정된 지역 내의 장소를 지도 API를 통해 크롤링해서 계단정복지도 서버 DB에 캐싱한다.
          * @param {StartPlaceCrawlingRequestDTO} startPlaceCrawlingRequestDTO 
          * @param {*} [options] Override http request option.
@@ -4094,15 +4422,28 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * 
-     * @summary 유저들에게 push notification을 보낸다.
-     * @param {AdminSendPushNotificationRequestDto} adminSendPushNotificationRequestDto 
+     * 푸시 알림 스케쥴을 커서링 방식으로 조회한다.
+     * @summary 커서링 방식의 푸시 알림 조회.
+     * @param {string} [cursor] 
+     * @param {string} [limit] default 값은 50으로 설정된다.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public adminSendPushNotification(adminSendPushNotificationRequestDto: AdminSendPushNotificationRequestDto, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).adminSendPushNotification(adminSendPushNotificationRequestDto, options).then((request) => request(this.axios, this.basePath));
+    public adminGetPushSchedules(cursor?: string, limit?: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).adminGetPushSchedules(cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 유저들에게 push notification을 보낸다.
+     * @param {AdminSendPushNotificationRequestDTO} adminSendPushNotificationRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public adminSendPushNotification(adminSendPushNotificationRequestDTO: AdminSendPushNotificationRequestDTO, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).adminSendPushNotification(adminSendPushNotificationRequestDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4278,6 +4619,43 @@ export class DefaultApi extends BaseAPI {
      */
     public loginPost(loginPostRequest: LoginPostRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).loginPost(loginPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 푸시 알림 스케쥴을 삭제한다.
+     * @param {string} scheduleId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public notificationsPushSchedulesScheduleIdDelete(scheduleId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).notificationsPushSchedulesScheduleIdDelete(scheduleId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 푸시 알림 스케쥴을 조회한다.
+     * @param {string} scheduleId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public notificationsPushSchedulesScheduleIdGet(scheduleId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).notificationsPushSchedulesScheduleIdGet(scheduleId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 푸시 알림 스케쥴을 수정한다.
+     * @param {string} scheduleId 
+     * @param {AdminUpdatePushNotificationScheduleRequestDTO} adminUpdatePushNotificationScheduleRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public notificationsPushSchedulesScheduleIdPut(scheduleId: string, adminUpdatePushNotificationScheduleRequestDTO: AdminUpdatePushNotificationScheduleRequestDTO, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).notificationsPushSchedulesScheduleIdPut(scheduleId, adminUpdatePushNotificationScheduleRequestDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
