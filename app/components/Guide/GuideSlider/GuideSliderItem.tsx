@@ -47,7 +47,7 @@ export default function GuideSliderItem({
           )}
 
           {sourceType === "image" ? (
-            <Image src={source} alt="이미지" width={width} height={217} />
+            <Image src={source} alt="이미지" width={width} height={217} unoptimized />
           ) : (
             <TriggeredLottie width={width} height={217} animationData={source} isActive={isActive} delay={800} />
           )}
