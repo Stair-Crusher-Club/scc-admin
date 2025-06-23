@@ -1,15 +1,15 @@
 "use client"
 
-import Lottie, { LottieComponentProps, LottieRefCurrentProps } from "lottie-react"
+import { DotLottie, DotLottieReact, DotLottieReactProps } from "@lottiefiles/dotlottie-react"
 import { useEffect, useRef } from "react"
 
-interface TriggeredLottieProps extends LottieComponentProps {
+interface TriggeredDotLottieProps extends DotLottieReactProps {
   isActive: boolean
   delay?: number
 }
 
-export default function TriggeredLottie({ isActive, animationData, delay }: TriggeredLottieProps) {
-  const lottieRef = useRef<LottieRefCurrentProps>(null)
+export default function TriggeredDotLottie({ isActive, src, delay }: TriggeredDotLottieProps) {
+  const lottieRef = useRef<DotLottie | null>(null)
 
   useEffect(() => {
     let timeoutKey: ReturnType<typeof setTimeout> | undefined
@@ -38,5 +38,14 @@ export default function TriggeredLottie({ isActive, animationData, delay }: Trig
     }
   }, [isActive, delay])
 
-  return <Lottie lottieRef={lottieRef} animationData={animationData} loop={false} autoPlay={false} />
+  return (
+    <DotLottieReact
+      dotLottieRefCallback={(dotLottie) => {
+        lottieRef.current = dotLottie
+      }}
+      src={src}
+      loop={false}
+      autoplay={false}
+    />
+  )
 }
