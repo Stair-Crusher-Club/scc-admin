@@ -24,3 +24,6 @@ jobs:
         run: pnpm i
       - name: Run lint
         run: pnpm lint
+
+      - name: build
+        run: pnpm panda && pnpm build
