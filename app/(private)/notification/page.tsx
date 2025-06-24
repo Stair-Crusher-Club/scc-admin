@@ -5,7 +5,8 @@ import React from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
-import { PushNotification, SendPushNotificationPayload, sendPushNotification } from "@/lib/apis/api"
+import { sendPushNotification } from "@/lib/apis/api"
+import { AdminSendPushNotificationRequestDTO } from "@/lib/generated-sources/openapi"
 
 import { Contents, Header } from "@/components/layout"
 import { Flex } from "@/styles/jsx"
@@ -136,15 +137,11 @@ export default function NotificationPage() {
         deepLinkToUse = undefined
       }
 
-      const notification: PushNotification = {
+      const payload: AdminSendPushNotificationRequestDTO = {
+        userIds: formValues.userIds.split(",").map((id) => id.trim()),
         title: titleToUse,
         body: formValues.body,
         deepLink: deepLinkToUse,
-      }
-
-      const payload: SendPushNotificationPayload = {
-        userIds: formValues.userIds.split(",").map((id) => id.trim()),
-        notification: notification,
       }
 
       const res = await sendPushNotification(payload)
