@@ -1,16 +1,6 @@
-import buildingConquerGuide02 from "../../public/guide/register/buildingConquerGuide/buildingConquerGuide02.json"
-import buildingConquerGuide03 from "../../public/guide/register/buildingConquerGuide/buildingConquerGuide03.json"
-import buildingConquerGuide04 from "../../public/guide/register/buildingConquerGuide/buildingConquerGuide04.json"
-import placeConquerGuide03 from "../../public/guide/register/placeConquerGuide/placeConquerGuide03.json"
-import placeConquerGuide04 from "../../public/guide/register/placeConquerGuide/placeConquerGuide04.json"
-import placeConquerGuide05 from "../../public/guide/register/placeConquerGuide/placeConquerGuide05.json"
-import filterSearchGuide03 from "../../public/guide/search/filterSearchGuide/filterSearchGuide03.json"
-import filterSearchGuide04 from "../../public/guide/search/filterSearchGuide/filterSearchGuide04.json"
-import filterSearchGuide05 from "../../public/guide/search/filterSearchGuide/filterSearchGuide05.json"
-import locationSearchGuide04 from "../../public/guide/search/locationSearchGuide/locationSearchGuide04.json"
-import sccRoadGuide04 from "../../public/guide/search/sccRoadGuide/sccRoadGuide04.json"
-
-type GuideSlideContentBase = {
+export type GuideSlideContent = {
+  sourceType: "image" | "lottie"
+  source: string
   title?: string
   description: string[]
   extraDescription?: {
@@ -19,16 +9,6 @@ type GuideSlideContentBase = {
     descriptionStyle?: "none" | "disc"
   }
 }
-
-export type GuideSlideContent =
-  | (GuideSlideContentBase & {
-      sourceType: "image"
-      source: string
-    })
-  | (GuideSlideContentBase & {
-      sourceType: "lottie"
-      source: object
-    })
 
 //#region 정보 등록하기
 // 장소 하나 정복하기
@@ -96,7 +76,7 @@ export const placeConquerGuide: GuideSlideContent[] = [
   },
   {
     description: ["계단 또는 경사로 정보를 입력해주세요.", "*계단이 1칸이라면 높이도 함께 입력해요."],
-    source: placeConquerGuide03,
+    source: "/guide/register/placeConquerGuide/placeConquerGuide03.lottie",
     sourceType: "lottie",
     extraDescription: {
       title: "💡계단 높이 정보가 필요한 이유?",
@@ -105,12 +85,12 @@ export const placeConquerGuide: GuideSlideContent[] = [
   },
   {
     description: ["출입문 유형을 알려주세요.", "중복 선택이 가능합니다."],
-    source: placeConquerGuide04,
+    source: "/guide/register/placeConquerGuide/placeConquerGuide04.lottie",
     sourceType: "lottie",
   },
   {
     description: ["더 도움이 될 정보가 있다면,", "의견을 남겨주세요."],
-    source: placeConquerGuide05,
+    source: "/guide/register/placeConquerGuide/placeConquerGuide05.lottie",
     sourceType: "lottie",
     extraDescription: {
       title: "💡코멘트는 접근성을 판단하는 데 큰 도움이 돼요. (예시)",
@@ -141,7 +121,7 @@ export const buildingConquerGuide: GuideSlideContent[] = [
   },
   {
     description: ["계단 또는 경사로 정보를 입력해주세요.", "*계단이 1칸이라면 높이도 함께 입력해요."],
-    source: buildingConquerGuide02,
+    source: "/guide/register/buildingConquerGuide/buildingConquerGuide02.lottie",
     sourceType: "lottie",
     extraDescription: {
       title: "💡계단 높이 정보가 필요한 이유?",
@@ -150,12 +130,12 @@ export const buildingConquerGuide: GuideSlideContent[] = [
   },
   {
     description: ["출입문 유형을 알려주세요.", "중복 선택이 가능합니다."],
-    source: buildingConquerGuide03,
+    source: "/guide/register/buildingConquerGuide/buildingConquerGuide03.lottie",
     sourceType: "lottie",
   },
   {
     description: ["건물 엘리베이터 정보를 입력해주세요."],
-    source: buildingConquerGuide04,
+    source: "/guide/register/buildingConquerGuide/buildingConquerGuide04.lottie",
     sourceType: "lottie",
     extraDescription: {
       title: "💡엘리베이터 탑승하러 가는 길 정보도 필요해요.",
@@ -168,7 +148,7 @@ export const buildingConquerGuide: GuideSlideContent[] = [
   },
   {
     description: ["더 도움이 될 정보가 있다면,", "의견을 남겨주세요."],
-    source: placeConquerGuide05,
+    source: "/guide/register/buildingConquerGuide/buildingConquerGuide05.lottie",
     sourceType: "lottie",
     extraDescription: {
       title: "💡코멘트는 접근성을 판단하는 데 큰 도움이 돼요. (예시)",
@@ -201,7 +181,7 @@ export const locationSearchGuide: GuideSlideContent[] = [
   },
   {
     description: ["장소 상세페이지에 들어가면", "사진과 함께 자세한 접근성 정보를 볼 수 있어요."],
-    source: locationSearchGuide04,
+    source: "/guide/search/locationSearchGuide/locationSearchGuide04.lottie",
     sourceType: "lottie",
   },
 ]
@@ -218,8 +198,8 @@ export const placeSearchGuide: GuideSlideContent[] = [
     sourceType: "image",
   },
   {
-    description: ["장소 상세페이지에서 사진과 함께 접근성 정보를 확인할 수 있어요."],
-    source: locationSearchGuide04,
+    description: ["장소 상세페이지에 들어가면", "사진과 함께 자세한 접근성 정보를 볼 수 있어요."],
+    source: "/guide/search/locationSearchGuide/locationSearchGuide04.lottie",
     sourceType: "lottie",
   },
 ]
@@ -238,19 +218,19 @@ export const filterSearchGuide: GuideSlideContent[] = [
   {
     title: "접근 레벨",
     description: ["접근 레벨에 따라", "원하는 수준만 골라볼 수 있어요."],
-    source: filterSearchGuide03,
+    source: "/guide/search/filterSearchGuide/filterSearchGuide03.lottie",
     sourceType: "lottie",
   },
   {
     title: "경사로 유무",
     description: ["접근레벨 0이거나,", "경사로가 있는 곳만 모아볼 수 있어요."],
-    source: filterSearchGuide04,
+    source: "/guide/search/filterSearchGuide/filterSearchGuide04.lottie",
     sourceType: "lottie",
   },
   {
     title: "정복 유무",
     description: ["정보가 등록된 곳만", "따로 모아서 볼 수 있어요."],
-    source: filterSearchGuide05,
+    source: "/guide/search/filterSearchGuide/filterSearchGuide05.lottie",
     sourceType: "lottie",
   },
 ]
@@ -273,7 +253,7 @@ export const sccRoadGuide: GuideSlideContent[] = [
   },
   {
     description: ["휠체어 유형, 화장실 유무 등", "장소 방문 전 꼭 필요한 정보를 확인해보세요."],
-    source: sccRoadGuide04,
+    source: "/guide/search/sccRoadGuide/sccRoadGuide04.lottie",
     sourceType: "lottie",
   },
 ]
