@@ -48,3 +48,170 @@ export const Button = styled("button", {
     },
   },
 })
+
+export const DeleteButton = styled("button", {
+  base: {
+    display: "block",
+    padding: "4px 8px",
+    margin: "4px auto",
+    backgroundColor: "var(--leaf-status-red)",
+    color: "white",
+    borderRadius: 4,
+    cursor: "pointer",
+    _disabled: {
+      backgroundColor: "var(--leaf-grey-80)",
+      cursor: "not-allowed",
+    },
+  },
+})
+
+export const EditButton = styled("button", {
+  base: {
+    display: "block",
+    padding: "4px 8px",
+    margin: "4px auto",
+    backgroundColor: "var(--leaf-primary-60)",
+    color: "white",
+    borderRadius: 4,
+    cursor: "pointer",
+    _disabled: {
+      backgroundColor: "var(--leaf-grey-80)",
+      cursor: "not-allowed",
+    },
+  },
+})
+
+export const TabContainer = styled("div", {
+  base: {
+    display: "flex",
+    gap: "10px",
+    marginBottom: "20px",
+    borderBottom: "1px solid #eee",
+    paddingBottom: "10px",
+  },
+})
+
+export const Tab = styled("button", {
+  base: {
+    padding: "8px 16px",
+    border: "none",
+    background: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    color: "#666",
+    borderBottom: "2px solid transparent",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      color: "#0066cc",
+    },
+  },
+  variants: {
+    active: {
+      true: {
+        color: "#0066cc",
+        borderBottom: "2px solid #0066cc",
+      },
+    },
+  },
+})
+
+export const TableWrapper = styled("div", {
+  base: {
+    width: "100%",
+    marginTop: "20px",
+  },
+})
+
+export const ScheduleTable = styled("table", {
+  base: {
+    width: "100%",
+    borderCollapse: "collapse",
+  },
+})
+
+export const ScheduleTheadTr = styled("tr", {
+  base: {
+    background: "#f8f8f8",
+  },
+})
+
+export const ScheduleTh = styled("th", {
+  base: {
+    padding: "10px",
+    borderBottom: "1px solid #eee",
+    fontWeight: 600,
+  },
+})
+
+export const ScheduleTd = styled("td", {
+  base: {
+    padding: "10px",
+    borderBottom: "1px solid #eee",
+  },
+  variants: {
+    center: {
+      true: {
+        textAlign: "center",
+      },
+    },
+  },
+})
+
+export const ScheduleTbodyTr = styled("tr", {
+  base: {},
+  variants: {
+    striped: {
+      true: {
+        background: "#fafbfc",
+      },
+      false: {
+        background: "#fff",
+      },
+    },
+  },
+})
+
+export const ModalOverlay = styled("div", {
+  base: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+})
+
+export const ModalContent = styled("div", {
+  base: {
+    backgroundColor: "white",
+    padding: "20px",
+    borderRadius: "8px",
+    position: "relative",
+    width: "50vw",
+    maxWidth: "60%",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    zIndex: 1001,
+  },
+})
+
+export const CloseButton = styled("button", {
+  base: {
+    position: "absolute",
+    top: "10px",
+    right: "30px",
+    background: "none",
+    border: "none",
+    fontSize: "24px",
+    cursor: "pointer",
+    color: "var(--leaf-text-primary)",
+    zIndex: 1001,
+    "&:hover": {
+      color: "var(--leaf-primary-60)",
+    },
+  },
+})
