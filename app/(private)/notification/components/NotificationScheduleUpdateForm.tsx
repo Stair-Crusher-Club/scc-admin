@@ -2,19 +2,52 @@ import { Combobox, DateInput, TextInput } from "@reactleaf/input/hookform"
 import React from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
 
-import { UpdateScheduleFormValues, deepLinkOptions, headerVariantOptions, predefinedWebviews } from "../page"
 import * as S from "../page.style"
+import {
+  DeepLinkOption,
+  Option,
+  WebviewOption,
+  deepLinkOptions,
+  headerVariantOptions,
+  predefinedWebviews,
+} from "./constants"
+
+export interface UpdateScheduleFormValues {
+  title?: string
+  body: string
+  deepLink?: DeepLinkOption
+  deepLinkArgument?: string
+  webviewUrl?: string
+  webviewFixedTitle?: string
+  webviewHeaderVariant?: Option
+  scheduleDate?: string
+}
 
 interface Props {
   id: string
   form: UseFormReturn<UpdateScheduleFormValues>
-  handlePredefinedWebviewChange: (form: any, option: any) => void
   onSubmit: (values: any) => void
   onCancel: () => void
 }
 
-export function NotificationScheduleUpdateForm({ id, form, handlePredefinedWebviewChange, onSubmit, onCancel }: Props) {
+export function NotificationScheduleUpdateForm({ id, form, onSubmit, onCancel }: Props) {
   const deepLinkWatch = form.watch("deepLink")
+
+  const handlePredefinedWebviewChange = (option: any) => {
+    const typedOption = option as WebviewOption
+    if (!typedOption || !typedOption.value) {
+      form.setValue("webviewUrl", "")
+      form.setValue("webviewFixedTitle", "")
+      form.setValue("webviewHeaderVariant", undefined)
+      return
+    }
+    form.setValue("webviewUrl", typedOption.value)
+    form.setValue("webviewFixedTitle", typedOption.fixedTitle)
+    form.setValue(
+      "webviewHeaderVariant",
+      headerVariantOptions.find((option) => option.value === typedOption.headerVariant),
+    )
+  }
 
   return (
     <FormProvider {...form}>
@@ -35,7 +68,7 @@ export function NotificationScheduleUpdateForm({ id, form, handlePredefinedWebvi
               name="predefinedWebview"
               options={predefinedWebviews}
               placeholder="자주 쓰는 웹뷰 딥링크 선택"
-              onChange={(option) => handlePredefinedWebviewChange(form, option)}
+              onChange={handlePredefinedWebviewChange}
               isClearable={true}
             />
             <S.InputTitle>웹뷰 URL (url 에 해당하는 부분만 넣어주세요)</S.InputTitle>
