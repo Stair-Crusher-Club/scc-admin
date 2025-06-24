@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 
 import {
   AdminAccessibilityDTO,
@@ -8,6 +8,7 @@ import {
   AdminStairHeightLevel,
   AdminStairInfoDTO,
   AdminUpdateChallengeRequestDTO,
+  AdminUpdatePushNotificationScheduleRequestDTO,
   ClubQuestCreateDryRunResultItemDTO,
   EpochMillisTimestamp,
 } from "@/lib/generated-sources/openapi"
@@ -307,4 +308,27 @@ export interface ImageDto {
 
 export function sendPushNotification(payload: AdminSendPushNotificationRequestDTO) {
   return defaultApi.adminSendPushNotification(payload)
+}
+
+export function usePushSchedules() {
+  return useInfiniteQuery({
+    queryKey: ["@pushSchedules"],
+    queryFn: ({ pageParam }) => defaultApi.adminGetPushSchedules(pageParam ?? undefined, "10").then((res) => res.data),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.cursor,
+  })
+}
+
+export function updatePushSchedule({
+  id,
+  payload,
+}: {
+  id: string
+  payload: AdminUpdatePushNotificationScheduleRequestDTO
+}) {
+  return defaultApi.notificationsPushSchedulesScheduleIdPut(id, payload)
+}
+
+export function deletePushSchedule({ id }: { id: string }) {
+  return defaultApi.notificationsPushSchedulesScheduleIdDelete(id)
 }
