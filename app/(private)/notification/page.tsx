@@ -14,81 +14,15 @@ import {
 
 import { Contents, Header } from "@/components/layout"
 
-import { NotificationScheduleUpdateForm } from "./components/NotificationScheduleUpdateForm"
-import { NotificationSendForm } from "./components/NotificationSendForm"
+import { NotificationScheduleUpdateForm, UpdateScheduleFormValues } from "./components/NotificationScheduleUpdateForm"
+import { NotificationSendForm, SendPushNotificationFormValues } from "./components/NotificationSendForm"
+import { Option, deepLinkOptions, headerVariantOptions } from "./components/constants"
 import * as S from "./page.style"
-
-interface Option {
-  label: string
-  value: string
-}
-
-interface DeepLinkOption extends Option {
-  isArgumentRequired: boolean
-}
-
-interface WebviewOption extends Option {
-  fixedTitle: string
-  headerVariant: string
-}
-
-export interface SendPushNotificationFormValues {
-  userIds: string
-  title?: string
-  body: string
-  deepLink?: DeepLinkOption
-  deepLinkArgument?: string
-  webviewUrl?: string
-  webviewFixedTitle?: string
-  webviewHeaderVariant?: Option
-  scheduleDate?: string
-}
-
-export interface UpdateScheduleFormValues {
-  title?: string
-  body: string
-  deepLink?: DeepLinkOption
-  deepLinkArgument?: string
-  webviewUrl?: string
-  webviewFixedTitle?: string
-  webviewHeaderVariant?: Option
-  scheduleDate?: string
-}
-
-export const deepLinkOptions: DeepLinkOption[] = [
-  { label: "홈", value: "stair-crusher://", isArgumentRequired: false },
-  { label: "프로필", value: "stair-crusher://profile", isArgumentRequired: false },
-  { label: "설정", value: "stair-crusher://setting", isArgumentRequired: false },
-  { label: "장소", value: "stair-crusher://place", isArgumentRequired: true },
-  { label: "챌린지", value: "stair-crusher://challenge", isArgumentRequired: true },
-  { label: "웹뷰", value: "stair-crusher://webview", isArgumentRequired: false },
-]
-
-export const headerVariantOptions: Option[] = [
-  { label: "브라우저처럼 열리도록 (상단에 X 버튼이 있다)", value: "appbar" },
-  { label: "앱 내부처럼 보이도록 (상단에 뒤로가기 버튼이 있다)", value: "navigation" },
-]
-
-export const predefinedWebviews: WebviewOption[] = [
-  {
-    label: "정보 등록 가이드",
-    value: "https://admin.staircrusher.club/public/guide?tab=register",
-    fixedTitle: "정보 등록/조회 가이드",
-    headerVariant: "navigation",
-  },
-  {
-    label: "정보 조회 가이드",
-    value: "https://admin.staircrusher.club/public/guide?tab=search",
-    fixedTitle: "정보 등록/조회 가이드",
-    headerVariant: "navigation",
-  },
-]
 
 function createWebviewDeepLink(url: string, fixedTitle: string, headerVariant: string): string {
   return `stair-crusher://webview?url=${encodeURIComponent(url)}&fixedTitle=${encodeURIComponent(fixedTitle)}&headerVariant=${encodeURIComponent(headerVariant)}`
 }
 
-// Utility to truncate date to nearest 10 minutes
 function truncateToNearest10Minutes(date: string): Date {
   const parsedDate = new Date(date)
   const ms = parsedDate.getTime()
@@ -128,22 +62,6 @@ export default function NotificationPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const { data, isLoading, refetch } = usePushSchedules()
   const schedules = data?.pages.flatMap((s) => s.list) ?? []
-
-  const handlePredefinedWebviewChange = (form: any, option: any) => {
-    const typedOption = option as WebviewOption
-    if (!typedOption || !typedOption.value) {
-      form.setValue("webviewUrl", "")
-      form.setValue("webviewFixedTitle", "")
-      form.setValue("webviewHeaderVariant", undefined)
-      return
-    }
-    form.setValue("webviewUrl", typedOption.value)
-    form.setValue("webviewFixedTitle", typedOption.fixedTitle)
-    form.setValue(
-      "webviewHeaderVariant",
-      headerVariantOptions.find((option) => option.value === typedOption.headerVariant),
-    )
-  }
 
   function validateAndExtractForm(formValues: SendPushNotificationFormValues | UpdateScheduleFormValues) {
     let titleToUse
@@ -310,11 +228,7 @@ export default function NotificationPage() {
           </S.Tab>
         </S.TabContainer>
         {activeTab === "send" ? (
-          <NotificationSendForm
-            form={sendPushForm}
-            handlePredefinedWebviewChange={handlePredefinedWebviewChange}
-            onSubmit={handleSendPushNotification}
-          />
+          <NotificationSendForm form={sendPushForm} onSubmit={handleSendPushNotification} />
         ) : (
           <>
             {isLoading ? (
@@ -366,7 +280,6 @@ export default function NotificationPage() {
                           <NotificationScheduleUpdateForm
                             id={editingId}
                             form={updateScheduleForm}
-                            handlePredefinedWebviewChange={handlePredefinedWebviewChange}
                             onSubmit={handleUpdateSchedule}
                             onCancel={() => setEditingId(null)}
                           />
