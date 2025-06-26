@@ -28,6 +28,7 @@ export default function GuideSliderItem({
   stepNumber,
   source,
   sourceType,
+  imageObjectFit,
   title,
   description,
   extraDescription,
@@ -47,9 +48,17 @@ export default function GuideSliderItem({
           )}
 
           {sourceType === "image" ? (
-            <Image src={source} alt="이미지" width={width} height={243} unoptimized />
+            <div style={{ width, height: 220, position: "relative" }}>
+              <Image
+                src={source}
+                alt="이미지"
+                style={{ width: "100%", height: "100%", objectFit: imageObjectFit ?? "contain" }}
+                fill
+                unoptimized
+              />
+            </div>
           ) : (
-            <TriggeredDotLottie width={width} height={243} src={source} isActive={isActive} delay={800} />
+            <TriggeredDotLottie width={width} height={220} src={source} isActive={isActive} delay={800} />
           )}
 
           {!hiddenNextButton && (
