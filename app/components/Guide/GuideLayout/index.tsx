@@ -18,7 +18,7 @@ export default function GuideLayout({ activeTab, changeActiveTab, children }: Gu
           <S.MenuButton
             active={activeTab === "register"}
             onClick={() => {
-              mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+              mainRef.current?.scrollTo({ top: 0 })
               changeActiveTab("register")
             }}
           >
@@ -27,7 +27,7 @@ export default function GuideLayout({ activeTab, changeActiveTab, children }: Gu
           <S.MenuButton
             active={activeTab === "search"}
             onClick={() => {
-              mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+              mainRef.current?.scrollTo({ top: 0 })
               changeActiveTab("search")
             }}
           >

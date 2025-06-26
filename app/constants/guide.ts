@@ -8,6 +8,7 @@ export type GuideSlideContent = {
     description: string[]
     descriptionStyle?: "none" | "disc"
   }
+  imageObjectFit?: "cover" | "contain"
 }
 
 //#region 정보 등록하기
@@ -69,6 +70,7 @@ export const placeConquerGuide: GuideSlideContent[] = [
     description: ["사진 가이드를 참고해서,", "매장 입구 사진을 찍어주세요."],
     source: "/guide/register/placeConquerGuide/placeConquerGuide02.png",
     sourceType: "image",
+    imageObjectFit: "cover",
     extraDescription: {
       title: "💡주의사항️",
       description: ["매장이 1층이 아닌 경우", "해당 층에서 <strong>매장의 입구 사진</strong>을 촬영해주세요!"],
