@@ -8,7 +8,7 @@ interface TriggeredDotLottieProps extends DotLottieReactProps {
   delay?: number
 }
 
-export default function TriggeredDotLottie({ isActive, src, delay }: TriggeredDotLottieProps) {
+export default function TriggeredDotLottie({ width, height, isActive, src, delay }: TriggeredDotLottieProps) {
   const lottieRef = useRef<DotLottie | null>(null)
 
   useEffect(() => {
@@ -39,13 +39,20 @@ export default function TriggeredDotLottie({ isActive, src, delay }: TriggeredDo
   }, [isActive, delay])
 
   return (
-    <DotLottieReact
-      dotLottieRefCallback={(dotLottie) => {
-        lottieRef.current = dotLottie
+    <div
+      style={{
+        width,
+        height,
       }}
-      src={src}
-      loop={false}
-      autoplay={false}
-    />
+    >
+      <DotLottieReact
+        dotLottieRefCallback={(dotLottie) => {
+          lottieRef.current = dotLottie
+        }}
+        src={src}
+        loop={false}
+        autoplay={false}
+      />
+    </div>
   )
 }

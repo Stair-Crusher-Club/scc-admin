@@ -47,9 +47,9 @@ export default function GuideSliderItem({
           )}
 
           {sourceType === "image" ? (
-            <Image src={source} alt="이미지" width={width} height={217} unoptimized />
+            <Image src={source} alt="이미지" width={width} height={243} unoptimized />
           ) : (
-            <TriggeredDotLottie width={width} height={217} src={source} isActive={isActive} delay={800} />
+            <TriggeredDotLottie width={width} height={243} src={source} isActive={isActive} delay={800} />
           )}
 
           {!hiddenNextButton && (
