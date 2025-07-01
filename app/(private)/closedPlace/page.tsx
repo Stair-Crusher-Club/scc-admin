@@ -13,7 +13,7 @@ import { ActionsCell } from "./components/Cells"
 import * as S from "./page.style"
 import { useClosedPlaceCandidates } from "./query"
 
-export default function AccessibilityList() {
+export default function ClosedPlacePage() {
   const [activeTab, setActiveTab] = useState<"all" | "registered">("all")
   const { data, fetchNextPage, hasNextPage, refetch } = useClosedPlaceCandidates(activeTab === "registered")
   const closedPlaceCandidates: AdminClosedPlaceCandidateDTO[] =
