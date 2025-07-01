@@ -2,6 +2,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 
 import {
   AdminAccessibilityDTO,
+  AdminCreateSearchPlacePresetRequestDTO,
   AdminEntranceDoorType,
   AdminImageUploadPurposeTypeDTO,
   AdminSendPushNotificationRequestDTO,
@@ -331,4 +332,23 @@ export function updatePushSchedule({
 
 export function deletePushSchedule({ id }: { id: string }) {
   return defaultApi.notificationsPushSchedulesScheduleIdDelete(id)
+}
+
+export function useSearchPresets() {
+  return useQuery({
+    queryKey: ["@searchPresets"],
+    queryFn: () => defaultApi.getSearchPreset().then((res) => res.data),
+  })
+}
+
+export function createSearchPreset(searchText: string, description: string) {
+  const payload: AdminCreateSearchPlacePresetRequestDTO = {
+    searchText,
+    description,
+  }
+  return defaultApi.createSearchPreset(payload)
+}
+
+export function deleteSearchPreset(id: string) {
+  return defaultApi.deleteSearchPreset(id)
 }

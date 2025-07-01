@@ -59,6 +59,7 @@ export default function Sidebar() {
           <MenuItem href="/closedPlace">폐업 추정 장소 관리</MenuItem>
           <MenuItem href="/banner">배너 관리</MenuItem>
           <MenuItem href="/notification">푸시 알림 관리</MenuItem>
+          <MenuItem href="/searchPreset">추천 검색어 관리</MenuItem>
         </S.Menu>
         <Spacer />
         <S.LogoutButton onClick={logout}>로그아웃</S.LogoutButton>

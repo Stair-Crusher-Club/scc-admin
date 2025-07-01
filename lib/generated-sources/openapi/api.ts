@@ -589,6 +589,25 @@ export interface AdminCreateImageUploadUrlsResponseDTO {
 /**
  * 
  * @export
+ * @interface AdminCreateSearchPlacePresetRequestDTO
+ */
+export interface AdminCreateSearchPlacePresetRequestDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreateSearchPlacePresetRequestDTO
+     */
+    'description': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreateSearchPlacePresetRequestDTO
+     */
+    'searchText': string;
+}
+/**
+ * 
+ * @export
  * @interface AdminCrusherGroupDto
  */
 export interface AdminCrusherGroupDto {
@@ -917,6 +936,31 @@ export interface AdminSearchAccessibilitiesResultDTO {
      * @memberof AdminSearchAccessibilitiesResultDTO
      */
     'cursor'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface AdminSearchPlacePresetDTO
+ */
+export interface AdminSearchPlacePresetDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminSearchPlacePresetDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminSearchPlacePresetDTO
+     */
+    'description': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminSearchPlacePresetDTO
+     */
+    'searchText': string;
 }
 /**
  * 
@@ -1635,6 +1679,19 @@ export interface GetCursoredClubQuestSummariesResultDTO {
      * @memberof GetCursoredClubQuestSummariesResultDTO
      */
     'cursor'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface GetSearchPreset200Response
+ */
+export interface GetSearchPreset200Response {
+    /**
+     * 
+     * @type {Array<AdminSearchPlacePresetDTO>}
+     * @memberof GetSearchPreset200Response
+     */
+    'presets': Array<AdminSearchPlacePresetDTO>;
 }
 /**
  * 위치를 위경도로 표현하기 위한 모델.
@@ -3427,6 +3484,76 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary 추천 검색어를 등록한다.
+         * @param {AdminCreateSearchPlacePresetRequestDTO} adminCreateSearchPlacePresetRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSearchPreset: async (adminCreateSearchPlacePresetRequestDTO: AdminCreateSearchPlacePresetRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminCreateSearchPlacePresetRequestDTO' is not null or undefined
+            assertParamExists('createSearchPreset', 'adminCreateSearchPlacePresetRequestDTO', adminCreateSearchPlacePresetRequestDTO)
+            const localVarPath = `/places/searchPresets`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreateSearchPlacePresetRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 등록된 추천 검색어를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSearchPreset: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteSearchPreset', 'id', id)
+            const localVarPath = `/places/searchPresets/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 폐업이 추정되는 장소를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -3487,6 +3614,36 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
             }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 등록된 모든 추천 검색어를 가져온다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSearchPreset: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/places/searchPresets`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
 
 
     
@@ -3961,6 +4118,28 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 추천 검색어를 등록한다.
+         * @param {AdminCreateSearchPlacePresetRequestDTO} adminCreateSearchPlacePresetRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createSearchPreset(adminCreateSearchPlacePresetRequestDTO: AdminCreateSearchPlacePresetRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createSearchPreset(adminCreateSearchPlacePresetRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 등록된 추천 검색어를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteSearchPreset(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteSearchPreset(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 폐업이 추정되는 장소를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -3980,6 +4159,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getCursoredClubQuestSummaries(cursor?: string, limit?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetCursoredClubQuestSummariesResultDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getCursoredClubQuestSummaries(cursor, limit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 등록된 모든 추천 검색어를 가져온다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSearchPreset(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSearchPreset200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSearchPreset(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4248,6 +4437,26 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary 추천 검색어를 등록한다.
+         * @param {AdminCreateSearchPlacePresetRequestDTO} adminCreateSearchPlacePresetRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSearchPreset(adminCreateSearchPlacePresetRequestDTO: AdminCreateSearchPlacePresetRequestDTO, options?: any): AxiosPromise<void> {
+            return localVarFp.createSearchPreset(adminCreateSearchPlacePresetRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 등록된 추천 검색어를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSearchPreset(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteSearchPreset(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 폐업이 추정되는 장소를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -4266,6 +4475,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getCursoredClubQuestSummaries(cursor?: string, limit?: string, options?: any): AxiosPromise<GetCursoredClubQuestSummariesResultDTO> {
             return localVarFp.getCursoredClubQuestSummaries(cursor, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 등록된 모든 추천 검색어를 가져온다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSearchPreset(options?: any): AxiosPromise<GetSearchPreset200Response> {
+            return localVarFp.getSearchPreset(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4560,6 +4778,30 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
+     * @summary 추천 검색어를 등록한다.
+     * @param {AdminCreateSearchPlacePresetRequestDTO} adminCreateSearchPlacePresetRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public createSearchPreset(adminCreateSearchPlacePresetRequestDTO: AdminCreateSearchPlacePresetRequestDTO, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).createSearchPreset(adminCreateSearchPlacePresetRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 등록된 추천 검색어를 삭제한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deleteSearchPreset(id: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deleteSearchPreset(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary 폐업이 추정되는 장소를 조회한다.
      * @param {string} id 
      * @param {*} [options] Override http request option.
@@ -4581,6 +4823,17 @@ export class DefaultApi extends BaseAPI {
      */
     public getCursoredClubQuestSummaries(cursor?: string, limit?: string, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getCursoredClubQuestSummaries(cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 등록된 모든 추천 검색어를 가져온다.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getSearchPreset(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getSearchPreset(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
