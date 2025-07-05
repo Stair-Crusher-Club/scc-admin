@@ -27,6 +27,7 @@ export default function Page() {
       storage.set("token", token)
       router.replace("/")
     } catch (e) {
+      console.debug(e);
       if (e instanceof NetworkError) {
         if (e.response.status === 401) {
           toast.error("아이디나 비밀번호가 틀렸습니다.")

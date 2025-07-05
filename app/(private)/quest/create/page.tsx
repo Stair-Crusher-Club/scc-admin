@@ -118,21 +118,25 @@ export default function QuestCreate() {
     if (!isValid) return
 
     setPreviewLoading(true)
-    const res = await previewDivisions({
-      regionType: form.getValues("method").value,
-      centerLocation: form.getValues("center"),
-      radiusMeters: form.getValues("radius"),
-      points: form.getValues("points"),
-      clusterCount: form.getValues("division"),
-      maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
-      useAlreadyCrawledPlace: form.getValues("placeSearchMethod").value === "USE_ALREADY_CRAWLED_PLACES",
-      questTargetPlaceCategories: form.getValues("questTargetPlaceCategories").map((it) => it.value),
-    })
-    setClusters(res)
-    setPreviewLoading(false)
+    try {
+      const res = await previewDivisions({
+        regionType: form.getValues("method").value,
+        centerLocation: form.getValues("center"),
+        radiusMeters: form.getValues("radius"),
+        points: form.getValues("points"),
+        clusterCount: form.getValues("division"),
+        maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
+        useAlreadyCrawledPlace: form.getValues("placeSearchMethod").value === "USE_ALREADY_CRAWLED_PLACES",
+        questTargetPlaceCategories: form.getValues("questTargetPlaceCategories").map((it) => it.value),
+      })
+      setClusters(res)
+      setPreviewLoading(false)
 
-    mode.current = "preview"
-    setShowPreview(true)
+      mode.current = "preview"
+      setShowPreview(true)
+    } catch (e) {
+      setPreviewLoading(false)
+    }
   }
 
   function previewOff() {
