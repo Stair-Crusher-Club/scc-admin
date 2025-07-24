@@ -33,6 +33,15 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: AWS_STS_REGIONAL_ENDPOINTS
+              value: regional
+            - name: AWS_REGION
+              value: ap-northeast-2
+            - name: AWS_ROLE_ARN
+              value: "{{ .Values.aws.roleArn }}"
+            - name: AWS_WEB_IDENTITY_TOKEN_FILE
+              value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -53,6 +62,19 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: aws-iam-token
+              mountPath: /var/run/secrets/eks.amazonaws.com/serviceaccount
+              readOnly: true
+      volumes:
+        - name: aws-iam-token
+          projected:
+            defaultMode: 420
+            sources:
+              - serviceAccountToken:
+                  audience: sts.amazonaws.com
+                  expirationSeconds: 86400
+                  path: token
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
