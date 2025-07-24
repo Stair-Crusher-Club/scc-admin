@@ -13,7 +13,6 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest-rc"
 
-imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
@@ -80,6 +79,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-aws:
-  roleArn: arn:aws:iam::291889421067:role/scc-admin-frontend-dev

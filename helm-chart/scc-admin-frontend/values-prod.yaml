@@ -11,7 +11,6 @@ image:
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.4.4"
-imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 serviceAccount:
@@ -66,6 +65,3 @@ autoscaling:
 nodeSelector: {}
 tolerations: []
 affinity: {}
-
-aws:
-  roleArn: arn:aws:iam::291889421067:role/scc-admin-frontend

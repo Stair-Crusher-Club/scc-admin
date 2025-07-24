@@ -1,0 +1,60 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "scc-admin-frontend.fullname" . }}-ecr-login-job
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "20"
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ include "scc-admin-frontend.serviceAccountName" . }}-deploy-secret
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: amazon/aws-cli:2.15.28
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              # Define variables for clarity
+              SECRET_NAME="{{ include "scc-admin-frontend.fullname" . }}-ecr-registry"
+              NAMESPACE="{{ .Release.Namespace }}"
+              DOCKER_SERVER="291889421067.dkr.ecr.ap-northeast-2.amazonaws.com"
+              
+              # Get temporary ECR password from AWS
+              DOCKER_PASSWORD=$(aws ecr get-login-password --region ap-northeast-2)
+              
+              # Create or update the imagePullSecret.
+              kubectl create secret docker-registry "${SECRET_NAME}" \
+                --namespace "${NAMESPACE}" \
+                --docker-server="${DOCKER_SERVER}" \
+                --docker-username="AWS" \
+                --docker-password="${DOCKER_PASSWORD}" \
+                --dry-run=client -o yaml | kubectl apply -f -
+          env:
+            - name: AWS_STS_REGIONAL_ENDPOINTS
+              value: regional
+            - name: AWS_REGION
+              value: ap-northeast-2
+            - name: AWS_ROLE_ARN
+              value: "{{ .Values.deploySecret.awsRoleArn }}"
+            - name: AWS_WEB_IDENTITY_TOKEN_FILE
+              value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
+          volumeMounts:
+            - name: aws-iam-token
+              mountPath: /var/run/secrets/eks.amazonaws.com/serviceaccount
+              readOnly: true
+      volumes:
+        - name: aws-iam-token
+          projected:
+            defaultMode: 420
+            sources:
+              - serviceAccountToken:
+                  audience: sts.amazonaws.com
+                  expirationSeconds: 86400
+                  path: token
+      restartPolicy: Never
+  backoffLimit: 3
