@@ -66,6 +66,3 @@ autoscaling:
 nodeSelector: {}
 tolerations: []
 affinity: {}
-
-aws:
-  roleArn: arn:aws:iam::291889421067:role/scc-admin-frontend
