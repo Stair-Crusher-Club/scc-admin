@@ -7,10 +7,11 @@ deploySecret:
 
 replicaCount: 1
 image:
-  repository: 291889421067.dkr.ecr.ap-northeast-2.amazonaws.com/scc-admin-frontend
+  repository: public.ecr.aws/i6n1n6v2/scc-admin-frontend
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.4.4"
+imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 serviceAccount:
