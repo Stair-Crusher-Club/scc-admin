@@ -13,7 +13,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          image: bitnami/kubectl:1.29
+          image: amazon/aws-cli:2.15.28
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "-c"]
           args:
@@ -26,6 +26,9 @@ spec:
               
               # Get temporary ECR password from AWS
               DOCKER_PASSWORD=$(aws ecr get-login-password --region ap-northeast-2)
+
+              wget "https://dl.k8s.io/release/$(wget https://dl.k8s.io/release/stable.txt -O-)/bin/linux/amd64/kubectl" &&
+              chmod u+x kubectl
               
               # Create or update the imagePullSecret.
               kubectl create secret docker-registry "${SECRET_NAME}" \
