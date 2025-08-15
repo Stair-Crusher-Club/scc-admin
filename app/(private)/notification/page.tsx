@@ -166,10 +166,12 @@ export default function NotificationPage() {
     }
   }
 
-  const handleDeleteSchedule = async (id: string) => {
+  const handleDeleteSchedule = async (schedule: AdminPushNotificationScheduleDTO) => {
+    if (schedule.scheduledAt === undefined) return
     if (!window.confirm("정말 삭제하시겠습니까?")) return
+
     try {
-      const res = await deletePushSchedule({ id })
+      const res = await deletePushSchedule({ id: schedule.id })
       if (res.status != 204) {
         throw new Error("Failed to delete schedule")
       }
@@ -181,6 +183,8 @@ export default function NotificationPage() {
   }
 
   const handleEditButtonClick = (schedule: AdminPushNotificationScheduleDTO) => {
+    if (schedule.scheduledAt === undefined) return
+
     const selectedDeepLinkOption =
       deepLinkOptions.find((opt) => opt.value === (schedule.deepLink?.split("?")[0] || schedule.deepLink)) ||
       deepLinkOptions[0]
@@ -258,10 +262,20 @@ export default function NotificationPage() {
                           <S.ScheduleTd>{schedule.title}</S.ScheduleTd>
                           <S.ScheduleTd>{schedule.body}</S.ScheduleTd>
                           <S.ScheduleTd>{schedule.deepLink}</S.ScheduleTd>
-                          <S.ScheduleTd center>{schedule.targetUsersCount}</S.ScheduleTd>
+                          <S.ScheduleTd center>{schedule.targetUserIds.length}</S.ScheduleTd>
                           <S.ScheduleTd center>
-                            <S.EditButton onClick={() => handleEditButtonClick(schedule)}>수정</S.EditButton>
-                            <S.DeleteButton onClick={() => handleDeleteSchedule(schedule.id)}>삭제</S.DeleteButton>
+                            <S.EditButton
+                              onClick={() => handleEditButtonClick(schedule)}
+                              disabled={schedule.scheduledAt === undefined}
+                            >
+                              수정
+                            </S.EditButton>
+                            <S.DeleteButton
+                              onClick={() => handleDeleteSchedule(schedule)}
+                              disabled={schedule.scheduledAt === undefined}
+                            >
+                              삭제
+                            </S.DeleteButton>
                           </S.ScheduleTd>
                         </S.ScheduleTbodyTr>
                       ))}
