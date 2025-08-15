@@ -51,6 +51,15 @@ export function NotificationSendForm({ id, form, onSubmit }: Props) {
     )
   }
 
+  const countTargetUsers = () => {
+    const userIds = form.watch("userIds")
+    if (userIds === undefined || userIds.trim() === "") {
+      return 0
+    }
+    const splitUserIds = userIds.split(",").filter((id) => id.trim() !== "")
+    return splitUserIds.length
+  }
+
   return (
     <FormProvider {...form}>
       <form id={id} onSubmit={form.handleSubmit(onSubmit)}>
@@ -62,6 +71,7 @@ export function NotificationSendForm({ id, form, onSubmit }: Props) {
             placeholder="타겟 유저 ID"
             {...form.register("userIds", { required: "푸시 알림 수신자를 입력하세요." })}
           />
+          <S.InputDescription>{countTargetUsers()}명에게 발송</S.InputDescription>
           <S.ErrorMessage>
             {typeof form.formState.errors?.userIds?.message === "string" ? form.formState.errors?.userIds?.message : ""}
           </S.ErrorMessage>
