@@ -41,22 +41,21 @@ export default function CsvDownloadButton({
         return
       }
 
-      // Create CSV content
-      const csvHeader = csvData.headers.join(",") + "\n"
+      // Create CSV content (escape + guard against formula injection)
+      const escapeAndSanitize = (value: string | number): string => {
+        const cellStr = String(value ?? "")
+        // If trimmed value starts with a formula char, prefix with apostrophe to prevent execution in Excel.
+        const trimmed = cellStr.replace(/^\s+/, "")
+        const needsFormulaEscape = /^[=+\-@]/.test(trimmed)
+        const safe = needsFormulaEscape ? "'" + cellStr : cellStr
+        const escaped = safe.replace(/"/g, '""')
+        return /[,"\n]/.test(safe) ? `"${escaped}"` : escaped
+      }
+
+      const csvHeader = csvData.headers.map(escapeAndSanitize).join(",") + "\r\n"
       const csvContent = csvData.rows
-        .map((row) =>
-          row
-            .map((cell) => {
-              // Escape cells that contain commas, quotes, or newlines
-              const cellStr = String(cell)
-              if (cellStr.includes(",") || cellStr.includes('"') || cellStr.includes("\n")) {
-                return `"${cellStr.replace(/"/g, '""')}"`
-              }
-              return cellStr
-            })
-            .join(","),
-        )
-        .join("\n")
+        .map((row) => row.map(escapeAndSanitize).join(","))
+        .join("\r\n")
 
       const csvFileContent = csvHeader + csvContent
 
