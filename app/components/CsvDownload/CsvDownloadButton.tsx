@@ -1,8 +1,10 @@
 "use client"
+
 import React from "react"
 import { toast } from "react-toastify"
 
 import { DownloadButton } from "./CsvDownloadButton.style"
+
 interface CsvData {
   headers: string[]
   rows: (string | number)[][]
@@ -53,9 +55,7 @@ export default function CsvDownloadButton({
       }
 
       const csvHeader = csvData.headers.map(escapeAndSanitize).join(",") + "\r\n"
-      const csvContent = csvData.rows
-        .map((row) => row.map(escapeAndSanitize).join(","))
-        .join("\r\n")
+      const csvContent = csvData.rows.map((row) => row.map(escapeAndSanitize).join(",")).join("\r\n")
 
       const csvFileContent = csvHeader + csvContent
 
@@ -75,10 +75,15 @@ export default function CsvDownloadButton({
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
+        // Free the object URL on the next tick
+        setTimeout(() => URL.revokeObjectURL(url), 0)
 
         // Show success message
         const message = typeof successMessage === "function" ? successMessage(csvData.rows.length) : successMessage
         toast.success(message)
+      } else {
+        // Graceful fallback when download attribute is not supported
+        toast.error(errorMessage)
       }
     } catch (error) {
       console.error("Failed to download CSV:", error)
