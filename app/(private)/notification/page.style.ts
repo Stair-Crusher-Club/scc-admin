@@ -147,13 +147,7 @@ export const ScheduleTd = styled("td", {
   base: {
     padding: "10px",
     borderBottom: "1px solid #eee",
-  },
-  variants: {
-    center: {
-      true: {
-        textAlign: "center",
-      },
-    },
+    textAlign: "center",
   },
 })
 
