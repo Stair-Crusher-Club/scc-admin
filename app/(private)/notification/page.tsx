@@ -14,6 +14,7 @@ import {
 
 import { Contents, Header } from "@/components/layout"
 
+import { NotificationCsvDownloadButton } from "./components/NotificationCsvDownloadButton"
 import { NotificationScheduleUpdateForm, UpdateScheduleFormValues } from "./components/NotificationScheduleUpdateForm"
 import { NotificationSendForm, SendPushNotificationFormValues } from "./components/NotificationSendForm"
 import { Option, deepLinkOptions, headerVariantOptions } from "./components/constants"
@@ -222,7 +223,7 @@ export default function NotificationPage() {
   return (
     <>
       <Header title="푸시 알림" />
-      <Contents.Normal>
+      <Contents.Normal style={{ width: "100%" }}>
         <S.TabContainer>
           <S.Tab type="button" active={activeTab === "send"} onClick={() => setActiveTab("send")}>
             푸시 알림 발송
@@ -244,6 +245,7 @@ export default function NotificationPage() {
                     <thead>
                       <S.ScheduleTheadTr>
                         <S.ScheduleTh>발송 예정 시각</S.ScheduleTh>
+                        <S.ScheduleTh>발송 시각</S.ScheduleTh>
                         <S.ScheduleTh>제목</S.ScheduleTh>
                         <S.ScheduleTh>내용</S.ScheduleTh>
                         <S.ScheduleTh>딥링크</S.ScheduleTh>
@@ -257,13 +259,18 @@ export default function NotificationPage() {
                           <S.ScheduleTd>
                             {schedule.scheduledAt?.value
                               ? format(new Date(schedule.scheduledAt.value), "yyyy-MM-dd HH:mm")
-                              : ""}
+                              : "즉시 발송"}
+                          </S.ScheduleTd>
+                          <S.ScheduleTd>
+                            {schedule.sentAt?.value
+                              ? format(new Date(schedule.sentAt.value), "yyyy-MM-dd HH:mm")
+                              : "아직 발송 안됨"}
                           </S.ScheduleTd>
                           <S.ScheduleTd>{schedule.title}</S.ScheduleTd>
                           <S.ScheduleTd>{schedule.body}</S.ScheduleTd>
                           <S.ScheduleTd>{schedule.deepLink}</S.ScheduleTd>
-                          <S.ScheduleTd center>{schedule.targetUserIds.length}</S.ScheduleTd>
-                          <S.ScheduleTd center>
+                          <S.ScheduleTd>{schedule.targetUserIds.length}</S.ScheduleTd>
+                          <S.ScheduleTd>
                             <S.EditButton
                               onClick={() => handleEditButtonClick(schedule)}
                               disabled={schedule.scheduledAt === undefined}
@@ -276,6 +283,10 @@ export default function NotificationPage() {
                             >
                               삭제
                             </S.DeleteButton>
+                            <NotificationCsvDownloadButton
+                              schedule={schedule}
+                              disabled={schedule.scheduledAt === undefined}
+                            />
                           </S.ScheduleTd>
                         </S.ScheduleTbodyTr>
                       ))}
