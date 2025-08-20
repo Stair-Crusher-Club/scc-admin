@@ -1,8 +1,8 @@
+"use client"
 import React from "react"
 import { toast } from "react-toastify"
 
 import { DownloadButton } from "./CsvDownloadButton.style"
-
 interface CsvData {
   headers: string[]
   rows: (string | number)[][]
