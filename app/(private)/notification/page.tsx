@@ -16,7 +16,7 @@ import { Contents, Header } from "@/components/layout"
 
 import { NotificationCsvDownloadButton } from "./components/NotificationCsvDownloadButton"
 import { NotificationScheduleUpdateForm, UpdateScheduleFormValues } from "./components/NotificationScheduleUpdateForm"
-import { NotificationSendForm, SendPushNotificationFormValues } from "./components/NotificationSendForm"
+import { NotificationSendForm, SendPushNotificationFormValues, ParsedSendPushNotificationFormValues } from "./components/NotificationSendForm"
 import { Option, deepLinkOptions, headerVariantOptions } from "./components/constants"
 import * as S from "./page.style"
 
@@ -64,7 +64,7 @@ export default function NotificationPage() {
   const { data, isLoading, refetch } = usePushSchedules()
   const schedules = data?.pages.flatMap((s) => s.list) ?? []
 
-  function validateAndExtractForm(formValues: SendPushNotificationFormValues | UpdateScheduleFormValues) {
+  function validateAndExtractForm(formValues: SendPushNotificationFormValues | ParsedSendPushNotificationFormValues | UpdateScheduleFormValues) {
     let titleToUse
     if (formValues.title && formValues.title?.length > 0) {
       titleToUse = formValues.title
@@ -106,15 +106,20 @@ export default function NotificationPage() {
     }
   }
 
-  async function handleSendPushNotification(formValues: SendPushNotificationFormValues) {
+  async function handleSendPushNotification(formValues: ParsedSendPushNotificationFormValues) {
     try {
       const extractedValues = validateAndExtractForm(formValues)
       if (!extractedValues) return
       const { title, body, deepLink } = extractedValues
 
+      if (formValues.parsedUserIds.length === 0) {
+        toast.error("유효한 유저 ID를 입력하세요.")
+        return
+      }
+
       const truncatedDate = formValues.scheduleDate ? truncateToNearest10Minutes(formValues.scheduleDate) : undefined
       const payload: AdminSendPushNotificationRequestDTO = {
-        userIds: formValues.userIds.split(",").map((id) => id.trim()),
+        userIds: formValues.parsedUserIds,
         title: title,
         body: body,
         deepLink: deepLink,
@@ -126,7 +131,7 @@ export default function NotificationPage() {
         throw new Error("Failed to send notification")
       }
 
-      toast.success("푸시 알림을 발송했습니다.")
+      toast.success(`푸시 알림을 ${formValues.parsedUserIds.length}명에게 발송했습니다.`)
       sendPushForm.reset()
     } catch (error) {
       console.error("Failed to send notification:", error)

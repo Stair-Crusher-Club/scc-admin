@@ -26,10 +26,14 @@ export interface SendPushNotificationFormValues {
   scheduleDate?: string
 }
 
+export interface ParsedSendPushNotificationFormValues extends Omit<SendPushNotificationFormValues, 'userIds'> {
+  parsedUserIds: string[]
+}
+
 interface Props {
   id?: string
   form: UseFormReturn<SendPushNotificationFormValues>
-  onSubmit: (values: any) => void
+  onSubmit: (values: ParsedSendPushNotificationFormValues) => void
 }
 
 export function NotificationSendForm({ id, form, onSubmit }: Props) {
@@ -51,27 +55,49 @@ export function NotificationSendForm({ id, form, onSubmit }: Props) {
     )
   }
 
-  const countTargetUsers = () => {
-    const userIds = form.watch("userIds")
-    if (userIds === undefined || userIds.trim() === "") {
-      return 0
+  const parseUserIds = (userIds: string): string[] => {
+    if (!userIds || userIds.trim() === "") {
+      return []
     }
-    const splitUserIds = userIds.split(",").filter((id) => id.trim() !== "")
-    return splitUserIds.length
+    // Split by both comma and newline
+    const splitUserIds = userIds
+      .split(/[,\n]+/)
+      .map((id) => id.trim())
+      .filter((id) => id !== "")
+    // Remove duplicates
+    return [...new Set(splitUserIds)]
+  }
+
+  const parsedUserIds = parseUserIds(form.watch("userIds"))
+  const userCount = parsedUserIds.length
+
+  const handleSubmit = (values: SendPushNotificationFormValues) => {
+    onSubmit({
+      ...values,
+      parsedUserIds,
+    })
   }
 
   return (
     <FormProvider {...form}>
-      <form id={id} onSubmit={form.handleSubmit(onSubmit)}>
+      <form id={id} onSubmit={form.handleSubmit(handleSubmit)}>
         <Flex direction={"column"}>
           <S.InputTitle>유저 ID</S.InputTitle>
           <S.InputDescription>* scc_user 테이블의 user_id 혹은 user_account 테이블의 id 값</S.InputDescription>
-          <S.InputDescription>* 여러 명에게 보내려면 쉼표(,)로 구분해주세요</S.InputDescription>
+          <S.InputDescription>* 여러 명에게 보내려면 쉼표(,) 또는 엔터로 구분해주세요</S.InputDescription>
           <S.Textarea
-            placeholder="타겟 유저 ID"
+            placeholder="타겟 유저 ID (쉼표 또는 엔터로 구분)"
             {...form.register("userIds", { required: "푸시 알림 수신자를 입력하세요." })}
           />
-          <S.InputDescription>{countTargetUsers()}명에게 발송</S.InputDescription>
+          <S.InputDescription style={{ marginTop: 8, fontWeight: "bold" }}>
+            총 {userCount}명에게 발송 예정
+          </S.InputDescription>
+          {userCount > 0 && (
+            <S.InputDescription style={{ marginTop: 4, fontSize: "12px", color: "#666" }}>
+              미리보기 (처음 5명): {parsedUserIds.slice(0, 5).join(", ")}
+              {userCount > 5 && ` ... 외 ${userCount - 5}명`}
+            </S.InputDescription>
+          )}
           <S.ErrorMessage>
             {typeof form.formState.errors?.userIds?.message === "string" ? form.formState.errors?.userIds?.message : ""}
           </S.ErrorMessage>
