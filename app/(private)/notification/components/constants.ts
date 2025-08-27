@@ -5,6 +5,7 @@ export interface Option {
 
 export interface DeepLinkOption extends Option {
   isArgumentRequired: boolean
+  queryParams?: { key: string; label: string; placeholder: string; description: string }[]
 }
 
 export interface WebviewOption extends Option {
@@ -18,7 +19,21 @@ export const deepLinkOptions: DeepLinkOption[] = [
   { label: "설정", value: "stair-crusher://setting", isArgumentRequired: false },
   { label: "장소", value: "stair-crusher://place", isArgumentRequired: true },
   { label: "챌린지", value: "stair-crusher://challenge", isArgumentRequired: true },
+  { 
+    label: "검색", 
+    value: "stair-crusher://search", 
+    isArgumentRequired: false,
+    queryParams: [
+      {
+        key: "searchQuery",
+        label: "검색어",
+        placeholder: "e.g. 삼성역 카페; 미리 검색어를 두지 않으려면 쿼리 파라미터를 삭제해주세요.",
+        description: "검색창에 미리 입력될 검색어"
+      },
+    ]
+  },
   { label: "웹뷰", value: "stair-crusher://webview", isArgumentRequired: false },
+  { label: "커스텀 딥링크", value: "custom", isArgumentRequired: false },
 ]
 
 export const headerVariantOptions: Option[] = [
@@ -40,3 +55,4 @@ export const predefinedWebviews: WebviewOption[] = [
     headerVariant: "navigation",
   },
 ]
+

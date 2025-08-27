@@ -17,11 +17,95 @@ import { Contents, Header } from "@/components/layout"
 import { NotificationCsvDownloadButton } from "./components/NotificationCsvDownloadButton"
 import { NotificationScheduleUpdateForm, UpdateScheduleFormValues } from "./components/NotificationScheduleUpdateForm"
 import { NotificationSendForm, SendPushNotificationFormValues, ParsedSendPushNotificationFormValues } from "./components/NotificationSendForm"
-import { Option, deepLinkOptions, headerVariantOptions } from "./components/constants"
+import { Option, DeepLinkOption, deepLinkOptions, headerVariantOptions } from "./components/constants"
+import { buildDeepLinkFromFormValues } from "./components/deepLinkUtils"
 import * as S from "./page.style"
 
 function createWebviewDeepLink(url: string, fixedTitle: string, headerVariant: string): string {
   return `stair-crusher://webview?url=${encodeURIComponent(url)}&fixedTitle=${encodeURIComponent(fixedTitle)}&headerVariant=${encodeURIComponent(headerVariant)}`
+}
+
+interface ParsedDeepLinkData {
+  selectedDeepLinkOption?: DeepLinkOption
+  deepLinkArgument: string
+  queryParams: { [key: string]: string }
+  customDeepLink: string
+  webviewUrl: string
+  webviewFixedTitle: string
+  webviewHeaderVariant: Option | undefined
+}
+
+function parseDeepLink(deepLinkUrl?: string): ParsedDeepLinkData {
+  let selectedDeepLinkOption: DeepLinkOption | undefined = undefined
+  let deepLinkArgument = ""
+  let queryParams: { [key: string]: string } = {}
+  let customDeepLink = ""
+  let webviewUrl = ""
+  let webviewFixedTitle = ""
+  let webviewHeaderVariant: Option | undefined = undefined
+
+  if (!deepLinkUrl) {
+    return {
+      selectedDeepLinkOption,
+      deepLinkArgument,
+      queryParams,
+      customDeepLink,
+      webviewUrl,
+      webviewFixedTitle,
+      webviewHeaderVariant,
+    }
+  }
+
+  // Check if it's a search deeplink
+  if (deepLinkUrl.startsWith("stair-crusher://search")) {
+    selectedDeepLinkOption = deepLinkOptions.find((opt) => opt.value === "stair-crusher://search") || deepLinkOptions[0]
+    const urlParts = deepLinkUrl.split("?")
+    if (urlParts.length > 1) {
+      const params = new URLSearchParams(urlParts[1])
+      params.forEach((value, key) => {
+        queryParams[key] = value
+      })
+    }
+  } else if (deepLinkUrl.startsWith("stair-crusher://webview")) {
+    selectedDeepLinkOption = deepLinkOptions.find((opt) => opt.value === "stair-crusher://webview") || deepLinkOptions[0]
+    const params = new URLSearchParams(deepLinkUrl.split("?")[1] || "")
+    webviewUrl = params.get("url") || ""
+    webviewFixedTitle = params.get("fixedTitle") || ""
+    const headerVariantValue = params.get("headerVariant") || undefined
+    webviewHeaderVariant = headerVariantOptions.find((opt) => opt.value === headerVariantValue)
+  } else {
+    // Try to find exact match first
+    const exactMatch = deepLinkOptions.find((opt) => opt.value === (deepLinkUrl.split("?")[0] || deepLinkUrl))
+    
+    if (exactMatch) {
+      selectedDeepLinkOption = exactMatch
+    } else {
+      // Check for argument-required options
+      const baseUrl = deepLinkUrl.split("/").slice(0, 3).join("/")
+      const baseMatch = deepLinkOptions.find((opt) => opt.value === baseUrl)
+      
+      if (baseMatch && baseMatch.isArgumentRequired) {
+        selectedDeepLinkOption = baseMatch
+        // e.g. stair-crusher://place/1234
+        const parts = deepLinkUrl.split("/") || []
+        deepLinkArgument = parts.length > 3 ? parts.slice(3).join("/") : ""
+      } else {
+        // If still not found, treat as custom
+        selectedDeepLinkOption = deepLinkOptions.find((opt) => opt.value === "custom") || deepLinkOptions[0]
+        customDeepLink = deepLinkUrl
+      }
+    }
+  }
+
+  return {
+    selectedDeepLinkOption,
+    deepLinkArgument,
+    queryParams,
+    customDeepLink,
+    webviewUrl,
+    webviewFixedTitle,
+    webviewHeaderVariant,
+  }
 }
 
 function truncateToNearest10Minutes(date: string): Date {
@@ -39,6 +123,8 @@ export default function NotificationPage() {
       body: "",
       deepLink: deepLinkOptions[0],
       deepLinkArgument: "",
+      queryParams: {},
+      customDeepLink: "",
       webviewUrl: "",
       webviewFixedTitle: "",
       webviewHeaderVariant: undefined,
@@ -52,6 +138,8 @@ export default function NotificationPage() {
       body: "",
       deepLink: deepLinkOptions[0],
       deepLinkArgument: "",
+      queryParams: {},
+      customDeepLink: "",
       webviewUrl: "",
       webviewFixedTitle: "",
       webviewHeaderVariant: undefined,
@@ -72,31 +160,20 @@ export default function NotificationPage() {
       titleToUse = undefined
     }
 
-    let deepLinkToUse
+    const deepLinkToUse = buildDeepLinkFromFormValues(formValues)
+    
+    // Validate deeplink
     if (formValues.deepLink && formValues.deepLink.value.length > 0) {
-      if (formValues.deepLink.value === "stair-crusher://webview") {
-        // Validate webview fields
-        if (!formValues.webviewUrl || !formValues.webviewFixedTitle || !formValues.webviewHeaderVariant) {
+      if (!deepLinkToUse) {
+        if (formValues.deepLink.value === "custom") {
+          toast.error("커스텀 딥링크 URL을 입력하세요.")
+        } else if (formValues.deepLink.value === "stair-crusher://webview") {
           toast.error("웹뷰 URL, 고정 제목, 헤더 타입을 모두 입력하세요.")
-          return
-        }
-        deepLinkToUse = createWebviewDeepLink(
-          formValues.webviewUrl,
-          formValues.webviewFixedTitle,
-          formValues.webviewHeaderVariant.value,
-        )
-      } else if (formValues.deepLink.isArgumentRequired) {
-        if (!formValues.deepLinkArgument || formValues.deepLinkArgument.length === 0) {
+        } else if (formValues.deepLink.isArgumentRequired) {
           toast.error("딥링크 상세 정보를 입력하세요.")
-          return
-        } else {
-          deepLinkToUse = `${formValues.deepLink.value}/${formValues.deepLinkArgument}`
         }
-      } else {
-        deepLinkToUse = formValues.deepLink.value
+        return
       }
-    } else {
-      deepLinkToUse = undefined
     }
 
     return {
@@ -191,35 +268,18 @@ export default function NotificationPage() {
   const handleEditButtonClick = (schedule: AdminPushNotificationScheduleDTO) => {
     if (schedule.scheduledAt === undefined) return
 
-    const selectedDeepLinkOption =
-      deepLinkOptions.find((opt) => opt.value === (schedule.deepLink?.split("?")[0] || schedule.deepLink)) ||
-      deepLinkOptions[0]
-    let deepLinkArgument = ""
-    let webviewUrl = ""
-    let webviewFixedTitle = ""
-    let webviewHeaderVariant: Option | undefined = undefined
-
-    if (selectedDeepLinkOption.isArgumentRequired) {
-      // e.g. stair-crusher://place/1234
-      const parts = schedule.deepLink?.split("/") || []
-      deepLinkArgument = parts.length > 3 ? parts.slice(3).join("/") : ""
-    } else if (selectedDeepLinkOption.value === "stair-crusher://webview") {
-      // e.g. stair-crusher://webview?url=...&fixedTitle=...&headerVariant=...
-      const params = new URLSearchParams(schedule.deepLink?.split("?")[1] || "")
-      webviewUrl = params.get("url") || ""
-      webviewFixedTitle = params.get("fixedTitle") || ""
-      const headerVariantValue = params.get("headerVariant") || undefined
-      webviewHeaderVariant = headerVariantOptions.find((opt) => opt.value === headerVariantValue)
-    }
+    const parsedData = parseDeepLink(schedule.deepLink)
 
     updateScheduleForm.reset({
       title: schedule.title || "",
       body: schedule.body || "",
-      deepLink: selectedDeepLinkOption,
-      deepLinkArgument,
-      webviewUrl,
-      webviewFixedTitle,
-      webviewHeaderVariant,
+      deepLink: parsedData.selectedDeepLinkOption,
+      deepLinkArgument: parsedData.deepLinkArgument,
+      queryParams: parsedData.queryParams,
+      customDeepLink: parsedData.customDeepLink,
+      webviewUrl: parsedData.webviewUrl,
+      webviewFixedTitle: parsedData.webviewFixedTitle,
+      webviewHeaderVariant: parsedData.webviewHeaderVariant,
       scheduleDate: format(new Date(schedule.scheduledAt.value), "yyyy-MM-dd HH:mm"),
     })
     setEditingId(schedule.id)

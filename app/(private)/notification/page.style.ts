@@ -209,3 +209,68 @@ export const CloseButton = styled("button", {
     },
   },
 })
+
+export const AddButton = styled("button", {
+  base: {
+    padding: "4px 8px",
+    backgroundColor: "var(--leaf-primary-60)",
+    color: "white",
+    border: "none",
+    borderRadius: 4,
+    cursor: "pointer",
+    fontSize: "12px",
+    "&:hover": {
+      backgroundColor: "var(--leaf-primary-50)",
+    },
+  },
+})
+
+export const RemoveButton = styled("button", {
+  base: {
+    padding: "4px 8px",
+    backgroundColor: "var(--leaf-status-red)",
+    color: "white",
+    border: "none",
+    borderRadius: 4,
+    cursor: "pointer",
+    fontSize: "14px",
+    minWidth: "24px",
+    "&:hover": {
+      backgroundColor: "#dc3545",
+    },
+  },
+})
+
+export const PreviewBox = styled("div", {
+  base: {
+    backgroundColor: "#f8f9fa",
+    border: "1px solid #dee2e6",
+    borderRadius: 4,
+    padding: "12px",
+    margin: "8px 0 16px 0",
+  },
+})
+
+export const PreviewLabel = styled("span", {
+  base: {
+    display: "block",
+    fontSize: "12px",
+    color: "#6c757d",
+    fontWeight: 500,
+    marginBottom: "4px",
+  },
+})
+
+export const PreviewContent = styled("span", {
+  base: {
+    display: "block",
+    fontSize: "14px",
+    color: "#212529",
+    fontFamily: "monospace",
+    wordBreak: "break-all",
+    backgroundColor: "white",
+    padding: "8px",
+    borderRadius: 2,
+    border: "1px solid #e9ecef",
+  },
+})

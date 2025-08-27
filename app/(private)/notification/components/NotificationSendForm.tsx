@@ -1,5 +1,5 @@
 import { Combobox, DateInput, TextInput } from "@reactleaf/input/hookform"
-import React from "react"
+import React, { useMemo } from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
 
 import { Flex } from "@/styles/jsx"
@@ -13,6 +13,8 @@ import {
   headerVariantOptions,
   predefinedWebviews,
 } from "./constants"
+import { QueryParamsInput } from "./QueryParamsInput"
+import { buildDeepLinkFromFormValues } from "./deepLinkUtils"
 
 export interface SendPushNotificationFormValues {
   userIds: string
@@ -20,6 +22,8 @@ export interface SendPushNotificationFormValues {
   body: string
   deepLink?: DeepLinkOption
   deepLinkArgument?: string
+  queryParams?: { [key: string]: string }
+  customDeepLink?: string
   webviewUrl?: string
   webviewFixedTitle?: string
   webviewHeaderVariant?: Option
@@ -38,6 +42,12 @@ interface Props {
 
 export function NotificationSendForm({ id, form, onSubmit }: Props) {
   const deepLinkWatch = form.watch("deepLink")
+  const formValues = form.watch()
+  
+  // Calculate deep link preview
+  const deepLinkPreview = useMemo(() => {
+    return buildDeepLinkFromFormValues(formValues)
+  }, [formValues])
 
   const handlePredefinedWebviewChange = (option: any) => {
     const typedOption = option as WebviewOption
@@ -112,7 +122,15 @@ export function NotificationSendForm({ id, form, onSubmit }: Props) {
         <S.InputTitle>딥링크</S.InputTitle>
         <Combobox name="deepLink" options={deepLinkOptions} placeholder="딥링크" />
 
-        {deepLinkWatch && deepLinkWatch.value === "stair-crusher://webview" ? (
+        {deepLinkWatch && deepLinkWatch.value === "custom" ? (
+          <>
+            <S.InputTitle>커스텀 딥링크 URL</S.InputTitle>
+            <S.InputDescription>* 전체 딥링크 URL을 입력하세요 (예: stair-crusher://search?searchQuery=카페)</S.InputDescription>
+            <TextInput type="text" name="customDeepLink" placeholder="stair-crusher://..." required={true} />
+          </>
+        ) : deepLinkWatch && deepLinkWatch.value === "stair-crusher://search" ? (
+          <QueryParamsInput form={form} fieldName="queryParams" predefinedKeys={deepLinkWatch.queryParams} />
+        ) : deepLinkWatch && deepLinkWatch.value === "stair-crusher://webview" ? (
           <>
             <S.InputTitle>자주 쓰는 웹뷰 딥링크</S.InputTitle>
             <Combobox
@@ -143,6 +161,15 @@ export function NotificationSendForm({ id, form, onSubmit }: Props) {
               placeholder="딥링크 상세 정보 (Ex. 장소 ID)"
               disabled={!deepLinkWatch || !deepLinkWatch.isArgumentRequired}
             />
+          </>
+        )}
+        {deepLinkPreview && (
+          <>
+            <S.InputTitle>딥링크 미리보기</S.InputTitle>
+            <S.PreviewBox>
+              <S.PreviewLabel>생성될 딥링크:</S.PreviewLabel>
+              <S.PreviewContent>{deepLinkPreview}</S.PreviewContent>
+            </S.PreviewBox>
           </>
         )}
 
