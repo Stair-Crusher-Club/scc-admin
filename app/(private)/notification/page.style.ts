@@ -140,6 +140,7 @@ export const ScheduleTh = styled("th", {
     padding: "10px",
     borderBottom: "1px solid #eee",
     fontWeight: 600,
+    textAlign: "left",
   },
 })
 
@@ -147,7 +148,7 @@ export const ScheduleTd = styled("td", {
   base: {
     padding: "10px",
     borderBottom: "1px solid #eee",
-    textAlign: "center",
+    textAlign: "left",
   },
 })
 
