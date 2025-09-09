@@ -33,9 +33,9 @@ export const stairInfoOptions = [
 ]
 
 export const stairHeightLevelOptions = [
-  { label: "엄지 반 마디", value: AdminStairHeightLevel.HalfThumb } as const,
-  { label: "엄지 한 마디", value: AdminStairHeightLevel.Thumb } as const,
-  { label: "한 마디 이상", value: AdminStairHeightLevel.OverThumb } as const,
+  { label: "엄지 한마디", value: AdminStairHeightLevel.HalfThumb } as const,
+  { label: "엄지 손가락", value: AdminStairHeightLevel.Thumb } as const,
+  { label: "엄지 손가락 이상", value: AdminStairHeightLevel.OverThumb } as const,
 ]
 
 export const entranceDoorTypeOptions = [
