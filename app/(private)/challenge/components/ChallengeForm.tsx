@@ -24,6 +24,7 @@ export const actionOptions = [
   { label: "건물 코멘트 등록", value: "BUILDING_ACCESSIBILITY_COMMENT" } as const,
   { label: "장소 정보 등록", value: "PLACE_ACCESSIBILITY" } as const,
   { label: "장소 코멘트 등록", value: "PLACE_ACCESSIBILITY_COMMENT" } as const,
+  { label: "장소 리뷰", value: "PLACE_REVIEW" } as const,
 ]
 
 export interface ChallengeFormValues {
