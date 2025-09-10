@@ -169,12 +169,14 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
             name="startDate"
             label="챌린지 시작"
             dateFormat="yyyy-MM-dd HH:mm"
+            showTimeSelect={true}
             disabled={isNotEditableFieldDisabled}
           />
           <DateInput
             name="endDate"
             label="챌린지 종료"
             dateFormat="yyyy-MM-dd HH:mm"
+            showTimeSelect={true}
             placeholderText="비워두면 무기한으로 적용됩니다."
             disabled={isEditableFieldDisabled}
           />
