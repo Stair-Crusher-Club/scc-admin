@@ -88,8 +88,11 @@ export default function ChallengeDetail() {
       return
     }
     alert("챌린지가 수정되었습니다.")
+    // 챌린지 상세 데이터 다시 불러오기
+    await queryClient.invalidateQueries({ queryKey: ["@challenge", id] })
+    // 챌린지 목록 데이터도 다시 불러오기
+    await queryClient.invalidateQueries({ queryKey: ["@challenges"] })
     setEditMode(false)
-    router.push("/challenge")
   }
 
   function handleFormSubmit(values: ChallengeFormValues) {
