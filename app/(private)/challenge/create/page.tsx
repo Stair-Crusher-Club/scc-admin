@@ -27,6 +27,7 @@ export default function CreateChallenge() {
       questActions,
       questRegions,
       description,
+      isB2B,
       crusherGroupName,
       imageUrl,
       imageWidth,
@@ -71,6 +72,7 @@ export default function CreateChallenge() {
         },
       ],
       description: description,
+      isB2B: isB2B,
       crusherGroup: crusherGroup,
     })
 

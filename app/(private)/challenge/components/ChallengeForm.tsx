@@ -36,6 +36,7 @@ export interface ChallengeFormValues {
   questActions: Option[]
   questRegions: Option[]
   description: string
+  isB2B: boolean
   crusherGroupName?: string
   imageUrl?: string
   imageWidth?: number
@@ -50,6 +51,7 @@ export const defaultValues: Partial<ChallengeFormValues> = {
   endDate: null,
   questActions: actionOptions,
   description: "",
+  isB2B: false,
   crusherGroupName: "",
   imageUrl: "",
   imageWidth: undefined,

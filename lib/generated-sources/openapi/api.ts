@@ -373,6 +373,12 @@ export interface AdminChallengeDTO {
     'description': string;
     /**
      * 
+     * @type {boolean}
+     * @memberof AdminChallengeDTO
+     */
+    'isB2B'?: boolean;
+    /**
+     * 
      * @type {AdminCrusherGroupDto}
      * @memberof AdminChallengeDTO
      */
@@ -548,6 +554,12 @@ export interface AdminCreateChallengeRequestDTO {
      * @memberof AdminCreateChallengeRequestDTO
      */
     'description': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'isB2B'?: boolean;
     /**
      * 
      * @type {AdminCrusherGroupDto}
@@ -1111,6 +1123,12 @@ export interface AdminUpdateChallengeRequestDTO {
      * @memberof AdminUpdateChallengeRequestDTO
      */
     'description': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'isB2B'?: boolean;
     /**
      * 
      * @type {AdminCrusherGroupDto}

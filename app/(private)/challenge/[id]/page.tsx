@@ -37,6 +37,7 @@ export default function ChallengeDetail() {
       ],
       questActions: actionOptions.filter((v) => challenge.conditions[0]?.actionCondition?.types?.includes(v.value)),
       description: challenge.description,
+      isB2B: challenge.isB2B ?? false,
       crusherGroupName: challenge.crusherGroup?.name || "",
       imageUrl: challenge.crusherGroup?.icon?.url || "",
       imageWidth: challenge.crusherGroup?.icon?.width,
@@ -78,6 +79,7 @@ export default function ChallengeDetail() {
       name: values.name,
       endsAtMillis: values.endDate ? values.endDate.getTime() : undefined,
       description: values.description,
+      isB2B: values.isB2B,
       crusherGroup: crusherGroup,
     }
     const res = await updateChallenge({ id, payload })
@@ -121,6 +123,7 @@ export default function ChallengeDetail() {
                       (v) => originalChallenge.conditions?.[0]?.actionCondition?.types?.includes(v.value) ?? false,
                     ),
                     description: originalChallenge.description,
+                    isB2B: originalChallenge.isB2B ?? false,
                     crusherGroupName: originalChallenge.crusherGroup?.name || "",
                     imageUrl: originalChallenge.crusherGroup?.icon?.url,
                     imageWidth: originalChallenge.crusherGroup?.icon?.width,
