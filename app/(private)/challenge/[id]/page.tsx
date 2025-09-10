@@ -29,9 +29,12 @@ export default function ChallengeDetail() {
       name: challenge.name,
       inviteCode: challenge.invitationCode || "",
       joinCode: challenge.passcode || "",
-      startDate: format(challenge.startsAtMillis, "yyyy-MM-dd HH:mm"),
-      endDate: challenge.endsAtMillis ? format(challenge.endsAtMillis, "yyyy-MM-dd HH:mm") : "",
-      milestones: challenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
+      startDate: new Date(challenge.startsAtMillis),
+      endDate: challenge.endsAtMillis ? new Date(challenge.endsAtMillis) : null,
+      milestones: [
+        ...challenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
+        {label: challenge.goal.toString(), value: challenge.goal.toString()}
+      ],
       questActions: actionOptions.filter((v) => challenge.conditions[0]?.actionCondition?.types?.includes(v.value)),
       description: challenge.description,
       crusherGroupName: challenge.crusherGroup?.name || "",
@@ -73,7 +76,7 @@ export default function ChallengeDetail() {
 
     const payload: AdminUpdateChallengeRequestDTO = {
       name: values.name,
-      endsAtMillis: values.endDate ? new Date(values.endDate).getTime() : undefined,
+      endsAtMillis: values.endDate ? values.endDate.getTime() : undefined,
       description: values.description,
       crusherGroup: crusherGroup,
     }
@@ -111,10 +114,8 @@ export default function ChallengeDetail() {
                     name: originalChallenge.name,
                     inviteCode: originalChallenge.invitationCode || "",
                     joinCode: originalChallenge.passcode || "",
-                    startDate: format(originalChallenge.startsAtMillis, "yyyy-MM-dd HH:mm"),
-                    endDate: originalChallenge.endsAtMillis
-                      ? format(originalChallenge.endsAtMillis, "yyyy-MM-dd HH:mm")
-                      : "",
+                    startDate: new Date(originalChallenge.startsAtMillis),
+                    endDate: originalChallenge.endsAtMillis ? new Date(originalChallenge.endsAtMillis) : null,
                     milestones: originalChallenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
                     questActions: actionOptions.filter(
                       (v) => originalChallenge.conditions?.[0]?.actionCondition?.types?.includes(v.value) ?? false,

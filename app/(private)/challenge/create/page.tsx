@@ -1,6 +1,5 @@
 "use client"
 
-import { format } from "date-fns"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -61,8 +60,8 @@ export default function CreateChallenge() {
       isPublic: inviteCode === "",
       invitationCode: inviteCode ? inviteCode : undefined,
       passcode: joinCode ? joinCode : undefined,
-      startsAtMillis: new Date(startDate).getTime(),
-      endsAtMillis: endDate ? new Date(endDate).getTime() : undefined,
+      startsAtMillis: startDate.getTime(),
+      endsAtMillis: endDate ? endDate.getTime() : undefined,
       goal: milestoneNumbers.at(-1) ?? 0,
       milestones: milestoneNumbers.slice(0, -1),
       conditions: [

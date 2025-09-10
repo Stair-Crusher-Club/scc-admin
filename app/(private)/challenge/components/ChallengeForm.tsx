@@ -3,7 +3,6 @@
 import { FileInput } from "@reactleaf/input"
 import { Autocomplete, Combobox, DateInput, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import axios from "axios"
-import { format } from "date-fns"
 import { ChangeEventHandler, useEffect, useState } from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
 
@@ -31,8 +30,8 @@ export interface ChallengeFormValues {
   name: string
   inviteCode: string
   joinCode: string
-  startDate: string
-  endDate: string
+  startDate: Date
+  endDate: Date | null
   milestones: Option[]
   questActions: Option[]
   questRegions: Option[]
@@ -47,7 +46,8 @@ export const defaultValues: Partial<ChallengeFormValues> = {
   name: "",
   inviteCode: "",
   joinCode: "",
-  startDate: format(new Date(), "yyyy-MM-dd HH:mm"),
+  startDate: new Date(),
+  endDate: null,
   questActions: actionOptions,
   description: "",
   crusherGroupName: "",
@@ -213,7 +213,62 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
           rules={{ required: { value: true, message: "1개 이상의 조건을 선택해주세요." } }}
           options={actionOptions}
         />
-        <TextInput name="description" label="설명" disabled={isEditableFieldDisabled} />
+        <div>
+          <label htmlFor="description" className={css({ fontSize: "14px", fontWeight: "500", display: "block", marginBottom: "4px" })}>
+            설명 (Markdown 지원)
+          </label>
+          <textarea
+            {...form.register("description")}
+            id="description"
+            placeholder="챌린지에 대한 설명을 입력하세요. **굵은글씨**, *기울임*, `코드` 등 Markdown 문법을 사용할 수 있습니다."
+            disabled={isEditableFieldDisabled}
+            className={css({
+              width: "100%",
+              minHeight: "120px",
+              padding: "12px",
+              border: "1px solid #d1d5db",
+              borderRadius: "6px",
+              fontSize: "14px",
+              lineHeight: "1.5",
+              resize: "vertical",
+              fontFamily: "inherit",
+              _focus: {
+                outline: "none",
+                borderColor: "#3b82f6",
+                boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.1)",
+              },
+              _disabled: {
+                backgroundColor: "#f9fafb",
+                color: "#6b7280",
+                cursor: "not-allowed",
+              },
+            })}
+          />
+          <div className={css({ fontSize: "12px", color: "#6b7280", marginTop: "4px" })}>
+            줄바꿈은 엔터키로 가능하며, Markdown 문법을 사용하여 텍스트를 꾸밀 수 있습니다.
+          </div>
+        </div>
+        <div className={css({ marginBottom: "16px" })}>
+          <label className={css({ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" })}>
+            <input
+              type="checkbox"
+              {...form.register("isB2B")}
+              disabled={isEditableFieldDisabled}
+              className={css({
+                width: "18px",
+                height: "18px",
+                cursor: "pointer",
+                _disabled: {
+                  cursor: "not-allowed",
+                },
+              })}
+            />
+            <span className={css({ fontSize: "14px", fontWeight: "500" })}>B2B 챌린지</span>
+          </label>
+          <div className={css({ fontSize: "12px", color: "#6b7280", marginTop: "4px", marginLeft: "26px" })}>
+            B2B(기업용) 챌린지인 경우 체크하세요.
+          </div>
+        </div>
         <TextInput
           name="crusherGroupName"
           label="파트너 라벨 이름"
