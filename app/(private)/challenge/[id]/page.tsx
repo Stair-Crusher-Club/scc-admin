@@ -38,6 +38,7 @@ export default function ChallengeDetail() {
       questActions: actionOptions.filter((v) => challenge.conditions[0]?.actionCondition?.types?.includes(v.value)),
       description: challenge.description,
       isB2B: challenge.isB2B ?? false,
+      b2bFormSchema: challenge.b2bFormSchema,
       crusherGroupName: challenge.crusherGroup?.name || "",
       imageUrl: challenge.crusherGroup?.icon?.url || "",
       imageWidth: challenge.crusherGroup?.icon?.width,
@@ -75,11 +76,25 @@ export default function ChallengeDetail() {
       }
     }
 
+    const milestoneNumbers = values.milestones.map((v) => parseInt(v.value))
+    
     const payload: AdminUpdateChallengeRequestDTO = {
       name: values.name,
+      invitationCode: values.inviteCode || undefined,
+      passcode: values.joinCode || undefined,
+      startsAtMillis: values.startDate.getTime(),
       endsAtMillis: values.endDate ? values.endDate.getTime() : undefined,
+      goal: milestoneNumbers.at(-1) ?? 0,
+      milestones: milestoneNumbers.slice(0, -1),
+      conditions: [
+        {
+          addressCondition: { rawEupMyeonDongs: values.questRegions?.map((v) => v.label.split(" ").at(-1) ?? "") || [] },
+          actionCondition: { types: values.questActions.map((v) => v.value) as any },
+        },
+      ],
       description: values.description,
       isB2B: values.isB2B,
+      b2bFormSchema: values.isB2B ? values.b2bFormSchema : undefined,
       crusherGroup: crusherGroup,
     }
     const res = await updateChallenge({ id, payload })
@@ -121,12 +136,16 @@ export default function ChallengeDetail() {
                     joinCode: originalChallenge.passcode || "",
                     startDate: new Date(originalChallenge.startsAtMillis),
                     endDate: originalChallenge.endsAtMillis ? new Date(originalChallenge.endsAtMillis) : null,
-                    milestones: originalChallenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
+                    milestones: [
+                      ...originalChallenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
+                      {label: originalChallenge.goal.toString(), value: originalChallenge.goal.toString()}
+                    ],
                     questActions: actionOptions.filter(
                       (v) => originalChallenge.conditions?.[0]?.actionCondition?.types?.includes(v.value) ?? false,
                     ),
                     description: originalChallenge.description,
                     isB2B: originalChallenge.isB2B ?? false,
+                    b2bFormSchema: originalChallenge.b2bFormSchema,
                     crusherGroupName: originalChallenge.crusherGroup?.name || "",
                     imageUrl: originalChallenge.crusherGroup?.icon?.url,
                     imageWidth: originalChallenge.crusherGroup?.icon?.width,

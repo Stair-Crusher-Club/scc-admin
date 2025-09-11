@@ -265,6 +265,54 @@ export interface AdminChallengeAddressConditionDTO {
 /**
  * 
  * @export
+ * @interface AdminChallengeB2bFormSchemaAvailableFieldDTO
+ */
+export interface AdminChallengeB2bFormSchemaAvailableFieldDTO {
+    /**
+     * 
+     * @type {AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO}
+     * @memberof AdminChallengeB2bFormSchemaAvailableFieldDTO
+     */
+    'name': AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminChallengeB2bFormSchemaAvailableFieldDTO
+     */
+    'options'?: Array<string>;
+}
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO = {
+    ParticipantName: 'PARTICIPANT_NAME',
+    CompanyName: 'COMPANY_NAME',
+    OrganizationName: 'ORGANIZATION_NAME',
+    EmployeeIdentificationNumber: 'EMPLOYEE_IDENTIFICATION_NUMBER'
+} as const;
+
+export type AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO = typeof AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO[keyof typeof AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO];
+
+
+/**
+ * 
+ * @export
+ * @interface AdminChallengeB2bFormSchemaDTO
+ */
+export interface AdminChallengeB2bFormSchemaDTO {
+    /**
+     * 
+     * @type {Array<AdminChallengeB2bFormSchemaAvailableFieldDTO>}
+     * @memberof AdminChallengeB2bFormSchemaDTO
+     */
+    'availableFields': Array<AdminChallengeB2bFormSchemaAvailableFieldDTO>;
+}
+/**
+ * 
+ * @export
  * @interface AdminChallengeConditionDTO
  */
 export interface AdminChallengeConditionDTO {
@@ -377,6 +425,12 @@ export interface AdminChallengeDTO {
      * @memberof AdminChallengeDTO
      */
     'isB2B'?: boolean;
+    /**
+     * 
+     * @type {AdminChallengeB2bFormSchemaDTO}
+     * @memberof AdminChallengeDTO
+     */
+    'b2bFormSchema'?: AdminChallengeB2bFormSchemaDTO;
     /**
      * 
      * @type {AdminCrusherGroupDto}
@@ -560,6 +614,12 @@ export interface AdminCreateChallengeRequestDTO {
      * @memberof AdminCreateChallengeRequestDTO
      */
     'isB2B'?: boolean;
+    /**
+     * 
+     * @type {AdminChallengeB2bFormSchemaDTO}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'b2bFormSchema'?: AdminChallengeB2bFormSchemaDTO;
     /**
      * 
      * @type {AdminCrusherGroupDto}
@@ -1113,10 +1173,46 @@ export interface AdminUpdateChallengeRequestDTO {
     'name': string;
     /**
      * 
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'invitationCode'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'passcode'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'startsAtMillis'?: number;
+    /**
+     * 
      * @type {number}
      * @memberof AdminUpdateChallengeRequestDTO
      */
     'endsAtMillis'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'goal'?: number;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'milestones'?: Array<number>;
+    /**
+     * 
+     * @type {Array<AdminChallengeConditionDTO>}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'conditions'?: Array<AdminChallengeConditionDTO>;
     /**
      * 
      * @type {string}
@@ -1129,6 +1225,12 @@ export interface AdminUpdateChallengeRequestDTO {
      * @memberof AdminUpdateChallengeRequestDTO
      */
     'isB2B'?: boolean;
+    /**
+     * 
+     * @type {AdminChallengeB2bFormSchemaDTO}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'b2bFormSchema'?: AdminChallengeB2bFormSchemaDTO;
     /**
      * 
      * @type {AdminCrusherGroupDto}
