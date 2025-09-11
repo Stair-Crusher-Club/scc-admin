@@ -3,7 +3,7 @@
 import { FileInput } from "@reactleaf/input"
 import { Autocomplete, Combobox, DateInput, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import axios from "axios"
-import { ChangeEventHandler, useEffect, useState } from "react"
+import { ChangeEventHandler, useEffect, useRef, useState } from "react"
 import { FormProvider, UseFormReturn, useWatch } from "react-hook-form"
 
 import { getImageUploadUrls } from "@/lib/apis/api"
@@ -58,6 +58,7 @@ export const defaultValues: Partial<ChallengeFormValues> = {
   questActions: actionOptions,
   description: "",
   isB2B: false,
+  b2bFormSchema: undefined,
   crusherGroupName: "",
   imageUrl: "",
   imageWidth: undefined,
@@ -79,6 +80,9 @@ const availableFieldOptions = [
 
 // 옵션 파싱 유틸리티 함수
 const parseOptions = (optionsText: string): string[] => {
+  if (!optionsText || optionsText.trim() === '') {
+    return []
+  }
   return optionsText
     .split(',')
     .map(opt => opt.trim())
@@ -110,17 +114,23 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
   
   // useWatch로 isB2B 값 안정적으로 감지
   const isB2B = useWatch({ control: form.control, name: "isB2B" })
+  
+  // useWatch로 b2bFormSchema 값 변화 감지
+  const b2bFormSchema = useWatch({ control: form.control, name: "b2bFormSchema" })
+  
+  // 초기화 상태 추적용 ref
+  const isInitialized = useRef(false)
 
-  // B2B 폼 스키마 초기화 (컴포넌트 마운트 시 한 번만)
+  // B2B 폼 스키마 초기화 (b2bFormSchema가 설정되는 최초 한 번만)
   useEffect(() => {
-    const currentSchema = form.getValues("b2bFormSchema")
-    if (currentSchema?.availableFields) {
-      setSelectedFields(currentSchema.availableFields.map(field => field.name))
+    if (b2bFormSchema?.availableFields && !isInitialized.current) {
+      isInitialized.current = true
+      setSelectedFields(b2bFormSchema.availableFields.map(field => field.name))
       
       // 기존 옵션 데이터 로드
       const newFieldOptions = { ...fieldOptions }
       const newFieldOptionsText = { ...fieldOptionsText }
-      currentSchema.availableFields.forEach(field => {
+      b2bFormSchema.availableFields.forEach(field => {
         if (field.options) {
           newFieldOptions[field.name] = field.options
           newFieldOptionsText[field.name] = field.options.join(", ")
@@ -129,7 +139,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
       setFieldOptions(newFieldOptions)
       setFieldOptionsText(newFieldOptionsText)
     }
-  }, []) // 빈 의존성 배열로 마운트 시 한 번만 실행
+  }, [b2bFormSchema]) // b2bFormSchema 값 변화 시 실행하되, 최초 한 번만
 
   const handleFieldToggle = (fieldName: AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO) => {
     const newFields = selectedFields.includes(fieldName)
@@ -151,7 +161,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
   }
 
   const handleOptionsUpdate = (fieldName: AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO, optionsText: string) => {
-    // 텍스트 상태 업데이트
+    // 텍스트 상태 먼저 업데이트 (사용자 입력 그대로 유지)
     setFieldOptionsText(prev => ({ ...prev, [fieldName]: optionsText }))
     
     // 파싱된 옵션 배열 업데이트 (빈 배열이면 null)
