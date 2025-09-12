@@ -1,6 +1,6 @@
 "use client"
 
-import { format } from "date-fns"
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -14,6 +14,7 @@ import * as S from "./page.style"
 
 export default function CreateChallenge() {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const form = useForm<ChallengeFormValues>({ defaultValues })
 
@@ -28,6 +29,8 @@ export default function CreateChallenge() {
       questActions,
       questRegions,
       description,
+      isB2B,
+      b2bFormSchema,
       crusherGroupName,
       imageUrl,
       imageWidth,
@@ -61,8 +64,8 @@ export default function CreateChallenge() {
       isPublic: inviteCode === "",
       invitationCode: inviteCode ? inviteCode : undefined,
       passcode: joinCode ? joinCode : undefined,
-      startsAtMillis: new Date(startDate).getTime(),
-      endsAtMillis: endDate ? new Date(endDate).getTime() : undefined,
+      startsAtMillis: startDate.getTime(),
+      endsAtMillis: endDate ? endDate.getTime() : undefined,
       goal: milestoneNumbers.at(-1) ?? 0,
       milestones: milestoneNumbers.slice(0, -1),
       conditions: [
@@ -72,6 +75,8 @@ export default function CreateChallenge() {
         },
       ],
       description: description,
+      isB2B: isB2B,
+      b2bFormSchema: isB2B ? b2bFormSchema : undefined,
       crusherGroup: crusherGroup,
     })
 
@@ -80,6 +85,10 @@ export default function CreateChallenge() {
       return
     }
     toast.success("챌린지가 생성되었습니다.")
+    
+    // 챌린지 목록 데이터 새로고침
+    await queryClient.invalidateQueries({ queryKey: ["@challenges"], exact: true })
+    
     router.push("/challenge")
   }
 

@@ -1,7 +1,6 @@
 "use client"
 
 import { useQueryClient } from "@tanstack/react-query"
-import { format } from "date-fns"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -29,11 +28,16 @@ export default function ChallengeDetail() {
       name: challenge.name,
       inviteCode: challenge.invitationCode || "",
       joinCode: challenge.passcode || "",
-      startDate: format(challenge.startsAtMillis, "yyyy-MM-dd HH:mm"),
-      endDate: challenge.endsAtMillis ? format(challenge.endsAtMillis, "yyyy-MM-dd HH:mm") : "",
-      milestones: challenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
+      startDate: new Date(challenge.startsAtMillis),
+      endDate: challenge.endsAtMillis ? new Date(challenge.endsAtMillis) : null,
+      milestones: [
+        ...challenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
+        {label: challenge.goal.toString(), value: challenge.goal.toString()}
+      ],
       questActions: actionOptions.filter((v) => challenge.conditions[0]?.actionCondition?.types?.includes(v.value)),
       description: challenge.description,
+      isB2B: challenge.isB2B ?? false,
+      b2bFormSchema: challenge.b2bFormSchema,
       crusherGroupName: challenge.crusherGroup?.name || "",
       imageUrl: challenge.crusherGroup?.icon?.url || "",
       imageWidth: challenge.crusherGroup?.icon?.width,
@@ -71,10 +75,25 @@ export default function ChallengeDetail() {
       }
     }
 
+    const milestoneNumbers = values.milestones.map((v) => parseInt(v.value))
+    
     const payload: AdminUpdateChallengeRequestDTO = {
       name: values.name,
-      endsAtMillis: values.endDate ? new Date(values.endDate).getTime() : undefined,
+      invitationCode: values.inviteCode || undefined,
+      passcode: values.joinCode || undefined,
+      startsAtMillis: values.startDate.getTime(),
+      endsAtMillis: values.endDate ? values.endDate.getTime() : undefined,
+      goal: milestoneNumbers.at(-1) ?? 0,
+      milestones: milestoneNumbers.slice(0, -1),
+      conditions: [
+        {
+          addressCondition: { rawEupMyeonDongs: values.questRegions?.map((v) => v.label.split(" ").at(-1) ?? "") || [] },
+          actionCondition: { types: values.questActions.map((v) => v.value) as any },
+        },
+      ],
       description: values.description,
+      isB2B: values.isB2B,
+      b2bFormSchema: values.isB2B ? values.b2bFormSchema : undefined,
       crusherGroup: crusherGroup,
     }
     const res = await updateChallenge({ id, payload })
@@ -83,8 +102,11 @@ export default function ChallengeDetail() {
       return
     }
     alert("챌린지가 수정되었습니다.")
+    // 챌린지 상세 데이터 다시 불러오기
+    await queryClient.invalidateQueries({ queryKey: ["@challenge", id] })
+    // 챌린지 목록 데이터도 다시 불러오기
+    await queryClient.invalidateQueries({ queryKey: ["@challenges"] })
     setEditMode(false)
-    router.push("/challenge")
   }
 
   function handleFormSubmit(values: ChallengeFormValues) {
@@ -111,15 +133,18 @@ export default function ChallengeDetail() {
                     name: originalChallenge.name,
                     inviteCode: originalChallenge.invitationCode || "",
                     joinCode: originalChallenge.passcode || "",
-                    startDate: format(originalChallenge.startsAtMillis, "yyyy-MM-dd HH:mm"),
-                    endDate: originalChallenge.endsAtMillis
-                      ? format(originalChallenge.endsAtMillis, "yyyy-MM-dd HH:mm")
-                      : "",
-                    milestones: originalChallenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
+                    startDate: new Date(originalChallenge.startsAtMillis),
+                    endDate: originalChallenge.endsAtMillis ? new Date(originalChallenge.endsAtMillis) : null,
+                    milestones: [
+                      ...originalChallenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
+                      {label: originalChallenge.goal.toString(), value: originalChallenge.goal.toString()}
+                    ],
                     questActions: actionOptions.filter(
                       (v) => originalChallenge.conditions?.[0]?.actionCondition?.types?.includes(v.value) ?? false,
                     ),
                     description: originalChallenge.description,
+                    isB2B: originalChallenge.isB2B ?? false,
+                    b2bFormSchema: originalChallenge.b2bFormSchema,
                     crusherGroupName: originalChallenge.crusherGroup?.name || "",
                     imageUrl: originalChallenge.crusherGroup?.icon?.url,
                     imageWidth: originalChallenge.crusherGroup?.icon?.width,

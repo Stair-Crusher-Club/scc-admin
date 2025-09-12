@@ -2,6 +2,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 
 import {
   AdminAccessibilityDTO,
+  AdminChallengeB2bFormSchemaDTO,
   AdminCreateSearchPlacePresetRequestDTO,
   AdminEntranceDoorType,
   AdminImageUploadPurposeTypeDTO,
@@ -31,7 +32,8 @@ import {
 const baseURL =
   process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
     ? "https://api.staircrusher.club/admin"
-    : "https://api.dev.staircrusher.club/admin"
+    // : "https://api.dev.staircrusher.club/admin"
+    : "http://localhost:8080/admin"
 const config = new Configuration({ basePath: baseURL })
 const defaultApi = new DefaultApi(config)
 const challengeApi = new ChallengeApi(config)
@@ -177,6 +179,8 @@ type CreateChallengeParams = {
     actionCondition: { types: string[] }
   }[]
   description: string
+  isB2B: boolean
+  b2bFormSchema?: AdminChallengeB2bFormSchemaDTO
   crusherGroup?: CrusherGroup
 }
 export function createChallenge(payload: CreateChallengeParams) {
