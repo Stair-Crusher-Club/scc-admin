@@ -1,5 +1,6 @@
 "use client"
 
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -13,6 +14,7 @@ import * as S from "./page.style"
 
 export default function CreateChallenge() {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const form = useForm<ChallengeFormValues>({ defaultValues })
 
@@ -83,6 +85,10 @@ export default function CreateChallenge() {
       return
     }
     toast.success("챌린지가 생성되었습니다.")
+    
+    // 챌린지 목록 데이터 새로고침
+    await queryClient.invalidateQueries({ queryKey: ["@challenges"], exact: true })
+    
     router.push("/challenge")
   }
 
