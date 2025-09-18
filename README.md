@@ -21,6 +21,8 @@ pnpm i
 pnpm panda
 # dev 서버 실행
 pnpm dev
+# submodule 설정
+git submodule init && git submodule update
 ```
 
 ### 환경 설정

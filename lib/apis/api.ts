@@ -2,15 +2,18 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 
 import {
   AdminAccessibilityDTO,
+  AdminAccessibilityInspectionResultDTO,
   AdminChallengeB2bFormSchemaDTO,
   AdminCreateSearchPlacePresetRequestDTO,
   AdminEntranceDoorType,
   AdminImageUploadPurposeTypeDTO,
+  AdminSearchAccessibilityInspectionResultsDTO,
   AdminSendPushNotificationRequestDTO,
   AdminStairHeightLevel,
   AdminStairInfoDTO,
   AdminUpdateChallengeRequestDTO,
   AdminUpdatePushNotificationScheduleRequestDTO,
+  AccessibilityTypeDTO,
   ClubQuestCreateDryRunResultItemDTO,
   EpochMillisTimestamp,
 } from "@/lib/generated-sources/openapi"
@@ -355,4 +358,39 @@ export function createSearchPreset(searchText: string, description: string) {
 
 export function deleteSearchPreset(id: string) {
   return defaultApi.deleteSearchPreset(id)
+}
+
+export function useAccessibilityInspectionResults({
+  accessibilityType,
+  isPassed,
+  createdAtFromLocalDate,
+  createdAtToLocalDate,
+}: {
+  accessibilityType?: AccessibilityTypeDTO
+  isPassed?: boolean
+  createdAtFromLocalDate?: string
+  createdAtToLocalDate?: string
+}) {
+  return useInfiniteQuery<AdminSearchAccessibilityInspectionResultsDTO>({
+    queryKey: [
+      "@accessibilityInspectionResults",
+      accessibilityType ?? null,
+      typeof isPassed === "boolean" ? isPassed : null,
+      createdAtFromLocalDate ?? null,
+      createdAtToLocalDate ?? null,
+    ],
+    queryFn: ({ pageParam }) =>
+      accessibilityApi
+        .searchAccessibilityInspectionResults(
+          accessibilityType,
+          isPassed,
+          createdAtFromLocalDate,
+          createdAtToLocalDate,
+          (pageParam as string | undefined) ?? undefined,
+          "50",
+        )
+        .then((res) => res.data),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.cursor,
+  })
 }
