@@ -1,8 +1,10 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { format as formatDate } from "date-fns"
+import { useModal } from "@/hooks/useModal"
 
-import { useAccessibilityInspectionResults } from "@/lib/apis/api"
+import { useAccessibilityInspectionResults, runImagePipeline } from "@/lib/apis/api"
 import { AccessibilityTypeDTO } from "@/lib/generated-sources/openapi"
 
 import { Contents, Header } from "@/components/layout"
@@ -15,6 +17,9 @@ export default function AccessibilityInspectionResultPage() {
   const [isPassed, setIsPassed] = useState<boolean | undefined>()
   const [fromDate, setFromDate] = useState<string>("")
   const [toDate, setToDate] = useState<string>("")
+  const [isRunningPipeline, setIsRunningPipeline] = useState(false)
+
+  const modal = useModal()
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
     useAccessibilityInspectionResults({
@@ -26,11 +31,36 @@ export default function AccessibilityInspectionResultPage() {
 
   const items = useMemo(() => data?.pages.flatMap((p) => p.items) ?? [], [data])
 
+  const handleRunReinspection = async (items: Array<{ accessibilityId: string; accessibilityType: AccessibilityTypeDTO }>) => {
+    setIsRunningPipeline(true)
+    try {
+      await runImagePipeline({ items })
+      alert("재검수가 성공적으로 실행되었습니다.")
+      refetch() // 데이터 새로고침
+    } catch (error) {
+      console.error("재검수 실행 중 오류:", error)
+      alert("재검수 실행 중 오류가 발생했습니다.")
+    } finally {
+      setIsRunningPipeline(false)
+    }
+  }
+
+  const openReinspectionDialog = () => {
+    modal.openModal({
+      type: "ReinspectionDialog",
+      props: {
+        onConfirm: handleRunReinspection,
+        isLoading: isRunningPipeline,
+      }
+    })
+  }
+
   return (
     <>
-      <Header title="접근성 검증 결과">
+      <Header title="접근성 검증 결과" />
+      <S.FiltersContainer>
         <S.Filters>
-          <label>
+          <S.FilterLabel>
             유형
             <S.Select
               value={accessibilityType ?? ""}
@@ -44,8 +74,8 @@ export default function AccessibilityInspectionResultPage() {
               <option value="PLACE">PLACE</option>
               <option value="BUILDING">BUILDING</option>
             </S.Select>
-          </label>
-          <label>
+          </S.FilterLabel>
+          <S.FilterLabel>
             합격여부
             <S.Select
               value={typeof isPassed === "boolean" ? String(isPassed) : ""}
@@ -57,22 +87,26 @@ export default function AccessibilityInspectionResultPage() {
               <option value="true">합격</option>
               <option value="false">불합격</option>
             </S.Select>
-          </label>
-          <label>
+          </S.FilterLabel>
+          <S.FilterLabel>
             시작일
             <S.Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
-          </label>
-          <label>
+          </S.FilterLabel>
+          <S.FilterLabel>
             종료일
             <S.Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
-          </label>
+          </S.FilterLabel>
           <S.Button onClick={() => refetch()}>검색</S.Button>
+          <S.ReinspectionButton onClick={openReinspectionDialog} disabled={isRunningPipeline}>
+            {isRunningPipeline ? "재검수 중..." : "재검수하기"}
+          </S.ReinspectionButton>
         </S.Filters>
-      </Header>
+      </S.FiltersContainer>
       <Contents.Normal>
         <S.TableWrapper>
           <S.TableHeader>
             <S.HeaderCell>생성일</S.HeaderCell>
+            <S.HeaderCell>접근성ID</S.HeaderCell>
             <S.HeaderCell>유형</S.HeaderCell>
             <S.HeaderCell>검증결과</S.HeaderCell>
             <S.HeaderCell>설명</S.HeaderCell>
@@ -85,7 +119,8 @@ export default function AccessibilityInspectionResultPage() {
           ) : (
             items.map((item) => (
               <S.RowWrapper key={item.id}>
-                <S.Cell>{new Date(item.createdAtMillis).toLocaleString()}</S.Cell>
+                <S.Cell>{formatDate(new Date(item.createdAtMillis), "yyyy/M/d HH:mm")}</S.Cell>
+                <S.Cell>{item.accessibilityId}</S.Cell>
                 <S.Cell>{item.accessibilityType}</S.Cell>
                 <S.Cell>{item.isPassed ? "합격" : "불합격"}</S.Cell>
                 <S.Cell>

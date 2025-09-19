@@ -394,3 +394,14 @@ export function useAccessibilityInspectionResults({
     getNextPageParam: (lastPage) => lastPage.cursor,
   })
 }
+
+export interface RunImagePipelinePayload {
+  items: Array<{
+    accessibilityId: string
+    accessibilityType: AccessibilityTypeDTO
+  }>
+}
+
+export function runImagePipeline(payload: RunImagePipelinePayload) {
+  return accessibilityApi.runAccessibilityImagePipeline(payload)
+}

@@ -1,39 +1,124 @@
 import { styled } from "@/styles/jsx"
 
+export const FiltersContainer = styled("div", {
+  base: {
+    padding: "16px 20px",
+    background: "white",
+    borderBottom: "1px solid #eee",
+  },
+})
+
 export const Filters = styled("div", {
   base: {
     display: "flex",
-    gap: "8px",
-    alignItems: "center",
+    gap: "16px",
+    alignItems: "flex-end",
     flexWrap: "wrap",
+    rowGap: "12px",
+  },
+})
+
+export const FilterLabel = styled("label", {
+  base: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#333",
+    minWidth: "120px",
   },
 })
 
 export const Select = styled("select", {
   base: {
-    padding: "6px 10px",
+    padding: "8px 12px",
     border: "1px solid #ddd",
-    borderRadius: "6px",
+    borderRadius: "8px",
     background: "white",
+    fontSize: "14px",
+    minWidth: "100px",
+    cursor: "pointer",
+    transition: "border-color 0.2s ease",
+    "&:focus": {
+      outline: "none",
+      borderColor: "#007bff",
+      boxShadow: "0 0 0 2px rgba(0, 123, 255, 0.1)",
+    },
+    "&:hover": {
+      borderColor: "#bbb",
+    },
   },
 })
 
 export const Input = styled("input", {
   base: {
-    padding: "6px 10px",
+    padding: "8px 12px",
     border: "1px solid #ddd",
-    borderRadius: "6px",
+    borderRadius: "8px",
     background: "white",
+    fontSize: "14px",
+    minWidth: "140px",
+    transition: "border-color 0.2s ease",
+    "&:focus": {
+      outline: "none",
+      borderColor: "#007bff",
+      boxShadow: "0 0 0 2px rgba(0, 123, 255, 0.1)",
+    },
+    "&:hover": {
+      borderColor: "#bbb",
+    },
   },
 })
 
 export const Button = styled("button", {
   base: {
-    padding: "8px 14px",
-    borderRadius: "6px",
+    padding: "10px 16px",
+    borderRadius: "8px",
     border: "1px solid #ddd",
     background: "white",
     cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#333",
+    transition: "all 0.2s ease",
+    minWidth: "80px",
+    "&:hover": {
+      background: "#f8f9fa",
+      borderColor: "#bbb",
+    },
+    "&:active": {
+      transform: "translateY(1px)",
+    },
+  },
+})
+
+export const ReinspectionButton = styled("button", {
+  base: {
+    padding: "10px 16px",
+    borderRadius: "8px",
+    border: "1px solid #007bff",
+    background: "#007bff",
+    color: "white",
+    cursor: "pointer",
+    fontWeight: "500",
+    fontSize: "14px",
+    minWidth: "100px",
+    transition: "all 0.2s ease",
+    "&:hover:not(:disabled)": {
+      background: "#0056b3",
+      borderColor: "#0056b3",
+      transform: "translateY(-1px)",
+      boxShadow: "0 2px 8px rgba(0, 123, 255, 0.3)",
+    },
+    "&:active:not(:disabled)": {
+      transform: "translateY(0)",
+    },
+    "&:disabled": {
+      opacity: 0.6,
+      cursor: "not-allowed",
+      transform: "none",
+    },
   },
 })
 
@@ -58,6 +143,15 @@ export const TableHeader = styled("div", {
     minHeight: 40,
     alignItems: "center",
     width: "100%",
+    "& > div:nth-child(2)": {
+      width: "15%",
+    },
+    "& > div:nth-child(5)": {
+      width: "20%",
+    },
+    "& > div:nth-child(6)": {
+      width: "30%",
+    },
   },
 })
 
@@ -67,6 +161,18 @@ export const RowWrapper = styled("div", {
     alignItems: "center",
     borderBottom: "1px solid #eee",
     width: "100%",
+    "& > div:nth-child(1)": {
+      width: "30%",
+    },
+    "& > div:nth-child(2)": {
+      width: "10%",
+    },
+    "& > div:nth-child(5)": {
+      width: "20%",
+    },
+    "& > div:nth-child(6)": {
+      width: "30%",
+    },
   },
 })
 
