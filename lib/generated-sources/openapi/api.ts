@@ -139,25 +139,6 @@ export interface AdminAccessibilityInspectionResultDTO {
 /**
  * 
  * @export
- * @interface AdminAccessibilityItemDTO
- */
-export interface AdminAccessibilityItemDTO {
-    /**
-     * 
-     * @type {AccessibilityTypeDTO}
-     * @memberof AdminAccessibilityItemDTO
-     */
-    'accessibilityType': AccessibilityTypeDTO;
-    /**
-     * 
-     * @type {string}
-     * @memberof AdminAccessibilityItemDTO
-     */
-    'accessibilityId': string;
-}
-/**
- * 
- * @export
  * @interface AdminBannerDTO
  */
 export interface AdminBannerDTO {
@@ -1086,19 +1067,6 @@ export interface AdminPushNotificationScheduleDTO {
      * @memberof AdminPushNotificationScheduleDTO
      */
     'targetUserIds': Array<string>;
-}
-/**
- * 
- * @export
- * @interface AdminRerunAccessibilityInspectionRequestDTO
- */
-export interface AdminRerunAccessibilityInspectionRequestDTO {
-    /**
-     * 
-     * @type {Array<AdminAccessibilityItemDTO>}
-     * @memberof AdminRerunAccessibilityInspectionRequestDTO
-     */
-    'accessibilityItems': Array<AdminAccessibilityItemDTO>;
 }
 /**
  * 
@@ -2129,6 +2097,38 @@ export type RotationDTO = typeof RotationDTO[keyof typeof RotationDTO];
 /**
  * 
  * @export
+ * @interface RunAccessibilityImagePipelineRequest
+ */
+export interface RunAccessibilityImagePipelineRequest {
+    /**
+     * 
+     * @type {Array<RunAccessibilityImagePipelineRequestItemsInner>}
+     * @memberof RunAccessibilityImagePipelineRequest
+     */
+    'items': Array<RunAccessibilityImagePipelineRequestItemsInner>;
+}
+/**
+ * 
+ * @export
+ * @interface RunAccessibilityImagePipelineRequestItemsInner
+ */
+export interface RunAccessibilityImagePipelineRequestItemsInner {
+    /**
+     * 
+     * @type {string}
+     * @memberof RunAccessibilityImagePipelineRequestItemsInner
+     */
+    'accessibilityId': string;
+    /**
+     * 
+     * @type {AccessibilityTypeDTO}
+     * @memberof RunAccessibilityImagePipelineRequestItemsInner
+     */
+    'accessibilityType': AccessibilityTypeDTO;
+}
+/**
+ * 
+ * @export
  * @interface StartPlaceCrawlingRequestDTO
  */
 export interface StartPlaceCrawlingRequestDTO {
@@ -2223,16 +2223,16 @@ export const AccessibilityApiAxiosParamCreator = function (configuration?: Confi
             };
         },
         /**
-         * 지정된 접근성 항목들에 대해 이미지 검증을 재실행하고, 기존 AccessibilityInspectionResult를 삭제한 후 새로운 결과를 생성한다. 
-         * @summary 접근성 이미지 검증을 재실행한다.
-         * @param {AdminRerunAccessibilityInspectionRequestDTO} adminRerunAccessibilityInspectionRequestDTO 
+         * 
+         * @summary 접근성 정보의 이미지 파이프라인을 실행한다.
+         * @param {RunAccessibilityImagePipelineRequest} runAccessibilityImagePipelineRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        rerunAccessibilityInspection: async (adminRerunAccessibilityInspectionRequestDTO: AdminRerunAccessibilityInspectionRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'adminRerunAccessibilityInspectionRequestDTO' is not null or undefined
-            assertParamExists('rerunAccessibilityInspection', 'adminRerunAccessibilityInspectionRequestDTO', adminRerunAccessibilityInspectionRequestDTO)
-            const localVarPath = `/accessibility-inspection-results/rerun`;
+        runAccessibilityImagePipeline: async (runAccessibilityImagePipelineRequest: RunAccessibilityImagePipelineRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'runAccessibilityImagePipelineRequest' is not null or undefined
+            assertParamExists('runAccessibilityImagePipeline', 'runAccessibilityImagePipelineRequest', runAccessibilityImagePipelineRequest)
+            const localVarPath = `/accessibility/run-image-pipeline`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2255,7 +2255,7 @@ export const AccessibilityApiAxiosParamCreator = function (configuration?: Confi
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(adminRerunAccessibilityInspectionRequestDTO, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(runAccessibilityImagePipelineRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2506,14 +2506,14 @@ export const AccessibilityApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 지정된 접근성 항목들에 대해 이미지 검증을 재실행하고, 기존 AccessibilityInspectionResult를 삭제한 후 새로운 결과를 생성한다. 
-         * @summary 접근성 이미지 검증을 재실행한다.
-         * @param {AdminRerunAccessibilityInspectionRequestDTO} adminRerunAccessibilityInspectionRequestDTO 
+         * 
+         * @summary 접근성 정보의 이미지 파이프라인을 실행한다.
+         * @param {RunAccessibilityImagePipelineRequest} runAccessibilityImagePipelineRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async rerunAccessibilityInspection(adminRerunAccessibilityInspectionRequestDTO: AdminRerunAccessibilityInspectionRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.rerunAccessibilityInspection(adminRerunAccessibilityInspectionRequestDTO, options);
+        async runAccessibilityImagePipeline(runAccessibilityImagePipelineRequest: RunAccessibilityImagePipelineRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.runAccessibilityImagePipeline(runAccessibilityImagePipelineRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -2602,14 +2602,14 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
             return localVarFp.deletePlaceAccessibility(id, options).then((request) => request(axios, basePath));
         },
         /**
-         * 지정된 접근성 항목들에 대해 이미지 검증을 재실행하고, 기존 AccessibilityInspectionResult를 삭제한 후 새로운 결과를 생성한다. 
-         * @summary 접근성 이미지 검증을 재실행한다.
-         * @param {AdminRerunAccessibilityInspectionRequestDTO} adminRerunAccessibilityInspectionRequestDTO 
+         * 
+         * @summary 접근성 정보의 이미지 파이프라인을 실행한다.
+         * @param {RunAccessibilityImagePipelineRequest} runAccessibilityImagePipelineRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        rerunAccessibilityInspection(adminRerunAccessibilityInspectionRequestDTO: AdminRerunAccessibilityInspectionRequestDTO, options?: any): AxiosPromise<void> {
-            return localVarFp.rerunAccessibilityInspection(adminRerunAccessibilityInspectionRequestDTO, options).then((request) => request(axios, basePath));
+        runAccessibilityImagePipeline(runAccessibilityImagePipelineRequest: RunAccessibilityImagePipelineRequest, options?: any): AxiosPromise<void> {
+            return localVarFp.runAccessibilityImagePipeline(runAccessibilityImagePipelineRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2697,15 +2697,15 @@ export class AccessibilityApi extends BaseAPI {
     }
 
     /**
-     * 지정된 접근성 항목들에 대해 이미지 검증을 재실행하고, 기존 AccessibilityInspectionResult를 삭제한 후 새로운 결과를 생성한다. 
-     * @summary 접근성 이미지 검증을 재실행한다.
-     * @param {AdminRerunAccessibilityInspectionRequestDTO} adminRerunAccessibilityInspectionRequestDTO 
+     * 
+     * @summary 접근성 정보의 이미지 파이프라인을 실행한다.
+     * @param {RunAccessibilityImagePipelineRequest} runAccessibilityImagePipelineRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccessibilityApi
      */
-    public rerunAccessibilityInspection(adminRerunAccessibilityInspectionRequestDTO: AdminRerunAccessibilityInspectionRequestDTO, options?: AxiosRequestConfig) {
-        return AccessibilityApiFp(this.configuration).rerunAccessibilityInspection(adminRerunAccessibilityInspectionRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    public runAccessibilityImagePipeline(runAccessibilityImagePipelineRequest: RunAccessibilityImagePipelineRequest, options?: AxiosRequestConfig) {
+        return AccessibilityApiFp(this.configuration).runAccessibilityImagePipeline(runAccessibilityImagePipelineRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3995,15 +3995,15 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * 
          * @summary 퀘스트에서 특정 장소를 제외한다.
          * @param {string} clubQuestId 
-         * @param {string} targetPlaceId 
+         * @param {string} placeId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        clubQuestsClubQuestIdTargetPlacesDelete: async (clubQuestId: string, targetPlaceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        clubQuestsClubQuestIdTargetPlacesDelete: async (clubQuestId: string, placeId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'clubQuestId' is not null or undefined
             assertParamExists('clubQuestsClubQuestIdTargetPlacesDelete', 'clubQuestId', clubQuestId)
-            // verify required parameter 'targetPlaceId' is not null or undefined
-            assertParamExists('clubQuestsClubQuestIdTargetPlacesDelete', 'targetPlaceId', targetPlaceId)
+            // verify required parameter 'placeId' is not null or undefined
+            assertParamExists('clubQuestsClubQuestIdTargetPlacesDelete', 'placeId', placeId)
             const localVarPath = `/clubQuests/{clubQuestId}/targetPlaces`
                 .replace(`{${"clubQuestId"}}`, encodeURIComponent(String(clubQuestId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -4021,8 +4021,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
-            if (targetPlaceId !== undefined) {
-                localVarQueryParameter['targetPlaceId'] = targetPlaceId;
+            if (placeId !== undefined) {
+                localVarQueryParameter['placeId'] = placeId;
             }
 
 
@@ -4793,12 +4793,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * 
          * @summary 퀘스트에서 특정 장소를 제외한다.
          * @param {string} clubQuestId 
-         * @param {string} targetPlaceId 
+         * @param {string} placeId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId: string, targetPlaceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ClubQuestDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId, targetPlaceId, options);
+        async clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId: string, placeId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ClubQuestDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId, placeId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5116,12 +5116,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * 
          * @summary 퀘스트에서 특정 장소를 제외한다.
          * @param {string} clubQuestId 
-         * @param {string} targetPlaceId 
+         * @param {string} placeId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId: string, targetPlaceId: string, options?: any): AxiosPromise<ClubQuestDTO> {
-            return localVarFp.clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId, targetPlaceId, options).then((request) => request(axios, basePath));
+        clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId: string, placeId: string, options?: any): AxiosPromise<ClubQuestDTO> {
+            return localVarFp.clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId, placeId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -5449,13 +5449,13 @@ export class DefaultApi extends BaseAPI {
      * 
      * @summary 퀘스트에서 특정 장소를 제외한다.
      * @param {string} clubQuestId 
-     * @param {string} targetPlaceId 
+     * @param {string} placeId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId: string, targetPlaceId: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId, targetPlaceId, options).then((request) => request(this.axios, this.basePath));
+    public clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId: string, placeId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).clubQuestsClubQuestIdTargetPlacesDelete(clubQuestId, placeId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
