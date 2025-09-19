@@ -3950,15 +3950,15 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * 
          * @summary 퀘스트에서 특정 건물을 제외한다.
          * @param {string} clubQuestId 
-         * @param {string} targetBuildingId 
+         * @param {string} buildingId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        clubQuestsClubQuestIdTargetBuildingsDelete: async (clubQuestId: string, targetBuildingId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        clubQuestsClubQuestIdTargetBuildingsDelete: async (clubQuestId: string, buildingId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'clubQuestId' is not null or undefined
             assertParamExists('clubQuestsClubQuestIdTargetBuildingsDelete', 'clubQuestId', clubQuestId)
-            // verify required parameter 'targetBuildingId' is not null or undefined
-            assertParamExists('clubQuestsClubQuestIdTargetBuildingsDelete', 'targetBuildingId', targetBuildingId)
+            // verify required parameter 'buildingId' is not null or undefined
+            assertParamExists('clubQuestsClubQuestIdTargetBuildingsDelete', 'buildingId', buildingId)
             const localVarPath = `/clubQuests/{clubQuestId}/targetBuildings`
                 .replace(`{${"clubQuestId"}}`, encodeURIComponent(String(clubQuestId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -3976,8 +3976,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
-            if (targetBuildingId !== undefined) {
-                localVarQueryParameter['targetBuildingId'] = targetBuildingId;
+            if (buildingId !== undefined) {
+                localVarQueryParameter['buildingId'] = buildingId;
             }
 
 
@@ -4781,12 +4781,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * 
          * @summary 퀘스트에서 특정 건물을 제외한다.
          * @param {string} clubQuestId 
-         * @param {string} targetBuildingId 
+         * @param {string} buildingId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId: string, targetBuildingId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ClubQuestDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId, targetBuildingId, options);
+        async clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId: string, buildingId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ClubQuestDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId, buildingId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5105,12 +5105,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * 
          * @summary 퀘스트에서 특정 건물을 제외한다.
          * @param {string} clubQuestId 
-         * @param {string} targetBuildingId 
+         * @param {string} buildingId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId: string, targetBuildingId: string, options?: any): AxiosPromise<ClubQuestDTO> {
-            return localVarFp.clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId, targetBuildingId, options).then((request) => request(axios, basePath));
+        clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId: string, buildingId: string, options?: any): AxiosPromise<ClubQuestDTO> {
+            return localVarFp.clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId, buildingId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -5436,13 +5436,13 @@ export class DefaultApi extends BaseAPI {
      * 
      * @summary 퀘스트에서 특정 건물을 제외한다.
      * @param {string} clubQuestId 
-     * @param {string} targetBuildingId 
+     * @param {string} buildingId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId: string, targetBuildingId: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId, targetBuildingId, options).then((request) => request(this.axios, this.basePath));
+    public clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId: string, buildingId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).clubQuestsClubQuestIdTargetBuildingsDelete(clubQuestId, buildingId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
