@@ -216,6 +216,37 @@ export default function NotificationPage() {
     }
   }
 
+  async function handleTestSendPushNotification(formValues: ParsedSendPushNotificationFormValues) {
+    try {
+      const extractedValues = validateAndExtractForm(formValues)
+      if (!extractedValues) return
+      const { title, body, deepLink } = extractedValues
+
+      if (formValues.parsedUserIds.length === 0) {
+        toast.error("테스트 발송할 유저를 선택하세요.")
+        return
+      }
+
+      const payload: AdminSendPushNotificationRequestDTO = {
+        userIds: formValues.parsedUserIds,
+        title: title,
+        body: body,
+        deepLink: deepLink,
+        scheduledAt: undefined, // 즉시 발송
+      }
+
+      const res = await sendPushNotification(payload)
+      if (res.status != 200) {
+        throw new Error("Failed to send test notification")
+      }
+
+      toast.success(`테스트 푸시 알림을 ${formValues.parsedUserIds.length}명에게 발송했습니다.`)
+    } catch (error) {
+      console.error("Failed to send test notification:", error)
+      toast.error("테스트 푸시 알림 발송에 실패했습니다.")
+    }
+  }
+
   const handleUpdateSchedule = async (formValues: UpdateScheduleFormValues) => {
     if (!editingId) return
     try {
@@ -298,7 +329,11 @@ export default function NotificationPage() {
           </S.Tab>
         </S.TabContainer>
         {activeTab === "send" ? (
-          <NotificationSendForm form={sendPushForm} onSubmit={handleSendPushNotification} />
+          <NotificationSendForm
+            form={sendPushForm}
+            onSubmit={handleSendPushNotification}
+            onTestSend={handleTestSendPushNotification}
+          />
         ) : (
           <>
             {isLoading ? (

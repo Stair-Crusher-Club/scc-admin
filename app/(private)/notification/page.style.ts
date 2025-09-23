@@ -275,3 +275,113 @@ export const PreviewContent = styled("span", {
     border: "1px solid #e9ecef",
   },
 })
+
+export const TestModalContent = styled("div", {
+  base: {
+    backgroundColor: "white",
+    padding: "24px",
+    borderRadius: "8px",
+    position: "relative",
+    width: "90vw",
+    maxWidth: "600px",
+    maxHeight: "80vh",
+    overflowY: "auto",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    zIndex: 1001,
+  },
+})
+
+export const UserListContainer = styled("div", {
+  base: {
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    maxHeight: "240px",
+    overflowY: "auto",
+    margin: "16px 0",
+  },
+})
+
+export const UserItem = styled("div", {
+  base: {
+    padding: "12px",
+    borderBottom: "1px solid #eee",
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
+    _hover: {
+      backgroundColor: "#f8f9fa",
+    },
+  },
+  variants: {
+    selected: {
+      true: {
+        backgroundColor: "#e3f2fd",
+      },
+    },
+  },
+})
+
+export const UserCheckbox = styled("input", {
+  base: {
+    marginRight: "12px",
+    cursor: "pointer",
+  },
+})
+
+export const UserInfo = styled("div", {
+  base: {
+    display: "flex",
+    flexDirection: "column",
+  },
+})
+
+export const UserName = styled("span", {
+  base: {
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#333",
+  },
+})
+
+export const UserId = styled("span", {
+  base: {
+    fontSize: "12px",
+    color: "#666",
+    marginTop: "2px",
+  },
+})
+
+export const ModalActions = styled("div", {
+  base: {
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: "12px",
+    marginTop: "24px",
+  },
+})
+
+export const SecondaryButton = styled("button", {
+  base: {
+    padding: "8px 16px",
+    backgroundColor: "transparent",
+    color: "#666",
+    border: "1px solid #ddd",
+    borderRadius: 4,
+    cursor: "pointer",
+    _hover: {
+      backgroundColor: "#f8f9fa",
+    },
+  },
+})
+
+export const TestInfoBox = styled("div", {
+  base: {
+    backgroundColor: "#fff3cd",
+    border: "1px solid #ffeaa7",
+    borderRadius: "4px",
+    padding: "12px",
+    marginBottom: "16px",
+    fontSize: "14px",
+    color: "#856404",
+  },
+})

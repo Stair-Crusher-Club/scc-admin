@@ -1,5 +1,5 @@
 import { Combobox, DateInput, TextInput } from "@reactleaf/input/hookform"
-import React, { useMemo } from "react"
+import React, { useMemo, useState } from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
 
 import { Flex } from "@/styles/jsx"
@@ -14,6 +14,7 @@ import {
   predefinedWebviews,
 } from "./constants"
 import { QueryParamsInput } from "./QueryParamsInput"
+import { TestSendModal } from "./TestSendModal"
 import { buildDeepLinkFromFormValues } from "./deepLinkUtils"
 
 export interface SendPushNotificationFormValues {
@@ -38,16 +39,31 @@ interface Props {
   id?: string
   form: UseFormReturn<SendPushNotificationFormValues>
   onSubmit: (values: ParsedSendPushNotificationFormValues) => void
+  onTestSend?: (values: ParsedSendPushNotificationFormValues) => void
 }
 
-export function NotificationSendForm({ id, form, onSubmit }: Props) {
+export function NotificationSendForm({ id, form, onSubmit, onTestSend }: Props) {
+  const [isTestModalOpen, setIsTestModalOpen] = useState(false)
   const deepLinkWatch = form.watch("deepLink")
   const formValues = form.watch()
+  const titleWatch = form.watch("title")
+  const bodyWatch = form.watch("body")
   
   // Calculate deep link preview
   const deepLinkPreview = useMemo(() => {
     return buildDeepLinkFromFormValues(formValues)
   }, [formValues])
+
+  // Template preview with example user name
+  const titlePreview = useMemo(() => {
+    if (!titleWatch) return ""
+    return titleWatch.replace(/{{nickname}}/g, "어드민크러셔")
+  }, [titleWatch])
+
+  const bodyPreview = useMemo(() => {
+    if (!bodyWatch) return ""
+    return bodyWatch.replace(/{{nickname}}/g, "어드민크러셔")
+  }, [bodyWatch])
 
   const handlePredefinedWebviewChange = (option: any) => {
     const typedOption = option as WebviewOption
@@ -114,10 +130,18 @@ export function NotificationSendForm({ id, form, onSubmit }: Props) {
         </Flex>
 
         <S.InputTitle>제목</S.InputTitle>
-        <TextInput type="text" name="title" placeholder="푸시 알림 제목" />
+        <S.InputDescription>* {"{{"}nickname{"}}"} 템플릿을 사용하면 서버에서 자동으로 닉네임으로 변환됩니다</S.InputDescription>
+        <TextInput type="text" name="title" placeholder="푸시 알림 제목 (예: {{nickname}}님, 새로운 챌린지가 있어요!)" />
+        <S.InputDescription style={{ marginTop: 4, color: "#0066cc", display: 'block', marginBottom: 20 }}>
+          미리보기: {titlePreview}
+        </S.InputDescription>
 
         <S.InputTitle>본문</S.InputTitle>
-        <TextInput type="text" name="body" placeholder="푸시 알림 본문" required={true} />
+        <S.InputDescription>* {"{{"}nickname{"}}"} 템플릿을 사용하면 서버에서 자동으로 닉네임으로 변환됩니다</S.InputDescription>
+        <TextInput type="text" name="body" placeholder="푸시 알림 본문 (예: {{nickname}}님을 위한 특별한 미션을 확인해보세요!)" required={true} />
+        <S.InputDescription style={{ marginTop: 4, color: "#0066cc", display: 'block', marginBottom: 20 }}>
+          미리보기: {bodyPreview}
+        </S.InputDescription>
 
         <S.InputTitle>딥링크</S.InputTitle>
         <Combobox name="deepLink" options={deepLinkOptions} placeholder="딥링크" />
@@ -183,7 +207,32 @@ export function NotificationSendForm({ id, form, onSubmit }: Props) {
           isClearable={true}
         />
 
-        <S.Button type="submit">푸시 알림 보내기</S.Button>
+        <Flex gap={3}>
+          <S.Button type="submit">푸시 알림 보내기</S.Button>
+          {onTestSend && (
+            <S.Button type="button" onClick={() => setIsTestModalOpen(true)}>
+              테스트 발송
+            </S.Button>
+          )}
+        </Flex>
+
+        {onTestSend && (
+          <TestSendModal
+            isOpen={isTestModalOpen}
+            onClose={() => setIsTestModalOpen(false)}
+            formValues={formValues}
+            onTestSend={(selectedUsers) => {
+              const testValues = {
+                ...formValues,
+                parsedUserIds: selectedUsers.map(user => user.id),
+                title: formValues.title ? `[테스트] ${formValues.title}` : '[테스트] 푸시 알림',
+                scheduleDate: undefined, // 즉시 발송
+              }
+              onTestSend(testValues)
+              setIsTestModalOpen(false)
+            }}
+          />
+        )}
       </form>
     </FormProvider>
   )
