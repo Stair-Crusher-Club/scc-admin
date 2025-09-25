@@ -188,7 +188,7 @@ export default function AccessibilityInspectionResultPage() {
           ) : items.length === 0 ? (
             <S.EmptyMessage>결과가 없습니다.</S.EmptyMessage>
           ) : (
-            items.map((item) => {
+            items.map((item: AdminAccessibilityInspectionResultDTO) => {
               const isExpanded = expandedRows.has(item.id)
               const imagesLoaded = loadedImages.has(item.id)
               const images = item.images ?? item.imageInspectionResult?.images ?? []
@@ -221,7 +221,7 @@ export default function AccessibilityInspectionResultPage() {
                       {images.length > 0 ? (
                         imagesLoaded ? (
                           <S.ThumbGrid>
-                            {images.map((img: any, idx) => (
+                            {images.map((img: any, idx: number) => (
                               <RemoteImage
                                 key={idx}
                                 src={(img.thumbnailUrl ?? img.imageUrl ?? img.url) as string}
@@ -254,7 +254,7 @@ export default function AccessibilityInspectionResultPage() {
                         <S.DetailItem>
                           <S.DetailLabel>전체 코드</S.DetailLabel>
                           <S.CodeList>
-                            {item.imageInspectionResult?.overallCodes?.map((code, idx) => (
+                            {item.imageInspectionResult?.overallCodes?.map((code: string, idx: number) => (
                               <S.CodeItem key={idx}>{code}</S.CodeItem>
                             ))}
                           </S.CodeList>
@@ -263,11 +263,11 @@ export default function AccessibilityInspectionResultPage() {
                         <S.DetailItem>
                           <S.DetailLabel>이미지별 상세</S.DetailLabel>
                           <S.ImageDetailsList>
-                            {item.imageInspectionResult?.images?.map((imgDetail, idx) => (
+                            {item.imageInspectionResult?.images?.map((imgDetail: any, idx: number) => (
                               <S.ImageDetailItem key={idx}>
                                 <S.ImageDetailUrl>{imgDetail.url}</S.ImageDetailUrl>
                                 <S.CodeList>
-                                  {imgDetail.reasonCodes?.map((code, codeIdx) => (
+                                  {imgDetail.reasonCodes?.map((code: string, codeIdx: number) => (
                                     <S.CodeItem key={codeIdx}>{code}</S.CodeItem>
                                   ))}
                                 </S.CodeList>

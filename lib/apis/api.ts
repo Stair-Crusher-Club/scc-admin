@@ -479,7 +479,7 @@ export function useAccessibilityInspectionResultsPaginated({
         totalPages: cursors.length + (response.data.cursor ? 1 : 0),
       }
     },
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   })
 }
 
