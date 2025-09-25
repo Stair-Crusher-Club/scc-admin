@@ -395,6 +395,94 @@ export function useAccessibilityInspectionResults({
   })
 }
 
+// Store cursors for pagination
+const cursorCache = new Map<string, string[]>()
+
+export function useAccessibilityInspectionResultsPaginated({
+  accessibilityType,
+  isPassed,
+  createdAtFromLocalDate,
+  createdAtToLocalDate,
+  page = 1,
+  pageSize = 20,
+}: {
+  accessibilityType?: AccessibilityTypeDTO
+  isPassed?: boolean
+  createdAtFromLocalDate?: string
+  createdAtToLocalDate?: string
+  page?: number
+  pageSize?: number
+}) {
+  const cacheKey = JSON.stringify({
+    accessibilityType: accessibilityType ?? null,
+    isPassed: typeof isPassed === "boolean" ? isPassed : null,
+    createdAtFromLocalDate: createdAtFromLocalDate ?? null,
+    createdAtToLocalDate: createdAtToLocalDate ?? null,
+    pageSize,
+  })
+
+  return useQuery({
+    queryKey: [
+      "@accessibilityInspectionResultsPaginated",
+      accessibilityType ?? null,
+      typeof isPassed === "boolean" ? isPassed : null,
+      createdAtFromLocalDate ?? null,
+      createdAtToLocalDate ?? null,
+      page,
+      pageSize,
+    ],
+    queryFn: async () => {
+      // Get or initialize cursor array for this query
+      if (!cursorCache.has(cacheKey)) {
+        cursorCache.set(cacheKey, [])
+      }
+      const cursors = cursorCache.get(cacheKey)!
+
+      // Ensure we have enough cursors for the requested page
+      while (cursors.length < page - 1) {
+        const lastCursor = cursors[cursors.length - 1]
+        const response = await accessibilityApi.searchAccessibilityInspectionResults(
+          accessibilityType,
+          isPassed,
+          createdAtFromLocalDate,
+          createdAtToLocalDate,
+          lastCursor,
+          pageSize.toString()
+        )
+        
+        if (!response.data.cursor) break // No more pages
+        cursors.push(response.data.cursor)
+      }
+
+      // Get cursor for current page
+      const cursor = page === 1 ? undefined : cursors[page - 2]
+      
+      const response = await accessibilityApi.searchAccessibilityInspectionResults(
+        accessibilityType,
+        isPassed,
+        createdAtFromLocalDate,
+        createdAtToLocalDate,
+        cursor,
+        pageSize.toString()
+      )
+
+      // Update cursor cache if we got a new cursor
+      if (response.data.cursor && cursors.length === page - 1) {
+        cursors.push(response.data.cursor)
+      }
+
+      return {
+        ...response.data,
+        currentPage: page,
+        pageSize,
+        hasNextPage: !!response.data.cursor,
+        totalPages: cursors.length + (response.data.cursor ? 1 : 0),
+      }
+    },
+    keepPreviousData: true,
+  })
+}
+
 export interface RunImagePipelinePayload {
   items: Array<{
     accessibilityId: string

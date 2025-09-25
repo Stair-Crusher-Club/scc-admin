@@ -4,8 +4,8 @@ import { useMemo, useState } from "react"
 import { format as formatDate } from "date-fns"
 import { useModal } from "@/hooks/useModal"
 
-import { useAccessibilityInspectionResults, runImagePipeline } from "@/lib/apis/api"
-import { AccessibilityTypeDTO } from "@/lib/generated-sources/openapi"
+import { useAccessibilityInspectionResultsPaginated, runImagePipeline } from "@/lib/apis/api"
+import { AccessibilityTypeDTO, AdminAccessibilityInspectionResultDTO } from "@/lib/generated-sources/openapi"
 
 import { Contents, Header } from "@/components/layout"
 
@@ -18,18 +18,25 @@ export default function AccessibilityInspectionResultPage() {
   const [fromDate, setFromDate] = useState<string>("")
   const [toDate, setToDate] = useState<string>("")
   const [isRunningPipeline, setIsRunningPipeline] = useState(false)
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
 
   const modal = useModal()
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
-    useAccessibilityInspectionResults({
-      accessibilityType,
-      isPassed,
-      createdAtFromLocalDate: fromDate || undefined,
-      createdAtToLocalDate: toDate || undefined,
-    })
+  const { data, isLoading, refetch } = useAccessibilityInspectionResultsPaginated({
+    accessibilityType,
+    isPassed,
+    createdAtFromLocalDate: fromDate || undefined,
+    createdAtToLocalDate: toDate || undefined,
+    page: currentPage,
+    pageSize,
+  })
 
-  const items = useMemo(() => data?.pages.flatMap((p) => p.items) ?? [], [data])
+  const items = data?.items ?? []
+  const hasNextPage = data?.hasNextPage ?? false
+  const totalPages = data?.totalPages ?? 1
 
   const handleRunReinspection = async (items: Array<{ accessibilityId: string; accessibilityType: AccessibilityTypeDTO }>) => {
     setIsRunningPipeline(true)
@@ -55,6 +62,42 @@ export default function AccessibilityInspectionResultPage() {
     })
   }
 
+  const toggleRowExpansion = (itemId: string) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId)
+      } else {
+        newSet.add(itemId)
+      }
+      return newSet
+    })
+  }
+
+  const loadImages = (itemId: string) => {
+    setLoadedImages(prev => new Set(prev).add(itemId))
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    setExpandedRows(new Set()) // Reset expanded rows when changing pages
+    setLoadedImages(new Set()) // Reset loaded images when changing pages
+  }
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize)
+    setCurrentPage(1) // Reset to first page when changing page size
+    setExpandedRows(new Set())
+    setLoadedImages(new Set())
+  }
+
+  // Reset page when filters change
+  const handleFilterChange = () => {
+    setCurrentPage(1)
+    setExpandedRows(new Set())
+    setLoadedImages(new Set())
+  }
+
   return (
     <>
       <Header title="접근성 검증 결과" />
@@ -64,11 +107,12 @@ export default function AccessibilityInspectionResultPage() {
             유형
             <S.Select
               value={accessibilityType ?? ""}
-              onChange={(e) =>
+              onChange={(e) => {
                 setAccessibilityType(
                   (e.target.value || undefined) as AccessibilityTypeDTO | undefined,
                 )
-              }
+                handleFilterChange()
+              }}
             >
               <option value="">전체</option>
               <option value="PLACE">PLACE</option>
@@ -79,9 +123,10 @@ export default function AccessibilityInspectionResultPage() {
             합격여부
             <S.Select
               value={typeof isPassed === "boolean" ? String(isPassed) : ""}
-              onChange={(e) =>
+              onChange={(e) => {
                 setIsPassed(e.target.value === "" ? undefined : e.target.value === "true")
-              }
+                handleFilterChange()
+              }}
             >
               <option value="">전체</option>
               <option value="true">합격</option>
@@ -90,65 +135,186 @@ export default function AccessibilityInspectionResultPage() {
           </S.FilterLabel>
           <S.FilterLabel>
             시작일
-            <S.Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+            <S.Input 
+              type="date" 
+              value={fromDate} 
+              onChange={(e) => {
+                setFromDate(e.target.value)
+                handleFilterChange()
+              }} 
+            />
           </S.FilterLabel>
           <S.FilterLabel>
             종료일
-            <S.Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+            <S.Input 
+              type="date" 
+              value={toDate} 
+              onChange={(e) => {
+                setToDate(e.target.value)
+                handleFilterChange()
+              }} 
+            />
           </S.FilterLabel>
-          <S.Button onClick={() => refetch()}>검색</S.Button>
+          <S.FilterLabel>
+            페이지 크기
+            <S.Select
+              value={pageSize}
+              onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+            >
+              <option value="10">10개</option>
+              <option value="20">20개</option>
+              <option value="50">50개</option>
+              <option value="100">100개</option>
+            </S.Select>
+          </S.FilterLabel>
+          <S.Button onClick={() => {
+            setAccessibilityType(undefined)
+            setIsPassed(undefined)
+            setFromDate("")
+            setToDate("")
+            handleFilterChange()
+          }}>
+            초기화
+          </S.Button>
           <S.ReinspectionButton onClick={openReinspectionDialog} disabled={isRunningPipeline}>
             {isRunningPipeline ? "재검수 중..." : "재검수하기"}
           </S.ReinspectionButton>
         </S.Filters>
       </S.FiltersContainer>
       <Contents.Normal>
-        <S.TableWrapper>
-          <S.TableHeader>
-            <S.HeaderCell>생성일</S.HeaderCell>
-            <S.HeaderCell>접근성ID</S.HeaderCell>
-            <S.HeaderCell>유형</S.HeaderCell>
-            <S.HeaderCell>검증결과</S.HeaderCell>
-            <S.HeaderCell>설명</S.HeaderCell>
-            <S.HeaderCell>이미지</S.HeaderCell>
-          </S.TableHeader>
+        <S.ResultsContainer>
           {isLoading ? (
-            <p>로딩 중...</p>
+            <S.LoadingMessage>로딩 중...</S.LoadingMessage>
           ) : items.length === 0 ? (
-            <p>결과가 없습니다.</p>
+            <S.EmptyMessage>결과가 없습니다.</S.EmptyMessage>
           ) : (
-            items.map((item) => (
-              <S.RowWrapper key={item.id}>
-                <S.Cell>{formatDate(new Date(item.createdAtMillis), "yyyy/M/d HH:mm")}</S.Cell>
-                <S.Cell>{item.accessibilityId}</S.Cell>
-                <S.Cell>{item.accessibilityType}</S.Cell>
-                <S.Cell>{item.isPassed ? "합격" : "불합격"}</S.Cell>
-                <S.Cell>
-                  {item.imageInspectionResult?.description}
-                </S.Cell>
-                <S.ImagesCell>
-                  <S.ThumbGrid>
-                    {(item.images ?? item.imageInspectionResult?.images ?? []).map((img: any, idx) => (
-                      <RemoteImage
-                        key={idx}
-                        src={(img.thumbnailUrl ?? img.imageUrl ?? img.url) as string}
-                        width={120}
-                        height={90}
-                        style={{ objectFit: "cover", borderRadius: 6 }}
-                      />
-                    ))}
-                  </S.ThumbGrid>
-                </S.ImagesCell>
-              </S.RowWrapper>
-            ))
+            items.map((item) => {
+              const isExpanded = expandedRows.has(item.id)
+              const imagesLoaded = loadedImages.has(item.id)
+              const images = item.images ?? item.imageInspectionResult?.images ?? []
+              
+              return (
+                <S.ResultCard key={item.id}>
+                  <S.CardHeader>
+                    <S.CardTitle>
+                      {item.accessibilityId} - {item.accessibilityType}
+                    </S.CardTitle>
+                    <S.CardStatus isPassed={item.isPassed}>
+                      {item.isPassed ? "합격" : "불합격"}
+                    </S.CardStatus>
+                  </S.CardHeader>
+                  
+                  <S.CardContent>
+                    <S.InfoGrid>
+                      <S.InfoItem>
+                        <S.InfoLabel>생성일</S.InfoLabel>
+                        <S.InfoValue>{formatDate(new Date(item.createdAtMillis), "yyyy/M/d HH:mm")}</S.InfoValue>
+                      </S.InfoItem>
+                      <S.InfoItem>
+                        <S.InfoLabel>설명</S.InfoLabel>
+                        <S.InfoValue>{item.imageInspectionResult?.description || "설명 없음"}</S.InfoValue>
+                      </S.InfoItem>
+                    </S.InfoGrid>
+                    
+                    <S.ImageSection>
+                      <S.ImageSectionTitle>이미지</S.ImageSectionTitle>
+                      {images.length > 0 ? (
+                        imagesLoaded ? (
+                          <S.ThumbGrid>
+                            {images.map((img: any, idx) => (
+                              <RemoteImage
+                                key={idx}
+                                src={(img.thumbnailUrl ?? img.imageUrl ?? img.url) as string}
+                                width={120}
+                                height={90}
+                                style={{ objectFit: "cover", borderRadius: 6 }}
+                              />
+                            ))}
+                          </S.ThumbGrid>
+                        ) : (
+                          <S.LoadImagesButton onClick={() => loadImages(item.id)}>
+                            이미지 로드 ({images.length}개)
+                          </S.LoadImagesButton>
+                        )
+                      ) : (
+                        <S.NoImagesText>이미지 없음</S.NoImagesText>
+                      )}
+                    </S.ImageSection>
+                    
+                    <S.ExpandButton onClick={() => toggleRowExpansion(item.id)}>
+                      {isExpanded ? "상세 정보 접기" : "상세 정보 보기"}
+                    </S.ExpandButton>
+                  </S.CardContent>
+                  
+                  {isExpanded && (
+                    <S.ExpandedDetails>
+                      <S.DetailSection>
+                        <S.DetailTitle>상세 검수 결과</S.DetailTitle>
+                        
+                        <S.DetailItem>
+                          <S.DetailLabel>전체 코드</S.DetailLabel>
+                          <S.CodeList>
+                            {item.imageInspectionResult?.overallCodes?.map((code, idx) => (
+                              <S.CodeItem key={idx}>{code}</S.CodeItem>
+                            ))}
+                          </S.CodeList>
+                        </S.DetailItem>
+                        
+                        <S.DetailItem>
+                          <S.DetailLabel>이미지별 상세</S.DetailLabel>
+                          <S.ImageDetailsList>
+                            {item.imageInspectionResult?.images?.map((imgDetail, idx) => (
+                              <S.ImageDetailItem key={idx}>
+                                <S.ImageDetailUrl>{imgDetail.url}</S.ImageDetailUrl>
+                                <S.CodeList>
+                                  {imgDetail.reasonCodes?.map((code, codeIdx) => (
+                                    <S.CodeItem key={codeIdx}>{code}</S.CodeItem>
+                                  ))}
+                                </S.CodeList>
+                              </S.ImageDetailItem>
+                            ))}
+                          </S.ImageDetailsList>
+                        </S.DetailItem>
+                        
+                        <S.DetailItem>
+                          <S.DetailLabel>생성일</S.DetailLabel>
+                          <S.DetailValue>{formatDate(new Date(item.createdAtMillis), "yyyy-MM-dd HH:mm:ss")}</S.DetailValue>
+                        </S.DetailItem>
+                        
+                        <S.DetailItem>
+                          <S.DetailLabel>수정일</S.DetailLabel>
+                          <S.DetailValue>{formatDate(new Date(item.updatedAtMillis), "yyyy-MM-dd HH:mm:ss")}</S.DetailValue>
+                        </S.DetailItem>
+                      </S.DetailSection>
+                    </S.ExpandedDetails>
+                  )}
+                </S.ResultCard>
+              )
+            })
           )}
-        </S.TableWrapper>
-        {hasNextPage && (
-          <div style={{ marginTop: 12 }}>
-            <S.Button disabled={isFetchingNextPage} onClick={() => fetchNextPage()}>
-              더 불러오기
-            </S.Button>
-          </div>
+        </S.ResultsContainer>
+        
+        {items.length > 0 && (
+          <S.PaginationContainer>
+            <S.PaginationInfo>
+              페이지 {currentPage} / {totalPages} (총 {items.length}개 항목)
+            </S.PaginationInfo>
+            <S.PaginationControls>
+              <S.PaginationButton 
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                ← 이전
+              </S.PaginationButton>
+              
+              <S.PaginationButton 
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={!hasNextPage}
+              >
+                다음 →
+              </S.PaginationButton>
+            </S.PaginationControls>
+          </S.PaginationContainer>
         )}
       </Contents.Normal>
     </>
