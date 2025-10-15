@@ -154,7 +154,7 @@ export default function QuestCreate() {
       questNamePrefix: values.name,
       purposeType: values.purposeType.value,
       startAt: { value: values.startDate.getTime() },
-      endAt: { value: plusOneDay(values.endDate).getTime() },
+      endAt: { value: atEndOfDay(values.endDate).getTime() },
       dryRunResults: clusters,
     })
 
@@ -286,8 +286,8 @@ export default function QuestCreate() {
   )
 }
 
-function plusOneDay(date: Date): Date {
+function atEndOfDay(date: Date): Date {
   const newDate = new Date(date) // 원본 date 객체를 변경하지 않기 위해 새로운 Date 객체 생성
-  newDate.setDate(newDate.getDate() + 1)
+  newDate.setHours(23, 59, 59, 0) // 다음 날 23:59:59로 설정
   return newDate
 }

@@ -62,3 +62,11 @@ export const ActionButton = styled("button", {
     cursor: "pointer",
   },
 })
+
+export const ActionButtonWrapper = styled("div", {
+  base: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+  },
+})

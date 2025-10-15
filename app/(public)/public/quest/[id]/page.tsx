@@ -64,6 +64,20 @@ export default function QuestDetail() {
     openModal({ type: "QuestGuide", events: { onClose: () => storage.set("sawQuestGuide", Date()) } })
   }
 
+  function checkInToClubQuest() {
+    if (!quest) {
+      return
+    }
+    openModal({
+      type: "CheckInConfirm",
+      props: {
+        onConfirm: () => {
+          window.open(`stair-crusher://crusher-activity?clubQuestIdToCheckIn=${quest.id}`, "_blank")
+        },
+      },
+    })
+  }
+
   const placeCount = quest?.buildings.reduce((acc, building) => acc + building.places.length, 0) ?? 0
   const buildingCount = quest?.buildings.length ?? 0
 
@@ -108,7 +122,10 @@ export default function QuestDetail() {
         hidden={isHeaderHidden}
         hideMenu
       >
-        <Header.ActionButton onClick={openGuide}>가이드</Header.ActionButton>
+        <Header.ActionButtonWrapper>
+          <Header.ActionButton onClick={openGuide}>가이드</Header.ActionButton>
+          <Header.ActionButton onClick={checkInToClubQuest}>출석체크</Header.ActionButton>
+        </Header.ActionButtonWrapper>
       </Header>
       <Contents>
         <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>

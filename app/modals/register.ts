@@ -10,6 +10,7 @@ const register = {
   QuestSummarySheet: () => import("./QuestSummarySheet"),
   QuestCompletion: () => import("./QuestCompletion"),
   ReinspectionDialog: () => import("./ReinspectionDialog"),
+  CheckInConfirm: () => import("./CheckInConfirm"),
 }
 
 export default register

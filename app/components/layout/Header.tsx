@@ -46,3 +46,4 @@ export default function Header({ title, hidden, hideMenu, children }: React.Prop
 }
 
 Header.ActionButton = S.ActionButton
+Header.ActionButtonWrapper = S.ActionButtonWrapper
