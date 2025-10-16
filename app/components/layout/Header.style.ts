@@ -65,6 +65,7 @@ export const ActionButton = styled("button", {
 
 export const ActionButtonWrapper = styled("div", {
   base: {
+    minHeight: 'fit-content',
     display: 'flex',
     flexDirection: 'column',
     gap: 6,
