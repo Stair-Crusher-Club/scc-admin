@@ -22,7 +22,6 @@ export const Title = styled("h3", {
 
 export const Description = styled("p", {
   base: {
-    fontSize: "14px",
     color: "#232328",
     marginBottom: "24px",
     textAlign: "center",
@@ -43,7 +42,6 @@ export const CancelButton = styled("button", {
     background: "#f5f5f5",
     color: "#333",
     borderRadius: "4px",
-    fontSize: "14px",
     fontWeight: "500",
     cursor: "pointer",
   },
@@ -56,7 +54,6 @@ export const ConfirmButton = styled("button", {
     background: "var(--leaf-primary-60)",
     color: "white",
     borderRadius: "4px",
-    fontSize: "14px",
     fontWeight: "500",
     cursor: "pointer",
   },
