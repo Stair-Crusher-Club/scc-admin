@@ -385,3 +385,29 @@ export const TestInfoBox = styled("div", {
     color: "#856404",
   },
 })
+
+export const RadioGroup = styled("div", {
+  base: {
+    display: "flex",
+    gap: "16px",
+    marginBottom: "16px",
+  },
+})
+
+export const RadioLabel = styled("label", {
+  base: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    cursor: "pointer",
+    fontSize: "14px",
+    "& input[type='radio']": {
+      cursor: "pointer",
+      width: "16px",
+      height: "16px",
+    },
+    "& span": {
+      userSelect: "none",
+    },
+  },
+})

@@ -1,6 +1,7 @@
 import { Combobox, DateInput, TextInput } from "@reactleaf/input/hookform"
 import React, { useMemo, useState } from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
+import { toast } from "react-toastify"
 
 import { Flex } from "@/styles/jsx"
 
@@ -14,6 +15,7 @@ import {
   predefinedWebviews,
 } from "./constants"
 import { QueryParamsInput } from "./QueryParamsInput"
+import { SendConfirmModal } from "./SendConfirmModal"
 import { TestSendModal } from "./TestSendModal"
 import { buildDeepLinkFromFormValues } from "./deepLinkUtils"
 
@@ -28,6 +30,7 @@ export interface SendPushNotificationFormValues {
   webviewUrl?: string
   webviewFixedTitle?: string
   webviewHeaderVariant?: Option
+  sendType?: "immediate" | "scheduled"
   scheduleDate?: string
 }
 
@@ -44,10 +47,13 @@ interface Props {
 
 export function NotificationSendForm({ id, form, onSubmit, onTestSend }: Props) {
   const [isTestModalOpen, setIsTestModalOpen] = useState(false)
+  const [isSendConfirmModalOpen, setIsSendConfirmModalOpen] = useState(false)
+  const [pendingFormValues, setPendingFormValues] = useState<SendPushNotificationFormValues | null>(null)
   const deepLinkWatch = form.watch("deepLink")
   const formValues = form.watch()
   const titleWatch = form.watch("title")
   const bodyWatch = form.watch("body")
+  const sendTypeWatch = form.watch("sendType")
   
   // Calculate deep link preview
   const deepLinkPreview = useMemo(() => {
@@ -98,10 +104,8 @@ export function NotificationSendForm({ id, form, onSubmit, onTestSend }: Props) 
   const userCount = parsedUserIds.length
 
   const handleSubmit = (values: SendPushNotificationFormValues) => {
-    onSubmit({
-      ...values,
-      parsedUserIds,
-    })
+    setPendingFormValues(values)
+    setIsSendConfirmModalOpen(true)
   }
 
   return (
@@ -138,7 +142,18 @@ export function NotificationSendForm({ id, form, onSubmit, onTestSend }: Props) 
 
         <S.InputTitle>본문</S.InputTitle>
         <S.InputDescription>* {"{{"}nickname{"}}"} 템플릿을 사용하면 서버에서 자동으로 닉네임으로 변환됩니다</S.InputDescription>
-        <TextInput type="text" name="body" placeholder="푸시 알림 본문 (예: {{nickname}}님을 위한 특별한 미션을 확인해보세요!)" required={true} />
+        <TextInput
+          type="text"
+          name="body"
+          placeholder="푸시 알림 본문 (예: {{nickname}}님을 위한 특별한 미션을 확인해보세요!)"
+          required={true}
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter") {
+              e.preventDefault()
+              toast.warning("⚠️ 푸시 알림에서는 줄바꿈이 지원되지 않습니다")
+            }
+          }}
+        />
         <S.InputDescription style={{ marginTop: 4, color: "#0066cc", display: 'block', marginBottom: 20 }}>
           미리보기: {bodyPreview}
         </S.InputDescription>
@@ -197,24 +212,86 @@ export function NotificationSendForm({ id, form, onSubmit, onTestSend }: Props) 
           </>
         )}
 
-        <S.InputTitle>예약 발송 시각 (10분 단위로 설정 가능)</S.InputTitle>
-        <DateInput
-          name="scheduleDate"
-          dateFormat="yyyy-MM-dd HH:mm"
-          showTimeSelect={true}
-          timeIntervals={10}
-          placeholderText="비워두면 즉시 발송됩니다."
-          isClearable={true}
-        />
+        <S.InputTitle>발송 시각 설정</S.InputTitle>
+        <S.RadioGroup>
+          <S.RadioLabel>
+            <input
+              type="radio"
+              value="immediate"
+              {...form.register("sendType", { required: "발송 시각 설정을 선택하세요." })}
+              onChange={() => {
+                form.setValue("sendType", "immediate")
+                form.setValue("scheduleDate", undefined)
+              }}
+            />
+            <span>즉시 발송</span>
+          </S.RadioLabel>
+          <S.RadioLabel>
+            <input
+              type="radio"
+              value="scheduled"
+              {...form.register("sendType", { required: "발송 시각 설정을 선택하세요." })}
+              onChange={() => {
+                form.setValue("sendType", "scheduled")
+              }}
+            />
+            <span>예약 발송</span>
+          </S.RadioLabel>
+        </S.RadioGroup>
+        <S.ErrorMessage>
+          {typeof form.formState.errors?.sendType?.message === "string" ? form.formState.errors?.sendType?.message : ""}
+        </S.ErrorMessage>
+
+        {sendTypeWatch === "scheduled" && (
+          <>
+            <S.InputTitle>예약 발송 시각 (10분 단위로 설정 가능)</S.InputTitle>
+            <DateInput
+              name="scheduleDate"
+              dateFormat="yyyy-MM-dd HH:mm"
+              showTimeSelect={true}
+              timeIntervals={10}
+              placeholderText="발송 시각을 선택하세요"
+              isClearable={true}
+              required={true}
+            />
+            <S.ErrorMessage>
+              {typeof form.formState.errors?.scheduleDate?.message === "string" ? form.formState.errors?.scheduleDate?.message : ""}
+            </S.ErrorMessage>
+          </>
+        )}
 
         <Flex gap={3}>
-          <S.Button type="submit">푸시 알림 보내기</S.Button>
+          <S.Button type="submit">
+            푸시 알림 보내기
+          </S.Button>
           {onTestSend && (
             <S.Button type="button" onClick={() => setIsTestModalOpen(true)}>
               테스트 발송
             </S.Button>
           )}
         </Flex>
+
+        <SendConfirmModal
+          isOpen={isSendConfirmModalOpen}
+          onClose={() => {
+            setIsSendConfirmModalOpen(false)
+            setPendingFormValues(null)
+          }}
+          formValues={{
+            ...formValues,
+            parsedUserIds,
+          }}
+          onConfirm={() => {
+            if (pendingFormValues) {
+              onSubmit({
+                ...pendingFormValues,
+                parsedUserIds,
+              })
+            }
+            setIsSendConfirmModalOpen(false)
+            setPendingFormValues(null)
+          }}
+        />
 
         {onTestSend && (
           <TestSendModal
