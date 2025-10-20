@@ -185,6 +185,8 @@ type CreateChallengeParams = {
   isB2B: boolean
   b2bFormSchema?: AdminChallengeB2bFormSchemaDTO
   crusherGroup?: CrusherGroup
+  lastMonthRankImageUrl?: string
+  modalImageUrl?: string
 }
 export function createChallenge(payload: CreateChallengeParams) {
   return api.challenge.challengesPost({

@@ -459,6 +459,18 @@ export interface AdminChallengeDTO {
      * @type {number}
      * @memberof AdminChallengeDTO
      */
+    'joinStartAtMillis'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminChallengeDTO
+     */
+    'b2bGroupId'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminChallengeDTO
+     */
     'goal': number;
     /**
      * 
@@ -508,6 +520,24 @@ export interface AdminChallengeDTO {
      * @memberof AdminChallengeDTO
      */
     'crusherGroup'?: AdminCrusherGroupDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminChallengeDTO
+     */
+    'aggregationPeriodType'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminChallengeDTO
+     */
+    'lastMonthRankImageUrl'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminChallengeDTO
+     */
+    'modalImageUrl'?: string;
 }
 /**
  * 
@@ -660,6 +690,18 @@ export interface AdminCreateChallengeRequestDTO {
      * @type {number}
      * @memberof AdminCreateChallengeRequestDTO
      */
+    'joinStartAtMillis'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'b2bGroupId'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
     'goal': number;
     /**
      * 
@@ -697,6 +739,24 @@ export interface AdminCreateChallengeRequestDTO {
      * @memberof AdminCreateChallengeRequestDTO
      */
     'crusherGroup'?: AdminCrusherGroupDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'aggregationPeriodType'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'lastMonthRankImageUrl'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'modalImageUrl'?: string;
 }
 /**
  * 
@@ -1290,6 +1350,18 @@ export interface AdminUpdateChallengeRequestDTO {
      * @type {number}
      * @memberof AdminUpdateChallengeRequestDTO
      */
+    'joinStartAtMillis'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'b2bGroupId'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
     'goal'?: number;
     /**
      * 
@@ -1327,6 +1399,24 @@ export interface AdminUpdateChallengeRequestDTO {
      * @memberof AdminUpdateChallengeRequestDTO
      */
     'crusherGroup'?: AdminCrusherGroupDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'aggregationPeriodType'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'lastMonthRankImageUrl'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'modalImageUrl'?: string;
 }
 /**
  * 

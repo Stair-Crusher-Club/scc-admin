@@ -51,6 +51,8 @@ export interface ChallengeFormValues {
   imageUrl?: string
   imageWidth?: number
   imageHeight?: number
+  lastMonthRankImageUrl?: string | null
+  modalImageUrl?: string | null
 }
 
 export const defaultValues: Partial<ChallengeFormValues> = {
@@ -67,6 +69,8 @@ export const defaultValues: Partial<ChallengeFormValues> = {
   imageUrl: "",
   imageWidth: undefined,
   imageHeight: undefined,
+  lastMonthRankImageUrl: null,
+  modalImageUrl: null,
 }
 
 interface Props {
@@ -199,6 +203,14 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
   const [imageUrl, setImageUrl] = useState("")
   const [showImage, setShowImage] = useState(false)
   const formImageUrl = form.watch("imageUrl")
+  
+  const [lastMonthRankImageUrl, setLastMonthRankImageUrl] = useState("")
+  const [showLastMonthRankImage, setShowLastMonthRankImage] = useState(false)
+  const formLastMonthRankImageUrl = form.watch("lastMonthRankImageUrl")
+  
+  const [modalImageUrl, setModalImageUrl] = useState("")
+  const [showModalImage, setShowModalImage] = useState(false)
+  const formModalImageUrl = form.watch("modalImageUrl")
   useEffect(() => {
     if (formImageUrl && formImageUrl !== "") {
       setImageUrl(formImageUrl)
@@ -208,6 +220,26 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
       setShowImage(false)
     }
   }, [formImageUrl])
+
+  useEffect(() => {
+    if (formLastMonthRankImageUrl && formLastMonthRankImageUrl !== "") {
+      setLastMonthRankImageUrl(formLastMonthRankImageUrl)
+      setShowLastMonthRankImage(true)
+    } else {
+      setLastMonthRankImageUrl("")
+      setShowLastMonthRankImage(false)
+    }
+  }, [formLastMonthRankImageUrl])
+
+  useEffect(() => {
+    if (formModalImageUrl && formModalImageUrl !== "") {
+      setModalImageUrl(formModalImageUrl)
+      setShowModalImage(true)
+    } else {
+      setModalImageUrl("")
+      setShowModalImage(false)
+    }
+  }, [formModalImageUrl])
 
   async function getImageSize(url: string): Promise<number[]> {
     return new Promise((resolve, reject) => {
@@ -250,6 +282,70 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
         const [imageWidth, imageHeight]: number[] = await getImageSize(uploadedImageUrl)
         form.setValue("imageWidth", imageWidth)
         form.setValue("imageHeight", imageHeight)
+      })
+    }
+  }
+
+  const handleLastMonthRankImageChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (!e?.target?.files) {
+      return
+    }
+    const selectedFile = e!.target.files[0]
+
+    if (selectedFile) {
+      getImageUploadUrls({
+        purposeType: "CRUSHER_LABEL",
+        count: 1,
+        filenameExtension: selectedFile.name.split(".").pop()!,
+      }).then(async (result) => {
+        const uploadUrl = result.urls[0].url
+        await axios.put(uploadUrl, selectedFile, {
+          headers: {
+            "Content-Type": selectedFile.type,
+            "x-amz-acl": "public-read",
+          },
+          withCredentials: false,
+        })
+        const removeQueryParamFromUrl = (url: string) => {
+          const urlObj = new URL(url)
+          urlObj.search = ""
+          return urlObj.toString()
+        }
+        const uploadedImageUrl = removeQueryParamFromUrl(uploadUrl)
+        setLastMonthRankImageUrl(uploadedImageUrl)
+        form.setValue("lastMonthRankImageUrl", uploadedImageUrl)
+      })
+    }
+  }
+
+  const handleModalImageChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (!e?.target?.files) {
+      return
+    }
+    const selectedFile = e!.target.files[0]
+
+    if (selectedFile) {
+      getImageUploadUrls({
+        purposeType: "CRUSHER_LABEL",
+        count: 1,
+        filenameExtension: selectedFile.name.split(".").pop()!,
+      }).then(async (result) => {
+        const uploadUrl = result.urls[0].url
+        await axios.put(uploadUrl, selectedFile, {
+          headers: {
+            "Content-Type": selectedFile.type,
+            "x-amz-acl": "public-read",
+          },
+          withCredentials: false,
+        })
+        const removeQueryParamFromUrl = (url: string) => {
+          const urlObj = new URL(url)
+          urlObj.search = ""
+          return urlObj.toString()
+        }
+        const uploadedImageUrl = removeQueryParamFromUrl(uploadUrl)
+        setModalImageUrl(uploadedImageUrl)
+        form.setValue("modalImageUrl", uploadedImageUrl)
       })
     }
   }
@@ -506,6 +602,78 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
                 height={28}
                 className={css({
                   height: "28px",
+                  border: "1px solid #000000",
+                  objectFit: "contain",
+                })}
+              />
+            </div>
+          )}
+        </Flex>
+        <Flex direction={showLastMonthRankImage ? "row" : "column"}>
+          <div className={css({ width: showLastMonthRankImage ? "50%" : "100%" })}>
+            <FileInput
+              label="지난 달 랭킹 이미지"
+              accept="image/*"
+              onChange={handleLastMonthRankImageChange}
+              disabled={isEditableFieldDisabled}
+            />
+          </div>
+          {showLastMonthRankImage && (
+            <div
+              className={css({
+                width: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 4,
+                marginBottom: 12,
+                backgroundColor: "#ffffff",
+                position: "relative",
+              })}
+            >
+              <RemoteImage
+                src={lastMonthRankImageUrl}
+                width={200}
+                height={200}
+                className={css({
+                  maxWidth: "200px",
+                  maxHeight: "200px",
+                  border: "1px solid #000000",
+                  objectFit: "contain",
+                })}
+              />
+            </div>
+          )}
+        </Flex>
+        <Flex direction={showModalImage ? "row" : "column"}>
+          <div className={css({ width: showModalImage ? "50%" : "100%" })}>
+            <FileInput
+              label="모달 이미지"
+              accept="image/*"
+              onChange={handleModalImageChange}
+              disabled={isEditableFieldDisabled}
+            />
+          </div>
+          {showModalImage && (
+            <div
+              className={css({
+                width: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 4,
+                marginBottom: 12,
+                backgroundColor: "#ffffff",
+                position: "relative",
+              })}
+            >
+              <RemoteImage
+                src={modalImageUrl}
+                width={200}
+                height={200}
+                className={css({
+                  maxWidth: "200px",
+                  maxHeight: "200px",
                   border: "1px solid #000000",
                   objectFit: "contain",
                 })}

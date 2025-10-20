@@ -35,6 +35,8 @@ export default function CreateChallenge() {
       imageUrl,
       imageWidth,
       imageHeight,
+      lastMonthRankImageUrl,
+      modalImageUrl,
     } = values
 
     const milestoneNumbers = milestones.map((v) => parseInt(v.value))
@@ -78,6 +80,8 @@ export default function CreateChallenge() {
       isB2B: isB2B,
       b2bFormSchema: isB2B ? b2bFormSchema : undefined,
       crusherGroup: crusherGroup,
+      lastMonthRankImageUrl: lastMonthRankImageUrl || undefined,
+      modalImageUrl: modalImageUrl || undefined,
     })
 
     if (res.status !== 200) {
