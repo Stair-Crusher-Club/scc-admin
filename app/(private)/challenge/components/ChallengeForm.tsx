@@ -350,6 +350,26 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
     }
   }
 
+  const handleDeleteImage = () => {
+    setImageUrl("")
+    setShowImage(false)
+    form.setValue("imageUrl", "")
+    form.setValue("imageWidth", undefined)
+    form.setValue("imageHeight", undefined)
+  }
+
+  const handleDeleteLastMonthRankImage = () => {
+    setLastMonthRankImageUrl("")
+    setShowLastMonthRankImage(false)
+    form.setValue("lastMonthRankImageUrl", null)
+  }
+
+  const handleDeleteModalImage = () => {
+    setModalImageUrl("")
+    setShowModalImage(false)
+    form.setValue("modalImageUrl", null)
+  }
+
   const isEditableFieldDisabled = isEditMode === undefined ? false : !isEditMode
 
   return (
@@ -606,6 +626,37 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
                   objectFit: "contain",
                 })}
               />
+              <button
+                type="button"
+                onClick={handleDeleteImage}
+                disabled={isEditableFieldDisabled}
+                className={css({
+                  position: "absolute",
+                  top: "4px",
+                  right: "4px",
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "50%",
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  _hover: {
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                  },
+                  _disabled: {
+                    cursor: "not-allowed",
+                    opacity: 0.5,
+                  },
+                })}
+              >
+                ×
+              </button>
             </div>
           )}
         </Flex>
@@ -642,6 +693,37 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
                   objectFit: "contain",
                 })}
               />
+              <button
+                type="button"
+                onClick={handleDeleteLastMonthRankImage}
+                disabled={isEditableFieldDisabled}
+                className={css({
+                  position: "absolute",
+                  top: "4px",
+                  right: "4px",
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "50%",
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  _hover: {
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                  },
+                  _disabled: {
+                    cursor: "not-allowed",
+                    opacity: 0.5,
+                  },
+                })}
+              >
+                ×
+              </button>
             </div>
           )}
         </Flex>
@@ -678,6 +760,37 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
                   objectFit: "contain",
                 })}
               />
+              <button
+                type="button"
+                onClick={handleDeleteModalImage}
+                disabled={isEditableFieldDisabled}
+                className={css({
+                  position: "absolute",
+                  top: "4px",
+                  right: "4px",
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "50%",
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  _hover: {
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                  },
+                  _disabled: {
+                    cursor: "not-allowed",
+                    opacity: 0.5,
+                  },
+                })}
+              >
+                ×
+              </button>
             </div>
           )}
         </Flex>
