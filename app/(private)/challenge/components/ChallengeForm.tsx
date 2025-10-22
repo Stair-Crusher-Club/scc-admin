@@ -30,6 +30,10 @@ export const actionOptions = [
   { label: "장소 코멘트 등록", value: "PLACE_ACCESSIBILITY_COMMENT" } as const,
   { label: "장소 리뷰", value: "PLACE_REVIEW" } as const,
 ]
+const defaultActionOptions = [
+  { label: "건물 정보 등록", value: "BUILDING_ACCESSIBILITY" } as const,
+  { label: "장소 정보 등록", value: "PLACE_ACCESSIBILITY" } as const,
+]
 
 export interface ChallengeFormValues {
   name: string
@@ -55,7 +59,7 @@ export const defaultValues: Partial<ChallengeFormValues> = {
   joinCode: "",
   startDate: new Date(),
   endDate: null,
-  questActions: actionOptions,
+  questActions: defaultActionOptions,
   description: "",
   isB2B: false,
   b2bFormSchema: undefined,
@@ -262,12 +266,6 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
           disabled={isEditableFieldDisabled}
         />
         <Flex gap={16}>
-          <TextInput
-            name="inviteCode"
-            label="초대코드"
-            placeholder="초대코드를 입력하면 비공개 챌린지가 됩니다."
-            disabled={isEditableFieldDisabled}
-          />
           <TextInput
             name="joinCode"
             label="참여코드"
