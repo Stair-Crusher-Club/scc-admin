@@ -56,7 +56,8 @@ export const AccessibilityTypeDTO = {
     Place: 'Place',
     Building: 'Building',
     PlaceReview: 'PlaceReview',
-    ToiletReview: 'ToiletReview'
+    ToiletReview: 'ToiletReview',
+    Unknown: 'UNKNOWN'
 } as const;
 
 export type AccessibilityTypeDTO = typeof AccessibilityTypeDTO[keyof typeof AccessibilityTypeDTO];
@@ -107,22 +108,46 @@ export interface AdminAccessibilityInspectionResultDTO {
     'accessibilityType': AccessibilityTypeDTO;
     /**
      * 
-     * @type {boolean}
+     * @type {string}
      * @memberof AdminAccessibilityInspectionResultDTO
      */
-    'isPassed': boolean;
+    'inspectorId': string;
     /**
      * 
-     * @type {ImageInspectionResultDTO}
+     * @type {InspectorTypeDTO}
      * @memberof AdminAccessibilityInspectionResultDTO
      */
-    'imageInspectionResult': ImageInspectionResultDTO;
+    'inspectorType': InspectorTypeDTO;
+    /**
+     * 
+     * @type {ResultTypeDTO}
+     * @memberof AdminAccessibilityInspectionResultDTO
+     */
+    'resultType': ResultTypeDTO;
+    /**
+     * 검증 결과 내용 (JSON)
+     * @type {string}
+     * @memberof AdminAccessibilityInspectionResultDTO
+     */
+    'contents': string;
     /**
      * 
      * @type {Array<AdminImageDTO>}
      * @memberof AdminAccessibilityInspectionResultDTO
      */
     'images': Array<AdminImageDTO>;
+    /**
+     * 접근성 대상의 이름 (Place인 경우 장소명, Building인 경우 건물명)
+     * @type {string}
+     * @memberof AdminAccessibilityInspectionResultDTO
+     */
+    'accessibilityName'?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminAccessibilityInspectionResultDTO
+     */
+    'handledAtMillis'?: number | null;
     /**
      * 
      * @type {number}
@@ -344,13 +369,25 @@ export interface AdminChallengeB2bFormSchemaAvailableFieldDTO {
      * @type {AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO}
      * @memberof AdminChallengeB2bFormSchemaAvailableFieldDTO
      */
-    'name': AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO;
+    'name'?: AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO;
     /**
-     * 
+     * Custom 질문의 불변 key (camelCase, built-in인 경우 null)
+     * @type {string}
+     * @memberof AdminChallengeB2bFormSchemaAvailableFieldDTO
+     */
+    'key'?: string | null;
+    /**
+     * 질문명 override (built-in인 경우 선택, custom인 경우 필수)
+     * @type {string}
+     * @memberof AdminChallengeB2bFormSchemaAvailableFieldDTO
+     */
+    'customDisplayName'?: string | null;
+    /**
+     * 객관식 옵션 (null이면 주관식)
      * @type {Array<string>}
      * @memberof AdminChallengeB2bFormSchemaAvailableFieldDTO
      */
-    'options'?: Array<string>;
+    'options'?: Array<string> | null;
 }
 /**
  * 
@@ -522,10 +559,10 @@ export interface AdminChallengeDTO {
     'crusherGroup'?: AdminCrusherGroupDto;
     /**
      * 
-     * @type {string}
+     * @type {ChallengeAggregationPeriodTypeEnum}
      * @memberof AdminChallengeDTO
      */
-    'aggregationPeriodType'?: string;
+    'aggregationPeriodType'?: ChallengeAggregationPeriodTypeEnum;
     /**
      * 
      * @type {string}
@@ -741,10 +778,10 @@ export interface AdminCreateChallengeRequestDTO {
     'crusherGroup'?: AdminCrusherGroupDto;
     /**
      * 
-     * @type {string}
+     * @type {ChallengeAggregationPeriodTypeEnum}
      * @memberof AdminCreateChallengeRequestDTO
      */
-    'aggregationPeriodType'?: string;
+    'aggregationPeriodType'?: ChallengeAggregationPeriodTypeEnum;
     /**
      * 
      * @type {string}
@@ -1401,10 +1438,10 @@ export interface AdminUpdateChallengeRequestDTO {
     'crusherGroup'?: AdminCrusherGroupDto;
     /**
      * 
-     * @type {string}
+     * @type {ChallengeAggregationPeriodTypeEnum}
      * @memberof AdminUpdateChallengeRequestDTO
      */
-    'aggregationPeriodType'?: string;
+    'aggregationPeriodType'?: ChallengeAggregationPeriodTypeEnum;
     /**
      * 
      * @type {string}
@@ -1498,6 +1535,20 @@ export interface AdminUpdatePushNotificationScheduleRequestDTO {
      */
     'deepLink'?: string;
 }
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const ChallengeAggregationPeriodTypeEnum = {
+    AllTime: 'ALL_TIME',
+    Monthly: 'MONTHLY'
+} as const;
+
+export type ChallengeAggregationPeriodTypeEnum = typeof ChallengeAggregationPeriodTypeEnum[keyof typeof ChallengeAggregationPeriodTypeEnum];
+
+
 /**
  * 퀘스트 생성 시뮬레이션 결과. 각 퀘스트마다 1개의 아이템이 반환된다.
  * @export
@@ -1956,23 +2007,6 @@ export interface CreateClubQuestResponseDTO {
     'clubQuestIds': Array<string>;
 }
 /**
- * 
- * @export
- * @enum {string}
- */
-
-export const DetectedObjectDTO = {
-    Entrance: 'Entrance',
-    Stair: 'Stair',
-    Elevator: 'Elevator',
-    Signboard: 'Signboard',
-    Unknown: 'UNKNOWN'
-} as const;
-
-export type DetectedObjectDTO = typeof DetectedObjectDTO[keyof typeof DetectedObjectDTO];
-
-
-/**
  * 특정 시각을 표현하기 위한 모델.
  * @export
  * @interface EpochMillisTimestamp
@@ -2020,79 +2054,16 @@ export interface GetSearchPreset200Response {
 /**
  * 
  * @export
- * @interface ImageDetailDTO
- */
-export interface ImageDetailDTO {
-    /**
-     * 
-     * @type {string}
-     * @memberof ImageDetailDTO
-     */
-    'url': string;
-    /**
-     * 
-     * @type {Array<IndividualReasonCodeDTO>}
-     * @memberof ImageDetailDTO
-     */
-    'individualCodes': Array<IndividualReasonCodeDTO>;
-    /**
-     * 
-     * @type {Array<DetectedObjectDTO>}
-     * @memberof ImageDetailDTO
-     */
-    'detectedObjects': Array<DetectedObjectDTO>;
-    /**
-     * 
-     * @type {RotationDTO}
-     * @memberof ImageDetailDTO
-     */
-    'rotation': RotationDTO;
-}
-/**
- * 
- * @export
- * @interface ImageInspectionResultDTO
- */
-export interface ImageInspectionResultDTO {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ImageInspectionResultDTO
-     */
-    'isPassed': boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof ImageInspectionResultDTO
-     */
-    'description': string;
-    /**
-     * 
-     * @type {Array<OverallReasonCodeDTO>}
-     * @memberof ImageInspectionResultDTO
-     */
-    'overallCodes': Array<OverallReasonCodeDTO>;
-    /**
-     * 
-     * @type {Array<ImageDetailDTO>}
-     * @memberof ImageInspectionResultDTO
-     */
-    'images': Array<ImageDetailDTO>;
-}
-/**
- * 
- * @export
  * @enum {string}
  */
 
-export const IndividualReasonCodeDTO = {
-    ImageUnclearBlurry: 'IMAGE_UNCLEAR_BLURRY',
-    ImageRotated: 'IMAGE_ROTATED',
-    HarmfulContent: 'HARMFUL_CONTENT',
+export const InspectorTypeDTO = {
+    Human: 'HUMAN',
+    Ai: 'AI',
     Unknown: 'UNKNOWN'
 } as const;
 
-export type IndividualReasonCodeDTO = typeof IndividualReasonCodeDTO[keyof typeof IndividualReasonCodeDTO];
+export type InspectorTypeDTO = typeof InspectorTypeDTO[keyof typeof InspectorTypeDTO];
 
 
 /**
@@ -2139,22 +2110,6 @@ export interface LoginPostRequest {
  * @enum {string}
  */
 
-export const OverallReasonCodeDTO = {
-    NoEntranceInSet: 'NO_ENTRANCE_IN_SET',
-    NoDoorsillStairInSet: 'NO_DOORSILL_STAIR_IN_SET',
-    NoPlaceIndicationInSet: 'NO_PLACE_INDICATION_IN_SET',
-    Unknown: 'UNKNOWN'
-} as const;
-
-export type OverallReasonCodeDTO = typeof OverallReasonCodeDTO[keyof typeof OverallReasonCodeDTO];
-
-
-/**
- * 
- * @export
- * @enum {string}
- */
-
 export const QuestTargetPlaceCategoryEnumDTO = {
     Restaurant: 'RESTAURANT',
     Cafe: 'CAFE',
@@ -2173,15 +2128,14 @@ export type QuestTargetPlaceCategoryEnumDTO = typeof QuestTargetPlaceCategoryEnu
  * @enum {string}
  */
 
-export const RotationDTO = {
-    D0: 'D0',
-    D90: 'D90',
-    D180: 'D180',
-    D270: 'D270',
+export const ResultTypeDTO = {
+    Ok: 'OK',
+    Modify: 'MODIFY',
+    Delete: 'DELETE',
     Unknown: 'UNKNOWN'
 } as const;
 
-export type RotationDTO = typeof RotationDTO[keyof typeof RotationDTO];
+export type ResultTypeDTO = typeof ResultTypeDTO[keyof typeof ResultTypeDTO];
 
 
 /**
@@ -2414,8 +2368,11 @@ export const AccessibilityApiAxiosParamCreator = function (configuration?: Confi
         /**
          * 
          * @summary 접근성 이미지 검증 결과를 검색한다.
+         * @param {string} [id] 
          * @param {AccessibilityTypeDTO} [accessibilityType] 
-         * @param {boolean} [isPassed] 
+         * @param {InspectorTypeDTO} [inspectorType] 
+         * @param {ResultTypeDTO} [resultType] 
+         * @param {boolean} [isHandled] 
          * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
          * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
          * @param {string} [cursor] 
@@ -2423,7 +2380,7 @@ export const AccessibilityApiAxiosParamCreator = function (configuration?: Confi
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchAccessibilityInspectionResults: async (accessibilityType?: AccessibilityTypeDTO, isPassed?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        searchAccessibilityInspectionResults: async (id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/accessibility-inspection-results/search`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2440,12 +2397,24 @@ export const AccessibilityApiAxiosParamCreator = function (configuration?: Confi
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            if (id !== undefined) {
+                localVarQueryParameter['id'] = id;
+            }
+
             if (accessibilityType !== undefined) {
                 localVarQueryParameter['accessibilityType'] = accessibilityType;
             }
 
-            if (isPassed !== undefined) {
-                localVarQueryParameter['isPassed'] = isPassed;
+            if (inspectorType !== undefined) {
+                localVarQueryParameter['inspectorType'] = inspectorType;
+            }
+
+            if (resultType !== undefined) {
+                localVarQueryParameter['resultType'] = resultType;
+            }
+
+            if (isHandled !== undefined) {
+                localVarQueryParameter['isHandled'] = isHandled;
             }
 
             if (createdAtFromLocalDate !== undefined) {
@@ -2624,8 +2593,11 @@ export const AccessibilityApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 접근성 이미지 검증 결과를 검색한다.
+         * @param {string} [id] 
          * @param {AccessibilityTypeDTO} [accessibilityType] 
-         * @param {boolean} [isPassed] 
+         * @param {InspectorTypeDTO} [inspectorType] 
+         * @param {ResultTypeDTO} [resultType] 
+         * @param {boolean} [isHandled] 
          * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
          * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
          * @param {string} [cursor] 
@@ -2633,8 +2605,8 @@ export const AccessibilityApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async searchAccessibilityInspectionResults(accessibilityType?: AccessibilityTypeDTO, isPassed?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.searchAccessibilityInspectionResults(accessibilityType, isPassed, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options);
+        async searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -2718,8 +2690,11 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
         /**
          * 
          * @summary 접근성 이미지 검증 결과를 검색한다.
+         * @param {string} [id] 
          * @param {AccessibilityTypeDTO} [accessibilityType] 
-         * @param {boolean} [isPassed] 
+         * @param {InspectorTypeDTO} [inspectorType] 
+         * @param {ResultTypeDTO} [resultType] 
+         * @param {boolean} [isHandled] 
          * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
          * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
          * @param {string} [cursor] 
@@ -2727,8 +2702,8 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchAccessibilityInspectionResults(accessibilityType?: AccessibilityTypeDTO, isPassed?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: any): AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO> {
-            return localVarFp.searchAccessibilityInspectionResults(accessibilityType, isPassed, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options).then((request) => request(axios, basePath));
+        searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: any): AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO> {
+            return localVarFp.searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2817,8 +2792,11 @@ export class AccessibilityApi extends BaseAPI {
     /**
      * 
      * @summary 접근성 이미지 검증 결과를 검색한다.
+     * @param {string} [id] 
      * @param {AccessibilityTypeDTO} [accessibilityType] 
-     * @param {boolean} [isPassed] 
+     * @param {InspectorTypeDTO} [inspectorType] 
+     * @param {ResultTypeDTO} [resultType] 
+     * @param {boolean} [isHandled] 
      * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
      * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
      * @param {string} [cursor] 
@@ -2827,8 +2805,8 @@ export class AccessibilityApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof AccessibilityApi
      */
-    public searchAccessibilityInspectionResults(accessibilityType?: AccessibilityTypeDTO, isPassed?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: AxiosRequestConfig) {
-        return AccessibilityApiFp(this.configuration).searchAccessibilityInspectionResults(accessibilityType, isPassed, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    public searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: AxiosRequestConfig) {
+        return AccessibilityApiFp(this.configuration).searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

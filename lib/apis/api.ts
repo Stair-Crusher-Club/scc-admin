@@ -16,6 +16,8 @@ import {
   AccessibilityTypeDTO,
   ClubQuestCreateDryRunResultItemDTO,
   EpochMillisTimestamp,
+  InspectorTypeDTO,
+  ResultTypeDTO,
 } from "@/lib/generated-sources/openapi"
 
 import {
@@ -364,12 +366,16 @@ export function deleteSearchPreset(id: string) {
 
 export function useAccessibilityInspectionResults({
   accessibilityType,
-  isPassed,
+  inspectorType,
+  resultType,
+  isHandled,
   createdAtFromLocalDate,
   createdAtToLocalDate,
 }: {
   accessibilityType?: AccessibilityTypeDTO
-  isPassed?: boolean
+  inspectorType?: InspectorTypeDTO
+  resultType?: ResultTypeDTO
+  isHandled?: boolean
   createdAtFromLocalDate?: string
   createdAtToLocalDate?: string
 }) {
@@ -377,15 +383,20 @@ export function useAccessibilityInspectionResults({
     queryKey: [
       "@accessibilityInspectionResults",
       accessibilityType ?? null,
-      typeof isPassed === "boolean" ? isPassed : null,
+      inspectorType ?? null,
+      resultType ?? null,
+      isHandled ?? null,
       createdAtFromLocalDate ?? null,
       createdAtToLocalDate ?? null,
     ],
     queryFn: ({ pageParam }) =>
       accessibilityApi
         .searchAccessibilityInspectionResults(
+          undefined, // id
           accessibilityType,
-          isPassed,
+          inspectorType,
+          resultType,
+          isHandled,
           createdAtFromLocalDate,
           createdAtToLocalDate,
           (pageParam as string | undefined) ?? undefined,
@@ -402,14 +413,18 @@ const cursorCache = new Map<string, string[]>()
 
 export function useAccessibilityInspectionResultsPaginated({
   accessibilityType,
-  isPassed,
+  inspectorType,
+  resultType,
+  isHandled,
   createdAtFromLocalDate,
   createdAtToLocalDate,
   page = 1,
   pageSize = 20,
 }: {
   accessibilityType?: AccessibilityTypeDTO
-  isPassed?: boolean
+  inspectorType?: InspectorTypeDTO
+  resultType?: ResultTypeDTO
+  isHandled?: boolean
   createdAtFromLocalDate?: string
   createdAtToLocalDate?: string
   page?: number
@@ -417,7 +432,9 @@ export function useAccessibilityInspectionResultsPaginated({
 }) {
   const cacheKey = JSON.stringify({
     accessibilityType: accessibilityType ?? null,
-    isPassed: typeof isPassed === "boolean" ? isPassed : null,
+    inspectorType: inspectorType ?? null,
+    resultType: resultType ?? null,
+    isHandled: isHandled ?? null,
     createdAtFromLocalDate: createdAtFromLocalDate ?? null,
     createdAtToLocalDate: createdAtToLocalDate ?? null,
     pageSize,
@@ -427,7 +444,9 @@ export function useAccessibilityInspectionResultsPaginated({
     queryKey: [
       "@accessibilityInspectionResultsPaginated",
       accessibilityType ?? null,
-      typeof isPassed === "boolean" ? isPassed : null,
+      inspectorType ?? null,
+      resultType ?? null,
+      isHandled ?? null,
       createdAtFromLocalDate ?? null,
       createdAtToLocalDate ?? null,
       page,
@@ -444,24 +463,30 @@ export function useAccessibilityInspectionResultsPaginated({
       while (cursors.length < page - 1) {
         const lastCursor = cursors[cursors.length - 1]
         const response = await accessibilityApi.searchAccessibilityInspectionResults(
+          undefined, // id
           accessibilityType,
-          isPassed,
+          inspectorType,
+          resultType,
+          isHandled,
           createdAtFromLocalDate,
           createdAtToLocalDate,
           lastCursor,
           pageSize.toString()
         )
-        
+
         if (!response.data.cursor) break // No more pages
         cursors.push(response.data.cursor)
       }
 
       // Get cursor for current page
       const cursor = page === 1 ? undefined : cursors[page - 2]
-      
+
       const response = await accessibilityApi.searchAccessibilityInspectionResults(
+        undefined, // id
         accessibilityType,
-        isPassed,
+        inspectorType,
+        resultType,
+        isHandled,
         createdAtFromLocalDate,
         createdAtToLocalDate,
         cursor,
