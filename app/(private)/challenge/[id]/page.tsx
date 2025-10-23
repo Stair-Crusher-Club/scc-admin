@@ -42,6 +42,8 @@ export default function ChallengeDetail() {
       imageUrl: challenge.crusherGroup?.icon?.url || "",
       imageWidth: challenge.crusherGroup?.icon?.width,
       imageHeight: challenge.crusherGroup?.icon?.height,
+      lastMonthRankImageUrl: challenge.lastMonthRankImageUrl || null,
+      modalImageUrl: challenge.modalImageUrl || null,
     })
   }, [challenge])
 
@@ -95,6 +97,8 @@ export default function ChallengeDetail() {
       isB2B: values.isB2B,
       b2bFormSchema: values.isB2B ? values.b2bFormSchema : undefined,
       crusherGroup: crusherGroup,
+      lastMonthRankImageUrl: values.lastMonthRankImageUrl || undefined,
+      modalImageUrl: values.modalImageUrl || undefined,
     }
     const res = await updateChallenge({ id, payload })
     if (res.status !== 200) {
