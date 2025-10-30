@@ -29,7 +29,7 @@ git submodule init && git submodule update
 
 `.env` 파일 혹은 환경변수에 `NEXT_PUBLIC_DEPLOY_TYPE`을 `dev` | `live`로 설정하여 연결되는 엔드포인트를 변경할 수 있습니다.
 
-```sh
+```bash
 # live 서버로 연결하기
 NEXT_PUBLIC_DEPLOY_TYPE=live pnpm dev
 ```
