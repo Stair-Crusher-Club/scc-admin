@@ -43,15 +43,6 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
     },
   })
 
-  function openNaverMap() {
-    const isMobile = false
-    if (isMobile) {
-      window.open(`nmap://search?query=${place.name}`)
-    } else {
-      window.open(`https://map.naver.com/p/search/${place.name}`)
-    }
-  }
-
   function openInApp() {
     if (isMobile) {
       window.location.href = `stair-crusher://place/${place.placeId}`
@@ -110,9 +101,9 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
           <S.Button onClick={openInApp}>
             <Image src={stairCrusherIcon} alt="계단뿌셔클럽" style={{ width: 24, height: 24 }} />
           </S.Button>
-          <S.Button onClick={openNaverMap}>
+          <S.Link href={`https://map.naver.com/p/search/${place.name}`}>
             <Image src={naverMapIcon} alt="네이버 지도" style={{ width: 24, height: 24 }} />
-          </S.Button>
+          </S.Link>
           {authenticated ? (
             <S.Button onClick={deletePlace}>
               <Image src={deleteIcon} alt="삭제 " style={{ width: 24, height: 24 }} />
