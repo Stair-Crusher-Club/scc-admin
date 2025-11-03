@@ -384,7 +384,10 @@ export function useAccessibilityInspectionResults({
     queryFn: ({ pageParam }) =>
       accessibilityApi
         .searchAccessibilityInspectionResults(
+          undefined,
           accessibilityType,
+          undefined,
+          undefined,
           isPassed,
           createdAtFromLocalDate,
           createdAtToLocalDate,
@@ -444,7 +447,10 @@ export function useAccessibilityInspectionResultsPaginated({
       while (cursors.length < page - 1) {
         const lastCursor = cursors[cursors.length - 1]
         const response = await accessibilityApi.searchAccessibilityInspectionResults(
+          undefined,
           accessibilityType,
+          undefined,
+          undefined,
           isPassed,
           createdAtFromLocalDate,
           createdAtToLocalDate,
@@ -460,7 +466,10 @@ export function useAccessibilityInspectionResultsPaginated({
       const cursor = page === 1 ? undefined : cursors[page - 2]
       
       const response = await accessibilityApi.searchAccessibilityInspectionResults(
+        undefined,
         accessibilityType,
+        undefined,
+        undefined,
         isPassed,
         createdAtFromLocalDate,
         createdAtToLocalDate,

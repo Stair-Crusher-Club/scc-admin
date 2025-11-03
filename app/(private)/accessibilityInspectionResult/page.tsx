@@ -191,7 +191,9 @@ export default function AccessibilityInspectionResultPage() {
             items.map((item: AdminAccessibilityInspectionResultDTO) => {
               const isExpanded = expandedRows.has(item.id)
               const imagesLoaded = loadedImages.has(item.id)
-              const images = item.images ?? item.imageInspectionResult?.images ?? []
+              // FIXME: API spec에서 사라져서 임시로 주석 처리
+              // const images = item.images ?? item.imageInspectionResult?.images ?? []
+              const images = item.images ?? []
               
               return (
                 <S.ResultCard key={item.id}>
@@ -199,8 +201,12 @@ export default function AccessibilityInspectionResultPage() {
                     <S.CardTitle>
                       {item.accessibilityId} - {item.accessibilityType}
                     </S.CardTitle>
-                    <S.CardStatus isPassed={item.isPassed}>
+                    {/* FIXME: API spec에서 사라져서 임시로 주석 처리 */}
+                    {/* <S.CardStatus isPassed={item.isPassed}>
                       {item.isPassed ? "합격" : "불합격"}
+                    </S.CardStatus> */}
+                    <S.CardStatus isPassed={false}>
+                      불합격
                     </S.CardStatus>
                   </S.CardHeader>
                   
@@ -212,7 +218,10 @@ export default function AccessibilityInspectionResultPage() {
                       </S.InfoItem>
                       <S.InfoItem>
                         <S.InfoLabel>설명</S.InfoLabel>
-                        <S.InfoValue>{item.imageInspectionResult?.description || "설명 없음"}</S.InfoValue>
+                        <S.InfoValue>
+                          {/* FIXME: API spec에서 사라져서 임시로 주석 처리 */}
+                          {/* {item.imageInspectionResult?.description || "설명 없음"} */}
+                        </S.InfoValue>
                       </S.InfoItem>
                     </S.InfoGrid>
                     
@@ -254,16 +263,18 @@ export default function AccessibilityInspectionResultPage() {
                         <S.DetailItem>
                           <S.DetailLabel>전체 코드</S.DetailLabel>
                           <S.CodeList>
-                            {item.imageInspectionResult?.overallCodes?.map((code: string, idx: number) => (
+                            {/* FIXME: API spec에서 사라져서 임시로 주석 처리 */}
+                            {/* {item.imageInspectionResult?.overallCodes?.map((code: string, idx: number) => (
                               <S.CodeItem key={idx}>{code}</S.CodeItem>
-                            ))}
+                            ))} */}
                           </S.CodeList>
                         </S.DetailItem>
                         
                         <S.DetailItem>
                           <S.DetailLabel>이미지별 상세</S.DetailLabel>
                           <S.ImageDetailsList>
-                            {item.imageInspectionResult?.images?.map((imgDetail: any, idx: number) => (
+                            {/* FIXME: API spec에서 사라져서 임시로 주석 처리 */}
+                            {/* {item.imageInspectionResult?.images?.map((imgDetail: any, idx: number) => (
                               <S.ImageDetailItem key={idx}>
                                 <S.ImageDetailUrl>{imgDetail.url}</S.ImageDetailUrl>
                                 <S.CodeList>
@@ -272,7 +283,7 @@ export default function AccessibilityInspectionResultPage() {
                                   ))}
                                 </S.CodeList>
                               </S.ImageDetailItem>
-                            ))}
+                            ))} */}
                           </S.ImageDetailsList>
                         </S.DetailItem>
                         
