@@ -41,7 +41,7 @@ export default function CustomFieldItem({
         })}
       >
         <div className={css({ fontSize: "12px", fontWeight: "600", color: "#374151" })}>
-          Custom Question #{index + 1}
+          커스텀 필드 #{index + 1}
         </div>
         <button
           type="button"
@@ -79,7 +79,7 @@ export default function CustomFieldItem({
               marginBottom: "4px",
             })}
           >
-            Key (camelCase) <span className={css({ color: "#dc2626" })}>*</span>
+            Key (영어 & 띄어쓰기 X - e.g. organizationName) <span className={css({ color: "#dc2626" })}>*</span>
           </label>
           <input
             type="text"
@@ -121,13 +121,13 @@ export default function CustomFieldItem({
               marginBottom: "4px",
             })}
           >
-            질문 내용 <span className={css({ color: "#dc2626" })}>*</span>
+            필드 이름 <span className={css({ color: "#dc2626" })}>*</span>
           </label>
           <input
             type="text"
             value={field.customDisplayName || ""}
             onChange={(e) => onUpdate(field.id, { customDisplayName: e.target.value })}
-            placeholder="예: 참여 동기를 입력해주세요"
+            placeholder="예: 지역"
             disabled={disabled}
             required
             className={css({
