@@ -71,7 +71,7 @@ export default function Sidebar() {
     <>
       <aside
         className={cn(
-          "flex flex-col border-r bg-brand shadow-md transition-transform duration-300 ease-in-out",
+          "flex flex-col border-r bg-sidebar shadow-md transition-transform duration-300 ease-in-out",
           isMobile ? "absolute top-0 left-0 z-10 h-full w-64" : "relative flex-[280px_0_0]",
           opened ? "translate-x-0" : "-translate-x-full"
         )}
@@ -90,7 +90,7 @@ export default function Sidebar() {
           <Logo color="white" height={32} />
         </div>
 
-        <Separator className="bg-brand-foreground/20" />
+        <Separator className="bg-sidebar-foreground/20" />
 
         {/* Navigation */}
         <ScrollArea className="flex-1 px-2 py-4">
@@ -113,10 +113,10 @@ export default function Sidebar() {
 
         {/* Footer */}
         <div className="p-4">
-          <Separator className="mb-4 bg-brand-foreground/20" />
+          <Separator className="mb-4 bg-sidebar-foreground/20" />
           <Button
             variant="ghost"
-            className="w-full justify-start gap-2 text-brand-foreground hover:bg-brand-active hover:text-brand-foreground"
+            className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-active hover:text-sidebar-foreground"
             onClick={logout}
           >
             <LogOut className="h-4 w-4" />
@@ -153,9 +153,9 @@ function MenuItem({ href, icon: Icon, label, onClose }: MenuItemProps) {
       <Button
         variant="ghost"
         className={cn(
-          "w-full justify-start gap-3 px-3 py-2 text-brand-foreground transition-all hover:bg-brand-hover hover:text-brand-foreground",
+          "w-full justify-start gap-3 px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-hover hover:text-sidebar-foreground",
           isActive &&
-            "bg-brand-active font-semibold text-brand-foreground shadow-sm hover:bg-brand-active"
+            "bg-sidebar-active font-semibold text-sidebar-foreground shadow-sm hover:bg-sidebar-active"
         )}
       >
         <Icon className="h-5 w-5 flex-shrink-0" />

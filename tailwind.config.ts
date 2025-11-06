@@ -55,12 +55,12 @@ const config: Config = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			},
-  			brand: {
-  				DEFAULT: 'hsl(var(--brand))',
-  				foreground: 'hsl(var(--brand-foreground))',
-  				hover: 'hsl(var(--brand-hover))',
-  				active: 'hsl(var(--brand-active))'
-  			}
+			sidebar: {
+				DEFAULT: 'hsl(var(--sidebar))',
+				foreground: 'hsl(var(--sidebar-foreground))',
+				hover: 'hsl(var(--sidebar-hover))',
+				active: 'hsl(var(--sidebar-active))'
+			}
   		}
   	}
   },
