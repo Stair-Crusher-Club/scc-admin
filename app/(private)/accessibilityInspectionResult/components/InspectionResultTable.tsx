@@ -370,20 +370,14 @@ export function InspectionResultTable({
                 return (
                   <>
                     <TableRow key={row.id} className="cursor-pointer hover:bg-muted/50">
-                      {row.getVisibleCells().map((cell) => {
-                        const isSorted = cell.column.getIsSorted()
-                        return (
-                          <TableCell
-                            key={cell.id}
-                            className={isSorted ? "bg-primary/5" : ""}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        )
-                      })}
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
                     </TableRow>
                     {isExpanded && (
                       <TableRow key={`${row.id}-expanded`}>
