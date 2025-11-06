@@ -41,8 +41,9 @@ const USE_MOCK_ACCESSIBILITY_INSPECTION_DATA = true
 const baseURL =
   process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
     ? "https://api.staircrusher.club/admin"
-    : "https://api.dev.staircrusher.club/admin"
-    // : "http://localhost:8080/admin"
+    : process.env.NEXT_PUBLIC_DEPLOY_TYPE === "local"
+      ? "http://localhost:8080/admin"
+      : "https://api.dev.staircrusher.club/admin"
 const config = new Configuration({ basePath: baseURL })
 const defaultApi = new DefaultApi(config)
 const challengeApi = new ChallengeApi(config)

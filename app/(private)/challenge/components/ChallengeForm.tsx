@@ -9,10 +9,13 @@ import { FormProvider, UseFormReturn, useWatch } from "react-hook-form"
 import { getImageUploadUrls } from "@/lib/apis/api"
 import {
   AdminChallengeB2bFormSchemaDTO,
+  AdminChallengeB2bFormSchemaAvailableFieldDTO,
   AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO,
 } from "@/lib/generated-sources/openapi"
 
 import RemoteImage from "@/components/RemoteImage"
+import B2bFormSchemaPanel from "./B2bFormSchemaPanel"
+import { FormField, BuiltinFieldOption } from "./B2bFormTypes"
 import { css } from "@/styles/css"
 import { Flex } from "@/styles/jsx"
 
@@ -80,7 +83,7 @@ interface Props {
   onSubmit?: (values: ChallengeFormValues) => void
 }
 const availableFieldOptions = [
-  { label: "참가자 이름", value: "PARTICIPANT_NAME" as AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO },
+  { label: "실명", value: "PARTICIPANT_NAME" as AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO },
   { label: "소속 계열사", value: "COMPANY_NAME" as AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO },
   { label: "조직", value: "ORGANIZATION_NAME" as AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO },
   { label: "사원번호", value: "EMPLOYEE_IDENTIFICATION_NUMBER" as AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO },
@@ -97,6 +100,76 @@ const parseOptions = (optionsText: string): string[] => {
     .filter(opt => opt.length > 0)
 }
 
+
+
+/**
+ * Generate a unique ID for form fields
+ */
+function generateId(): string {
+  return `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+/**
+ * Convert API DTO to FormField (handles both V1 and V2 data)
+ */
+function dtoToField(dto: AdminChallengeB2bFormSchemaAvailableFieldDTO): FormField {
+  // V2 with built-in type (name !== null)
+  if (dto.name !== undefined && dto.name !== null) {
+    return {
+      id: generateId(),
+      type: 'builtin',
+      builtinName: dto.name,
+      customDisplayName: dto.customDisplayName || undefined,
+      options: dto.options || null,
+      optionsText: (dto.options || []).join(', '),
+    }
+  }
+  
+  // V2 custom question (name === null, must have key and customDisplayName)
+  return {
+    id: generateId(),
+    type: 'custom',
+    customKey: dto.key || `customField${Date.now()}`, // Fallback key generation
+    customDisplayName: dto.customDisplayName || '',
+    options: dto.options || null,
+    optionsText: (dto.options || []).join(', '),
+  }
+}
+
+/**
+ * Convert FormField to API DTO (V2 format)
+ */
+function fieldToDTO(field: FormField): AdminChallengeB2bFormSchemaAvailableFieldDTO {
+  if (field.type === 'builtin') {
+    return {
+      name: field.builtinName!,
+      key: null,
+      customDisplayName: field.customDisplayName || null,
+      options: field.options || undefined,
+    }
+  } else {
+    // Custom field - omit name instead of setting to null
+    return {
+      key: field.customKey!,
+      customDisplayName: field.customDisplayName!,
+      options: field.options || undefined,
+    }
+  }
+}
+
+/**
+ * Get default display name for built-in fields
+ */
+function getBuiltinDisplayName(fieldName: AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO): string {
+  const nameMap: Record<AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO, string> = {
+    PARTICIPANT_NAME: '실명',
+    COMPANY_NAME: '소속 계열사',
+    ORGANIZATION_NAME: '조직',
+    EMPLOYEE_IDENTIFICATION_NUMBER: '사원번호',
+  }
+  return nameMap[fieldName] || fieldName
+}
+
 export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props) {
   // milestones는 증가하는 순서로 입력되도록 한다.
   // useEffect 실행을 최소화하기 위한 stringify
@@ -105,20 +178,8 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
     ?.map((o) => o.value)
     .toString()
 
-  // B2B 폼 스키마 상태 관리
-  const [selectedFields, setSelectedFields] = useState<AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO[]>([])
-  const [fieldOptions, setFieldOptions] = useState<Record<AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO, string[] | null>>({
-    PARTICIPANT_NAME: null,
-    COMPANY_NAME: null,
-    ORGANIZATION_NAME: null,
-    EMPLOYEE_IDENTIFICATION_NUMBER: null,
-  })
-  const [fieldOptionsText, setFieldOptionsText] = useState<Record<AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO, string>>({
-    PARTICIPANT_NAME: "",
-    COMPANY_NAME: "",
-    ORGANIZATION_NAME: "",
-    EMPLOYEE_IDENTIFICATION_NUMBER: "",
-  })
+  // V2: Unified B2B form fields state
+  const [formFields, setFormFields] = useState<FormField[]>([])
   
   // useWatch로 isB2B 값 안정적으로 감지
   const isB2B = useWatch({ control: form.control, name: "isB2B" })
@@ -129,65 +190,123 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
   // 초기화 상태 추적용 ref
   const isInitialized = useRef(false)
 
-  // B2B 폼 스키마 초기화 (b2bFormSchema가 설정되는 최초 한 번만)
+  // V2: B2B 폼 스키마 초기화 (b2bFormSchema가 설정되는 최초 한 번만)
   useEffect(() => {
     if (b2bFormSchema?.availableFields && !isInitialized.current) {
       isInitialized.current = true
-      setSelectedFields(b2bFormSchema.availableFields.map(field => field.name))
-      
-      // 기존 옵션 데이터 로드
-      const newFieldOptions = { ...fieldOptions }
-      const newFieldOptionsText = { ...fieldOptionsText }
-      b2bFormSchema.availableFields.forEach(field => {
-        if (field.options) {
-          newFieldOptions[field.name] = field.options
-          newFieldOptionsText[field.name] = field.options.join(", ")
-        }
-      })
-      setFieldOptions(newFieldOptions)
-      setFieldOptionsText(newFieldOptionsText)
+      // Convert DTO fields to FormField[] (handles V1/V2 backward compatibility)
+      const fields = b2bFormSchema.availableFields.map(dtoToField)
+      setFormFields(fields)
     }
-  }, [b2bFormSchema]) // b2bFormSchema 값 변화 시 실행하되, 최초 한 번만
+  }, [b2bFormSchema])
 
-  const handleFieldToggle = (fieldName: AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO) => {
-    const newFields = selectedFields.includes(fieldName)
-      ? selectedFields.filter(name => name !== fieldName)
-      : [...selectedFields, fieldName]
+  /**
+   * V2: Toggle built-in field on/off
+   */
+  const handleToggleBuiltinField = (fieldName: AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO) => {
+    const existingField = formFields.find(f => f.type === 'builtin' && f.builtinName === fieldName)
     
-    setSelectedFields(newFields)
-    
-    // b2bFormSchema 즉시 업데이트
-    if (isB2B) {
-      const schema: AdminChallengeB2bFormSchemaDTO = {
-        availableFields: newFields.map(name => ({
-          name,
-          options: fieldOptions[name] === null ? undefined : fieldOptions[name],
-        }))
+    if (existingField) {
+      // Remove field
+      const newFields = formFields.filter(f => f.id !== existingField.id)
+      setFormFields(newFields)
+      syncFormFieldsToSchema(newFields)
+    } else {
+      // Add field
+      const newField: FormField = {
+        id: generateId(),
+        type: 'builtin',
+        builtinName: fieldName,
+        customDisplayName: undefined,
+        options: null,
+        optionsText: '',
       }
-      form.setValue("b2bFormSchema", schema)
+      const newFields = [...formFields, newField]
+      setFormFields(newFields)
+      syncFormFieldsToSchema(newFields)
     }
   }
 
-  const handleOptionsUpdate = (fieldName: AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO, optionsText: string) => {
-    // 텍스트 상태 먼저 업데이트 (사용자 입력 그대로 유지)
-    setFieldOptionsText(prev => ({ ...prev, [fieldName]: optionsText }))
-    
-    // 파싱된 옵션 배열 업데이트 (빈 배열이면 null)
+  /**
+   * V2: Update field properties
+   */
+  const handleUpdateField = (fieldId: string, updates: Partial<FormField>) => {
+    const newFields = formFields.map(field =>
+      field.id === fieldId ? { ...field, ...updates } : field
+    )
+    setFormFields(newFields)
+    syncFormFieldsToSchema(newFields)
+  }
+
+  /**
+   * V2: Update options text and parse into options array
+   */
+  const handleUpdateOptionsText = (fieldId: string, optionsText: string) => {
     const parsedOptions = parseOptions(optionsText)
     const options = parsedOptions.length > 0 ? parsedOptions : null
-    const newFieldOptions = { ...fieldOptions, [fieldName]: options }
-    setFieldOptions(newFieldOptions)
     
-    // b2bFormSchema 즉시 업데이트
-    if (isB2B && selectedFields.includes(fieldName)) {
-      const schema: AdminChallengeB2bFormSchemaDTO = {
-        availableFields: selectedFields.map(name => ({
-          name,
-          options: newFieldOptions[name] === null ? undefined : newFieldOptions[name],
-        }))
-      }
-      form.setValue("b2bFormSchema", schema)
+    const newFields = formFields.map(field =>
+      field.id === fieldId
+        ? { ...field, optionsText, options }
+        : field
+    )
+    setFormFields(newFields)
+    syncFormFieldsToSchema(newFields)
+  }
+
+  /**
+   * V2: Add custom question
+   */
+  const handleAddCustomField = () => {
+    const existingCustomCount = formFields.filter(f => f.type === 'custom').length
+    const newKey = `customField${existingCustomCount + 1}`
+    
+    const newField: FormField = {
+      id: generateId(),
+      type: 'custom',
+      customKey: newKey,
+      customDisplayName: '',
+      options: null,
+      optionsText: '',
     }
+    
+    const newFields = [...formFields, newField]
+    setFormFields(newFields)
+    syncFormFieldsToSchema(newFields)
+  }
+
+  /**
+   * V2: Remove field (custom only)
+   */
+  const handleRemoveField = (fieldId: string) => {
+    const newFields = formFields.filter(f => f.id !== fieldId)
+    setFormFields(newFields)
+    syncFormFieldsToSchema(newFields)
+  }
+
+  /**
+   * V2: Toggle options for a field
+   */
+  const handleToggleOptions = (fieldId: string, enabled: boolean) => {
+    const newFields = formFields.map(field =>
+      field.id === fieldId
+        ? { ...field, options: enabled ? [] : null, optionsText: enabled ? field.optionsText : '' }
+        : field
+    )
+    setFormFields(newFields)
+    syncFormFieldsToSchema(newFields)
+  }
+
+  /**
+   * Sync FormField[] state to react-hook-form b2bFormSchema
+   */
+  const syncFormFieldsToSchema = (fields: FormField[]) => {
+    if (!isB2B) return
+    
+    const schema: AdminChallengeB2bFormSchemaDTO = {
+      availableFields: fields.map(fieldToDTO),
+    }
+    form.setValue("b2bFormSchema", schema)
   }
 
   useEffect(() => {
@@ -494,98 +613,19 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
             B2B(기업용) 챌린지인 경우 체크하세요.
           </div>
           
-          {/* B2B 폼 스키마 설정 */}
+          {/* V2: B2B 폼 스키마 설정 */}
           {isB2B && (
-            <div className={css({ marginTop: "12px", marginLeft: "26px", padding: "12px", border: "1px solid #e5e7eb", borderRadius: "6px", backgroundColor: "#f9fafb" })}>
-              <div className={css({ fontSize: "14px", fontWeight: "500", marginBottom: "8px" })}>
-                B2B 챌린지 참가 시 입력 필드 설정
-              </div>
-              <div className={css({ fontSize: "12px", color: "#6b7280", marginBottom: "12px" })}>
-                참가자가 입력할 수 있는 필드를 선택하세요.
-              </div>
-              
-              {/* 사용 가능한 필드들 */}
-              <div className={css({ display: "flex", flexDirection: "column", gap: "12px" })}>
-                {availableFieldOptions.map((option) => (
-                  <div key={option.value}>
-                    <label className={css({ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" })}>
-                      <input 
-                        type="checkbox" 
-                        checked={selectedFields.includes(option.value)}
-                        onChange={() => handleFieldToggle(option.value)}
-                        disabled={isEditableFieldDisabled}
-                        className={css({
-                          width: "16px",
-                          height: "16px",
-                          cursor: "pointer",
-                          _disabled: {
-                            cursor: "not-allowed",
-                          },
-                        })}
-                      />
-                      <span className={css({ fontSize: "13px" })}>{option.label} ({option.value})</span>
-                    </label>
-                    
-                    {/* 회사명 필드일 때만 옵션 입력 표시 */}
-                    {option.value === "COMPANY_NAME" && selectedFields.includes(option.value) && (
-                      <div className={css({ marginTop: "8px", marginLeft: "24px" })}>
-                        <input
-                          type="text"
-                          value={fieldOptionsText.COMPANY_NAME}
-                          onChange={(e) => {
-                            handleOptionsUpdate("COMPANY_NAME", e.target.value)
-                          }}
-                          placeholder="회사명 옵션을 쉼표로 구분하여 입력 (예: 삼성, LG, 현대)"
-                          disabled={false}
-                          className={css({
-                            width: "100%",
-                            padding: "6px 10px",
-                            fontSize: "12px",
-                            border: "1px solid #d1d5db",
-                            borderRadius: "4px",
-                            _focus: {
-                              outline: "none",
-                              borderColor: "#3b82f6",
-                              boxShadow: "0 0 0 2px rgba(59, 130, 246, 0.1)",
-                            },
-                            _disabled: {
-                              backgroundColor: "#f9fafb",
-                              color: "#6b7280",
-                              cursor: "not-allowed",
-                            },
-                          })}
-                        />
-                        {/* 파싱된 옵션 프리뷰 */}
-                        {fieldOptions.COMPANY_NAME && fieldOptions.COMPANY_NAME.length > 0 && (
-                          <div className={css({ marginTop: "6px" })}>
-                            <div className={css({ fontSize: "11px", color: "#6b7280", marginBottom: "4px" })}>
-                              앱에 노출될 선택지 ({fieldOptions.COMPANY_NAME.length}개):
-                            </div>
-                            <div className={css({ display: "flex", flexWrap: "wrap", gap: "4px" })}>
-                              {fieldOptions.COMPANY_NAME.map((option, idx) => (
-                                <span 
-                                  key={idx}
-                                  className={css({
-                                    padding: "2px 8px",
-                                    fontSize: "11px",
-                                    backgroundColor: "#e5e7eb",
-                                    color: "#374151",
-                                    borderRadius: "12px",
-                                    border: "1px solid #d1d5db",
-                                  })}
-                                >
-                                  {option}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <B2bFormSchemaPanel
+              formFields={formFields}
+              availableFieldOptions={availableFieldOptions}
+              onToggleBuiltinField={handleToggleBuiltinField}
+              onUpdateField={handleUpdateField}
+              onUpdateOptionsText={handleUpdateOptionsText}
+              onToggleOptions={handleToggleOptions}
+              onAddCustomField={handleAddCustomField}
+              onRemoveField={handleRemoveField}
+              disabled={isEditableFieldDisabled}
+            />
           )}
         </div>
         <TextInput

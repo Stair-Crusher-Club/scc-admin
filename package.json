@@ -5,6 +5,7 @@
   "scripts": {
     "panda": "panda codegen",
     "dev": "rm -rf .next && next dev -p 3066",
+    "local": "NEXT_PUBLIC_DEPLOY_TYPE=local pnpm dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

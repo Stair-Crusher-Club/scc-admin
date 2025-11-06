@@ -94,7 +94,7 @@ export default function QuestCreate() {
   }, [])
 
   function handleKeyDown(e: KeyboardEvent) {
-    if (e.metaKey && e.key === "z") {
+    if ((e.metaKey || e.ctrlKey) && e.key === "z") {
       undo()
     }
   }
@@ -236,7 +236,7 @@ export default function QuestCreate() {
               )}
               {form.watch("method").value === "POLYGON" && (
                 <p style={{ opacity: 0.8, fontSize: "0.8em", marginBottom: 12 }}>
-                  지도를 클릭해 다각형을 그리세요. <kbd>Cmd</kbd> + <kbd>Z</kbd>로 마지막 클릭 지점을 취소할 수 있어요.
+                  지도를 클릭해 다각형을 그리세요. <kbd>Cmd/Ctrl</kbd> + <kbd>Z</kbd>로 마지막 클릭 지점을 취소할 수 있어요.
                 </p>
               )}
               <NumberInput

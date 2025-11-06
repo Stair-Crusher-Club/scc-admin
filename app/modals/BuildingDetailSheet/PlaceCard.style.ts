@@ -97,3 +97,14 @@ export const Button = styled("button", {
     cursor: "pointer",
   },
 })
+
+export const Link = styled("a", {
+  base: {
+    flexShrink: 0,
+    border: "1px solid #ccc",
+    borderRadius: 4,
+    background: "white",
+    overflow: "hidden",
+    cursor: "pointer",
+  },
+})
