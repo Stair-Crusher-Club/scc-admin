@@ -10,6 +10,16 @@ import {
   AdminStairInfoDTO,
 } from "@/lib/generated-sources/openapi"
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+
 import * as S from "./EditAccessibility.style"
 
 interface Option {
@@ -91,68 +101,64 @@ export const EditPlaceAccessibilityModal: React.FC<EditPlaceAccessibilityModalPr
   form,
   onSubmit,
 }) => {
-  if (!isOpen) return null
-
   const floors = form.watch("floors")
   const stairs = form.watch("stairInfo")
-  return (
-    <S.ModalOverlay onClick={onClose}>
-      <S.ModalContent onClick={(e) => e.stopPropagation()}>
-        <S.CloseButton onClick={onClose}>x</S.CloseButton>
-        <S.ModalHeader>
-          <S.ModalHeaderTitle>장소 정보 수정</S.ModalHeaderTitle>
-          <S.ModalHeaderBody>
-            {placeAccessibility?.placeName} 정복자: {placeAccessibility?.registeredUserName}
-          </S.ModalHeaderBody>
-        </S.ModalHeader>
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <S.ModalBody>
-              <S.ModalBodyRow>
-                <Combobox name="floors" label="층 정보" options={floorOptions} />
-                <Combobox
-                  name="isFirstFloor"
-                  label="1층에 있는 장소"
-                  options={booleanOptions}
-                  isDisabled={floors != undefined}
-                />
-              </S.ModalBodyRow>
-              <S.ModalBodyRow>
-                <NumberInput
-                  name="floorNumber"
-                  label="몇 층에 있는 장소인가요? (지하는 음수로 입력해주세요)"
-                  disabled={!floors || floors.value != "not_first"}
-                />
-                <Combobox
-                  name="isStairOnlyOption"
-                  label="2층 매장으로 가는 방법이 계단 뿐인가요?"
-                  options={booleanOptions}
-                  isDisabled={!floors || floors.value != "multiple_including_first"}
-                />
-              </S.ModalBodyRow>
 
-              <S.ModalBodyRow>
-                <Combobox name="stairInfo" label="입구 계단 정보" options={stairInfoOptions} />
-                <Combobox
-                  name="stairHeightLevel"
-                  label="계단 1칸의 높이"
-                  options={stairHeightLevelOptions}
-                  isDisabled={!stairs || stairs.value != "ONE"}
-                />
-              </S.ModalBodyRow>
-              <Combobox name="hasSlope" label="입구에 경사로가 있나요?" options={booleanOptions} />
-              <Combobox isMulti={true} name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} />
-            </S.ModalBody>
-            <S.ModalFooter>
-              <S.CancelButton type="button" onClick={onClose}>
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>장소 정보 수정</DialogTitle>
+          <DialogDescription>
+            {placeAccessibility?.placeName} 정복자: {placeAccessibility?.registeredUserName}
+          </DialogDescription>
+        </DialogHeader>
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Combobox name="floors" label="층 정보" options={floorOptions} />
+              <Combobox
+                name="isFirstFloor"
+                label="1층에 있는 장소"
+                options={booleanOptions}
+                isDisabled={floors != undefined}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <NumberInput
+                name="floorNumber"
+                label="몇 층에 있는 장소인가요? (지하는 음수로 입력해주세요)"
+                disabled={!floors || floors.value != "not_first"}
+              />
+              <Combobox
+                name="isStairOnlyOption"
+                label="2층 매장으로 가는 방법이 계단 뿐인가요?"
+                options={booleanOptions}
+                isDisabled={!floors || floors.value != "multiple_including_first"}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Combobox name="stairInfo" label="입구 계단 정보" options={stairInfoOptions} />
+              <Combobox
+                name="stairHeightLevel"
+                label="계단 1칸의 높이"
+                options={stairHeightLevelOptions}
+                isDisabled={!stairs || stairs.value != "ONE"}
+              />
+            </div>
+            <Combobox name="hasSlope" label="입구에 경사로가 있나요?" options={booleanOptions} />
+            <Combobox isMulti={true} name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} />
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={onClose}>
                 취소
-              </S.CancelButton>
-              <S.SaveButton type="submit">저장</S.SaveButton>
-            </S.ModalFooter>
+              </Button>
+              <Button type="submit">저장</Button>
+            </DialogFooter>
           </form>
         </FormProvider>
-      </S.ModalContent>
-    </S.ModalOverlay>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -163,61 +169,57 @@ export const EditBuildingAccessibilityModal: React.FC<EditBuildingAccessibilityM
   form,
   onSubmit,
 }) => {
-  if (!isOpen) return null
-
   const entranceStairs = form.watch("entranceStairInfo")
   const hasElevator = form.watch("hasElevator")
   const elevatorStairs = form.watch("elevatorStairInfo")
 
   return (
-    <S.ModalOverlay onClick={onClose}>
-      <S.ModalContent onClick={(e) => e.stopPropagation()}>
-        <S.CloseButton onClick={onClose}>x</S.CloseButton>
-        <S.ModalHeader>
-          <S.ModalHeaderTitle>건물 정보 수정</S.ModalHeaderTitle>
-          <S.ModalHeaderBody>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>건물 정보 수정</DialogTitle>
+          <DialogDescription>
             {buildingAccessibility?.buildingName} 정복자: {buildingAccessibility?.registeredUserName}
-          </S.ModalHeaderBody>
-        </S.ModalHeader>
+          </DialogDescription>
+        </DialogHeader>
         <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <S.ModalBody>
-              <Combobox name="hasSlope" label="입구에 경사로가 있나요?" options={booleanOptions} />
-              <S.ModalBodyRow>
-                <Combobox name="entranceStairInfo" label="입구에 계단이 있나요?" options={stairInfoOptions} />
-                <Combobox
-                  name="entranceStairHeightLevel"
-                  label="입구 계단 1칸의 높이"
-                  options={stairHeightLevelOptions}
-                  isDisabled={!entranceStairs || entranceStairs.value != "ONE"}
-                />
-              </S.ModalBodyRow>
-              <Combobox isMulti={true} name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} />
-              <Combobox name="hasElevator" label="엘리베이터가 있나요?" options={booleanOptions} />
-              <S.ModalBodyRow>
-                <Combobox
-                  name="elevatorStairInfo"
-                  label="엘리베이터까지의 계단 정보"
-                  options={stairInfoOptions}
-                  isDisabled={!hasElevator || hasElevator.value == false}
-                />
-                <Combobox
-                  name="elevatorStairHeightLevel"
-                  label="엘리베이터까지의 계단 1칸 높이"
-                  options={stairHeightLevelOptions}
-                  isDisabled={!elevatorStairs || elevatorStairs.value != "ONE"}
-                />
-              </S.ModalBodyRow>
-            </S.ModalBody>
-            <S.ModalFooter>
-              <S.CancelButton type="button" onClick={onClose}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <Combobox name="hasSlope" label="입구에 경사로가 있나요?" options={booleanOptions} />
+            <div className="grid grid-cols-2 gap-4">
+              <Combobox name="entranceStairInfo" label="입구에 계단이 있나요?" options={stairInfoOptions} />
+              <Combobox
+                name="entranceStairHeightLevel"
+                label="입구 계단 1칸의 높이"
+                options={stairHeightLevelOptions}
+                isDisabled={!entranceStairs || entranceStairs.value != "ONE"}
+              />
+            </div>
+            <Combobox isMulti={true} name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} />
+            <Combobox name="hasElevator" label="엘리베이터가 있나요?" options={booleanOptions} />
+            <div className="grid grid-cols-2 gap-4">
+              <Combobox
+                name="elevatorStairInfo"
+                label="엘리베이터까지의 계단 정보"
+                options={stairInfoOptions}
+                isDisabled={!hasElevator || hasElevator.value == false}
+              />
+              <Combobox
+                name="elevatorStairHeightLevel"
+                label="엘리베이터까지의 계단 1칸 높이"
+                options={stairHeightLevelOptions}
+                isDisabled={!elevatorStairs || elevatorStairs.value != "ONE"}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={onClose}>
                 취소
-              </S.CancelButton>
-              <S.SaveButton type="submit">저장</S.SaveButton>
-            </S.ModalFooter>
+              </Button>
+              <Button type="submit">저장</Button>
+            </DialogFooter>
           </form>
         </FormProvider>
-      </S.ModalContent>
-    </S.ModalOverlay>
+      </DialogContent>
+    </Dialog>
   )
 }
