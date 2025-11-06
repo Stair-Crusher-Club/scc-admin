@@ -33,6 +33,10 @@ import {
   ClubQuestTargetPlaceDTO,
   LocationDTO,
 } from "../generated-sources/openapi"
+import { getMockAccessibilityInspectionResults } from "./mockAccessibilityInspectionData"
+
+// Toggle this to enable/disable mock data for accessibility inspection results
+const USE_MOCK_ACCESSIBILITY_INSPECTION_DATA = true
 
 const baseURL =
   process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
@@ -453,6 +457,24 @@ export function useAccessibilityInspectionResultsPaginated({
       pageSize,
     ],
     queryFn: async () => {
+      // Use mock data if enabled
+      if (USE_MOCK_ACCESSIBILITY_INSPECTION_DATA) {
+        // Simulate network delay
+        await new Promise((resolve) => setTimeout(resolve, 300))
+
+        return getMockAccessibilityInspectionResults({
+          accessibilityType,
+          inspectorType,
+          resultType,
+          isHandled,
+          createdAtFromLocalDate,
+          createdAtToLocalDate,
+          page,
+          pageSize,
+        })
+      }
+
+      // Real API call
       // Get or initialize cursor array for this query
       if (!cursorCache.has(cacheKey)) {
         cursorCache.set(cacheKey, [])
