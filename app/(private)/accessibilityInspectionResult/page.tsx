@@ -94,10 +94,7 @@ export default function AccessibilityInspectionResultPage() {
     handleFilterChange()
   }
 
-  const columns = getColumns({
-    expandedRows,
-    toggleRowExpansion,
-  })
+  const columns = getColumns()
 
   // Filter data based on local filters
   const filteredItems = items.filter((item) => {
@@ -297,6 +294,7 @@ export default function AccessibilityInspectionResultPage() {
                 columns={columns}
                 data={filteredItems}
                 expandedRows={expandedRows}
+                onRowClick={toggleRowExpansion}
               />
             )}
           </CardContent>

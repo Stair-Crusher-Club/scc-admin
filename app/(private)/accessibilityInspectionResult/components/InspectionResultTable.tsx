@@ -302,12 +302,14 @@ interface InspectionResultTableProps {
   columns: ColumnDef<AdminAccessibilityInspectionResultDTO>[]
   data: AdminAccessibilityInspectionResultDTO[]
   expandedRows: Set<string>
+  onRowClick: (itemId: string) => void
 }
 
 export function InspectionResultTable({
   columns,
   data,
   expandedRows,
+  onRowClick,
 }: InspectionResultTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -369,7 +371,11 @@ export function InspectionResultTable({
 
                 return (
                   <>
-                    <TableRow key={row.id} className="cursor-pointer hover:bg-muted/50">
+                    <TableRow
+                      key={row.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => onRowClick(row.original.id)}
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
                           {flexRender(

@@ -2,7 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { format as formatDate } from "date-fns"
-import { ChevronDown, ChevronUp } from "lucide-react"
 
 import {
   AdminAccessibilityInspectionResultDTO,
@@ -12,14 +11,8 @@ import {
 
 import { DataTableColumnHeader } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 
-interface ColumnContext {
-  expandedRows: Set<string>
-  toggleRowExpansion: (itemId: string) => void
-}
-
-export function getColumns(context: ColumnContext): ColumnDef<AdminAccessibilityInspectionResultDTO>[] {
+export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[] {
   return [
     {
       accessorKey: "accessibilityName",
@@ -123,38 +116,6 @@ export function getColumns(context: ColumnContext): ColumnDef<AdminAccessibility
       },
       enableSorting: true,
       sortingFn: "basic",
-    },
-    {
-      id: "actions",
-      header: () => <div className="text-center font-semibold">상세</div>,
-      cell: ({ row }) => {
-        const isExpanded = context.expandedRows.has(row.original.id)
-        const images = row.original.images ?? []
-        return (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              context.toggleRowExpansion(row.original.id)
-            }}
-            className="gap-2"
-          >
-            {isExpanded ? (
-              <>
-                <ChevronUp className="h-4 w-4" />
-                접기
-              </>
-            ) : (
-              <>
-                <ChevronDown className="h-4 w-4" />
-                보기 {images.length > 0 && `(${images.length})`}
-              </>
-            )}
-          </Button>
-        )
-      },
-      enableSorting: false,
     },
   ]
 }
