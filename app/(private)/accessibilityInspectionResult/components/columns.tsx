@@ -89,7 +89,7 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
     {
       accessorKey: "inspectorType",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="검수자" />
+        <DataTableColumnHeader column={column} title="검수자 유형" />
       ),
       cell: ({ row }) => {
         const inspectorType = row.original.inspectorType
@@ -97,6 +97,21 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           <Badge variant={inspectorType === "HUMAN" ? "default" : "secondary"}>
             {inspectorType}
           </Badge>
+        )
+      },
+      enableSorting: true,
+    },
+    {
+      accessorKey: "inspectorId",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="검수자 ID" />
+      ),
+      cell: ({ row }) => {
+        const inspectorId = row.original.inspectorId
+        return (
+          <div className="font-mono text-xs max-w-[150px] truncate" title={inspectorId}>
+            {inspectorId || "-"}
+          </div>
         )
       },
       enableSorting: true,
