@@ -20,13 +20,13 @@ import { usePathname, useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useMediaQuery } from "react-responsive"
 
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import { AppState } from "@/lib/globalAtoms"
 import { storage } from "@/lib/storage"
 import { cn } from "@/lib/utils"
 
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
 import Logo from "@/icons/Logo"
 
 import kongal from "./character_astronut.png"
@@ -73,14 +73,11 @@ export default function Sidebar() {
         className={cn(
           "flex flex-col border-r bg-sidebar shadow-md transition-transform duration-300 ease-in-out",
           isMobile ? "absolute top-0 left-0 z-10 h-full w-64" : "relative flex-[280px_0_0]",
-          opened ? "translate-x-0" : "-translate-x-full"
+          opened ? "translate-x-0" : "-translate-x-full",
         )}
       >
         {/* Header */}
-        <div
-          className="flex items-center gap-2 px-4 py-6 cursor-pointer group"
-          onClick={() => router.push("/")}
-        >
+        <div className="flex items-center gap-2 px-4 py-6 cursor-pointer group" onClick={() => router.push("/")}>
           <Image
             src={kongal}
             alt="콩알이"
@@ -128,7 +125,7 @@ export default function Sidebar() {
         <div
           className={cn(
             "fixed top-0 left-0 z-[9] h-full w-full bg-black/50 backdrop-blur-sm transition-opacity duration-300 ease-in-out",
-            opened ? "opacity-100" : "pointer-events-none opacity-0"
+            opened ? "opacity-100" : "pointer-events-none opacity-0",
           )}
           onClick={toggleSidebar}
         />
@@ -146,7 +143,7 @@ interface MenuItemProps {
 
 function MenuItem({ href, icon: Icon, label, onClose }: MenuItemProps) {
   const path = usePathname()
-  const isActive = path.startsWith(href)
+  const isActive = path === href || path.startsWith(`${href}/`)
 
   return (
     <Link href={href} onClick={onClose} className="block">
@@ -154,8 +151,7 @@ function MenuItem({ href, icon: Icon, label, onClose }: MenuItemProps) {
         variant="ghost"
         className={cn(
           "w-full justify-start gap-3 px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-hover hover:text-sidebar-foreground",
-          isActive &&
-            "bg-sidebar-active font-semibold text-sidebar-foreground shadow-sm hover:bg-sidebar-active"
+          isActive && "bg-sidebar-active font-semibold text-sidebar-foreground shadow-sm hover:bg-sidebar-active",
         )}
       >
         <Icon className="h-5 w-5 flex-shrink-0" />
