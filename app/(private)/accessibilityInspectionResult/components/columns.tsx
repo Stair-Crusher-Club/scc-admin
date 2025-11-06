@@ -13,7 +13,6 @@ import {
 import { DataTableColumnHeader } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import RemoteImage from "@/components/RemoteImage"
 
 interface ColumnContext {
@@ -28,16 +27,7 @@ export function getColumns(context: ColumnContext): ColumnDef<AdminAccessibility
     {
       accessorKey: "accessibilityName",
       header: ({ column }) => (
-        <div className="flex flex-col gap-2">
-          <DataTableColumnHeader column={column} title="장소명" />
-          <Input
-            placeholder="필터..."
-            value={(column.getFilterValue() as string) ?? ""}
-            onChange={(event) => column.setFilterValue(event.target.value)}
-            className="h-8 w-[150px]"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
+        <DataTableColumnHeader column={column} title="장소명" />
       ),
       cell: ({ row }) => {
         const name = row.original.accessibilityName || "이름 없음"
@@ -48,23 +38,12 @@ export function getColumns(context: ColumnContext): ColumnDef<AdminAccessibility
         )
       },
       enableSorting: true,
-      enableColumnFilter: true,
       sortingFn: "alphanumeric",
-      filterFn: "includesString",
     },
     {
       accessorKey: "accessibilityId",
       header: ({ column }) => (
-        <div className="flex flex-col gap-2">
-          <DataTableColumnHeader column={column} title="접근성 ID" />
-          <Input
-            placeholder="필터..."
-            value={(column.getFilterValue() as string) ?? ""}
-            onChange={(event) => column.setFilterValue(event.target.value)}
-            className="h-8 w-[120px]"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
+        <DataTableColumnHeader column={column} title="접근성 ID" />
       ),
       cell: ({ row }) => {
         const id = row.original.accessibilityId
@@ -75,8 +54,6 @@ export function getColumns(context: ColumnContext): ColumnDef<AdminAccessibility
         )
       },
       enableSorting: true,
-      enableColumnFilter: true,
-      filterFn: "includesString",
     },
     {
       accessorKey: "accessibilityType",

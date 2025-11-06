@@ -34,6 +34,8 @@ export default function AccessibilityInspectionResultPage() {
   const [isHandled, setIsHandled] = useState<boolean | undefined>()
   const [fromDate, setFromDate] = useState<string>("")
   const [toDate, setToDate] = useState<string>("")
+  const [accessibilityName, setAccessibilityName] = useState<string>("")
+  const [accessibilityId, setAccessibilityId] = useState<string>("")
   const [isRunningPipeline, setIsRunningPipeline] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
@@ -123,6 +125,8 @@ export default function AccessibilityInspectionResultPage() {
     setIsHandled(undefined)
     setFromDate("")
     setToDate("")
+    setAccessibilityName("")
+    setAccessibilityId("")
     handleFilterChange()
   }
 
@@ -131,6 +135,17 @@ export default function AccessibilityInspectionResultPage() {
     loadedImages,
     toggleRowExpansion,
     loadImages,
+  })
+
+  // Filter data based on local filters
+  const filteredItems = items.filter((item) => {
+    if (accessibilityName && !item.accessibilityName?.toLowerCase().includes(accessibilityName.toLowerCase())) {
+      return false
+    }
+    if (accessibilityId && !item.accessibilityId.toLowerCase().includes(accessibilityId.toLowerCase())) {
+      return false
+    }
+    return true
   })
 
   return (
@@ -144,6 +159,34 @@ export default function AccessibilityInspectionResultPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="accessibilityName">장소명</Label>
+                <Input
+                  id="accessibilityName"
+                  type="text"
+                  placeholder="장소명 검색"
+                  value={accessibilityName}
+                  onChange={(e) => {
+                    setAccessibilityName(e.target.value)
+                    handleFilterChange()
+                  }}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="accessibilityId">접근성 ID</Label>
+                <Input
+                  id="accessibilityId"
+                  type="text"
+                  placeholder="ID 검색"
+                  value={accessibilityId}
+                  onChange={(e) => {
+                    setAccessibilityId(e.target.value)
+                    handleFilterChange()
+                  }}
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label>유형</Label>
                 <Select
@@ -294,7 +337,7 @@ export default function AccessibilityInspectionResultPage() {
             ) : (
               <InspectionResultTable
                 columns={columns}
-                data={items}
+                data={filteredItems}
                 expandedRows={expandedRows}
                 loadedImages={loadedImages}
               />
@@ -302,11 +345,15 @@ export default function AccessibilityInspectionResultPage() {
           </CardContent>
         </Card>
 
-        {items.length > 0 && (
+        {filteredItems.length > 0 && (
           <Card className="mt-6">
             <CardContent className="flex flex-col items-center gap-4 py-6">
               <p className="text-sm text-muted-foreground font-medium">
-                페이지 {currentPage} / {totalPages} (총 {items.length}개 항목)
+                페이지 {currentPage} / {totalPages} (
+                {filteredItems.length === items.length
+                  ? `총 ${items.length}개`
+                  : `${filteredItems.length}개 / 전체 ${items.length}개`}
+                )
               </p>
               <div className="flex gap-2">
                 <Button
