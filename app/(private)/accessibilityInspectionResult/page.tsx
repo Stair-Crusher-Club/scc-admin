@@ -1,14 +1,12 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { format as formatDate } from "date-fns"
-import { ChevronDown, ChevronUp, RefreshCw, RotateCcw } from "lucide-react"
+import { useState } from "react"
+import { RefreshCw, RotateCcw } from "lucide-react"
 import { useModal } from "@/hooks/useModal"
 
 import { runImagePipeline, useAccessibilityInspectionResultsPaginated } from "@/lib/apis/api"
 import {
   AccessibilityTypeDTO,
-  AdminAccessibilityInspectionResultDTO,
   InspectorTypeDTO,
   ResultTypeDTO,
 } from "@/lib/generated-sources/openapi"
@@ -24,9 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Contents, Header } from "@/components/layout"
-import RemoteImage from "@/components/RemoteImage"
+
+import { getColumns } from "./components/columns"
+import { InspectionResultTable } from "./components/InspectionResultTable"
 
 export default function AccessibilityInspectionResultPage() {
   const [accessibilityType, setAccessibilityType] = useState<AccessibilityTypeDTO | undefined>()
@@ -126,6 +125,13 @@ export default function AccessibilityInspectionResultPage() {
     setToDate("")
     handleFilterChange()
   }
+
+  const columns = getColumns({
+    expandedRows,
+    loadedImages,
+    toggleRowExpansion,
+    loadImages,
+  })
 
   return (
     <>
@@ -279,165 +285,22 @@ export default function AccessibilityInspectionResultPage() {
           </CardContent>
         </Card>
 
-        <div className="space-y-4">
-          {isLoading ? (
-            <Card>
-              <CardContent className="flex items-center justify-center py-12">
+        <Card>
+          <CardContent className="p-6">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
                 <p className="text-muted-foreground">로딩 중...</p>
-              </CardContent>
-            </Card>
-          ) : items.length === 0 ? (
-            <Card>
-              <CardContent className="flex items-center justify-center py-12">
-                <p className="text-muted-foreground">결과가 없습니다.</p>
-              </CardContent>
-            </Card>
-          ) : (
-            items.map((item: AdminAccessibilityInspectionResultDTO) => {
-              const isExpanded = expandedRows.has(item.id)
-              const imagesLoaded = loadedImages.has(item.id)
-              const images = item.images ?? []
-              let imageInspectionResult = null
-              try {
-                if (item.contents) {
-                  imageInspectionResult = JSON.parse(item.contents)
-                }
-              } catch (e) {
-                console.error("Failed to parse inspection result contents", e)
-              }
-
-              return (
-                <Card key={item.id} className="overflow-hidden">
-                  <CardHeader className="bg-muted/50">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <CardTitle className="text-lg">
-                          {item.accessibilityName ? `${item.accessibilityName} - ` : ""}
-                          {item.accessibilityId}
-                        </CardTitle>
-                        <CardDescription>{item.accessibilityType}</CardDescription>
-                      </div>
-                      <Badge variant={item.resultType === "OK" ? "default" : "destructive"}>
-                        {item.resultType}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="pt-6">
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">생성일</p>
-                        <p className="text-sm">{formatDate(new Date(item.createdAtMillis), "yyyy/M/d HH:mm")}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">설명</p>
-                        <p className="text-sm">{imageInspectionResult?.description || "설명 없음"}</p>
-                      </div>
-                    </div>
-
-                    <div className="mb-6">
-                      <h4 className="text-sm font-semibold mb-3">이미지</h4>
-                      {images.length > 0 ? (
-                        imagesLoaded ? (
-                          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                            {images.map((img: any, idx: number) => (
-                              <div key={idx} className="relative aspect-video overflow-hidden rounded-md border">
-                                <RemoteImage
-                                  src={(img.thumbnailUrl ?? img.imageUrl) as string}
-                                  width={120}
-                                  height={90}
-                                  style={{ objectFit: "cover", width: "100%", height: "100%" }}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <Button variant="outline" size="sm" onClick={() => loadImages(item.id)}>
-                            이미지 로드 ({images.length}개)
-                          </Button>
-                        )
-                      ) : (
-                        <p className="text-sm text-muted-foreground italic">이미지 없음</p>
-                      )}
-                    </div>
-
-                    <Button
-                      variant="outline"
-                      className="w-full gap-2"
-                      onClick={() => toggleRowExpansion(item.id)}
-                    >
-                      {isExpanded ? (
-                        <>
-                          <ChevronUp className="h-4 w-4" />
-                          상세 정보 접기
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown className="h-4 w-4" />
-                          상세 정보 보기
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-
-                  {isExpanded && (
-                    <div className="border-t bg-muted/30 p-6">
-                      <h3 className="text-lg font-semibold mb-4 border-b pb-2">상세 검수 결과</h3>
-
-                      <div className="space-y-6">
-                        <div>
-                          <Label className="text-sm font-semibold mb-2 block">전체 코드</Label>
-                          <div className="flex flex-wrap gap-2">
-                            {imageInspectionResult?.overallCodes?.map((code: string, idx: number) => (
-                              <Badge key={idx} variant="secondary">
-                                {code}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div>
-                          <Label className="text-sm font-semibold mb-2 block">이미지별 상세</Label>
-                          <div className="space-y-3">
-                            {imageInspectionResult?.images?.map((imgDetail: any, idx: number) => (
-                              <div key={idx} className="bg-background border rounded-lg p-4">
-                                <p className="text-xs font-mono text-muted-foreground mb-2 break-all bg-muted px-2 py-1 rounded">
-                                  {imgDetail.url}
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                  {imgDetail.reasonCodes?.map((code: string, codeIdx: number) => (
-                                    <Badge key={codeIdx} variant="outline">
-                                      {code}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                          <div>
-                            <Label className="text-sm font-semibold mb-1 block">생성일</Label>
-                            <p className="text-sm font-mono text-muted-foreground">
-                              {formatDate(new Date(item.createdAtMillis), "yyyy-MM-dd HH:mm:ss")}
-                            </p>
-                          </div>
-                          <div>
-                            <Label className="text-sm font-semibold mb-1 block">수정일</Label>
-                            <p className="text-sm font-mono text-muted-foreground">
-                              {formatDate(new Date(item.updatedAtMillis), "yyyy-MM-dd HH:mm:ss")}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </Card>
-              )
-            })
-          )}
-        </div>
+              </div>
+            ) : (
+              <InspectionResultTable
+                columns={columns}
+                data={items}
+                expandedRows={expandedRows}
+                loadedImages={loadedImages}
+              />
+            )}
+          </CardContent>
+        </Card>
 
         {items.length > 0 && (
           <Card className="mt-6">
