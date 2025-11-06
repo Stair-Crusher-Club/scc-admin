@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import H3 from "@/components/Heading/H3"
 import Table, { makeTypedColumn } from "@/components/Table"
 import { Contents, Header } from "@/components/layout"
-import { ActionButton } from "@/components/layout/Header.style"
+import { Button } from "@/components/ui/button"
 
 import * as S from "./page.style"
 import { Banner, deleteBanner, useAllBanners, useHomeBanners } from "./query"
@@ -33,7 +33,7 @@ export default function BannerList() {
     <>
       <Header title="등록된 정보 관리" />
       <Contents.Normal>
-        <ActionButton onClick={() => router.push("/banner/create")}>배너 추가</ActionButton>
+        <Button onClick={() => router.push("/banner/create")} size="sm" className="mb-4">배너 추가</Button>
         <H3>전체 배너</H3>
         <Table rows={allBanners} rowKey={(row) => row.id} columns={columns} context={{ handleDeleteBanner }} />
         <H3>홈 배너 (앱에 노출되는 것과 동일)</H3>
@@ -62,11 +62,11 @@ const columns = [
     title: "랜딩 페이지 링크",
     field: "clickPageUrl",
     render: (clickPageUrl) => (
-      <ActionButton>
+      <Button variant="outline" size="sm" asChild>
         <a href={clickPageUrl} target="_blank">
           오픈
         </a>
-      </ActionButton>
+      </Button>
     ),
   }),
   col({
