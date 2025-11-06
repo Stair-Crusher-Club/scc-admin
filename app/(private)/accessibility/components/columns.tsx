@@ -1,0 +1,184 @@
+"use client"
+
+import { ColumnDef } from "@tanstack/react-table"
+import dayjs from "dayjs"
+import { Filter } from "lucide-react"
+
+import { AdminAccessibilityDTO } from "@/lib/generated-sources/openapi"
+import { SearchAccessibilitiesPayload } from "@/lib/apis/api"
+
+import { DataTableColumnHeader } from "@/components/ui/data-table"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+
+import { ActionsCell, ImagesCell } from "./Cells"
+
+export function getColumns(
+  ctx?: SearchAccessibilitiesPayload
+): ColumnDef<AdminAccessibilityDTO>[] {
+  return [
+    {
+      accessorKey: "placeAccessibility.placeName",
+      header: ({ column }) => (
+        <div className="flex flex-col gap-2">
+          <DataTableColumnHeader column={column} title="장소명" />
+          <Input
+            placeholder="필터..."
+            value={(column.getFilterValue() as string) ?? ""}
+            onChange={(event) => column.setFilterValue(event.target.value)}
+            className="h-8 w-[150px]"
+          />
+        </div>
+      ),
+      cell: ({ row }) => {
+        const placeName = row.original.placeAccessibility.placeName
+        return (
+          <div className="font-medium max-w-[200px] truncate" title={placeName}>
+            {placeName}
+          </div>
+        )
+      },
+      enableSorting: true,
+      enableColumnFilter: true,
+      sortingFn: "alphanumeric",
+      filterFn: "includesString",
+    },
+    {
+      accessorKey: "placeAccessibility.images",
+      header: "장소 사진",
+      cell: ({ row }) => (
+        <ImagesCell
+          images={row.original.placeAccessibility.images.map(
+            (item) => item.thumbnailUrl ?? item.imageUrl
+          )}
+        />
+      ),
+      enableSorting: false,
+    },
+    {
+      accessorKey: "buildingAccessibility.images",
+      header: "건물 사진",
+      cell: ({ row }) => (
+        <ImagesCell
+          images={mergeBuildingAccessibilityImages(
+            row.original.buildingAccessibility
+          )}
+        />
+      ),
+      enableSorting: false,
+    },
+    {
+      accessorKey: "placeAccessibility.registeredUserName",
+      header: ({ column }) => (
+        <div className="flex flex-col gap-2">
+          <DataTableColumnHeader column={column} title="촬영자" />
+          <Input
+            placeholder="필터..."
+            value={(column.getFilterValue() as string) ?? ""}
+            onChange={(event) => column.setFilterValue(event.target.value)}
+            className="h-8 w-[120px]"
+          />
+        </div>
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="text-sm">
+            {row.original.placeAccessibility.registeredUserName}
+          </div>
+        )
+      },
+      enableSorting: true,
+      enableColumnFilter: true,
+      filterFn: "includesString",
+    },
+    {
+      accessorKey: "placeAccessibility.createdAtMillis",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="촬영 일시" />
+      ),
+      cell: ({ row }) => {
+        const date = dayjs(row.original.placeAccessibility.createdAtMillis)
+        return (
+          <div className="text-sm whitespace-nowrap">
+            {date.format("YYYY-MM-DD HH:mm")}
+          </div>
+        )
+      },
+      enableSorting: true,
+      sortingFn: "basic",
+    },
+    {
+      accessorKey: "placeAccessibility.isFirstFloor",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="1층 여부" />
+      ),
+      cell: ({ row }) => {
+        const isFirstFloor = row.original.placeAccessibility.isFirstFloor
+        return (
+          <Badge variant={isFirstFloor ? "default" : "secondary"}>
+            {isFirstFloor ? "1층" : "1층 아님"}
+          </Badge>
+        )
+      },
+      enableSorting: true,
+    },
+    {
+      accessorKey: "placeAccessibility.stairInfo",
+      header: "계단 정보",
+      cell: ({ row }) => {
+        const stairInfo = row.original.placeAccessibility.stairInfo
+        const stairMap: Record<string, string> = {
+          NONE: "없음",
+          ONE: "1개",
+          TWO_TO_FIVE: "2~5개",
+          OVER_SIX: "6개 이상",
+        }
+        return <div className="text-sm">{stairMap[stairInfo] || stairInfo}</div>
+      },
+      enableSorting: false,
+    },
+    {
+      accessorKey: "buildingAccessibility.hasElevator",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="엘리베이터" />
+      ),
+      cell: ({ row }) => {
+        const hasElevator = row.original.buildingAccessibility?.hasElevator
+        if (hasElevator === undefined) return <div className="text-sm text-muted-foreground">-</div>
+        return (
+          <Badge variant={hasElevator ? "default" : "secondary"}>
+            {hasElevator ? "있음" : "없음"}
+          </Badge>
+        )
+      },
+      enableSorting: true,
+    },
+    {
+      id: "actions",
+      header: "작업",
+      cell: ({ row }) => <ActionsCell accessibility={row.original} ctx={ctx} />,
+      enableSorting: false,
+    },
+  ]
+}
+
+const mergeBuildingAccessibilityImages = (
+  buildingAccessibility?: AdminAccessibilityDTO["buildingAccessibility"]
+) => {
+  const imageUrls: string[] = []
+  if (buildingAccessibility == null) return imageUrls
+
+  if (buildingAccessibility.entranceImages.length > 0) {
+    buildingAccessibility.entranceImages.forEach((image) => {
+      imageUrls.push(image.thumbnailUrl ?? image.imageUrl)
+    })
+  }
+  if (buildingAccessibility.elevatorImages.length > 0) {
+    buildingAccessibility.elevatorImages.forEach((image) => {
+      imageUrls.push(image.thumbnailUrl ?? image.imageUrl)
+    })
+  }
+
+  return imageUrls
+}
