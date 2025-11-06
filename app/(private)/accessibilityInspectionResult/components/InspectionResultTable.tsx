@@ -31,14 +31,12 @@ interface InspectionResultTableProps {
   columns: ColumnDef<AdminAccessibilityInspectionResultDTO>[]
   data: AdminAccessibilityInspectionResultDTO[]
   expandedRows: Set<string>
-  loadedImages: Set<string>
 }
 
 export function InspectionResultTable({
   columns,
   data,
   expandedRows,
-  loadedImages,
 }: InspectionResultTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -87,7 +85,6 @@ export function InspectionResultTable({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => {
                 const isExpanded = expandedRows.has(row.original.id)
-                const imagesLoaded = loadedImages.has(row.original.id)
                 const images = row.original.images ?? []
 
                 let imageInspectionResult = null
@@ -128,7 +125,7 @@ export function InspectionResultTable({
                               <p className="text-sm">{imageInspectionResult?.description || "설명 없음"}</p>
                             </div>
 
-                            {imagesLoaded && images.length > 0 && (
+                            {images.length > 0 && (
                               <div>
                                 <Label className="text-sm font-semibold mb-3 block">전체 이미지</Label>
                                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">

@@ -13,13 +13,10 @@ import {
 import { DataTableColumnHeader } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import RemoteImage from "@/components/RemoteImage"
 
 interface ColumnContext {
   expandedRows: Set<string>
-  loadedImages: Set<string>
   toggleRowExpansion: (itemId: string) => void
-  loadImages: (itemId: string) => void
 }
 
 export function getColumns(context: ColumnContext): ColumnDef<AdminAccessibilityInspectionResultDTO>[] {
@@ -128,58 +125,11 @@ export function getColumns(context: ColumnContext): ColumnDef<AdminAccessibility
       sortingFn: "basic",
     },
     {
-      accessorKey: "images",
-      header: () => <div className="text-center font-semibold">이미지</div>,
-      cell: ({ row }) => {
-        const images = row.original.images ?? []
-        const isLoaded = context.loadedImages.has(row.original.id)
-
-        if (images.length === 0) {
-          return <span className="text-xs text-muted-foreground">없음</span>
-        }
-
-        if (!isLoaded) {
-          return (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                context.loadImages(row.original.id)
-              }}
-            >
-              로드 ({images.length})
-            </Button>
-          )
-        }
-
-        return (
-          <div className="flex gap-1">
-            {images.slice(0, 3).map((img: any, idx: number) => (
-              <div key={idx} className="w-12 h-12 rounded border overflow-hidden">
-                <RemoteImage
-                  src={img.thumbnailUrl ?? img.imageUrl}
-                  width={48}
-                  height={48}
-                  style={{ objectFit: "cover", width: "100%", height: "100%" }}
-                />
-              </div>
-            ))}
-            {images.length > 3 && (
-              <div className="w-12 h-12 rounded border bg-muted flex items-center justify-center text-xs">
-                +{images.length - 3}
-              </div>
-            )}
-          </div>
-        )
-      },
-      enableSorting: false,
-    },
-    {
       id: "actions",
       header: () => <div className="text-center font-semibold">상세</div>,
       cell: ({ row }) => {
         const isExpanded = context.expandedRows.has(row.original.id)
+        const images = row.original.images ?? []
         return (
           <Button
             variant="ghost"
@@ -198,7 +148,7 @@ export function getColumns(context: ColumnContext): ColumnDef<AdminAccessibility
             ) : (
               <>
                 <ChevronDown className="h-4 w-4" />
-                보기
+                보기 {images.length > 0 && `(${images.length})`}
               </>
             )}
           </Button>

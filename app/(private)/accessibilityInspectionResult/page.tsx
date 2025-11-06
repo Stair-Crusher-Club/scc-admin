@@ -36,7 +36,6 @@ export default function AccessibilityInspectionResultPage() {
   const [accessibilityName, setAccessibilityName] = useState<string>("")
   const [accessibilityId, setAccessibilityId] = useState<string>("")
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
-  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
 
@@ -67,27 +66,20 @@ export default function AccessibilityInspectionResultPage() {
     })
   }
 
-  const loadImages = (itemId: string) => {
-    setLoadedImages((prev) => new Set(prev).add(itemId))
-  }
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
     setExpandedRows(new Set())
-    setLoadedImages(new Set())
   }
 
   const handlePageSizeChange = (newPageSize: string) => {
     setPageSize(Number(newPageSize))
     setCurrentPage(1)
     setExpandedRows(new Set())
-    setLoadedImages(new Set())
   }
 
   const handleFilterChange = () => {
     setCurrentPage(1)
     setExpandedRows(new Set())
-    setLoadedImages(new Set())
   }
 
   const resetFilters = () => {
@@ -104,9 +96,7 @@ export default function AccessibilityInspectionResultPage() {
 
   const columns = getColumns({
     expandedRows,
-    loadedImages,
     toggleRowExpansion,
-    loadImages,
   })
 
   // Filter data based on local filters
@@ -307,7 +297,6 @@ export default function AccessibilityInspectionResultPage() {
                 columns={columns}
                 data={filteredItems}
                 expandedRows={expandedRows}
-                loadedImages={loadedImages}
               />
             )}
           </CardContent>
