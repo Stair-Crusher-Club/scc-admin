@@ -15,8 +15,9 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const isDevEnv = process.env.NEXT_PUBLIC_DEPLOY_TYPE !== "live"
   return (
-    <html lang="ko">
+    <html lang="ko" className={isDevEnv ? "env-dev" : undefined}>
       <body className={fonts.className}>
         <Providers>{children}</Providers>
       </body>

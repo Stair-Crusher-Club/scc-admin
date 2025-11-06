@@ -113,6 +113,19 @@ body {
     --sidebar-hover: 220 75% 50%;
     --sidebar-active: 220 75% 45%;
   }
+  /* Dev environment override: use purple for sidebar */
+  .env-dev {
+    --sidebar: 256 60% 55%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-hover: 256 60% 50%;
+    --sidebar-active: 256 60% 45%;
+  }
+  .env-dev.dark {
+    --sidebar: 256 60% 55%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-hover: 256 60% 50%;
+    --sidebar-active: 256 60% 45%;
+  }
 }
 
 @layer base {
