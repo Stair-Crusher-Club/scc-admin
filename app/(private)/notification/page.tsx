@@ -319,7 +319,7 @@ export default function NotificationPage() {
   return (
     <>
       <Header title="푸시 알림" />
-      <Contents.Normal style={{ width: "100%" }}>
+      <Contents.Normal className="w-full">
         <S.TabContainer>
           <S.Tab type="button" active={activeTab === "send"} onClick={() => setActiveTab("send")}>
             푸시 알림 발송
