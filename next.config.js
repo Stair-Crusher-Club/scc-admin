@@ -15,6 +15,8 @@ const nextConfig = {
       // CDN
       { protocol: "https", hostname: "d1whorck6z6h62.cloudfront.net" },
       { protocol: "https", hostname: "d3vmj65l82owxs.cloudfront.net" },
+      { protocol: "https", hostname: "fastly.picsum.photos" },
+      { protocol: "https", hostname: "picsum.photos" },
     ],
   },
 }
