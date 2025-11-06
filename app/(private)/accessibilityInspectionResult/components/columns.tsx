@@ -9,16 +9,13 @@ import {
   ResultTypeDTO,
 } from "@/lib/generated-sources/openapi"
 
-import { DataTableColumnHeader } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 
 export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[] {
   return [
     {
       accessorKey: "accessibilityName",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="장소명" />
-      ),
+      header: () => <div className="text-center font-semibold">장소명</div>,
       cell: ({ row }) => {
         const name = row.original.accessibilityName || "이름 없음"
         return (
@@ -27,14 +24,11 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           </div>
         )
       },
-      enableSorting: true,
-      sortingFn: "alphanumeric",
+      enableSorting: false,
     },
     {
       accessorKey: "accessibilityId",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="접근성 ID" />
-      ),
+      header: () => <div className="text-center font-semibold">접근성 ID</div>,
       cell: ({ row }) => {
         const id = row.original.accessibilityId
         return (
@@ -43,13 +37,11 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           </div>
         )
       },
-      enableSorting: true,
+      enableSorting: false,
     },
     {
       accessorKey: "accessibilityType",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="유형" />
-      ),
+      header: () => <div className="text-center font-semibold">유형</div>,
       cell: ({ row }) => {
         const type = row.original.accessibilityType
         const typeColors: Record<AccessibilityTypeDTO, string> = {
@@ -65,14 +57,11 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           </Badge>
         )
       },
-      enableSorting: true,
-      sortingFn: "alphanumeric",
+      enableSorting: false,
     },
     {
       accessorKey: "resultType",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="결과" />
-      ),
+      header: () => <div className="text-center font-semibold">결과</div>,
       cell: ({ row }) => {
         const result = row.original.resultType
         const variantMap: Record<ResultTypeDTO, "default" | "destructive" | "secondary"> = {
@@ -83,14 +72,11 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
         }
         return <Badge variant={variantMap[result]}>{result}</Badge>
       },
-      enableSorting: true,
-      sortingFn: "alphanumeric",
+      enableSorting: false,
     },
     {
       accessorKey: "inspectorType",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="검수자 유형" />
-      ),
+      header: () => <div className="text-center font-semibold">검수자 유형</div>,
       cell: ({ row }) => {
         const inspectorType = row.original.inspectorType
         return (
@@ -99,13 +85,11 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           </Badge>
         )
       },
-      enableSorting: true,
+      enableSorting: false,
     },
     {
       accessorKey: "inspectorId",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="검수자 ID" />
-      ),
+      header: () => <div className="text-center font-semibold">검수자 ID</div>,
       cell: ({ row }) => {
         const inspectorId = row.original.inspectorId
         return (
@@ -114,13 +98,11 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           </div>
         )
       },
-      enableSorting: true,
+      enableSorting: false,
     },
     {
       accessorKey: "createdAtMillis",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="생성일" />
-      ),
+      header: () => <div className="text-center font-semibold">생성일</div>,
       cell: ({ row }) => {
         const date = new Date(row.original.createdAtMillis)
         return (
@@ -129,8 +111,7 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           </div>
         )
       },
-      enableSorting: true,
-      sortingFn: "basic",
+      enableSorting: false,
     },
   ]
 }
