@@ -74,6 +74,12 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+
+    /* Brand colors */
+    --brand: 256 60% 55%;
+    --brand-foreground: 0 0% 100%;
+    --brand-hover: 256 60% 50%;
+    --brand-active: 256 60% 40%;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -100,6 +106,12 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    /* Brand colors */
+    --brand: 256 60% 55%;
+    --brand-foreground: 0 0% 100%;
+    --brand-hover: 256 60% 50%;
+    --brand-active: 256 60% 40%;
   }
 }
 

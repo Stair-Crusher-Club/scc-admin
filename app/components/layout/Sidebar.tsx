@@ -1,12 +1,28 @@
 "use client"
 
 import { useAtom, useSetAtom } from "jotai"
+import {
+  Building2,
+  ClipboardList,
+  Flag,
+  Home,
+  LogOut,
+  MapPin,
+  Megaphone,
+  Search,
+  ShieldCheck,
+  Tag,
+  Trophy,
+} from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useMediaQuery } from "react-responsive"
 
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
 import { AppState } from "@/lib/globalAtoms"
 import { storage } from "@/lib/storage"
 import { cn } from "@/lib/utils"
@@ -14,6 +30,19 @@ import { cn } from "@/lib/utils"
 import Logo from "@/icons/Logo"
 
 import kongal from "./character_astronut.png"
+
+const menuItems = [
+  { href: "/chunks", label: "장소 청크 관리", icon: MapPin },
+  { href: "/quest", label: "퀘스트 관리", icon: ClipboardList },
+  { href: "/challenge", label: "챌린지 관리", icon: Trophy },
+  { href: "/region", label: "오픈 지역 관리", icon: Flag },
+  { href: "/accessibility", label: "등록된 정보 관리", icon: Home },
+  { href: "/closedPlace", label: "폐업 추정 장소 관리", icon: Building2 },
+  { href: "/banner", label: "배너 관리", icon: Tag },
+  { href: "/notification", label: "푸시 알림 관리", icon: Megaphone },
+  { href: "/searchPreset", label: "추천 검색어 관리", icon: Search },
+  { href: "/accessibilityInspectionResult", label: "접근성 검증 결과", icon: ShieldCheck },
+]
 
 export default function Sidebar() {
   const router = useRouter()
@@ -42,50 +71,64 @@ export default function Sidebar() {
     <>
       <aside
         className={cn(
-          "relative flex flex-col transition-transform duration-300 ease-in-out",
-          isMobile
-            ? "absolute top-0 left-0 z-10 w-60 h-full"
-            : "relative flex-[240px_0_0]",
-          "bg-[oklch(62.84%_0.202_256.31)]",
+          "flex flex-col border-r bg-brand shadow-md transition-transform duration-300 ease-in-out",
+          isMobile ? "absolute top-0 left-0 z-10 h-full w-64" : "relative flex-[280px_0_0]",
           opened ? "translate-x-0" : "-translate-x-full"
         )}
       >
+        {/* Header */}
         <div
-          className="flex items-center p-3 text-2xl text-white cursor-pointer"
+          className="flex items-center gap-2 px-4 py-6 cursor-pointer group"
           onClick={() => router.push("/")}
         >
           <Image
             src={kongal}
             alt="콩알이"
-            style={{ width: 60, height: 40, objectFit: "contain", objectPosition: "left" }}
+            style={{ width: 48, height: 32, objectFit: "contain" }}
+            className="transition-transform group-hover:scale-110"
           />
-          <Logo color="white" height={40} />
+          <Logo color="white" height={32} />
         </div>
-        <ul className="py-4">
-          <MenuItem href="/chunks">장소 청크 관리</MenuItem>
-          <MenuItem href="/quest">퀘스트 관리</MenuItem>
-          <MenuItem href="/challenge">챌린지 관리</MenuItem>
-          <MenuItem href="/region">오픈 지역 관리</MenuItem>
-          <MenuItem href="/accessibility">등록된 정보 관리</MenuItem>
-          <MenuItem href="/closedPlace">폐업 추정 장소 관리</MenuItem>
-          <MenuItem href="/banner">배너 관리</MenuItem>
-          <MenuItem href="/notification">푸시 알림 관리</MenuItem>
-          <MenuItem href="/searchPreset">추천 검색어 관리</MenuItem>
-          <MenuItem href="/accessibilityInspectionResult">접근성 검증 결과</MenuItem>
-        </ul>
-        <div className="flex-1" />
-        <button
-          className="flex items-center px-4 py-2 text-xs text-white cursor-pointer hover:bg-white/10"
-          onClick={logout}
-        >
-          로그아웃
-        </button>
+
+        <Separator className="bg-brand-foreground/20" />
+
+        {/* Navigation */}
+        <ScrollArea className="flex-1 px-2 py-4">
+          <nav className="flex flex-col gap-1">
+            {menuItems.map((item) => (
+              <MenuItem
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                label={item.label}
+                onClose={() => {
+                  if (isMobile) {
+                    setAppState((s) => ({ ...s, isSidebarOpened: false }))
+                  }
+                }}
+              />
+            ))}
+          </nav>
+        </ScrollArea>
+
+        {/* Footer */}
+        <div className="p-4">
+          <Separator className="mb-4 bg-brand-foreground/20" />
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-2 text-brand-foreground hover:bg-brand-active hover:text-brand-foreground"
+            onClick={logout}
+          >
+            <LogOut className="h-4 w-4" />
+            로그아웃
+          </Button>
+        </div>
       </aside>
       {isMobile && (
         <div
           className={cn(
-            "fixed top-0 left-0 z-[9] w-full h-full bg-black/50 backdrop-blur-sm transition-opacity duration-300 ease-in-out",
-            opened ? "opacity-100" : "opacity-0 pointer-events-none"
+            "fixed top-0 left-0 z-[9] h-full w-full bg-black/50 backdrop-blur-sm transition-opacity duration-300 ease-in-out",
+            opened ? "opacity-100" : "pointer-events-none opacity-0"
           )}
           onClick={toggleSidebar}
         />
@@ -94,28 +137,30 @@ export default function Sidebar() {
   )
 }
 
-function MenuItem({ href, children }: { href: string; children: React.ReactNode }) {
-  const isMobile = useMediaQuery({ maxWidth: 800 })
+interface MenuItemProps {
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  label: string
+  onClose: () => void
+}
+
+function MenuItem({ href, icon: Icon, label, onClose }: MenuItemProps) {
   const path = usePathname()
   const isActive = path.startsWith(href)
-  const setAppState = useSetAtom(AppState)
-
-  function closeSidebar() {
-    if (isMobile) {
-      setAppState((s) => ({ ...s, isSidebarOpened: false }))
-    }
-  }
 
   return (
-    <Link href={href} onClick={closeSidebar}>
-      <li
+    <Link href={href} onClick={onClose} className="block">
+      <Button
+        variant="ghost"
         className={cn(
-          "flex items-center px-4 py-2 text-base text-white cursor-pointer hover:bg-white/10",
-          isActive && "bg-[oklch(50%_0.202_256.31)]"
+          "w-full justify-start gap-3 px-3 py-2 text-brand-foreground transition-all hover:bg-brand-hover hover:text-brand-foreground",
+          isActive &&
+            "bg-brand-active font-semibold text-brand-foreground shadow-sm hover:bg-brand-active"
         )}
       >
-        {children}
-      </li>
+        <Icon className="h-5 w-5 flex-shrink-0" />
+        <span className="text-sm">{label}</span>
+      </Button>
     </Link>
   )
 }
