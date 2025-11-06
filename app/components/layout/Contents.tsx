@@ -13,7 +13,7 @@ Contents.Normal = function ContentsNormal({
   className?: string
 }) {
   return (
-    <main className={cn("w-fit p-8", className)}>
+    <main className={cn("w-full p-8", className)}>
       {children}
     </main>
   )
