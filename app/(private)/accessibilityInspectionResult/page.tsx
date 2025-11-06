@@ -4,8 +4,13 @@ import { useMemo, useState } from "react"
 import { format as formatDate } from "date-fns"
 import { useModal } from "@/hooks/useModal"
 
-import { useAccessibilityInspectionResultsPaginated, runImagePipeline } from "@/lib/apis/api"
-import { AccessibilityTypeDTO, AdminAccessibilityInspectionResultDTO } from "@/lib/generated-sources/openapi"
+import { runImagePipeline, useAccessibilityInspectionResultsPaginated } from "@/lib/apis/api"
+import {
+  AccessibilityTypeDTO,
+  AdminAccessibilityInspectionResultDTO,
+  InspectorTypeDTO,
+  ResultTypeDTO,
+} from "@/lib/generated-sources/openapi"
 
 import { Contents, Header } from "@/components/layout"
 
@@ -14,7 +19,9 @@ import RemoteImage from "@/components/RemoteImage"
 
 export default function AccessibilityInspectionResultPage() {
   const [accessibilityType, setAccessibilityType] = useState<AccessibilityTypeDTO | undefined>()
-  const [isPassed, setIsPassed] = useState<boolean | undefined>()
+  const [inspectorType, setInspectorType] = useState<InspectorTypeDTO | undefined>()
+  const [resultType, setResultType] = useState<ResultTypeDTO | undefined>()
+  const [isHandled, setIsHandled] = useState<boolean | undefined>()
   const [fromDate, setFromDate] = useState<string>("")
   const [toDate, setToDate] = useState<string>("")
   const [isRunningPipeline, setIsRunningPipeline] = useState(false)
@@ -27,7 +34,9 @@ export default function AccessibilityInspectionResultPage() {
 
   const { data, isLoading, refetch } = useAccessibilityInspectionResultsPaginated({
     accessibilityType,
-    isPassed,
+    inspectorType,
+    resultType,
+    isHandled,
     createdAtFromLocalDate: fromDate || undefined,
     createdAtToLocalDate: toDate || undefined,
     page: currentPage,
@@ -58,12 +67,12 @@ export default function AccessibilityInspectionResultPage() {
       props: {
         onConfirm: handleRunReinspection,
         isLoading: isRunningPipeline,
-      }
+      },
     })
   }
 
   const toggleRowExpansion = (itemId: string) => {
-    setExpandedRows(prev => {
+    setExpandedRows((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(itemId)) {
         newSet.delete(itemId)
@@ -75,7 +84,7 @@ export default function AccessibilityInspectionResultPage() {
   }
 
   const loadImages = (itemId: string) => {
-    setLoadedImages(prev => new Set(prev).add(itemId))
+    setLoadedImages((prev) => new Set(prev).add(itemId))
   }
 
   const handlePageChange = (page: number) => {
@@ -108,72 +117,105 @@ export default function AccessibilityInspectionResultPage() {
             <S.Select
               value={accessibilityType ?? ""}
               onChange={(e) => {
-                setAccessibilityType(
-                  (e.target.value || undefined) as AccessibilityTypeDTO | undefined,
-                )
+                setAccessibilityType((e.target.value || undefined) as AccessibilityTypeDTO | undefined)
                 handleFilterChange()
               }}
             >
               <option value="">전체</option>
-              <option value="PLACE">PLACE</option>
-              <option value="BUILDING">BUILDING</option>
+              <option value="Place">Place</option>
+              <option value="Building">Building</option>
+              <option value="PlaceReview">PlaceReview</option>
+              <option value="ToiletReview">ToiletReview</option>
+              <option value="UNKNOWN">UNKNOWN</option>
             </S.Select>
           </S.FilterLabel>
           <S.FilterLabel>
-            합격여부
+            검수자 유형
             <S.Select
-              value={typeof isPassed === "boolean" ? String(isPassed) : ""}
+              value={inspectorType ?? ""}
               onChange={(e) => {
-                setIsPassed(e.target.value === "" ? undefined : e.target.value === "true")
+                setInspectorType((e.target.value || undefined) as InspectorTypeDTO | undefined)
                 handleFilterChange()
               }}
             >
               <option value="">전체</option>
-              <option value="true">합격</option>
-              <option value="false">불합격</option>
+              <option value="HUMAN">HUMAN</option>
+              <option value="AI">AI</option>
+              <option value="UNKNOWN">UNKNOWN</option>
+            </S.Select>
+          </S.FilterLabel>
+          <S.FilterLabel>
+            검수 결과
+            <S.Select
+              value={resultType ?? ""}
+              onChange={(e) => {
+                setResultType((e.target.value || undefined) as ResultTypeDTO | undefined)
+                handleFilterChange()
+              }}
+            >
+              <option value="">전체</option>
+              <option value="OK">OK</option>
+              <option value="MODIFY">MODIFY</option>
+              <option value="DELETE">DELETE</option>
+              <option value="UNKNOWN">UNKNOWN</option>
+            </S.Select>
+          </S.FilterLabel>
+          <S.FilterLabel>
+            처리 여부
+            <S.Select
+              value={typeof isHandled === "boolean" ? String(isHandled) : ""}
+              onChange={(e) => {
+                setIsHandled(e.target.value === "" ? undefined : e.target.value === "true")
+                handleFilterChange()
+              }}
+            >
+              <option value="">전체</option>
+              <option value="true">처리됨</option>
+              <option value="false">미처리</option>
             </S.Select>
           </S.FilterLabel>
           <S.FilterLabel>
             시작일
-            <S.Input 
-              type="date" 
-              value={fromDate} 
+            <S.Input
+              type="date"
+              value={fromDate}
               onChange={(e) => {
                 setFromDate(e.target.value)
                 handleFilterChange()
-              }} 
+              }}
             />
           </S.FilterLabel>
           <S.FilterLabel>
             종료일
-            <S.Input 
-              type="date" 
-              value={toDate} 
+            <S.Input
+              type="date"
+              value={toDate}
               onChange={(e) => {
                 setToDate(e.target.value)
                 handleFilterChange()
-              }} 
+              }}
             />
           </S.FilterLabel>
           <S.FilterLabel>
             페이지 크기
-            <S.Select
-              value={pageSize}
-              onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-            >
+            <S.Select value={pageSize} onChange={(e) => handlePageSizeChange(Number(e.target.value))}>
               <option value="10">10개</option>
               <option value="20">20개</option>
               <option value="50">50개</option>
               <option value="100">100개</option>
             </S.Select>
           </S.FilterLabel>
-          <S.Button onClick={() => {
-            setAccessibilityType(undefined)
-            setIsPassed(undefined)
-            setFromDate("")
-            setToDate("")
-            handleFilterChange()
-          }}>
+          <S.Button
+            onClick={() => {
+              setAccessibilityType(undefined)
+              setInspectorType(undefined)
+              setResultType(undefined)
+              setIsHandled(undefined)
+              setFromDate("")
+              setToDate("")
+              handleFilterChange()
+            }}
+          >
             초기화
           </S.Button>
           <S.ReinspectionButton onClick={openReinspectionDialog} disabled={isRunningPipeline}>
@@ -191,25 +233,26 @@ export default function AccessibilityInspectionResultPage() {
             items.map((item: AdminAccessibilityInspectionResultDTO) => {
               const isExpanded = expandedRows.has(item.id)
               const imagesLoaded = loadedImages.has(item.id)
-              // FIXME: API spec에서 사라져서 임시로 주석 처리
-              // const images = item.images ?? item.imageInspectionResult?.images ?? []
               const images = item.images ?? []
-              
+              let imageInspectionResult = null
+              try {
+                if (item.contents) {
+                  imageInspectionResult = JSON.parse(item.contents)
+                }
+              } catch (e) {
+                console.error("Failed to parse inspection result contents", e)
+              }
+
               return (
                 <S.ResultCard key={item.id}>
                   <S.CardHeader>
                     <S.CardTitle>
+                      {item.accessibilityName ? `${item.accessibilityName} - ` : ""}
                       {item.accessibilityId} - {item.accessibilityType}
                     </S.CardTitle>
-                    {/* FIXME: API spec에서 사라져서 임시로 주석 처리 */}
-                    {/* <S.CardStatus isPassed={item.isPassed}>
-                      {item.isPassed ? "합격" : "불합격"}
-                    </S.CardStatus> */}
-                    <S.CardStatus isPassed={false}>
-                      불합격
-                    </S.CardStatus>
+                    <S.CardStatus isPassed={item.resultType === "OK"}>{item.resultType}</S.CardStatus>
                   </S.CardHeader>
-                  
+
                   <S.CardContent>
                     <S.InfoGrid>
                       <S.InfoItem>
@@ -218,13 +261,10 @@ export default function AccessibilityInspectionResultPage() {
                       </S.InfoItem>
                       <S.InfoItem>
                         <S.InfoLabel>설명</S.InfoLabel>
-                        <S.InfoValue>
-                          {/* FIXME: API spec에서 사라져서 임시로 주석 처리 */}
-                          {/* {item.imageInspectionResult?.description || "설명 없음"} */}
-                        </S.InfoValue>
+                        <S.InfoValue>{imageInspectionResult?.description || "설명 없음"}</S.InfoValue>
                       </S.InfoItem>
                     </S.InfoGrid>
-                    
+
                     <S.ImageSection>
                       <S.ImageSectionTitle>이미지</S.ImageSectionTitle>
                       {images.length > 0 ? (
@@ -233,7 +273,7 @@ export default function AccessibilityInspectionResultPage() {
                             {images.map((img: any, idx: number) => (
                               <RemoteImage
                                 key={idx}
-                                src={(img.thumbnailUrl ?? img.imageUrl ?? img.url) as string}
+                                src={(img.thumbnailUrl ?? img.imageUrl) as string}
                                 width={120}
                                 height={90}
                                 style={{ objectFit: "cover", borderRadius: 6 }}
@@ -249,32 +289,30 @@ export default function AccessibilityInspectionResultPage() {
                         <S.NoImagesText>이미지 없음</S.NoImagesText>
                       )}
                     </S.ImageSection>
-                    
+
                     <S.ExpandButton onClick={() => toggleRowExpansion(item.id)}>
                       {isExpanded ? "상세 정보 접기" : "상세 정보 보기"}
                     </S.ExpandButton>
                   </S.CardContent>
-                  
+
                   {isExpanded && (
                     <S.ExpandedDetails>
                       <S.DetailSection>
                         <S.DetailTitle>상세 검수 결과</S.DetailTitle>
-                        
+
                         <S.DetailItem>
                           <S.DetailLabel>전체 코드</S.DetailLabel>
                           <S.CodeList>
-                            {/* FIXME: API spec에서 사라져서 임시로 주석 처리 */}
-                            {/* {item.imageInspectionResult?.overallCodes?.map((code: string, idx: number) => (
+                            {imageInspectionResult?.overallCodes?.map((code: string, idx: number) => (
                               <S.CodeItem key={idx}>{code}</S.CodeItem>
-                            ))} */}
+                            ))}
                           </S.CodeList>
                         </S.DetailItem>
-                        
+
                         <S.DetailItem>
                           <S.DetailLabel>이미지별 상세</S.DetailLabel>
                           <S.ImageDetailsList>
-                            {/* FIXME: API spec에서 사라져서 임시로 주석 처리 */}
-                            {/* {item.imageInspectionResult?.images?.map((imgDetail: any, idx: number) => (
+                            {imageInspectionResult?.images?.map((imgDetail: any, idx: number) => (
                               <S.ImageDetailItem key={idx}>
                                 <S.ImageDetailUrl>{imgDetail.url}</S.ImageDetailUrl>
                                 <S.CodeList>
@@ -283,18 +321,22 @@ export default function AccessibilityInspectionResultPage() {
                                   ))}
                                 </S.CodeList>
                               </S.ImageDetailItem>
-                            ))} */}
+                            ))}
                           </S.ImageDetailsList>
                         </S.DetailItem>
-                        
+
                         <S.DetailItem>
                           <S.DetailLabel>생성일</S.DetailLabel>
-                          <S.DetailValue>{formatDate(new Date(item.createdAtMillis), "yyyy-MM-dd HH:mm:ss")}</S.DetailValue>
+                          <S.DetailValue>
+                            {formatDate(new Date(item.createdAtMillis), "yyyy-MM-dd HH:mm:ss")}
+                          </S.DetailValue>
                         </S.DetailItem>
-                        
+
                         <S.DetailItem>
                           <S.DetailLabel>수정일</S.DetailLabel>
-                          <S.DetailValue>{formatDate(new Date(item.updatedAtMillis), "yyyy-MM-dd HH:mm:ss")}</S.DetailValue>
+                          <S.DetailValue>
+                            {formatDate(new Date(item.updatedAtMillis), "yyyy-MM-dd HH:mm:ss")}
+                          </S.DetailValue>
                         </S.DetailItem>
                       </S.DetailSection>
                     </S.ExpandedDetails>
@@ -304,24 +346,18 @@ export default function AccessibilityInspectionResultPage() {
             })
           )}
         </S.ResultsContainer>
-        
+
         {items.length > 0 && (
           <S.PaginationContainer>
             <S.PaginationInfo>
               페이지 {currentPage} / {totalPages} (총 {items.length}개 항목)
             </S.PaginationInfo>
             <S.PaginationControls>
-              <S.PaginationButton 
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
+              <S.PaginationButton onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
                 ← 이전
               </S.PaginationButton>
-              
-              <S.PaginationButton 
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={!hasNextPage}
-              >
+
+              <S.PaginationButton onClick={() => handlePageChange(currentPage + 1)} disabled={!hasNextPage}>
                 다음 →
               </S.PaginationButton>
             </S.PaginationControls>
@@ -331,5 +367,6 @@ export default function AccessibilityInspectionResultPage() {
     </>
   )
 }
+
 
 

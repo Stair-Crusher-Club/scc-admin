@@ -16,6 +16,8 @@ import {
   AccessibilityTypeDTO,
   ClubQuestCreateDryRunResultItemDTO,
   EpochMillisTimestamp,
+  InspectorTypeDTO,
+  ResultTypeDTO,
 } from "@/lib/generated-sources/openapi"
 
 import {
@@ -31,6 +33,10 @@ import {
   ClubQuestTargetPlaceDTO,
   LocationDTO,
 } from "../generated-sources/openapi"
+import { getMockAccessibilityInspectionResults } from "./mockAccessibilityInspectionData"
+
+// Toggle this to enable/disable mock data for accessibility inspection results
+const USE_MOCK_ACCESSIBILITY_INSPECTION_DATA = true
 
 const baseURL =
   process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
@@ -365,12 +371,16 @@ export function deleteSearchPreset(id: string) {
 
 export function useAccessibilityInspectionResults({
   accessibilityType,
-  isPassed,
+  inspectorType,
+  resultType,
+  isHandled,
   createdAtFromLocalDate,
   createdAtToLocalDate,
 }: {
   accessibilityType?: AccessibilityTypeDTO
-  isPassed?: boolean
+  inspectorType?: InspectorTypeDTO
+  resultType?: ResultTypeDTO
+  isHandled?: boolean
   createdAtFromLocalDate?: string
   createdAtToLocalDate?: string
 }) {
@@ -378,18 +388,20 @@ export function useAccessibilityInspectionResults({
     queryKey: [
       "@accessibilityInspectionResults",
       accessibilityType ?? null,
-      typeof isPassed === "boolean" ? isPassed : null,
+      inspectorType ?? null,
+      resultType ?? null,
+      isHandled ?? null,
       createdAtFromLocalDate ?? null,
       createdAtToLocalDate ?? null,
     ],
     queryFn: ({ pageParam }) =>
       accessibilityApi
         .searchAccessibilityInspectionResults(
-          undefined,
+          undefined, // id
           accessibilityType,
-          undefined,
-          undefined,
-          isPassed,
+          inspectorType,
+          resultType,
+          isHandled,
           createdAtFromLocalDate,
           createdAtToLocalDate,
           (pageParam as string | undefined) ?? undefined,
@@ -406,14 +418,18 @@ const cursorCache = new Map<string, string[]>()
 
 export function useAccessibilityInspectionResultsPaginated({
   accessibilityType,
-  isPassed,
+  inspectorType,
+  resultType,
+  isHandled,
   createdAtFromLocalDate,
   createdAtToLocalDate,
   page = 1,
   pageSize = 20,
 }: {
   accessibilityType?: AccessibilityTypeDTO
-  isPassed?: boolean
+  inspectorType?: InspectorTypeDTO
+  resultType?: ResultTypeDTO
+  isHandled?: boolean
   createdAtFromLocalDate?: string
   createdAtToLocalDate?: string
   page?: number
@@ -421,7 +437,9 @@ export function useAccessibilityInspectionResultsPaginated({
 }) {
   const cacheKey = JSON.stringify({
     accessibilityType: accessibilityType ?? null,
-    isPassed: typeof isPassed === "boolean" ? isPassed : null,
+    inspectorType: inspectorType ?? null,
+    resultType: resultType ?? null,
+    isHandled: isHandled ?? null,
     createdAtFromLocalDate: createdAtFromLocalDate ?? null,
     createdAtToLocalDate: createdAtToLocalDate ?? null,
     pageSize,
@@ -431,13 +449,33 @@ export function useAccessibilityInspectionResultsPaginated({
     queryKey: [
       "@accessibilityInspectionResultsPaginated",
       accessibilityType ?? null,
-      typeof isPassed === "boolean" ? isPassed : null,
+      inspectorType ?? null,
+      resultType ?? null,
+      isHandled ?? null,
       createdAtFromLocalDate ?? null,
       createdAtToLocalDate ?? null,
       page,
       pageSize,
     ],
     queryFn: async () => {
+      // Use mock data if enabled
+      if (USE_MOCK_ACCESSIBILITY_INSPECTION_DATA) {
+        // Simulate network delay
+        await new Promise((resolve) => setTimeout(resolve, 300))
+
+        return getMockAccessibilityInspectionResults({
+          accessibilityType,
+          inspectorType,
+          resultType,
+          isHandled,
+          createdAtFromLocalDate,
+          createdAtToLocalDate,
+          page,
+          pageSize,
+        })
+      }
+
+      // Real API call
       // Get or initialize cursor array for this query
       if (!cursorCache.has(cacheKey)) {
         cursorCache.set(cacheKey, [])
@@ -448,30 +486,30 @@ export function useAccessibilityInspectionResultsPaginated({
       while (cursors.length < page - 1) {
         const lastCursor = cursors[cursors.length - 1]
         const response = await accessibilityApi.searchAccessibilityInspectionResults(
-          undefined,
+          undefined, // id
           accessibilityType,
-          undefined,
-          undefined,
-          isPassed,
+          inspectorType,
+          resultType,
+          isHandled,
           createdAtFromLocalDate,
           createdAtToLocalDate,
           lastCursor,
           pageSize.toString()
         )
-        
+
         if (!response.data.cursor) break // No more pages
         cursors.push(response.data.cursor)
       }
 
       // Get cursor for current page
       const cursor = page === 1 ? undefined : cursors[page - 2]
-      
+
       const response = await accessibilityApi.searchAccessibilityInspectionResults(
-        undefined,
+        undefined, // id
         accessibilityType,
-        undefined,
-        undefined,
-        isPassed,
+        inspectorType,
+        resultType,
+        isHandled,
         createdAtFromLocalDate,
         createdAtToLocalDate,
         cursor,

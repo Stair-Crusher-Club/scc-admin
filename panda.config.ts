@@ -12,7 +12,7 @@ export default defineConfig({
   include: ["./app/**/*.{ts,tsx}"],
 
   // Files to exclude
-  exclude: [],
+  exclude: ["./app/components/ui/**/*.tsx", "./app/components/layout/**/*.tsx"],
 
   // Useful for theme customization
   theme: {
