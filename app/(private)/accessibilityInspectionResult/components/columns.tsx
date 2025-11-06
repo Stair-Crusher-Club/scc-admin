@@ -129,7 +129,7 @@ export function getColumns(context: ColumnContext): ColumnDef<AdminAccessibility
     },
     {
       accessorKey: "images",
-      header: "이미지",
+      header: () => <div className="text-center font-semibold">이미지</div>,
       cell: ({ row }) => {
         const images = row.original.images ?? []
         const isLoaded = context.loadedImages.has(row.original.id)
@@ -177,7 +177,7 @@ export function getColumns(context: ColumnContext): ColumnDef<AdminAccessibility
     },
     {
       id: "actions",
-      header: "상세",
+      header: () => <div className="text-center font-semibold">상세</div>,
       cell: ({ row }) => {
         const isExpanded = context.expandedRows.has(row.original.id)
         return (

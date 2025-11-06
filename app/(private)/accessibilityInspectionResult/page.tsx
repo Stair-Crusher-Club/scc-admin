@@ -1,10 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { RefreshCw, RotateCcw } from "lucide-react"
-import { useModal } from "@/hooks/useModal"
+import { RotateCcw } from "lucide-react"
 
-import { runImagePipeline, useAccessibilityInspectionResultsPaginated } from "@/lib/apis/api"
+import { useAccessibilityInspectionResultsPaginated } from "@/lib/apis/api"
 import {
   AccessibilityTypeDTO,
   InspectorTypeDTO,
@@ -36,15 +35,12 @@ export default function AccessibilityInspectionResultPage() {
   const [toDate, setToDate] = useState<string>("")
   const [accessibilityName, setAccessibilityName] = useState<string>("")
   const [accessibilityId, setAccessibilityId] = useState<string>("")
-  const [isRunningPipeline, setIsRunningPipeline] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
 
-  const modal = useModal()
-
-  const { data, isLoading, refetch } = useAccessibilityInspectionResultsPaginated({
+  const { data, isLoading } = useAccessibilityInspectionResultsPaginated({
     accessibilityType,
     inspectorType,
     resultType,
@@ -58,30 +54,6 @@ export default function AccessibilityInspectionResultPage() {
   const items = data?.items ?? []
   const hasNextPage = data?.hasNextPage ?? false
   const totalPages = data?.totalPages ?? 1
-
-  const handleRunReinspection = async (items: Array<{ accessibilityId: string; accessibilityType: AccessibilityTypeDTO }>) => {
-    setIsRunningPipeline(true)
-    try {
-      await runImagePipeline({ items })
-      alert("재검수가 성공적으로 실행되었습니다.")
-      refetch()
-    } catch (error) {
-      console.error("재검수 실행 중 오류:", error)
-      alert("재검수 실행 중 오류가 발생했습니다.")
-    } finally {
-      setIsRunningPipeline(false)
-    }
-  }
-
-  const openReinspectionDialog = () => {
-    modal.openModal({
-      type: "ReinspectionDialog",
-      props: {
-        onConfirm: handleRunReinspection,
-        isLoading: isRunningPipeline,
-      },
-    })
-  }
 
   const toggleRowExpansion = (itemId: string) => {
     setExpandedRows((prev) => {
@@ -319,10 +291,6 @@ export default function AccessibilityInspectionResultPage() {
               <Button variant="outline" onClick={resetFilters} className="gap-2">
                 <RotateCcw className="h-4 w-4" />
                 초기화
-              </Button>
-              <Button onClick={openReinspectionDialog} disabled={isRunningPipeline} className="gap-2">
-                <RefreshCw className={`h-4 w-4 ${isRunningPipeline ? "animate-spin" : ""}`} />
-                {isRunningPipeline ? "재검수 중..." : "재검수하기"}
               </Button>
             </div>
           </CardContent>

@@ -46,7 +46,7 @@ export function getColumns(
     },
     {
       accessorKey: "placeAccessibility.images",
-      header: "장소 사진",
+      header: () => <div className="text-center font-semibold">장소 사진</div>,
       cell: ({ row }) => (
         <ImagesCell
           images={row.original.placeAccessibility.images.map(
@@ -58,7 +58,7 @@ export function getColumns(
     },
     {
       accessorKey: "buildingAccessibility.images",
-      header: "건물 사진",
+      header: () => <div className="text-center font-semibold">건물 사진</div>,
       cell: ({ row }) => (
         <ImagesCell
           images={mergeBuildingAccessibilityImages(
@@ -125,7 +125,7 @@ export function getColumns(
     },
     {
       accessorKey: "placeAccessibility.stairInfo",
-      header: "계단 정보",
+      header: () => <div className="text-center font-semibold">계단 정보</div>,
       cell: ({ row }) => {
         const stairInfo = row.original.placeAccessibility.stairInfo
         const stairMap: Record<string, string> = {
@@ -156,7 +156,7 @@ export function getColumns(
     },
     {
       id: "actions",
-      header: "작업",
+      header: () => <div className="text-center font-semibold">작업</div>,
       cell: ({ row }) => <ActionsCell accessibility={row.original} ctx={ctx} />,
       enableSorting: false,
     },

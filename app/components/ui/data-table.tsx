@@ -65,8 +65,12 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  const isSorted = header.column.getIsSorted()
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className={isSorted ? "bg-primary/5" : ""}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -86,14 +90,20 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const isSorted = cell.column.getIsSorted()
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={isSorted ? "bg-primary/5" : ""}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    )
+                  })}
                 </TableRow>
               ))
             ) : (
@@ -128,17 +138,27 @@ export function DataTableColumnHeader({
   title: string
 }) {
   if (!column.getCanSort()) {
-    return <div>{title}</div>
+    return <div className="text-center font-semibold">{title}</div>
   }
 
+  const isSorted = column.getIsSorted()
+
   return (
-    <Button
-      variant="ghost"
-      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      className="-ml-3 h-8"
-    >
-      <span>{title}</span>
-      <ArrowUpDown className="ml-2 h-4 w-4" />
-    </Button>
+    <div className="flex items-center justify-center">
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className={`h-8 gap-1 ${isSorted ? "bg-primary/10 text-primary font-semibold" : ""}`}
+      >
+        <span>{title}</span>
+        {isSorted === "asc" ? (
+          <span className="text-xs">↑</span>
+        ) : isSorted === "desc" ? (
+          <span className="text-xs">↓</span>
+        ) : (
+          <ArrowUpDown className="h-4 w-4 opacity-50" />
+        )}
+      </Button>
+    </div>
   )
 }
