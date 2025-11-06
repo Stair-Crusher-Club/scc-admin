@@ -3,6 +3,7 @@ import Image from "next/image"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
+import { Pencil, Trash2 } from "lucide-react"
 
 import {
   SearchAccessibilitiesPayload,
@@ -17,6 +18,7 @@ import {
 import { AdminAccessibilityDTO } from "@/lib/generated-sources/openapi"
 import { NetworkError } from "@/lib/http"
 
+import { Button } from "@/components/ui/button"
 import { useModal } from "@/hooks/useModal"
 
 import * as S from "./Cells.style"
@@ -38,33 +40,52 @@ export function ImagesCell({ images }: { images: string[] }) {
     openModal({ type: "AccessibilityImage", props: { imageUrl: url } })
   }
 
+  if (images.length === 0) {
+    return (
+      <div className="w-[180px] h-[180px] bg-gray-100 rounded-md flex items-center justify-center text-gray-400 text-sm">
+        사진 없음
+      </div>
+    )
+  }
+
   if (images.length === 1) {
     const imageUrl = images[0]
     return (
-      <S.ImagesGrid>
+      <div className="w-[180px] h-[180px] relative cursor-pointer overflow-hidden rounded-md">
         <Image
           key={imageUrl}
           src={imageUrl}
-          width={200}
-          height={200}
+          fill
           alt=""
-          style={{ gridRow: "1/3", gridColumn: "1/3" }}
+          className="object-cover hover:scale-105 transition-transform"
           onClick={() => seeDetails(imageUrl)}
           unoptimized
         />
-      </S.ImagesGrid>
+      </div>
     )
   }
 
   return (
-    <S.ImagesGrid>
-      {images.map((imageUrl) => (
-        <Image key={imageUrl} src={imageUrl} alt="" width={98} height={98} onClick={() => seeDetails(imageUrl)} />
+    <div className="grid grid-cols-2 gap-1 w-[180px] h-[180px]">
+      {images.slice(0, 4).map((imageUrl) => (
+        <div
+          key={imageUrl}
+          className="relative cursor-pointer overflow-hidden rounded-sm"
+        >
+          <Image
+            src={imageUrl}
+            alt=""
+            fill
+            className="object-cover hover:scale-105 transition-transform"
+            onClick={() => seeDetails(imageUrl)}
+            unoptimized
+          />
+        </div>
       ))}
-      {Array.from({ length: 4 - images.length }).map((_, idx) => (
-        <div key={idx} style={{ backgroundColor: "#eee" }} />
+      {Array.from({ length: Math.max(0, 4 - images.length) }).map((_, idx) => (
+        <div key={idx} className="bg-gray-100 rounded-sm" />
       ))}
-    </S.ImagesGrid>
+    </div>
   )
 }
 
@@ -315,29 +336,52 @@ export function ActionsCell({
 
   return (
     <>
-      <S.Actions>
-        <S.EditButton
+      <div className="flex flex-col gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-2"
           onClick={() => {
             setSelectedAccessibility(accessibility)
             setIsPlaceAccessibilityModalOpen(true)
           }}
         >
+          <Pencil className="h-3 w-3" />
           장소 정보 수정
-        </S.EditButton>
-        <S.DeleteButton onClick={handleDeletePlaceAccessibility}>장소 정보 삭제</S.DeleteButton>
-        <S.EditButton
+        </Button>
+        <Button
+          size="sm"
+          variant="destructive"
+          className="gap-2"
+          onClick={handleDeletePlaceAccessibility}
+        >
+          <Trash2 className="h-3 w-3" />
+          장소 정보 삭제
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-2"
           disabled={!accessibility.buildingAccessibility}
           onClick={() => {
             setSelectedAccessibility(accessibility)
             setIsBuildingAccessibilityModalOpen(true)
           }}
         >
+          <Pencil className="h-3 w-3" />
           {accessibility.buildingAccessibility ? "건물 정보 수정" : "건물 정보 없음"}
-        </S.EditButton>
-        <S.DeleteButton disabled={!accessibility.buildingAccessibility} onClick={handleDeleteBuildingAccessibility}>
+        </Button>
+        <Button
+          size="sm"
+          variant="destructive"
+          className="gap-2"
+          disabled={!accessibility.buildingAccessibility}
+          onClick={handleDeleteBuildingAccessibility}
+        >
+          <Trash2 className="h-3 w-3" />
           {accessibility.buildingAccessibility ? "건물 정보 삭제" : "건물 정보 없음"}
-        </S.DeleteButton>
-      </S.Actions>
+        </Button>
+      </div>
 
       <EditPlaceAccessibilityModal
         isOpen={isPlaceAccessibilityModalOpen}
