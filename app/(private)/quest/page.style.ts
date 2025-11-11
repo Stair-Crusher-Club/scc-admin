@@ -39,6 +39,13 @@ const Button = styled("button", {
   },
 })
 
+export const ManageGroupButton = styled(Button, {
+  base: {
+    borderColor: "#4CAF50",
+    color: "#4CAF50",
+  },
+})
+
 export const ShareButton = styled(Button, {
   base: {
     borderColor: "#1D85FF",

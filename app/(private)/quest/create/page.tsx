@@ -159,8 +159,9 @@ export default function QuestCreate() {
     })
 
     toast.success("퀘스트가 생성되었습니다.")
-    queryClient.invalidateQueries({ queryKey: ["@quests"], exact: true })
-    router.back()
+    queryClient.invalidateQueries({ queryKey: ["@quests",], exact: true })
+    queryClient.invalidateQueries({ queryKey: ["@clubQuestSummaries",], exact: true })
+    router.push('/quest')
   }
 
   return (

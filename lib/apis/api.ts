@@ -73,6 +73,17 @@ export function useQuest({ id }: { id: string }) {
   })
 }
 
+export function useQuestsByGroupId({ groupId }: { groupId: string }) {
+  return useQuery({
+    queryKey: ["@questGroup", groupId],
+    queryFn: async ({ queryKey }) => {
+      const result = await api.default.getClubQuestsByGroupId(queryKey[1])
+      return result.data
+    },
+    staleTime: 10 * 1000,
+  })
+}
+
 // 특정 빌딩 정보만 가져오기
 export function useQuestBuilding({ questId, buildingId }: { questId: string; buildingId: string }) {
   const { data, ...others } = useQuest({ id: questId })
@@ -159,6 +170,21 @@ export async function deleteQuestTargetPlace(questId: string, place: ClubQuestTa
 
 export async function deleteQuestTargetBuilding(questId: string, building: ClubQuestTargetBuildingDTO) {
   return api.default.clubQuestsClubQuestIdTargetBuildingsDelete(questId, building.buildingId)
+}
+
+export async function moveQuestTargetPlace({
+  questId,
+  targetQuestId,
+  placeIds,
+}: {
+  questId: string
+  targetQuestId: string
+  placeIds: string[]
+}) {
+  return api.default.moveClubQuestTargetPlace(questId, {
+    targetQuestId,
+    placeIds,
+  })
 }
 
 export function useChallenges() {

@@ -12,6 +12,7 @@ import { useClubQuestSummaries } from "@/(private)/quest/query"
 import { Contents, Header } from "@/components/layout"
 
 import * as S from "./page.style"
+import { getQuestGroupName } from "./util"
 
 export default function QuestList() {
   const router = useRouter()
@@ -21,7 +22,7 @@ export default function QuestList() {
 
   const regrouped = quests.reduce(
     (acc, q) => {
-      const key = q.name.split(" - ")[0]
+      const key = getQuestGroupName(q.name)!;
       if (!acc[key]) acc[key] = []
       acc[key].push(q)
       return acc
@@ -62,6 +63,14 @@ export default function QuestList() {
             <S.QuestHeader>
               {questGroupName}
               <S.CreatedAt></S.CreatedAt>
+              {quests[0].groupId
+                ? (
+                  <S.ManageGroupButton onClick={() => router.push(`/quest/group/${encodeURIComponent(quests[0].groupId!)}`)}>
+                    그룹 관리
+                  </S.ManageGroupButton>
+                )
+                : null
+              }
               <S.ShareButton onClick={() => share(quests)}>공유하기</S.ShareButton>
               <S.DeleteButton onClick={() => deleteQuests(quests)}>삭제하기</S.DeleteButton>
             </S.QuestHeader>

@@ -1607,6 +1607,12 @@ export interface ClubQuestDTO {
      */
     'name': string;
     /**
+     * 퀘스트 그룹 식별자 (dryRun 배치 단위). 같은 groupId를 가진 퀘스트들은 동일한 배치로 생성됨.
+     * @type {string}
+     * @memberof ClubQuestDTO
+     */
+    'groupId'?: string;
+    /**
      * 
      * @type {ClubQuestPurposeTypeEnumDTO}
      * @memberof ClubQuestDTO
@@ -1695,6 +1701,12 @@ export interface ClubQuestSummaryDTO {
      * @memberof ClubQuestSummaryDTO
      */
     'shortenedUrl'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ClubQuestSummaryDTO
+     */
+    'groupId'?: string;
 }
 /**
  * 퀘스트 대상이 되는 건물 정보.
@@ -2020,6 +2032,19 @@ export interface EpochMillisTimestamp {
     'value': number;
 }
 /**
+ * groupId로 조회한 퀘스트 목록
+ * @export
+ * @interface GetClubQuestsByGroupIdResult
+ */
+export interface GetClubQuestsByGroupIdResult {
+    /**
+     * 
+     * @type {Array<ClubQuestDTO>}
+     * @memberof GetClubQuestsByGroupIdResult
+     */
+    'items': Array<ClubQuestDTO>;
+}
+/**
  * 
  * @export
  * @interface GetCursoredClubQuestSummariesResultDTO
@@ -2103,6 +2128,44 @@ export interface LoginPostRequest {
      * @memberof LoginPostRequest
      */
     'password': string;
+}
+/**
+ * 장소 이동 요청
+ * @export
+ * @interface MoveClubQuestTargetPlaceRequest
+ */
+export interface MoveClubQuestTargetPlaceRequest {
+    /**
+     * 이동 대상 퀘스트 ID
+     * @type {string}
+     * @memberof MoveClubQuestTargetPlaceRequest
+     */
+    'targetQuestId': string;
+    /**
+     * 이동할 장소 ID 목록
+     * @type {Array<string>}
+     * @memberof MoveClubQuestTargetPlaceRequest
+     */
+    'placeIds': Array<string>;
+}
+/**
+ * 장소 이동 응답
+ * @export
+ * @interface MoveClubQuestTargetPlaceResponse
+ */
+export interface MoveClubQuestTargetPlaceResponse {
+    /**
+     * 
+     * @type {ClubQuestDTO}
+     * @memberof MoveClubQuestTargetPlaceResponse
+     */
+    'sourceQuest': ClubQuestDTO;
+    /**
+     * 
+     * @type {ClubQuestDTO}
+     * @memberof MoveClubQuestTargetPlaceResponse
+     */
+    'targetQuest': ClubQuestDTO;
 }
 /**
  * 
@@ -4341,6 +4404,44 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * 
+         * @summary groupId로 해당 그룹의 모든 퀘스트를 조회한다.
+         * @param {string} groupId 퀘스트 그룹 식별자
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getClubQuestsByGroupId: async (groupId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('getClubQuestsByGroupId', 'groupId', groupId)
+            const localVarPath = `/clubQuests/byGroup/{groupId}`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 퀘스트 목록을 커서링 방식으로 조회한다.
          * @summary 커서링 방식의 퀘스트 조회 API
          * @param {string} [cursor] 
@@ -4535,6 +4636,50 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(loginPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 특정 장소들을 다른 퀘스트로 이동한다.
+         * @param {string} clubQuestId 원본 퀘스트 ID
+         * @param {MoveClubQuestTargetPlaceRequest} moveClubQuestTargetPlaceRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        moveClubQuestTargetPlace: async (clubQuestId: string, moveClubQuestTargetPlaceRequest: MoveClubQuestTargetPlaceRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'clubQuestId' is not null or undefined
+            assertParamExists('moveClubQuestTargetPlace', 'clubQuestId', clubQuestId)
+            // verify required parameter 'moveClubQuestTargetPlaceRequest' is not null or undefined
+            assertParamExists('moveClubQuestTargetPlace', 'moveClubQuestTargetPlaceRequest', moveClubQuestTargetPlaceRequest)
+            const localVarPath = `/clubQuests/{clubQuestId}/targetPlaces/move`
+                .replace(`{${"clubQuestId"}}`, encodeURIComponent(String(clubQuestId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(moveClubQuestTargetPlaceRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4936,6 +5081,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 
+         * @summary groupId로 해당 그룹의 모든 퀘스트를 조회한다.
+         * @param {string} groupId 퀘스트 그룹 식별자
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getClubQuestsByGroupId(groupId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetClubQuestsByGroupIdResult>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getClubQuestsByGroupId(groupId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 퀘스트 목록을 커서링 방식으로 조회한다.
          * @summary 커서링 방식의 퀘스트 조회 API
          * @param {string} [cursor] 
@@ -4990,6 +5146,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async loginPost(loginPostRequest: LoginPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.loginPost(loginPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 특정 장소들을 다른 퀘스트로 이동한다.
+         * @param {string} clubQuestId 원본 퀘스트 ID
+         * @param {MoveClubQuestTargetPlaceRequest} moveClubQuestTargetPlaceRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async moveClubQuestTargetPlace(clubQuestId: string, moveClubQuestTargetPlaceRequest: MoveClubQuestTargetPlaceRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MoveClubQuestTargetPlaceResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.moveClubQuestTargetPlace(clubQuestId, moveClubQuestTargetPlaceRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5252,6 +5420,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getClosedPlaceCandidate(id, options).then((request) => request(axios, basePath));
         },
         /**
+         * 
+         * @summary groupId로 해당 그룹의 모든 퀘스트를 조회한다.
+         * @param {string} groupId 퀘스트 그룹 식별자
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getClubQuestsByGroupId(groupId: string, options?: any): AxiosPromise<GetClubQuestsByGroupIdResult> {
+            return localVarFp.getClubQuestsByGroupId(groupId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 퀘스트 목록을 커서링 방식으로 조회한다.
          * @summary 커서링 방식의 퀘스트 조회 API
          * @param {string} [cursor] 
@@ -5302,6 +5480,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         loginPost(loginPostRequest: LoginPostRequest, options?: any): AxiosPromise<void> {
             return localVarFp.loginPost(loginPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 특정 장소들을 다른 퀘스트로 이동한다.
+         * @param {string} clubQuestId 원본 퀘스트 ID
+         * @param {MoveClubQuestTargetPlaceRequest} moveClubQuestTargetPlaceRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        moveClubQuestTargetPlace(clubQuestId: string, moveClubQuestTargetPlaceRequest: MoveClubQuestTargetPlaceRequest, options?: any): AxiosPromise<MoveClubQuestTargetPlaceResponse> {
+            return localVarFp.moveClubQuestTargetPlace(clubQuestId, moveClubQuestTargetPlaceRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -5599,6 +5788,18 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 
+     * @summary groupId로 해당 그룹의 모든 퀘스트를 조회한다.
+     * @param {string} groupId 퀘스트 그룹 식별자
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getClubQuestsByGroupId(groupId: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getClubQuestsByGroupId(groupId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 퀘스트 목록을 커서링 방식으로 조회한다.
      * @summary 커서링 방식의 퀘스트 조회 API
      * @param {string} [cursor] 
@@ -5658,6 +5859,19 @@ export class DefaultApi extends BaseAPI {
      */
     public loginPost(loginPostRequest: LoginPostRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).loginPost(loginPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 특정 장소들을 다른 퀘스트로 이동한다.
+     * @param {string} clubQuestId 원본 퀘스트 ID
+     * @param {MoveClubQuestTargetPlaceRequest} moveClubQuestTargetPlaceRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public moveClubQuestTargetPlace(clubQuestId: string, moveClubQuestTargetPlaceRequest: MoveClubQuestTargetPlaceRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).moveClubQuestTargetPlace(clubQuestId, moveClubQuestTargetPlaceRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
