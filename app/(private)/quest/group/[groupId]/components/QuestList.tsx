@@ -3,14 +3,14 @@ import { styled } from "@/styles/jsx"
 
 interface QuestListProps {
   quests: ClubQuestDTO[]
-  questColorMap: Map<string, string>
+  questIndexMap: Map<string, number>
   moveMode: boolean
   onQuestClick: (questId: string) => void
 }
 
 export default function QuestList({
   quests,
-  questColorMap,
+  questIndexMap,
   moveMode,
   onQuestClick,
 }: QuestListProps) {
@@ -19,25 +19,34 @@ export default function QuestList({
       <Title>퀘스트 목록 ({quests.length})</Title>
       {moveMode && <ModeIndicator>옮길 퀘스트를 선택하세요</ModeIndicator>}
       <List>
-        {quests.map((quest) => (
-          <QuestItem
-            key={quest.id}
-            onClick={() => moveMode && onQuestClick(quest.id)}
-            style={{
-              cursor: moveMode ? "pointer" : "default",
-              opacity: moveMode ? 1 : 0.9,
-            }}
-          >
-            <ColorIndicator style={{ backgroundColor: questColorMap.get(quest.id) }} />
-            <QuestInfo>
-              <QuestName>{quest.name}</QuestName>
-              <QuestStats>
-                건물: {quest.buildings.length}개 | 장소:{" "}
-                {quest.buildings.reduce((sum, b) => sum + b.places.length, 0)}개
-              </QuestStats>
-            </QuestInfo>
-          </QuestItem>
-        ))}
+        {quests.map((quest) => {
+          const clusterIndex = questIndexMap.get(quest.id) ?? 0
+          return (
+            <QuestItem
+              key={quest.id}
+              onClick={() => moveMode && onQuestClick(quest.id)}
+              style={{
+                cursor: moveMode ? "pointer" : "default",
+                opacity: moveMode ? 1 : 0.9,
+              }}
+            >
+              <ColorIndicator
+                style={{
+                  backgroundImage: "url(/marker_cluster_sprite.png)",
+                  backgroundPosition: `${-24 * (clusterIndex % 10)}px ${-36 * Math.floor(clusterIndex / 10)}px`,
+                  backgroundSize: "240px 144px",
+                }}
+              />
+              <QuestInfo>
+                <QuestName>{quest.name}</QuestName>
+                <QuestStats>
+                  건물: {quest.buildings.length}개 | 장소:{" "}
+                  {quest.buildings.reduce((sum, b) => sum + b.places.length, 0)}개
+                </QuestStats>
+              </QuestInfo>
+            </QuestItem>
+          )
+        })}
       </List>
     </Container>
   )
@@ -98,10 +107,10 @@ const QuestItem = styled("div", {
 
 const ColorIndicator = styled("div", {
   base: {
-    width: "16px",
-    height: "16px",
-    borderRadius: "50%",
+    width: "24px",
+    height: "36px",
     flexShrink: 0,
+    backgroundRepeat: "no-repeat",
   },
 })
 

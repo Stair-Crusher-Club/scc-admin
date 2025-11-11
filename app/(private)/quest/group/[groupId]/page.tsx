@@ -20,20 +20,6 @@ interface PageProps {
   params: { groupId: string }
 }
 
-// marker_cluster_sprite.png와 유사한 색상 팔레트 (UI 표시용)
-const QUEST_COLORS = [
-  "#FF6B6B", // 빨강
-  "#4ECDC4", // 청록
-  "#45B7D1", // 파랑
-  "#FFA07A", // 주황
-  "#98D8C8", // 민트
-  "#F7DC6F", // 노랑
-  "#BB8FCE", // 보라
-  "#85C1E2", // 하늘
-  "#F8B739", // 금색
-  "#52B788", // 초록
-]
-
 export default function QuestGroupPage({ params }: PageProps) {
   const { groupId } = params
   const queryClient = useQueryClient()
@@ -59,12 +45,6 @@ export default function QuestGroupPage({ params }: PageProps) {
   const questIndexMap = new Map<string, number>()
   quests.forEach((quest, index) => {
     questIndexMap.set(quest.id, index)
-  })
-
-  // 퀘스트별 색상 할당 (UI 표시용)
-  const questColorMap = new Map<string, string>()
-  quests.forEach((quest, index) => {
-    questColorMap.set(quest.id, QUEST_COLORS[index % QUEST_COLORS.length])
   })
 
   // 지도 초기화
@@ -270,7 +250,7 @@ export default function QuestGroupPage({ params }: PageProps) {
           <S.LeftPanel>
             <QuestList
               quests={quests}
-              questColorMap={questColorMap}
+              questIndexMap={questIndexMap}
               moveMode={moveMode}
               onQuestClick={handleQuestClick}
             />
