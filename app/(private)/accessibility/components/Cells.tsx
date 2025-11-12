@@ -229,16 +229,16 @@ export function ActionsCell({
     if (!formValues.entranceDoorTypes || formValues.entranceDoorTypes.length === 0) {
       entranceDoorTypes = undefined
     } else {
-      entranceDoorTypes = formValues.entranceDoorTypes.map((v) => v.value)
+      entranceDoorTypes = formValues.entranceDoorTypes.map((v) => v.value).filter(it => !!it)
     }
 
     const payload: UpdatePlaceAccessibilityPayload = {
-      isFirstFloor: isFirstFloor,
+      isFirstFloor: isFirstFloor || false,
       floors: floors,
       isStairOnlyOption: formValues.isStairOnlyOption?.value,
-      stairInfo: formValues.stairInfo.value,
+      stairInfo: formValues.stairInfo.value || 'UNDEFINED',
       stairHeightLevel: formValues.stairHeightLevel?.value,
-      hasSlope: formValues.hasSlope.value,
+      hasSlope: formValues.hasSlope.value || false,
       entranceDoorTypes: entranceDoorTypes,
     }
 
@@ -286,16 +286,16 @@ export function ActionsCell({
     if (!formValues.entranceDoorTypes || formValues.entranceDoorTypes.length === 0) {
       entranceDoorTypes = undefined
     } else {
-      entranceDoorTypes = formValues.entranceDoorTypes.map((v) => v.value)
+      entranceDoorTypes = formValues.entranceDoorTypes.map((v) => v?.value).filter(it => !!it)
     }
 
     const payload: UpdateBuildingAccessibilityPayload = {
-      hasElevator: formValues.hasElevator.value,
-      hasSlope: formValues.hasSlope.value,
-      entranceStairInfo: formValues.entranceStairInfo.value,
+      hasElevator: formValues.hasElevator?.value || false,
+      hasSlope: formValues.hasSlope?.value || false,
+      entranceStairInfo: formValues.entranceStairInfo?.value || 'UNDEFINED',
       entranceStairHeightLevel: formValues.entranceStairHeightLevel?.value,
       entranceDoorTypes: entranceDoorTypes,
-      elevatorStairInfo: formValues.elevatorStairInfo.value,
+      elevatorStairInfo: formValues.elevatorStairInfo?.value || 'UNDEFINED',
       elevatorStairHeightLevel: formValues.elevatorStairHeightLevel?.value,
     }
 
