@@ -1,6 +1,7 @@
 import "@reactleaf/input/style"
 import type { Metadata } from "next"
 import { Noto_Sans_KR } from "next/font/google"
+import Script from "next/script"
 import "react-datepicker/dist/react-datepicker.css"
 import "react-toastify/dist/ReactToastify.css"
 
@@ -19,13 +20,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const naverClientId = process.env.NEXT_PUBLIC_NAVER_CLIENT_ID
   return (
     <html lang="ko" className={isDevEnv ? "env-dev" : undefined}>
-      <head>
-        <script
-          type="text/javascript"
-          src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverClientId}&submodules=geocoder`}
-        />
-      </head>
       <body className={fonts.className}>
+        <Script
+          src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverClientId}&submodules=geocoder`}
+          strategy="beforeInteractive"
+        />
         <Providers>{children}</Providers>
       </body>
     </html>
