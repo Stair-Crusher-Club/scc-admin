@@ -7,6 +7,7 @@ import { ChangeEventHandler, useEffect, useRef, useState } from "react"
 import { FormProvider, UseFormReturn, useWatch } from "react-hook-form"
 
 import { getImageUploadUrls } from "@/lib/apis/api"
+import { uploadImage } from "@/lib/imageUpload"
 import {
   AdminChallengeB2bFormSchemaDTO,
   AdminChallengeB2bFormSchemaAvailableFieldDTO,
@@ -437,35 +438,19 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
     }
   }
 
-  const handleModalImageChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+  const handleModalImageChange: ChangeEventHandler<HTMLInputElement> = async (e) => {
     if (!e?.target?.files) {
       return
     }
     const selectedFile = e!.target.files[0]
 
     if (selectedFile) {
-      getImageUploadUrls({
+      const uploadedImageUrl = await uploadImage({
+        file: selectedFile,
         purposeType: "CRUSHER_LABEL",
-        count: 1,
-        filenameExtension: selectedFile.name.split(".").pop()!,
-      }).then(async (result) => {
-        const uploadUrl = result.urls[0].url
-        await axios.put(uploadUrl, selectedFile, {
-          headers: {
-            "Content-Type": selectedFile.type,
-            "x-amz-acl": "public-read",
-          },
-          withCredentials: false,
-        })
-        const removeQueryParamFromUrl = (url: string) => {
-          const urlObj = new URL(url)
-          urlObj.search = ""
-          return urlObj.toString()
-        }
-        const uploadedImageUrl = removeQueryParamFromUrl(uploadUrl)
-        setModalImageUrl(uploadedImageUrl)
-        form.setValue("modalImageUrl", uploadedImageUrl)
       })
+      setModalImageUrl(uploadedImageUrl)
+      form.setValue("modalImageUrl", uploadedImageUrl)
     }
   }
 

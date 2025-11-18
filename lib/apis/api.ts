@@ -23,6 +23,7 @@ import {
 import {
   AccessibilityApi,
   BannerApi,
+  BbucleRoadApi,
   ChallengeApi,
   Configuration,
   DefaultApi,
@@ -49,17 +50,20 @@ const defaultApi = new DefaultApi(config)
 const challengeApi = new ChallengeApi(config)
 const bannerApi = new BannerApi(config)
 const accessibilityApi = new AccessibilityApi(config)
+const bbucleRoadApi = new BbucleRoadApi(config)
 
 export const api: {
   default: DefaultApi
   challenge: ChallengeApi
   banner: BannerApi
   accessibility: AccessibilityApi
+  bbucleRoad: BbucleRoadApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
   banner: bannerApi,
   accessibility: accessibilityApi,
+  bbucleRoad: bbucleRoadApi,
 }
 
 export function useQuest({ id }: { id: string }) {

@@ -16,8 +16,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const isDevEnv = process.env.NEXT_PUBLIC_DEPLOY_TYPE !== "live"
+  const naverClientId = process.env.NEXT_PUBLIC_NAVER_CLIENT_ID
   return (
     <html lang="ko" className={isDevEnv ? "env-dev" : undefined}>
+      <head>
+        <script
+          type="text/javascript"
+          src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverClientId}&submodules=geocoder`}
+        />
+      </head>
       <body className={fonts.className}>
         <Providers>{children}</Providers>
       </body>

@@ -941,7 +941,9 @@ export interface AdminImageDTO {
 
 export const AdminImageUploadPurposeTypeDTO = {
     Banner: 'BANNER',
-    CrusherLabel: 'CRUSHER_LABEL'
+    CrusherLabel: 'CRUSHER_LABEL',
+    BbucleRoadMarker: 'BBUCLE_ROAD_MARKER',
+    BbucleRoadDescription: 'BBUCLE_ROAD_DESCRIPTION'
 } as const;
 
 export type AdminImageUploadPurposeTypeDTO = typeof AdminImageUploadPurposeTypeDTO[keyof typeof AdminImageUploadPurposeTypeDTO];
@@ -1538,6 +1540,177 @@ export interface AdminUpdatePushNotificationScheduleRequestDTO {
 /**
  * 
  * @export
+ * @interface BbucleRoadPageDTO
+ */
+export interface BbucleRoadPageDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof BbucleRoadPageDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof BbucleRoadPageDTO
+     */
+    'title': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof BbucleRoadPageDTO
+     */
+    'titleImageUrl': string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof BbucleRoadPageDTO
+     */
+    'summary': Array<string>;
+    /**
+     * 
+     * @type {Array<BbucleRoadSectionDTO>}
+     * @memberof BbucleRoadPageDTO
+     */
+    'sections': Array<BbucleRoadSectionDTO>;
+    /**
+     * 
+     * @type {string}
+     * @memberof BbucleRoadPageDTO
+     */
+    'createdAt': string;
+}
+/**
+ * 
+ * @export
+ * @interface BbucleRoadSectionDTO
+ */
+export interface BbucleRoadSectionDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof BbucleRoadSectionDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {BbucleRoadSectionTypeDTO}
+     * @memberof BbucleRoadSectionDTO
+     */
+    'type': BbucleRoadSectionTypeDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof BbucleRoadSectionDTO
+     */
+    'title': string;
+    /**
+     * 
+     * @type {MapConfigDTO}
+     * @memberof BbucleRoadSectionDTO
+     */
+    'mapConfig'?: MapConfigDTO;
+    /**
+     * 
+     * @type {Array<MapMarkerDTO>}
+     * @memberof BbucleRoadSectionDTO
+     */
+    'markers'?: Array<MapMarkerDTO> | null;
+    /**
+     * 이미지 URL 목록
+     * @type {Array<string>}
+     * @memberof BbucleRoadSectionDTO
+     */
+    'imageUrls'?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof BbucleRoadSectionDTO
+     */
+    'accessibilityTips'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof BbucleRoadSectionDTO
+     */
+    'order': number;
+}
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const BbucleRoadSectionTypeDTO = {
+    MapOverview: 'MAP_OVERVIEW',
+    Traffic: 'TRAFFIC',
+    Ticketing: 'TICKETING',
+    WheelchairView: 'WHEELCHAIR_VIEW',
+    NearbyRestaurants: 'NEARBY_RESTAURANTS',
+    NearbyCafes: 'NEARBY_CAFES'
+} as const;
+
+export type BbucleRoadSectionTypeDTO = typeof BbucleRoadSectionTypeDTO[keyof typeof BbucleRoadSectionTypeDTO];
+
+
+/**
+ * 
+ * @export
+ * @interface BulkImportHumanInspectionResponseDTO
+ */
+export interface BulkImportHumanInspectionResponseDTO {
+    /**
+     * 처리 상태 메시지
+     * @type {string}
+     * @memberof BulkImportHumanInspectionResponseDTO
+     */
+    'message': string;
+    /**
+     * CSV 파일의 전체 레코드 수
+     * @type {number}
+     * @memberof BulkImportHumanInspectionResponseDTO
+     */
+    'totalRecords': number;
+    /**
+     * 파싱에 성공한 레코드 수
+     * @type {number}
+     * @memberof BulkImportHumanInspectionResponseDTO
+     */
+    'parsedCount': number;
+    /**
+     * 파싱에 실패한 레코드 수
+     * @type {number}
+     * @memberof BulkImportHumanInspectionResponseDTO
+     */
+    'parseErrors': number;
+    /**
+     * 등록에 성공한 레코드 수 (비동기 처리시 null)
+     * @type {number}
+     * @memberof BulkImportHumanInspectionResponseDTO
+     */
+    'successCount'?: number | null;
+    /**
+     * 등록에 실패한 레코드 수 (비동기 처리시 null)
+     * @type {number}
+     * @memberof BulkImportHumanInspectionResponseDTO
+     */
+    'failureCount'?: number | null;
+    /**
+     * 실패한 레코드의 에러 메시지 목록 (비동기 처리시 null)
+     * @type {Array<string>}
+     * @memberof BulkImportHumanInspectionResponseDTO
+     */
+    'errors'?: Array<string> | null;
+    /**
+     * 비동기 처리 여부 (true면 백그라운드 처리중)
+     * @type {boolean}
+     * @memberof BulkImportHumanInspectionResponseDTO
+     */
+    'asyncProcessing': boolean;
+}
+/**
+ * 
+ * @export
  * @enum {string}
  */
 
@@ -1971,6 +2144,86 @@ export interface CreateAndNotifyDailyClubQuestResponseDTO {
 /**
  * 
  * @export
+ * @interface CreateBbucleRoadPageRequestDTO
+ */
+export interface CreateBbucleRoadPageRequestDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateBbucleRoadPageRequestDTO
+     */
+    'title': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateBbucleRoadPageRequestDTO
+     */
+    'titleImageUrl': string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof CreateBbucleRoadPageRequestDTO
+     */
+    'summary': Array<string>;
+    /**
+     * 
+     * @type {Array<CreateBbucleRoadSectionDTO>}
+     * @memberof CreateBbucleRoadPageRequestDTO
+     */
+    'sections': Array<CreateBbucleRoadSectionDTO>;
+}
+/**
+ * 
+ * @export
+ * @interface CreateBbucleRoadSectionDTO
+ */
+export interface CreateBbucleRoadSectionDTO {
+    /**
+     * 
+     * @type {BbucleRoadSectionTypeDTO}
+     * @memberof CreateBbucleRoadSectionDTO
+     */
+    'type': BbucleRoadSectionTypeDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateBbucleRoadSectionDTO
+     */
+    'title': string;
+    /**
+     * 
+     * @type {MapConfigDTO}
+     * @memberof CreateBbucleRoadSectionDTO
+     */
+    'mapConfig'?: MapConfigDTO;
+    /**
+     * 
+     * @type {Array<CreateMapMarkerDTO>}
+     * @memberof CreateBbucleRoadSectionDTO
+     */
+    'markers'?: Array<CreateMapMarkerDTO> | null;
+    /**
+     * 이미지 URL 목록
+     * @type {Array<string>}
+     * @memberof CreateBbucleRoadSectionDTO
+     */
+    'imageUrls'?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateBbucleRoadSectionDTO
+     */
+    'accessibilityTips'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateBbucleRoadSectionDTO
+     */
+    'order': number;
+}
+/**
+ * 
+ * @export
  * @interface CreateClubQuestRequest
  */
 export interface CreateClubQuestRequest {
@@ -2017,6 +2270,43 @@ export interface CreateClubQuestResponseDTO {
      * @memberof CreateClubQuestResponseDTO
      */
     'clubQuestIds': Array<string>;
+}
+/**
+ * 
+ * @export
+ * @interface CreateMapMarkerDTO
+ */
+export interface CreateMapMarkerDTO {
+    /**
+     * 
+     * @type {MarkerCategoryDTO}
+     * @memberof CreateMapMarkerDTO
+     */
+    'category': MarkerCategoryDTO;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof CreateMapMarkerDTO
+     */
+    'position': LocationDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMapMarkerDTO
+     */
+    'tooltipText': string;
+    /**
+     * 
+     * @type {MarkerSizeDTO}
+     * @memberof CreateMapMarkerDTO
+     */
+    'size'?: MarkerSizeDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMapMarkerDTO
+     */
+    'customImageUrl'?: string;
 }
 /**
  * 특정 시각을 표현하기 위한 모델.
@@ -2128,6 +2418,116 @@ export interface LoginPostRequest {
      * @memberof LoginPostRequest
      */
     'password': string;
+}
+/**
+ * 
+ * @export
+ * @interface MapConfigDTO
+ */
+export interface MapConfigDTO {
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof MapConfigDTO
+     */
+    'center'?: LocationDTO;
+    /**
+     * 지도 확대 레벨 (1-14)
+     * @type {number}
+     * @memberof MapConfigDTO
+     */
+    'level'?: number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof MapConfigDTO
+     */
+    'showCurrentLocation': boolean;
+}
+/**
+ * 
+ * @export
+ * @interface MapMarkerDTO
+ */
+export interface MapMarkerDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof MapMarkerDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {MarkerCategoryDTO}
+     * @memberof MapMarkerDTO
+     */
+    'category': MarkerCategoryDTO;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof MapMarkerDTO
+     */
+    'position': LocationDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof MapMarkerDTO
+     */
+    'tooltipText': string;
+    /**
+     * 
+     * @type {MarkerSizeDTO}
+     * @memberof MapMarkerDTO
+     */
+    'size'?: MarkerSizeDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof MapMarkerDTO
+     */
+    'customImageUrl'?: string;
+}
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const MarkerCategoryDTO = {
+    Restaurant: 'RESTAURANT',
+    Cafe: 'CAFE',
+    AccessibleToilet: 'ACCESSIBLE_TOILET',
+    AccessibilityInfo: 'ACCESSIBILITY_INFO',
+    TicketBooth: 'TICKET_BOOTH',
+    Entrance: 'ENTRANCE',
+    Elevator: 'ELEVATOR',
+    SubwayExit: 'SUBWAY_EXIT',
+    BusStop: 'BUS_STOP',
+    Parking: 'PARKING',
+    Custom: 'CUSTOM'
+} as const;
+
+export type MarkerCategoryDTO = typeof MarkerCategoryDTO[keyof typeof MarkerCategoryDTO];
+
+
+/**
+ * 
+ * @export
+ * @interface MarkerSizeDTO
+ */
+export interface MarkerSizeDTO {
+    /**
+     * 
+     * @type {number}
+     * @memberof MarkerSizeDTO
+     */
+    'width': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof MarkerSizeDTO
+     */
+    'height': number;
 }
 /**
  * 장소 이동 요청
@@ -2246,6 +2646,135 @@ export interface StartPlaceCrawlingRequestDTO {
      */
     'boundaryVertices': Array<LocationDTO>;
 }
+/**
+ * 
+ * @export
+ * @interface UpdateBbucleRoadPageRequestDTO
+ */
+export interface UpdateBbucleRoadPageRequestDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateBbucleRoadPageRequestDTO
+     */
+    'title': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateBbucleRoadPageRequestDTO
+     */
+    'titleImageUrl': string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof UpdateBbucleRoadPageRequestDTO
+     */
+    'summary': Array<string>;
+    /**
+     * 
+     * @type {Array<UpdateBbucleRoadSectionDTO>}
+     * @memberof UpdateBbucleRoadPageRequestDTO
+     */
+    'sections': Array<UpdateBbucleRoadSectionDTO>;
+}
+/**
+ * 
+ * @export
+ * @interface UpdateBbucleRoadSectionDTO
+ */
+export interface UpdateBbucleRoadSectionDTO {
+    /**
+     * 기존 섹션은 id가 있고, 새 섹션은 null
+     * @type {string}
+     * @memberof UpdateBbucleRoadSectionDTO
+     */
+    'id'?: string;
+    /**
+     * 
+     * @type {BbucleRoadSectionTypeDTO}
+     * @memberof UpdateBbucleRoadSectionDTO
+     */
+    'type': BbucleRoadSectionTypeDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateBbucleRoadSectionDTO
+     */
+    'title': string;
+    /**
+     * 
+     * @type {MapConfigDTO}
+     * @memberof UpdateBbucleRoadSectionDTO
+     */
+    'mapConfig'?: MapConfigDTO;
+    /**
+     * 
+     * @type {Array<UpdateMapMarkerDTO>}
+     * @memberof UpdateBbucleRoadSectionDTO
+     */
+    'markers'?: Array<UpdateMapMarkerDTO> | null;
+    /**
+     * 이미지 URL 목록
+     * @type {Array<string>}
+     * @memberof UpdateBbucleRoadSectionDTO
+     */
+    'imageUrls'?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateBbucleRoadSectionDTO
+     */
+    'accessibilityTips'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof UpdateBbucleRoadSectionDTO
+     */
+    'order': number;
+}
+/**
+ * 
+ * @export
+ * @interface UpdateMapMarkerDTO
+ */
+export interface UpdateMapMarkerDTO {
+    /**
+     * 기존 마커는 id가 있고, 새 마커는 null
+     * @type {string}
+     * @memberof UpdateMapMarkerDTO
+     */
+    'id'?: string;
+    /**
+     * 
+     * @type {MarkerCategoryDTO}
+     * @memberof UpdateMapMarkerDTO
+     */
+    'category': MarkerCategoryDTO;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof UpdateMapMarkerDTO
+     */
+    'position': LocationDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMapMarkerDTO
+     */
+    'tooltipText': string;
+    /**
+     * 
+     * @type {MarkerSizeDTO}
+     * @memberof UpdateMapMarkerDTO
+     */
+    'size'?: MarkerSizeDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMapMarkerDTO
+     */
+    'customImageUrl'?: string;
+}
 
 /**
  * AccessibilityApi - axios parameter creator
@@ -2253,6 +2782,51 @@ export interface StartPlaceCrawlingRequestDTO {
  */
 export const AccessibilityApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
+         * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
+         * @param {File} file CSV 파일
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        bulkImportHumanInspections: async (file: File, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('bulkImportHumanInspections', 'file', file)
+            const localVarPath = `/accessibility-inspection-results/human/bulk-import`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @summary 건물 정보를 삭제한다.
@@ -2606,6 +3180,17 @@ export const AccessibilityApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AccessibilityApiAxiosParamCreator(configuration)
     return {
         /**
+         * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
+         * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
+         * @param {File} file CSV 파일
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async bulkImportHumanInspections(file: File, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BulkImportHumanInspectionResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.bulkImportHumanInspections(file, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 
          * @summary 건물 정보를 삭제한다.
          * @param {string} id 
@@ -2707,6 +3292,16 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
     const localVarFp = AccessibilityApiFp(configuration)
     return {
         /**
+         * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
+         * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
+         * @param {File} file CSV 파일
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        bulkImportHumanInspections(file: File, options?: any): AxiosPromise<BulkImportHumanInspectionResponseDTO> {
+            return localVarFp.bulkImportHumanInspections(file, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 
          * @summary 건물 정보를 삭제한다.
          * @param {string} id 
@@ -2800,6 +3395,18 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
  * @extends {BaseAPI}
  */
 export class AccessibilityApi extends BaseAPI {
+    /**
+     * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
+     * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
+     * @param {File} file CSV 파일
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccessibilityApi
+     */
+    public bulkImportHumanInspections(file: File, options?: AxiosRequestConfig) {
+        return AccessibilityApiFp(this.configuration).bulkImportHumanInspections(file, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary 건물 정보를 삭제한다.
@@ -3206,6 +3813,403 @@ export class BannerApi extends BaseAPI {
      */
     public adminListHomeBanners(options?: AxiosRequestConfig) {
         return BannerApiFp(this.configuration).adminListHomeBanners(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * BbucleRoadApi - axios parameter creator
+ * @export
+ */
+export const BbucleRoadApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 생성한다.
+         * @param {CreateBbucleRoadPageRequestDTO} createBbucleRoadPageRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createBbucleRoadPage: async (createBbucleRoadPageRequestDTO: CreateBbucleRoadPageRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createBbucleRoadPageRequestDTO' is not null or undefined
+            assertParamExists('createBbucleRoadPage', 'createBbucleRoadPageRequestDTO', createBbucleRoadPageRequestDTO)
+            const localVarPath = `/bbucle-road-pages`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createBbucleRoadPageRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteBbucleRoadPage: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteBbucleRoadPage', 'id', id)
+            const localVarPath = `/bbucle-road-pages/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBbucleRoadPage: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getBbucleRoadPage', 'id', id)
+            const localVarPath = `/bbucle-road-pages/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listBbucleRoadPages: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/bbucle-road-pages`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 수정한다.
+         * @param {string} id 
+         * @param {UpdateBbucleRoadPageRequestDTO} updateBbucleRoadPageRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateBbucleRoadPage: async (id: string, updateBbucleRoadPageRequestDTO: UpdateBbucleRoadPageRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateBbucleRoadPage', 'id', id)
+            // verify required parameter 'updateBbucleRoadPageRequestDTO' is not null or undefined
+            assertParamExists('updateBbucleRoadPage', 'updateBbucleRoadPageRequestDTO', updateBbucleRoadPageRequestDTO)
+            const localVarPath = `/bbucle-road-pages/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateBbucleRoadPageRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * BbucleRoadApi - functional programming interface
+ * @export
+ */
+export const BbucleRoadApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = BbucleRoadApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 생성한다.
+         * @param {CreateBbucleRoadPageRequestDTO} createBbucleRoadPageRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createBbucleRoadPage(createBbucleRoadPageRequestDTO: CreateBbucleRoadPageRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BbucleRoadPageDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createBbucleRoadPage(createBbucleRoadPageRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteBbucleRoadPage(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteBbucleRoadPage(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getBbucleRoadPage(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BbucleRoadPageDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBbucleRoadPage(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listBbucleRoadPages(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BbucleRoadPageDTO>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listBbucleRoadPages(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 수정한다.
+         * @param {string} id 
+         * @param {UpdateBbucleRoadPageRequestDTO} updateBbucleRoadPageRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateBbucleRoadPage(id: string, updateBbucleRoadPageRequestDTO: UpdateBbucleRoadPageRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BbucleRoadPageDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateBbucleRoadPage(id, updateBbucleRoadPageRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * BbucleRoadApi - factory interface
+ * @export
+ */
+export const BbucleRoadApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = BbucleRoadApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 생성한다.
+         * @param {CreateBbucleRoadPageRequestDTO} createBbucleRoadPageRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createBbucleRoadPage(createBbucleRoadPageRequestDTO: CreateBbucleRoadPageRequestDTO, options?: any): AxiosPromise<BbucleRoadPageDTO> {
+            return localVarFp.createBbucleRoadPage(createBbucleRoadPageRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteBbucleRoadPage(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteBbucleRoadPage(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBbucleRoadPage(id: string, options?: any): AxiosPromise<BbucleRoadPageDTO> {
+            return localVarFp.getBbucleRoadPage(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listBbucleRoadPages(options?: any): AxiosPromise<Array<BbucleRoadPageDTO>> {
+            return localVarFp.listBbucleRoadPages(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 뿌클로드 페이지를 수정한다.
+         * @param {string} id 
+         * @param {UpdateBbucleRoadPageRequestDTO} updateBbucleRoadPageRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateBbucleRoadPage(id: string, updateBbucleRoadPageRequestDTO: UpdateBbucleRoadPageRequestDTO, options?: any): AxiosPromise<BbucleRoadPageDTO> {
+            return localVarFp.updateBbucleRoadPage(id, updateBbucleRoadPageRequestDTO, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * BbucleRoadApi - object-oriented interface
+ * @export
+ * @class BbucleRoadApi
+ * @extends {BaseAPI}
+ */
+export class BbucleRoadApi extends BaseAPI {
+    /**
+     * 
+     * @summary 뿌클로드 페이지를 생성한다.
+     * @param {CreateBbucleRoadPageRequestDTO} createBbucleRoadPageRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BbucleRoadApi
+     */
+    public createBbucleRoadPage(createBbucleRoadPageRequestDTO: CreateBbucleRoadPageRequestDTO, options?: AxiosRequestConfig) {
+        return BbucleRoadApiFp(this.configuration).createBbucleRoadPage(createBbucleRoadPageRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 뿌클로드 페이지를 삭제한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BbucleRoadApi
+     */
+    public deleteBbucleRoadPage(id: string, options?: AxiosRequestConfig) {
+        return BbucleRoadApiFp(this.configuration).deleteBbucleRoadPage(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 뿌클로드 페이지를 조회한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BbucleRoadApi
+     */
+    public getBbucleRoadPage(id: string, options?: AxiosRequestConfig) {
+        return BbucleRoadApiFp(this.configuration).getBbucleRoadPage(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 뿌클로드 페이지 목록을 조회한다.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BbucleRoadApi
+     */
+    public listBbucleRoadPages(options?: AxiosRequestConfig) {
+        return BbucleRoadApiFp(this.configuration).listBbucleRoadPages(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 뿌클로드 페이지를 수정한다.
+     * @param {string} id 
+     * @param {UpdateBbucleRoadPageRequestDTO} updateBbucleRoadPageRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BbucleRoadApi
+     */
+    public updateBbucleRoadPage(id: string, updateBbucleRoadPageRequestDTO: UpdateBbucleRoadPageRequestDTO, options?: AxiosRequestConfig) {
+        return BbucleRoadApiFp(this.configuration).updateBbucleRoadPage(id, updateBbucleRoadPageRequestDTO, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
