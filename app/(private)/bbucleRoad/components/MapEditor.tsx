@@ -233,7 +233,7 @@ export default function MapEditor({
       <div className="lg:col-span-2">
         <Card>
           <CardContent className="p-4">
-            <div ref={mapContainer} className="w-full rounded-md" style={{ height: '500px' }} />
+            <div ref={mapContainer} className="w-full rounded-md" style={{ height: '300px' }} />
           </CardContent>
         </Card>
       </div>
