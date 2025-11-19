@@ -155,6 +155,7 @@ type CreateQuestPayload = {
   purposeType: ClubQuestPurposeTypeEnumDTO
   startAt: EpochMillisTimestamp
   endAt: EpochMillisTimestamp
+  isAttendanceCheckEnabled?: boolean
   dryRunResults: ClubQuestCreateDryRunResultItemDTO[]
 }
 export async function createQuest(payload: CreateQuestPayload) {

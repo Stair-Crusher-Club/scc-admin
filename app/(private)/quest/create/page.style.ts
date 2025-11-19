@@ -38,6 +38,8 @@ export const Form = styled("form", {
     width: 400,
     padding: 24,
     boxShadow: "0 0 6px 4px rgba(0, 0, 0, 0.1)",
+    maxHeight: "calc(100vh - 48px)",
+    overflowY: "auto",
   },
 })
 

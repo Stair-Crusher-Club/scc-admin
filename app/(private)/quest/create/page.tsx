@@ -57,6 +57,7 @@ interface FormValues {
   radius: number
   division: number
   maxPlacesPerQuest: number
+  isAttendanceCheckEnabled: boolean
 }
 
 export default function QuestCreate() {
@@ -80,6 +81,7 @@ export default function QuestCreate() {
       radius: 200,
       division: 3,
       maxPlacesPerQuest: 50,
+      isAttendanceCheckEnabled: true,
     },
   })
   const [clusters, setClusters] = useState<ClubQuestCreateDryRunResultItemDTO[]>([])
@@ -155,6 +157,7 @@ export default function QuestCreate() {
       purposeType: values.purposeType.value,
       startAt: { value: values.startDate.getTime() },
       endAt: { value: atEndOfDay(values.endDate).getTime() },
+      isAttendanceCheckEnabled: values.isAttendanceCheckEnabled,
       dryRunResults: clusters,
     })
 
@@ -193,8 +196,18 @@ export default function QuestCreate() {
                 <Combobox name="purposeType" label="퀘스트 용도" options={purposeTypeOptions} isClearable={false} />
               </Flex>
               <Flex>
-                <DateInput name="startDate" label="퀘스트 시작" dateFormat="yyyy-MM-dd" />
-                <DateInput name="endDate" label="퀘스트 종료" dateFormat="yyyy-MM-dd" />
+                <DateInput
+                  name="startDate"
+                  label="퀘스트 시작"
+                  dateFormat="yyyy-MM-dd"
+                  rules={{ required: "퀘스트 시작일을 입력해주세요." }}
+                />
+                <DateInput
+                  name="endDate"
+                  label="퀘스트 종료"
+                  dateFormat="yyyy-MM-dd"
+                  rules={{ required: "퀘스트 종료일을 입력해주세요." }}
+                />
               </Flex>
               <Flex>
                 <Combobox
@@ -248,6 +261,11 @@ export default function QuestCreate() {
               />
               <NumberInput name="maxPlacesPerQuest" label="퀘스트 당 최대 장소 수" clearable={false} />
             </fieldset>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", padding: "0 24px", marginTop: "12px" }}>
+              <input type="checkbox" {...form.register("isAttendanceCheckEnabled")} />
+              출석체크 활성화
+            </label>
 
             <Flex direction="column" gap="8px">
               {!showPreview && (

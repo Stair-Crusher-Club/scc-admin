@@ -318,6 +318,61 @@ export interface AdminBuildingAccessibilityDTO {
 /**
  * 
  * @export
+ * @interface AdminBuildingDeduplicationCandidateDTO
+ */
+export interface AdminBuildingDeduplicationCandidateDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'currentBuildingId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'newBuildingId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'buildingName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'roadAddress': string;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'location': LocationDTO;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'acceptedAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'ignoredAt'?: EpochMillisTimestamp;
+}
+/**
+ * 
+ * @export
  * @interface AdminChallengeActionConditionDTO
  */
 export interface AdminChallengeActionConditionDTO {
@@ -980,6 +1035,25 @@ export interface AdminListAllBannersResponseDTO {
      * @memberof AdminListAllBannersResponseDTO
      */
     'banners': Array<AdminBannerDTO>;
+}
+/**
+ * 
+ * @export
+ * @interface AdminListBuildingDeduplicationCandidatesResponseDTO
+ */
+export interface AdminListBuildingDeduplicationCandidatesResponseDTO {
+    /**
+     * 
+     * @type {Array<AdminBuildingDeduplicationCandidateDTO>}
+     * @memberof AdminListBuildingDeduplicationCandidatesResponseDTO
+     */
+    'items': Array<AdminBuildingDeduplicationCandidateDTO>;
+    /**
+     * 없으면 다음 페이지가 없다는 의미.
+     * @type {string}
+     * @memberof AdminListBuildingDeduplicationCandidatesResponseDTO
+     */
+    'cursor'?: string;
 }
 /**
  * 
@@ -1815,6 +1889,12 @@ export interface ClubQuestDTO {
      * @memberof ClubQuestDTO
      */
     'shortenedUrl'?: string;
+    /**
+     * 출석체크 가능 여부
+     * @type {boolean}
+     * @memberof ClubQuestDTO
+     */
+    'isAttendanceCheckEnabled'?: boolean;
 }
 /**
  * 
@@ -2252,6 +2332,12 @@ export interface CreateClubQuestRequest {
      */
     'endAt': EpochMillisTimestamp;
     /**
+     * 출석체크 가능 여부
+     * @type {boolean}
+     * @memberof CreateClubQuestRequest
+     */
+    'isAttendanceCheckEnabled'?: boolean;
+    /**
      * 
      * @type {Array<ClubQuestCreateDryRunResultItemDTO>}
      * @memberof CreateClubQuestRequest
@@ -2437,12 +2523,6 @@ export interface MapConfigDTO {
      * @memberof MapConfigDTO
      */
     'level'?: number;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof MapConfigDTO
-     */
-    'showCurrentLocation': boolean;
 }
 /**
  * 
@@ -5371,6 +5451,44 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary 건물 중복 제거 후보를 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBuildingDeduplicationCandidate: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getBuildingDeduplicationCandidate', 'id', id)
+            const localVarPath = `/building-deduplication-candidates/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 폐업이 추정되는 장소를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -5549,6 +5667,50 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             // authentication Admin required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 건물 중복 제거 후보 목록을 조회한다.
+         * @param {number} [limit] 
+         * @param {string} [cursor] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listBuildingDeduplicationCandidates: async (limit?: number, cursor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/building-deduplication-candidates`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
 
 
     
@@ -6075,6 +6237,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 건물 중복 제거 후보를 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getBuildingDeduplicationCandidate(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminBuildingDeduplicationCandidateDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBuildingDeduplicationCandidate(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 폐업이 추정되는 장소를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -6126,6 +6299,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async ignoreClosedPlaceCandidate(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminClosedPlaceCandidateDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.ignoreClosedPlaceCandidate(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 건물 중복 제거 후보 목록을 조회한다.
+         * @param {number} [limit] 
+         * @param {string} [cursor] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listBuildingDeduplicationCandidates(limit?: number, cursor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListBuildingDeduplicationCandidatesResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listBuildingDeduplicationCandidates(limit, cursor, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6415,6 +6600,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary 건물 중복 제거 후보를 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBuildingDeduplicationCandidate(id: string, options?: any): AxiosPromise<AdminBuildingDeduplicationCandidateDTO> {
+            return localVarFp.getBuildingDeduplicationCandidate(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 폐업이 추정되는 장소를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -6462,6 +6657,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         ignoreClosedPlaceCandidate(id: string, options?: any): AxiosPromise<AdminClosedPlaceCandidateDTO> {
             return localVarFp.ignoreClosedPlaceCandidate(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 건물 중복 제거 후보 목록을 조회한다.
+         * @param {number} [limit] 
+         * @param {string} [cursor] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listBuildingDeduplicationCandidates(limit?: number, cursor?: string, options?: any): AxiosPromise<AdminListBuildingDeduplicationCandidatesResponseDTO> {
+            return localVarFp.listBuildingDeduplicationCandidates(limit, cursor, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6781,6 +6987,18 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
+     * @summary 건물 중복 제거 후보를 조회한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getBuildingDeduplicationCandidate(id: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getBuildingDeduplicationCandidate(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary 폐업이 추정되는 장소를 조회한다.
      * @param {string} id 
      * @param {*} [options] Override http request option.
@@ -6837,6 +7055,19 @@ export class DefaultApi extends BaseAPI {
      */
     public ignoreClosedPlaceCandidate(id: string, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).ignoreClosedPlaceCandidate(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 건물 중복 제거 후보 목록을 조회한다.
+     * @param {number} [limit] 
+     * @param {string} [cursor] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public listBuildingDeduplicationCandidates(limit?: number, cursor?: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).listBuildingDeduplicationCandidates(limit, cursor, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

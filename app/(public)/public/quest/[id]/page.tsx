@@ -124,7 +124,9 @@ export default function QuestDetail() {
       >
         <Header.ActionButtonWrapper>
           <Header.ActionButton onClick={openGuide}>가이드</Header.ActionButton>
-          <Header.ActionButton onClick={checkInToClubQuest}>출석체크</Header.ActionButton>
+          {quest?.isAttendanceCheckEnabled && (
+            <Header.ActionButton onClick={checkInToClubQuest}>출석체크</Header.ActionButton>
+          )}
         </Header.ActionButtonWrapper>
       </Header>
       <Contents>
