@@ -63,7 +63,6 @@ export default function SectionEditor({ section, firstSectionMapConfig, onChange
             lng: firstSectionMapConfig?.center?.lng || 126.978,
           },
           level: firstSectionMapConfig?.level || 5,
-          showCurrentLocation: firstSectionMapConfig?.showCurrentLocation ?? true,
         },
         markers: [],
       })
@@ -160,7 +159,6 @@ export default function SectionEditor({ section, firstSectionMapConfig, onChange
                         lng: config.centerLng,
                       },
                       level: config.zoomLevel,
-                      showCurrentLocation: section.mapConfig?.showCurrentLocation ?? true,
                     })
                   }}
                   onMarkersChange={(markers) => {
