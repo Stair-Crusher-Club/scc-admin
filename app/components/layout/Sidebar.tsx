@@ -4,6 +4,7 @@ import { useAtom, useSetAtom } from "jotai"
 import {
   Building2,
   ClipboardList,
+  Copy,
   Flag,
   Home,
   LogOut,
@@ -39,6 +40,7 @@ const menuItems = [
   { href: "/region", label: "오픈 지역 관리", icon: Flag },
   { href: "/accessibility", label: "등록된 정보 관리", icon: Home },
   { href: "/closedPlace", label: "폐업 추정 장소 관리", icon: Building2 },
+  { href: "/buildingDeduplication", label: "건물 중복 제거 후보", icon: Copy },
   { href: "/banner", label: "배너 관리", icon: Tag },
   { href: "/bbucleRoad", label: "뿌클로드 관리", icon: Map },
   { href: "/notification", label: "푸시 알림 관리", icon: Megaphone },
