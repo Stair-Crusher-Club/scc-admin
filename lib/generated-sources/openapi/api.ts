@@ -630,6 +630,12 @@ export interface AdminChallengeDTO {
      * @memberof AdminChallengeDTO
      */
     'modalImageUrl'?: string;
+    /**
+     * When enabled, past contributions within challenge period are applied on join
+     * @type {boolean}
+     * @memberof AdminChallengeDTO
+     */
+    'isRetroactiveContributionEnabled'?: boolean;
 }
 /**
  * 
@@ -849,6 +855,12 @@ export interface AdminCreateChallengeRequestDTO {
      * @memberof AdminCreateChallengeRequestDTO
      */
     'modalImageUrl'?: string;
+    /**
+     * When enabled, past contributions within challenge period are applied on join
+     * @type {boolean}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'isRetroactiveContributionEnabled'?: boolean;
 }
 /**
  * 
@@ -1530,6 +1542,12 @@ export interface AdminUpdateChallengeRequestDTO {
      * @memberof AdminUpdateChallengeRequestDTO
      */
     'modalImageUrl'?: string;
+    /**
+     * When enabled, past contributions within challenge period are applied on join
+     * @type {boolean}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'isRetroactiveContributionEnabled'?: boolean;
 }
 /**
  * 

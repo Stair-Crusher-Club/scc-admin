@@ -212,6 +212,7 @@ type CreateChallengeParams = {
   invitationCode?: string
   passcode?: string
   startsAtMillis: number
+  joinStartAtMillis?: number
   endsAtMillis?: number
   goal: number
   milestones: number[]
@@ -221,6 +222,7 @@ type CreateChallengeParams = {
   }[]
   description: string
   isB2B: boolean
+  isRetroactiveContributionEnabled?: boolean
   b2bFormSchema?: AdminChallengeB2bFormSchemaDTO
   crusherGroup?: CrusherGroup
   lastMonthRankImageUrl?: string

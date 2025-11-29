@@ -44,12 +44,14 @@ export interface ChallengeFormValues {
   inviteCode: string
   joinCode: string
   startDate: Date
+  joinStartDate: Date | null
   endDate: Date | null
   milestones: Option[]
   questActions: Option[]
   questRegions: Option[]
   description: string
   isB2B: boolean
+  isRetroactiveContributionEnabled: boolean
   b2bFormSchema?: AdminChallengeB2bFormSchemaDTO
   crusherGroupName?: string
   imageUrl?: string
@@ -64,10 +66,12 @@ export const defaultValues: Partial<ChallengeFormValues> = {
   inviteCode: "",
   joinCode: "",
   startDate: new Date(),
+  joinStartDate: null,
   endDate: null,
   questActions: defaultActionOptions,
   description: "",
   isB2B: false,
+  isRetroactiveContributionEnabled: false,
   b2bFormSchema: undefined,
   crusherGroupName: "",
   imageUrl: "",
@@ -502,6 +506,14 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
             disabled={isEditableFieldDisabled}
           />
           <DateInput
+            name="joinStartDate"
+            label="참여 시작"
+            dateFormat="yyyy-MM-dd HH:mm"
+            showTimeSelect={true}
+            placeholderText="비워두면 챌린지 시작일과 동일"
+            disabled={isEditableFieldDisabled}
+          />
+          <DateInput
             name="endDate"
             label="챌린지 종료"
             dateFormat="yyyy-MM-dd HH:mm"
@@ -510,6 +522,27 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
             disabled={isEditableFieldDisabled}
           />
         </Flex>
+        <div className={css({ marginBottom: "16px" })}>
+          <label className={css({ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" })}>
+            <input
+              type="checkbox"
+              {...form.register("isRetroactiveContributionEnabled")}
+              disabled={isEditableFieldDisabled}
+              className={css({
+                width: "18px",
+                height: "18px",
+                cursor: "pointer",
+                _disabled: {
+                  cursor: "not-allowed",
+                },
+              })}
+            />
+            <span className={css({ fontSize: "14px", fontWeight: "500" })}>기여 소급적용 활성화</span>
+          </label>
+          <div className={css({ fontSize: "12px", color: "#6b7280", marginTop: "4px", marginLeft: "26px" })}>
+            예: 1월 1일 시작 챌린지에 1월 15일 참여 시, 1월 1~14일 기여분도 인정
+          </div>
+        </div>
         <Autocomplete
           isMulti
           name="milestones"
