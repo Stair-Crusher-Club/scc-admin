@@ -162,19 +162,6 @@ function fieldToDTO(field: FormField): AdminChallengeB2bFormSchemaAvailableField
   }
 }
 
-/**
- * Get default display name for built-in fields
- */
-function getBuiltinDisplayName(fieldName: AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO): string {
-  const nameMap: Record<AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO, string> = {
-    PARTICIPANT_NAME: '실명',
-    COMPANY_NAME: '소속 계열사',
-    ORGANIZATION_NAME: '조직',
-    EMPLOYEE_IDENTIFICATION_NUMBER: '사원번호',
-  }
-  return nameMap[fieldName] || fieldName
-}
-
 export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props) {
   // milestones는 증가하는 순서로 입력되도록 한다.
   // useEffect 실행을 최소화하기 위한 stringify

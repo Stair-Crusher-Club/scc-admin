@@ -1,5 +1,6 @@
 import globalAxios from "axios"
 import returnFetch from "return-fetch"
+import { toast } from "react-toastify"
 
 import { storage } from "./storage"
 
@@ -49,6 +50,13 @@ globalAxios.interceptors.response.use(
       storage.remove("token")
       history.pushState(null, "", "/account/login?redirect=" + window.location.pathname)
     }
+
+    // 서버 에러 메시지 toast 표시
+    const errorMessage = error.response?.data?.msg
+    if (errorMessage) {
+      toast.error(errorMessage)
+    }
+
     return Promise.reject(error)
   },
 )

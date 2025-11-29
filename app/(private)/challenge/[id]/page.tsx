@@ -104,11 +104,7 @@ export default function ChallengeDetail() {
       lastMonthRankImageUrl: values.lastMonthRankImageUrl || undefined,
       modalImageUrl: values.modalImageUrl || undefined,
     }
-    const res = await updateChallenge({ id, payload })
-    if (res.status !== 200) {
-      alert("챌린지 수정에 실패했습니다.")
-      return
-    }
+    await updateChallenge({ id, payload })
     alert("챌린지가 수정되었습니다.")
     // 챌린지 상세 데이터 다시 불러오기
     await queryClient.invalidateQueries({ queryKey: ["@challenge", id] })

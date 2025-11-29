@@ -14,11 +14,7 @@ export function ActionsCell({ page }: { page: BbucleRoadPageDTO }) {
     if (!confirm(`정말 "${page.title}" 페이지를 삭제하시겠습니까?`)) {
       return
     }
-    try {
-      await deletePage(page.id)
-    } catch (error) {
-      alert("삭제에 실패했습니다.")
-    }
+    await deletePage(page.id)
   }
 
   return (

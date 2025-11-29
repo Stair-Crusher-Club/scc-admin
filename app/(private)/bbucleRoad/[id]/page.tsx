@@ -93,30 +93,26 @@ export default function BbucleRoadEditPage() {
   }, [page, isCreateMode, reset])
 
   const onSubmit = async (data: FormData) => {
-    try {
-      if (isCreateMode) {
-        const createData: CreateBbucleRoadPageRequestDTO = {
-          title: data.title,
-          titleImageUrl: data.titleImageUrl,
-          summary: data.summary,
-          sections: data.sections as CreateBbucleRoadSectionDTO[],
-        }
-        await createPage(createData)
-        alert("페이지가 생성되었습니다.")
-      } else {
-        const updateData: UpdateBbucleRoadPageRequestDTO = {
-          title: data.title,
-          titleImageUrl: data.titleImageUrl,
-          summary: data.summary,
-          sections: data.sections as UpdateBbucleRoadSectionDTO[],
-        }
-        await updatePage({ id: pageId, data: updateData })
-        alert("페이지가 수정되었습니다.")
+    if (isCreateMode) {
+      const createData: CreateBbucleRoadPageRequestDTO = {
+        title: data.title,
+        titleImageUrl: data.titleImageUrl,
+        summary: data.summary,
+        sections: data.sections as CreateBbucleRoadSectionDTO[],
       }
-      router.push("/bbucleRoad")
-    } catch (error) {
-      alert(isCreateMode ? "페이지 생성에 실패했습니다." : "페이지 수정에 실패했습니다.")
+      await createPage(createData)
+      alert("페이지가 생성되었습니다.")
+    } else {
+      const updateData: UpdateBbucleRoadPageRequestDTO = {
+        title: data.title,
+        titleImageUrl: data.titleImageUrl,
+        summary: data.summary,
+        sections: data.sections as UpdateBbucleRoadSectionDTO[],
+      }
+      await updatePage({ id: pageId, data: updateData })
+      alert("페이지가 수정되었습니다.")
     }
+    router.push("/bbucleRoad")
   }
 
   if (isLoading && !isCreateMode) {

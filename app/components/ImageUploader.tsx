@@ -45,7 +45,6 @@ export default function ImageUploader({
       onChange([...value, ...urls])
     } catch (error) {
       console.error("Image upload failed:", error)
-      alert("이미지 업로드에 실패했습니다.")
     } finally {
       setUploading(false)
       // Reset input
