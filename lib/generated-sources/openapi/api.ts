@@ -332,31 +332,49 @@ export interface AdminBuildingDeduplicationCandidateDTO {
      * @type {string}
      * @memberof AdminBuildingDeduplicationCandidateDTO
      */
-    'currentBuildingId': string;
+    'building1Id': string;
     /**
      * 
      * @type {string}
      * @memberof AdminBuildingDeduplicationCandidateDTO
      */
-    'newBuildingId': string;
+    'building2Id': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'distanceInMeters': number;
     /**
      * 
      * @type {string}
      * @memberof AdminBuildingDeduplicationCandidateDTO
      */
-    'buildingName'?: string;
+    'building1Name'?: string;
     /**
      * 
      * @type {string}
      * @memberof AdminBuildingDeduplicationCandidateDTO
      */
-    'roadAddress': string;
+    'building2Name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'normalizedAddress': string;
     /**
      * 
      * @type {LocationDTO}
      * @memberof AdminBuildingDeduplicationCandidateDTO
      */
-    'location': LocationDTO;
+    'building1Location': LocationDTO;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'building2Location': LocationDTO;
     /**
      * 
      * @type {EpochMillisTimestamp}
@@ -369,6 +387,12 @@ export interface AdminBuildingDeduplicationCandidateDTO {
      * @memberof AdminBuildingDeduplicationCandidateDTO
      */
     'ignoredAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'canonicalBuildingId'?: string;
 }
 /**
  * 
