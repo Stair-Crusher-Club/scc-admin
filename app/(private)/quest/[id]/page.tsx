@@ -9,7 +9,7 @@ import { ClubQuestTargetBuildingDTO} from "@/lib/generated-sources/openapi"
 
 import Map from "@/components/Map"
 import { Me, QuestMarker } from "@/components/Map/components"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 import { useModal } from "@/hooks/useModal"
 
 import * as S from "./page.style"
@@ -55,7 +55,6 @@ export default function QuestDetail() {
 
   return (
     <>
-      <Header title={quest?.name} />
       <Contents>
         <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
           {quest?.buildings.map((building, index) => (

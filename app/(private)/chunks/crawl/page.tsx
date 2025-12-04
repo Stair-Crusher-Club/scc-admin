@@ -9,7 +9,7 @@ import { LocationDTO } from "@/lib/generated-sources/openapi"
 
 import Map from "@/components/Map"
 import { Circle, Polygon } from "@/components/Map/components"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 
 import { useCrawling } from "../query"
 
@@ -177,9 +177,6 @@ export default function CrawlPage() {
 
   return (
     <>
-      <Header title="장소 정보 가져오기">
-        <Header.ActionButton onClick={startCrawl}>이 지역 장소 정보 가져오기</Header.ActionButton>
-      </Header>
       <Contents.Columns>
         <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
           {mode.current.startsWith("CIRCLE") && (

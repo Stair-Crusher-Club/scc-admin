@@ -6,16 +6,19 @@ import { format as formatDate } from "date-fns"
 import {
   AdminAccessibilityInspectionResultDTO,
   AccessibilityTypeDTO,
-  ResultTypeDTO,
 } from "@/lib/generated-sources/openapi"
 
 import { Badge } from "@/components/ui/badge"
+import { DataTableColumnHeader } from "@/components/ui/data-table"
+import { ResultTypeBadge, InspectorTypeBadge } from "./Badges"
 
 export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[] {
   return [
     {
       accessorKey: "accessibilityName",
-      header: () => <div className="text-center font-semibold">장소명</div>,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="장소명" />
+      ),
       cell: ({ row }) => {
         const name = row.original.accessibilityName || "이름 없음"
         return (
@@ -24,11 +27,14 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           </div>
         )
       },
-      enableSorting: false,
+      enableSorting: true,
+      sortingFn: "alphanumeric",
     },
     {
       accessorKey: "accessibilityId",
-      header: () => <div className="text-center font-semibold">접근성 ID</div>,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="접근성 ID" />
+      ),
       cell: ({ row }) => {
         const id = row.original.accessibilityId
         return (
@@ -37,11 +43,14 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           </div>
         )
       },
-      enableSorting: false,
+      enableSorting: true,
+      sortingFn: "alphanumeric",
     },
     {
       accessorKey: "accessibilityType",
-      header: () => <div className="text-center font-semibold">유형</div>,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="유형" />
+      ),
       cell: ({ row }) => {
         const type = row.original.accessibilityType
         const typeColors: Record<AccessibilityTypeDTO, string> = {
@@ -52,44 +61,51 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           UNKNOWN: "bg-gray-100 text-gray-800",
         }
         return (
-          <Badge variant="secondary" className={typeColors[type]}>
-            {type}
-          </Badge>
+          <div className="w-fit">
+            <Badge variant="secondary" className={`${typeColors[type]} w-fit`}>
+              {type}
+            </Badge>
+          </div>
         )
       },
-      enableSorting: false,
+      enableSorting: true,
+      sortingFn: "alphanumeric",
     },
     {
       accessorKey: "resultType",
-      header: () => <div className="text-center font-semibold">결과</div>,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="결과" />
+      ),
       cell: ({ row }) => {
-        const result = row.original.resultType
-        const variantMap: Record<ResultTypeDTO, "default" | "destructive" | "secondary"> = {
-          OK: "default",
-          MODIFY: "secondary",
-          DELETE: "destructive",
-          UNKNOWN: "secondary",
-        }
-        return <Badge variant={variantMap[result]}>{result}</Badge>
+        return (
+          <div className="w-fit">
+            <ResultTypeBadge resultType={row.original.resultType} />
+          </div>
+        )
       },
-      enableSorting: false,
+      enableSorting: true,
+      sortingFn: "alphanumeric",
     },
     {
       accessorKey: "inspectorType",
-      header: () => <div className="text-center font-semibold">검수자 유형</div>,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="검수자 유형" />
+      ),
       cell: ({ row }) => {
-        const inspectorType = row.original.inspectorType
         return (
-          <Badge variant={inspectorType === "HUMAN" ? "default" : "secondary"}>
-            {inspectorType}
-          </Badge>
+          <div className="w-fit">
+            <InspectorTypeBadge inspectorType={row.original.inspectorType} />
+          </div>
         )
       },
-      enableSorting: false,
+      enableSorting: true,
+      sortingFn: "alphanumeric",
     },
     {
       accessorKey: "inspectorId",
-      header: () => <div className="text-center font-semibold">검수자 ID</div>,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="검수자 ID" />
+      ),
       cell: ({ row }) => {
         const inspectorId = row.original.inspectorId
         return (
@@ -98,11 +114,14 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           </div>
         )
       },
-      enableSorting: false,
+      enableSorting: true,
+      sortingFn: "alphanumeric",
     },
     {
       accessorKey: "createdAtMillis",
-      header: () => <div className="text-center font-semibold">생성일</div>,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="생성일" />
+      ),
       cell: ({ row }) => {
         const date = new Date(row.original.createdAtMillis)
         return (
@@ -111,7 +130,8 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
           </div>
         )
       },
-      enableSorting: false,
+      enableSorting: true,
+      sortingFn: "basic",
     },
   ]
 }

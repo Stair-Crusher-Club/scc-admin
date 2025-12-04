@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 import { api } from "@/lib/apis/api"
 import { useToast } from "@/hooks/use-toast"
 
@@ -210,7 +210,6 @@ export default function AccessibilityInspectionResultPage() {
 
   return (
     <>
-      <Header title="접근성 검증 결과" />
       <Contents.Normal>
         <Card className="mb-6">
           <CardHeader>
@@ -428,6 +427,9 @@ export default function AccessibilityInspectionResultPage() {
                 data={filteredItems}
                 expandedRows={expandedRows}
                 onRowClick={toggleRowExpansion}
+                enableRowSelection={true}
+                enablePagination={false}
+                pageSize={pageSize}
               />
             )}
           </CardContent>
@@ -448,6 +450,7 @@ export default function AccessibilityInspectionResultPage() {
                   variant="outline"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
+                  aria-label="Go to previous page"
                 >
                   ← 이전
                 </Button>
@@ -455,6 +458,7 @@ export default function AccessibilityInspectionResultPage() {
                   variant="outline"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={!hasNextPage}
+                  aria-label="Go to next page"
                 >
                   다음 →
                 </Button>

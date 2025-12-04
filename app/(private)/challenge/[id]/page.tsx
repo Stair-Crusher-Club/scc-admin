@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form"
 import { deleteChallenge, updateChallenge, useChallenge } from "@/lib/apis/api"
 import { AdminUpdateChallengeRequestDTO } from "@/lib/generated-sources/openapi"
 
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 
 import ChallengeForm, { ChallengeFormValues, actionOptions, defaultValues } from "../components/ChallengeForm"
 import * as S from "./page.style"
@@ -120,7 +120,6 @@ export default function ChallengeDetail() {
 
   return (
     <>
-      <Header title="챌린지 상세" />
       <Contents.Normal>
         <ChallengeForm id="edit-challenge" form={form} onSubmit={handleFormSubmit} isEditMode={editMode} />
         {editMode ? (

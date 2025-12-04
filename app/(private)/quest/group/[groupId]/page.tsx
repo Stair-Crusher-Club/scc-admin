@@ -7,7 +7,7 @@ import { toast } from "react-toastify"
 import { deleteQuestTargetBuilding, deleteQuestTargetPlace, moveQuestTargetPlace, useQuestsByGroupId } from "@/lib/apis/api"
 import { ClubQuestTargetBuildingDTO } from "@/lib/generated-sources/openapi"
 
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 import MapView from "@/components/Map/Map"
 import { ClusterMarker } from "@/components/Map/components"
 
@@ -220,7 +220,6 @@ export default function QuestGroupPage({ params }: PageProps) {
   if (isLoading) {
     return (
       <>
-        <Header title="퀘스트 그룹 관리" />
         <Contents>
           <S.LoadingContainer>로딩 중...</S.LoadingContainer>
         </Contents>
@@ -231,7 +230,6 @@ export default function QuestGroupPage({ params }: PageProps) {
   if (error || !questsData) {
     return (
       <>
-        <Header title="퀘스트 그룹 관리" />
         <Contents>
           <S.ErrorContainer>
             퀘스트 그룹을 불러오는 데 실패했습니다.
@@ -243,7 +241,6 @@ export default function QuestGroupPage({ params }: PageProps) {
 
   return (
     <>
-      <Header title={`퀘스트 그룹 관리 - ${getQuestGroupName(quests[0]?.name || '')}`} />
       <Contents>
         <S.Container>
           {/* 좌측 퀘스트 목록 */}

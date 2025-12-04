@@ -9,6 +9,13 @@ import { Sidebar } from "@/components/layout"
 import { Toaster } from "@/components/ui/toaster"
 import { Flex } from "@/styles/jsx"
 
+import { AppSidebar } from "@/components/app-sidebar"
+import { ChartAreaInteractive } from "@/components/chart-area-interactive"
+import { DataTable } from "@/components/data-table"
+import { SectionCards } from "@/components/section-cards"
+import { SiteHeader } from "@/components/site-header"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -27,6 +34,21 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
 
   if (authenticated === undefined) return null
   if (!authenticated) return <div>로그인이 필요합니다.</div>
+  return (
+    <SidebarProvider>
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <SiteHeader />
+        <div className="flex flex-1 flex-col overflow-x-hidden">
+          <div className="@container/main flex flex-1 flex-col gap-2 overflow-x-hidden">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 overflow-x-hidden">
+              {children}
+            </div>
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  )
   return (
     <>
       <Flex css={{ width: "full", height: "full" }}>

@@ -6,7 +6,7 @@ import { useState } from "react"
 
 import { AdminClosedPlaceCandidateDTO } from "@/lib/generated-sources/openapi"
 
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 
 import naverMapIcon from "../../../public/naver_map.jpg"
 import { ActionsCell } from "./components/Cells"
@@ -30,7 +30,6 @@ export default function ClosedPlacePage() {
 
   return (
     <>
-      <Header title="폐업 추정 장소 관리" />
       <Contents.Normal>
         <S.TabContainer>
           <S.Tab active={activeTab === "all"} onClick={() => setActiveTab("all")}>

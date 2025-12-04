@@ -6,7 +6,7 @@ import { createRegion, useRegions } from "@/lib/apis/api"
 
 import Map from "@/components/Map"
 import { Polygon } from "@/components/Map/components"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 import { useModal } from "@/hooks/useModal"
 
 import { FIXED_REGIONS } from "./data"
@@ -69,9 +69,6 @@ export default function Page() {
 
   return (
     <>
-      <Header title="오픈 지역 관리">
-        <Header.ActionButton onClick={selectHowToCreateRegion}>오픈 지역 추가</Header.ActionButton>
-      </Header>
       <Contents>
         <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
           {[...FIXED_REGIONS, ...regions].map((region) => (

@@ -4,7 +4,7 @@ import Image from "next/image"
 
 import { AdminBuildingDeduplicationCandidateDTO } from "@/lib/generated-sources/openapi"
 
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 
 import naverMapIcon from "../../../public/naver_map.jpg"
 import * as S from "./page.style"
@@ -26,7 +26,6 @@ export default function BuildingDeduplicationPage() {
 
   return (
     <>
-      <Header title="건물 중복 제거 후보 관리" />
       <Contents.Normal>
         <S.TableWrapper>
           <div>

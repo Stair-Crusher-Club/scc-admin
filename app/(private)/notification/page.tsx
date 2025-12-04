@@ -12,7 +12,7 @@ import {
   AdminUpdatePushNotificationScheduleRequestDTO,
 } from "@/lib/generated-sources/openapi"
 
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 
 import { NotificationCsvDownloadButton } from "./components/NotificationCsvDownloadButton"
 import { NotificationScheduleUpdateForm, UpdateScheduleFormValues } from "./components/NotificationScheduleUpdateForm"
@@ -318,7 +318,6 @@ export default function NotificationPage() {
 
   return (
     <>
-      <Header title="푸시 알림" />
       <Contents.Normal className="w-full">
         <S.TabContainer>
           <S.Tab type="button" active={activeTab === "send"} onClick={() => setActiveTab("send")}>

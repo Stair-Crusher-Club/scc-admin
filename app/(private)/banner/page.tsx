@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 
 import H3 from "@/components/Heading/H3"
 import Table, { makeTypedColumn } from "@/components/Table"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 import { Button } from "@/components/ui/button"
 
 import * as S from "./page.style"
@@ -31,7 +31,6 @@ export default function BannerList() {
 
   return (
     <>
-      <Header title="등록된 정보 관리" />
       <Contents.Normal>
         <Button onClick={() => router.push("/banner/create")} size="sm" className="mb-4">배너 추가</Button>
         <H3>전체 배너</H3>

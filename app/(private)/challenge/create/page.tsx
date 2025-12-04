@@ -7,7 +7,7 @@ import { toast } from "react-toastify"
 
 import { createChallenge } from "@/lib/apis/api"
 
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 
 import ChallengeForm, { ChallengeFormValues, defaultValues } from "../components/ChallengeForm"
 import * as S from "./page.style"
@@ -102,7 +102,6 @@ export default function CreateChallenge() {
 
   return (
     <>
-      <Header title="챌린지 생성" />
       <Contents.Normal>
         <ChallengeForm id="create-challenge" form={form} onSubmit={onSubmit} />
         <S.SubmitButton type="submit" form="create-challenge">

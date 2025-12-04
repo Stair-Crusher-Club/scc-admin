@@ -20,7 +20,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 import ImageUploader from "@/components/ImageUploader"
 import SectionEditor from "../components/SectionEditor"
 
@@ -118,7 +118,6 @@ export default function BbucleRoadEditPage() {
   if (isLoading && !isCreateMode) {
     return (
       <>
-        <Header title="뿌클로드 관리" />
         <Contents.Normal>
           <div className="text-center py-8">로딩 중...</div>
         </Contents.Normal>
@@ -128,7 +127,6 @@ export default function BbucleRoadEditPage() {
 
   return (
     <>
-      <Header title={isCreateMode ? "뿌클로드 페이지 생성" : "뿌클로드 페이지 편집"} />
       <Contents.Normal>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-6">
