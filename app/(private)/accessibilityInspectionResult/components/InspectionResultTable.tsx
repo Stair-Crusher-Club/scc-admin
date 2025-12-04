@@ -16,7 +16,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { format as formatDate } from "date-fns"
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   ChevronDown,
   ChevronLeft,
@@ -356,6 +356,7 @@ interface InspectionResultTableProps {
   enableRowSelection?: boolean
   enablePagination?: boolean
   pageSize?: number
+  onSelectionChange?: (selectedIds: string[]) => void
 }
 
 export function InspectionResultTable({
@@ -366,6 +367,7 @@ export function InspectionResultTable({
   enableRowSelection = false,
   enablePagination = false,
   pageSize: initialPageSize = 20,
+  onSelectionChange,
 }: InspectionResultTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -382,7 +384,10 @@ export function InspectionResultTable({
         {
           id: "select",
           header: ({ table }: any) => (
-            <div className="flex items-center justify-center">
+            <div 
+              className="flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Checkbox
                 checked={
                   table.getIsAllPageRowsSelected() ||
@@ -396,7 +401,10 @@ export function InspectionResultTable({
             </div>
           ),
           cell: ({ row }: any) => (
-            <div className="flex items-center justify-center">
+            <div 
+              className="flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Checkbox
                 checked={row.getIsSelected()}
                 onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -437,6 +445,15 @@ export function InspectionResultTable({
       pagination: enablePagination ? pagination : undefined,
     },
   })
+
+  // Notify parent component of selection changes
+  useEffect(() => {
+    if (enableRowSelection && onSelectionChange) {
+      const selectedIds = table.getFilteredSelectedRowModel().rows.map((row) => row.original.id)
+      onSelectionChange(selectedIds)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowSelection, data.length])
 
   return (
     <div className="space-y-4">
@@ -524,9 +541,8 @@ export function InspectionResultTable({
                   }
 
                   return (
-                    <>
+                    <React.Fragment key={row.id}>
                       <TableRow
-                        key={row.id}
                         data-state={row.getIsSelected() && "selected"}
                         className="cursor-pointer hover:bg-muted/50 data-[state=selected]:bg-muted/50"
                         onClick={() => onRowClick(row.original.id)}
@@ -562,7 +578,7 @@ export function InspectionResultTable({
                           </TableCell>
                         </TableRow>
                       )}
-                    </>
+                    </React.Fragment>
                   )
                 })
               ) : (

@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { RotateCcw, Upload } from "lucide-react"
+import { RotateCcw, Upload, CheckCircle2 } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
 
 import { useAccessibilityInspectionResultsPaginated } from "@/lib/apis/api"
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Contents } from "@/components/layout"
-import { api } from "@/lib/apis/api"
+import { api, applyAccessibilityInspectionResults } from "@/lib/apis/api"
 import { useToast } from "@/hooks/use-toast"
 
 import { getColumns } from "./components/columns"
@@ -48,6 +48,8 @@ export default function AccessibilityInspectionResultPage() {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [isApplying, setIsApplying] = useState(false)
 
   const { data, isLoading } = useAccessibilityInspectionResultsPaginated({
     accessibilityType,
@@ -106,6 +108,61 @@ export default function AccessibilityInspectionResultPage() {
 
   const handleBulkImportClick = () => {
     fileInputRef.current?.click()
+  }
+
+  const handleBulkApply = async () => {
+    if (selectedIds.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "선택된 항목 없음",
+        description: "일괄 반영할 항목을 선택해주세요.",
+      })
+      return
+    }
+
+    setIsApplying(true)
+    try {
+      const response = await applyAccessibilityInspectionResults({
+        inspectionResultIds: selectedIds,
+      })
+
+      const result = response.data
+      const successCount = result.results.filter((r) => r.success).length
+      const failureCount = result.results.filter((r) => !r.success).length
+
+      if (failureCount > 0) {
+        const errorMessages = result.results
+          .filter((r) => !r.success)
+          .map((r) => r.errorMessage)
+          .filter((msg) => msg)
+          .slice(0, 5)
+          .join("\n")
+
+        toast({
+          variant: "destructive",
+          title: "일괄 반영 완료 (일부 실패)",
+          description: `성공: ${successCount}개, 실패: ${failureCount}개${errorMessages ? `\n\n에러:\n${errorMessages}` : ""}`,
+        })
+      } else {
+        toast({
+          title: "일괄 반영 성공",
+          description: `${successCount}개의 검수 결과가 반영되었습니다.`,
+        })
+      }
+
+      // Refresh data after successful apply
+      queryClient.invalidateQueries({ queryKey: ["@accessibilityInspectionResultsPaginated"] })
+      setSelectedIds([])
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || "일괄 반영 중 오류가 발생했습니다."
+      toast({
+        variant: "destructive",
+        title: "일괄 반영 실패",
+        description: errorMessage,
+      })
+    } finally {
+      setIsApplying(false)
+    }
   }
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -388,6 +445,15 @@ export default function AccessibilityInspectionResultPage() {
                 <Upload className="h-4 w-4" />
                 {isUploading ? "업로드 중..." : "CSV 일괄 등록"}
               </Button>
+              <Button
+                variant="default"
+                onClick={handleBulkApply}
+                disabled={isApplying || selectedIds.length === 0}
+                className="gap-2"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                {isApplying ? "반영 중..." : `선택 항목 일괄 반영 (${selectedIds.length}개)`}
+              </Button>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -430,6 +496,7 @@ export default function AccessibilityInspectionResultPage() {
                 enableRowSelection={true}
                 enablePagination={false}
                 pageSize={pageSize}
+                onSelectionChange={setSelectedIds}
               />
             )}
           </CardContent>
