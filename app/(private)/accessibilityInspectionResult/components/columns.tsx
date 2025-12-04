@@ -2,24 +2,15 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { format as formatDate } from "date-fns"
-import {
-  CheckCircle2Icon,
-  PencilIcon,
-  Trash2Icon,
-  UserIcon,
-  SparklesIcon,
-  HelpCircleIcon,
-} from "lucide-react"
 
 import {
   AdminAccessibilityInspectionResultDTO,
   AccessibilityTypeDTO,
-  ResultTypeDTO,
-  InspectorTypeDTO,
 } from "@/lib/generated-sources/openapi"
 
 import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/ui/data-table"
+import { ResultTypeBadge, InspectorTypeBadge } from "./Badges"
 
 export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[] {
   return [
@@ -86,42 +77,9 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
         <DataTableColumnHeader column={column} title="결과" />
       ),
       cell: ({ row }) => {
-        const result = row.original.resultType
-        const getResultIcon = (resultType: ResultTypeDTO) => {
-          switch (resultType) {
-            case "OK":
-              return (
-                <CheckCircle2Icon className="text-green-500 dark:text-green-400" />
-              )
-            case "MODIFY":
-              return <PencilIcon className="text-blue-500 dark:text-blue-400" />
-            case "DELETE":
-              return <Trash2Icon className="text-red-500 dark:text-red-400" />
-            case "UNKNOWN":
-              return (
-                <HelpCircleIcon className="text-muted-foreground" />
-              )
-            default:
-              return null
-          }
-        }
-
-        const variantMap: Record<ResultTypeDTO, "default" | "destructive" | "secondary" | "outline"> = {
-          OK: "outline",
-          MODIFY: "outline",
-          DELETE: "outline",
-          UNKNOWN: "outline",
-        }
-
         return (
           <div className="w-fit">
-            <Badge
-              variant={variantMap[result]}
-              className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3 w-fit"
-            >
-              {getResultIcon(result)}
-              {result}
-            </Badge>
+            <ResultTypeBadge resultType={row.original.resultType} />
           </div>
         )
       },
@@ -134,35 +92,9 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
         <DataTableColumnHeader column={column} title="검수자 유형" />
       ),
       cell: ({ row }) => {
-        const inspectorType = row.original.inspectorType
-        const getInspectorIcon = (inspectorType: InspectorTypeDTO) => {
-          switch (inspectorType) {
-            case "HUMAN":
-              return (
-                <UserIcon className="text-blue-500 dark:text-blue-400" />
-              )
-            case "AI":
-              return (
-                <SparklesIcon className="text-purple-500 dark:text-purple-400" />
-              )
-            case "UNKNOWN":
-              return (
-                <HelpCircleIcon className="text-muted-foreground" />
-              )
-            default:
-              return null
-          }
-        }
-
         return (
           <div className="w-fit">
-            <Badge
-              variant="outline"
-              className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3 w-fit"
-            >
-              {getInspectorIcon(inspectorType)}
-              {inspectorType}
-            </Badge>
+            <InspectorTypeBadge inspectorType={row.original.inspectorType} />
           </div>
         )
       },

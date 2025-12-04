@@ -24,9 +24,14 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ColumnsIcon,
+  ImageIcon,
+  DoorOpenIcon,
+  CodeIcon,
+  TagIcon,
 } from "lucide-react"
 
 import { AdminAccessibilityInspectionResultDTO } from "@/lib/generated-sources/openapi"
+import { ResultTypeBadge, InspectorTypeBadge } from "./Badges"
 
 import {
   Table,
@@ -97,7 +102,12 @@ function AIInspectionDetail({
         <div className="flex flex-wrap gap-2">
           {result?.overallCodes?.length > 0 ? (
             result.overallCodes.map((code: string, idx: number) => (
-              <Badge key={idx} variant="secondary">
+              <Badge
+                key={idx}
+                variant="outline"
+                className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3"
+              >
+                <CodeIcon className="text-purple-500 dark:text-purple-400" />
                 {code}
               </Badge>
             ))
@@ -118,7 +128,12 @@ function AIInspectionDetail({
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {imgDetail.reasonCodes?.map((code: string, codeIdx: number) => (
-                    <Badge key={codeIdx} variant="outline">
+                    <Badge
+                      key={codeIdx}
+                      variant="outline"
+                      className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3"
+                    >
+                      <TagIcon className="text-orange-500 dark:text-orange-400" />
                       {code}
                     </Badge>
                   ))}
@@ -166,9 +181,7 @@ function HumanInspectionDetail({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label className="text-sm font-semibold mb-2 block">검수 상태</Label>
-          <Badge variant="default" className="text-base px-3 py-1">
-            {result?.status || "UNKNOWN"}
-          </Badge>
+          <ResultTypeBadge resultType={item.resultType} />
         </div>
       </div>
 
@@ -211,7 +224,11 @@ function HumanInspectionDetail({
             {result.imageReasons.map((imgReason: any, idx: number) => (
               <div key={idx} className="bg-background border rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <Badge variant="outline" className="shrink-0">
+                  <Badge
+                    variant="outline"
+                    className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3 shrink-0"
+                  >
+                    <ImageIcon className="text-blue-500 dark:text-blue-400" />
                     이미지 #{imgReason.imageIndex}
                   </Badge>
                   <div className="flex-1">
@@ -287,7 +304,12 @@ function HumanInspectionDetail({
                   <span className="text-sm col-span-2">
                     <div className="flex flex-wrap gap-2">
                       {result.modificationRequest.entranceDoorTypes.map((type: string, idx: number) => (
-                        <Badge key={idx} variant="secondary">
+                        <Badge
+                          key={idx}
+                          variant="outline"
+                          className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3"
+                        >
+                          <DoorOpenIcon className="text-blue-500 dark:text-blue-400" />
                           {type}
                         </Badge>
                       ))}
