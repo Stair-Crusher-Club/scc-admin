@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { RotateCcw } from "lucide-react"
+import { useRef, useState } from "react"
+import { RotateCcw, Upload } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
 
 import { useAccessibilityInspectionResultsPaginated } from "@/lib/apis/api"
 import {
@@ -22,11 +23,20 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Contents, Header } from "@/components/layout"
+import { api } from "@/lib/apis/api"
+import { useToast } from "@/hooks/use-toast"
 
 import { getColumns } from "./components/columns"
 import { InspectionResultTable } from "./components/InspectionResultTable"
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+
 export default function AccessibilityInspectionResultPage() {
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadMessage, setUploadMessage] = useState<string>("")
   const [accessibilityType, setAccessibilityType] = useState<AccessibilityTypeDTO | undefined>()
   const [inspectorType, setInspectorType] = useState<InspectorTypeDTO | undefined>()
   const [resultType, setResultType] = useState<ResultTypeDTO | undefined>()
@@ -92,6 +102,97 @@ export default function AccessibilityInspectionResultPage() {
     setAccessibilityName("")
     setAccessibilityId("")
     handleFilterChange()
+  }
+
+  const handleBulkImportClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // File type validation
+    if (!file.name.endsWith(".csv")) {
+      toast({
+        variant: "destructive",
+        title: "파일 형식 오류",
+        description: "CSV 파일만 업로드 가능합니다.",
+      })
+      return
+    }
+
+    // File size validation (10MB)
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        variant: "destructive",
+        title: "파일 크기 초과",
+        description: "파일 크기는 10MB 이하여야 합니다.",
+      })
+      return
+    }
+
+    setIsUploading(true)
+    setUploadMessage("")
+
+    try {
+      const response = await api.accessibility.bulkImportHumanInspections(file)
+
+      const result = response.data
+      let message = `업로드 완료\n`
+      message += `전체 레코드: ${result.totalRecords}개\n`
+      message += `파싱 성공: ${result.parsedCount}개\n`
+      message += `파싱 실패: ${result.parseErrors}개\n`
+
+      if (result.asyncProcessing) {
+        message += `\n비동기 처리 시작됨 (100개 초과)`
+        toast({
+          title: "업로드 완료",
+          description: "대량 데이터로 인해 백그라운드에서 처리됩니다.",
+        })
+      } else {
+        message += `성공: ${result.successCount ?? 0}개\n`
+        message += `실패: ${result.failureCount ?? 0}개`
+        if (result.errors && result.errors.length > 0) {
+          message += `\n\n에러 내용:\n${result.errors.slice(0, 5).join("\n")}`
+          if (result.errors.length > 5) {
+            message += `\n... 외 ${result.errors.length - 5}개`
+          }
+        }
+
+        // Show success toast
+        const hasErrors = result.failureCount && result.failureCount > 0
+        if (hasErrors) {
+          toast({
+            title: "업로드 완료",
+            description: `성공: ${result.successCount}개, 실패: ${result.failureCount}개`,
+          })
+        } else {
+          toast({
+            title: "업로드 성공",
+            description: `${result.successCount}개의 레코드가 등록되었습니다.`,
+          })
+        }
+
+        // Refresh data after successful upload
+        queryClient.invalidateQueries({ queryKey: ["@accessibilityInspectionResultsPaginated"] })
+      }
+
+      setUploadMessage(message)
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || "업로드 중 오류가 발생했습니다."
+      setUploadMessage(`오류: ${errorMessage}`)
+      toast({
+        variant: "destructive",
+        title: "업로드 실패",
+        description: errorMessage,
+      })
+    } finally {
+      setIsUploading(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
+    }
   }
 
   const columns = getColumns()
@@ -279,9 +380,41 @@ export default function AccessibilityInspectionResultPage() {
                 <RotateCcw className="h-4 w-4" />
                 초기화
               </Button>
+              <Button
+                variant="default"
+                onClick={handleBulkImportClick}
+                disabled={isUploading}
+                className="gap-2"
+              >
+                <Upload className="h-4 w-4" />
+                {isUploading ? "업로드 중..." : "CSV 일괄 등록"}
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+              />
             </div>
           </CardContent>
         </Card>
+
+        {uploadMessage && (
+          <Card className="mt-6 border-blue-200 bg-blue-50">
+            <CardContent className="pt-6 relative">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute top-2 right-2"
+                onClick={() => setUploadMessage("")}
+              >
+                ✕
+              </Button>
+              <pre className="text-sm whitespace-pre-wrap font-mono pr-8">{uploadMessage}</pre>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardContent className="p-6">

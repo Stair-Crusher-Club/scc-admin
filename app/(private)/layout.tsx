@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { storage } from "@/lib/storage"
 
 import { Sidebar } from "@/components/layout"
+import { Toaster } from "@/components/ui/toaster"
 import { Flex } from "@/styles/jsx"
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
@@ -27,11 +28,14 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   if (authenticated === undefined) return null
   if (!authenticated) return <div>로그인이 필요합니다.</div>
   return (
-    <Flex css={{ width: "full", height: "full" }}>
-      <Sidebar />
-      <Flex direction="column" css={{ width: "full", overflow: "auto" }}>
-        {children}
+    <>
+      <Flex css={{ width: "full", height: "full" }}>
+        <Sidebar />
+        <Flex direction="column" css={{ width: "full", overflow: "auto" }}>
+          {children}
+        </Flex>
       </Flex>
-    </Flex>
+      <Toaster />
+    </>
   )
 }
