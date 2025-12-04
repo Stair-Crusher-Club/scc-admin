@@ -75,27 +75,31 @@ export default function Sidebar() {
     <>
       <aside
         className={cn(
-          "flex flex-col border-r bg-sidebar shadow-md transition-transform duration-300 ease-in-out",
-          isMobile ? "absolute top-0 left-0 z-10 h-full w-64" : "relative flex-[280px_0_0]",
+          "flex flex-col border-r bg-background transition-transform duration-300 ease-in-out",
+          isMobile ? "absolute top-0 left-0 z-50 h-full w-64" : "relative flex-[280px_0_0]",
           opened ? "translate-x-0" : "-translate-x-full",
         )}
       >
         {/* Header */}
-        <div className="flex items-center gap-2 px-4 py-6 cursor-pointer group" onClick={() => router.push("/")}>
-          <Image
-            src={kongal}
-            alt="콩알이"
-            style={{ width: 48, height: 32, objectFit: "contain" }}
-            className="transition-transform group-hover:scale-110"
-          />
-          <Logo color="white" height={32} />
+        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+          <button
+            onClick={() => router.push("/")}
+            className="flex items-center gap-2 font-semibold group"
+          >
+            <Image
+              src={kongal}
+              alt="콩알이"
+              width={32}
+              height={32}
+              className="transition-transform group-hover:scale-110"
+            />
+            <span className="text-base font-semibold">계단뿌셔클럽</span>
+          </button>
         </div>
 
-        <Separator className="bg-sidebar-foreground/20" />
-
         {/* Navigation */}
-        <ScrollArea className="flex-1 px-2 py-4">
-          <nav className="flex flex-col gap-1">
+        <ScrollArea className="flex-1 px-3 py-2">
+          <nav className="grid items-start gap-1 text-sm font-medium">
             {menuItems.map((item) => (
               <MenuItem
                 key={item.href}
@@ -113,11 +117,10 @@ export default function Sidebar() {
         </ScrollArea>
 
         {/* Footer */}
-        <div className="p-4">
-          <Separator className="mb-4 bg-sidebar-foreground/20" />
+        <div className="mt-auto border-t p-4">
           <Button
             variant="ghost"
-            className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-active hover:text-sidebar-foreground"
+            className="w-full justify-start gap-2"
             onClick={logout}
           >
             <LogOut className="h-4 w-4" />
@@ -128,7 +131,7 @@ export default function Sidebar() {
       {isMobile && (
         <div
           className={cn(
-            "fixed top-0 left-0 z-[9] h-full w-full bg-black/50 backdrop-blur-sm transition-opacity duration-300 ease-in-out",
+            "fixed top-0 left-0 z-40 h-full w-full bg-black/50 backdrop-blur-sm transition-opacity duration-300 ease-in-out",
             opened ? "opacity-100" : "pointer-events-none opacity-0",
           )}
           onClick={toggleSidebar}
@@ -150,17 +153,16 @@ function MenuItem({ href, icon: Icon, label, onClose }: MenuItemProps) {
   const isActive = path === href || path.startsWith(`${href}/`)
 
   return (
-    <Link href={href} onClick={onClose} className="block">
-      <Button
-        variant="ghost"
-        className={cn(
-          "w-full justify-start gap-3 px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-hover hover:text-sidebar-foreground",
-          isActive && "bg-sidebar-active font-semibold text-sidebar-foreground shadow-sm hover:bg-sidebar-active",
-        )}
-      >
-        <Icon className="h-5 w-5 flex-shrink-0" />
-        <span className="text-sm">{label}</span>
-      </Button>
+    <Link
+      href={href}
+      onClick={onClose}
+      className={cn(
+        "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+        isActive && "bg-muted text-primary font-medium",
+      )}
+    >
+      <Icon className="h-4 w-4" />
+      {label}
     </Link>
   )
 }
