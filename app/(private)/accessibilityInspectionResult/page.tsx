@@ -9,9 +9,7 @@ import {
   AccessibilityTypeDTO,
   InspectorTypeDTO,
   ResultTypeDTO,
-  AdminAccessibilityInspectionResultDTO,
 } from "@/lib/generated-sources/openapi"
-import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,22 +28,6 @@ import { useToast } from "@/hooks/use-toast"
 
 import { getColumns } from "./components/columns"
 import { InspectionResultTable } from "./components/InspectionResultTable"
-
-// 데이터 스키마 정의
-export const inspectionResultSchema = z.object({
-  id: z.string(),
-  accessibilityId: z.string(),
-  accessibilityType: z.string(),
-  inspectorId: z.string(),
-  inspectorType: z.string(),
-  resultType: z.string(),
-  contents: z.string(),
-  images: z.array(z.any()),
-  accessibilityName: z.string().nullable().optional(),
-  handledAtMillis: z.number().nullable().optional(),
-  createdAtMillis: z.number(),
-  updatedAtMillis: z.number(),
-})
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
