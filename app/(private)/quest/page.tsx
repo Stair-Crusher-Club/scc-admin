@@ -9,7 +9,7 @@ import { deleteQuest } from "@/lib/apis/api"
 import { ClubQuestSummaryDTO } from "@/lib/generated-sources/openapi"
 
 import { useClubQuestSummaries } from "@/(private)/quest/query"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 
 import * as S from "./page.style"
 import { getQuestGroupName } from "./util"
@@ -54,9 +54,6 @@ export default function QuestList() {
 
   return (
     <>
-      <Header title="퀘스트 관리">
-        <Header.ActionButton onClick={() => router.push("/quest/create")}>퀘스트 추가</Header.ActionButton>
-      </Header>
       <Contents.Normal>
         {Object.entries(regrouped).map(([questGroupName, quests]) => (
           <S.QuestRow key={questGroupName}>

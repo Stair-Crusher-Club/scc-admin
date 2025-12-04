@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 
 import { useChallenges } from "@/lib/apis/api"
 
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 
 import * as S from "./page.style"
 
@@ -15,9 +15,6 @@ export default function ChallengeList() {
 
   return (
     <>
-      <Header title="챌린지 관리">
-        <Header.ActionButton onClick={() => router.push("/challenge/create")}>챌린지 추가</Header.ActionButton>
-      </Header>
       <Contents.Normal>
         <S.Challenges>
           {challenges.map((challenge) => (

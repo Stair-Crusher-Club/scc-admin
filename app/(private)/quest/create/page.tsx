@@ -12,7 +12,7 @@ import { ClubQuestCreateDryRunResultItemDTO, ClubQuestPurposeTypeEnumDTO } from 
 
 import Map from "@/components/Map"
 import { Circle, ClusterMarker, Polygon } from "@/components/Map/components"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 import { Flex } from "@/styles/jsx"
 
 import * as S from "./page.style"
@@ -169,7 +169,6 @@ export default function QuestCreate() {
 
   return (
     <>
-      <Header title="퀘스트 생성" />
       <Contents.Columns>
         <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
           {form.watch("method").value === "CIRCLE" && (

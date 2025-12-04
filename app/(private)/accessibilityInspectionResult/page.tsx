@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 import { api } from "@/lib/apis/api"
 import { useToast } from "@/hooks/use-toast"
 
@@ -210,7 +210,6 @@ export default function AccessibilityInspectionResultPage() {
 
   return (
     <>
-      <Header title="접근성 검증 결과" />
       <Contents.Normal>
         <Card className="mb-6">
           <CardHeader>

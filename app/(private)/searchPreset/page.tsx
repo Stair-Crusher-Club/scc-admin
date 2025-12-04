@@ -4,7 +4,7 @@ import { useState } from "react"
 
 import { deleteSearchPreset, useSearchPresets } from "@/lib/apis/api"
 
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 
 import CreatePresetModal from "./components/CreatePresetModal"
 import * as S from "./page.style"
@@ -22,9 +22,6 @@ export default function SearchPresetPage() {
 
   return (
     <>
-      <Header title="추천 검색어 관리">
-        <Header.ActionButton onClick={() => setModalOpen(true)}>추천 검색어 추가</Header.ActionButton>
-      </Header>
       <Contents.Normal>
         <S.TableWrapper>
           <S.TableHeader>

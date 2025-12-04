@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
 import { createBanner } from "@/(private)/banner/query"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
 
 import BannerForm, { BannerFormValues, defaultValues } from "../components/BannerForm"
 import * as S from "./page.style"
@@ -38,7 +38,6 @@ export default function CreateBanner() {
 
   return (
     <>
-      <Header title="배너 생성" />
       <Contents.Normal>
         <BannerForm id="create-banner" form={form} onSubmit={onSubmit} />
         <S.SubmitButton type="submit" form="create-banner">
