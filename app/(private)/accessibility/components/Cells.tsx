@@ -3,7 +3,7 @@ import Image from "next/image"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2, Sparkles } from "lucide-react"
 
 import {
   SearchAccessibilitiesPayload,
@@ -14,8 +14,9 @@ import {
   deletePlaceAccessibility,
   updateBuildingAccessibility,
   updatePlaceAccessibility,
+  runImagePipeline,
 } from "@/lib/apis/api"
-import { AdminAccessibilityDTO } from "@/lib/generated-sources/openapi"
+import { AdminAccessibilityDTO, AccessibilityTypeDTO } from "@/lib/generated-sources/openapi"
 import { NetworkError } from "@/lib/http"
 
 import { Button } from "@/components/ui/button"
@@ -135,6 +136,31 @@ export function ActionsCell({
       }))
       return { ...data, pages: newPages }
     })
+  }
+
+  async function handleRunPlaceInspection() {
+    const { id, placeName } = accessibility.placeAccessibility
+    if (!confirm(`[${placeName}]의 장소 정보를 AI 검수하시겠습니까?`)) return
+
+    try {
+      await runImagePipeline({
+        items: [
+          {
+            accessibilityId: id,
+            accessibilityType: AccessibilityTypeDTO.Place,
+          },
+        ],
+      })
+      toast.success(`[${placeName}]의 AI 검수가 시작되었습니다.`)
+    } catch (e) {
+      if (e instanceof NetworkError) {
+        const error = await e.response.json()
+        toast.error(`[${placeName}]의 AI 검수 실행에 실패했습니다.`)
+        toast.error(`${error.msg}`)
+      } else {
+        toast.error("네트워크 에러가 발생했습니다.")
+      }
+    }
   }
 
   const convertToFloorOptions = (floors?: number[]) => {
@@ -348,6 +374,15 @@ export function ActionsCell({
         >
           <Pencil className="h-3 w-3" />
           장소 정보 수정
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-2"
+          onClick={handleRunPlaceInspection}
+        >
+          <Sparkles className="h-3 w-3" />
+          장소 정보 검수
         </Button>
         <Button
           size="sm"
