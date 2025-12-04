@@ -130,6 +130,30 @@ export default function AccessibilityInspectionResultPage() {
       const successCount = result.results.filter((r) => r.success).length
       const failureCount = result.results.filter((r) => !r.success).length
 
+      // appliedAction별 통계
+      const actionStats = result.results.reduce(
+        (acc: Record<string, number>, r) => {
+          if (r.success && r.appliedAction) {
+            const action = r.appliedAction
+            acc[action] = (acc[action] || 0) + 1
+          }
+          return acc
+        },
+        {} as Record<string, number>
+      )
+
+      const actionSummary = Object.entries(actionStats)
+        .map(([action, count]) => {
+          const actionLabels: Record<string, string> = {
+            DELETED: "삭제",
+            MODIFIED: "수정",
+            NO_ACTION_NEEDED: "조치 불필요",
+            ERROR: "에러",
+          }
+          return `${actionLabels[action] || action}: ${count}개`
+        })
+        .join(", ")
+
       if (failureCount > 0) {
         const errorMessages = result.results
           .filter((r) => !r.success)
@@ -141,12 +165,12 @@ export default function AccessibilityInspectionResultPage() {
         toast({
           variant: "destructive",
           title: "일괄 반영 완료 (일부 실패)",
-          description: `성공: ${successCount}개, 실패: ${failureCount}개${errorMessages ? `\n\n에러:\n${errorMessages}` : ""}`,
+          description: `성공: ${successCount}개, 실패: ${failureCount}개${actionSummary ? `\n처리 내역: ${actionSummary}` : ""}${errorMessages ? `\n\n에러:\n${errorMessages}` : ""}`,
         })
       } else {
         toast({
           title: "일괄 반영 성공",
-          description: `${successCount}개의 검수 결과가 반영되었습니다.`,
+          description: `${successCount}개의 검수 결과가 반영되었습니다.${actionSummary ? `\n처리 내역: ${actionSummary}` : ""}`,
         })
       }
 

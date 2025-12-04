@@ -10,7 +10,11 @@ import {
 
 import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/ui/data-table"
-import { ResultTypeBadge, InspectorTypeBadge } from "./Badges"
+import {
+  ResultTypeBadge,
+  InspectorTypeBadge,
+  HandledActionBadge,
+} from "./Badges"
 
 export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[] {
   return [
@@ -111,6 +115,21 @@ export function getColumns(): ColumnDef<AdminAccessibilityInspectionResultDTO>[]
         return (
           <div className="font-mono text-xs max-w-[150px] truncate" title={inspectorId}>
             {inspectorId || "-"}
+          </div>
+        )
+      },
+      enableSorting: true,
+      sortingFn: "alphanumeric",
+    },
+    {
+      accessorKey: "applyState",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="반영 작업" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="w-fit">
+            <HandledActionBadge applyState={row.original.applyState} />
           </div>
         )
       },

@@ -149,6 +149,12 @@ export interface AdminAccessibilityInspectionResultDTO {
      */
     'handledAtMillis'?: number | null;
     /**
+     * 검수 결과 반영 상태 (APPLIED, ERROR)
+     * @type {ApplyStateDto}
+     * @memberof AdminAccessibilityInspectionResultDTO
+     */
+    'applyState'?: ApplyStateDto | null;
+    /**
      * 
      * @type {number}
      * @memberof AdminAccessibilityInspectionResultDTO
@@ -1662,7 +1668,8 @@ export interface AdminUpdatePushNotificationScheduleRequestDTO {
 export const AppliedActionDto = {
     Deleted: 'DELETED',
     Modified: 'MODIFIED',
-    NoActionNeeded: 'NO_ACTION_NEEDED'
+    NoActionNeeded: 'NO_ACTION_NEEDED',
+    Error: 'ERROR'
 } as const;
 
 export type AppliedActionDto = typeof AppliedActionDto[keyof typeof AppliedActionDto];
@@ -1756,6 +1763,20 @@ export interface ApplyAccessibilityInspectionResultsRequest {
      */
     'inspectionResultIds': Array<string>;
 }
+/**
+ * 검수 결과 반영 상태
+ * @export
+ * @enum {string}
+ */
+
+export const ApplyStateDto = {
+    Applied: 'APPLIED',
+    Error: 'ERROR'
+} as const;
+
+export type ApplyStateDto = typeof ApplyStateDto[keyof typeof ApplyStateDto];
+
+
 /**
  * 
  * @export
