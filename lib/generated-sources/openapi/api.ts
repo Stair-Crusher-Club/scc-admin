@@ -149,6 +149,12 @@ export interface AdminAccessibilityInspectionResultDTO {
      */
     'handledAtMillis'?: number | null;
     /**
+     * 검수 결과 반영 상태 (APPLIED, ERROR)
+     * @type {ApplyStateDto}
+     * @memberof AdminAccessibilityInspectionResultDTO
+     */
+    'applyState'?: ApplyStateDto | null;
+    /**
      * 
      * @type {number}
      * @memberof AdminAccessibilityInspectionResultDTO
@@ -160,6 +166,37 @@ export interface AdminAccessibilityInspectionResultDTO {
      * @memberof AdminAccessibilityInspectionResultDTO
      */
     'updatedAtMillis': number;
+}
+/**
+ * Place를 SubBuilding에 할당한 결과
+ * @export
+ * @interface AdminAssignPlacesToSubBuildingsResponseDTO
+ */
+export interface AdminAssignPlacesToSubBuildingsResponseDTO {
+    /**
+     * 대상 Building의 전체 Place 수
+     * @type {number}
+     * @memberof AdminAssignPlacesToSubBuildingsResponseDTO
+     */
+    'totalPlaces': number;
+    /**
+     * SubBuilding에 할당된 Place 수
+     * @type {number}
+     * @memberof AdminAssignPlacesToSubBuildingsResponseDTO
+     */
+    'assignedCount': number;
+    /**
+     * 어떤 SubBuilding에도 할당되지 않은 Place 수
+     * @type {number}
+     * @memberof AdminAssignPlacesToSubBuildingsResponseDTO
+     */
+    'unassignedCount': number;
+    /**
+     * 결과 메시지
+     * @type {string}
+     * @memberof AdminAssignPlacesToSubBuildingsResponseDTO
+     */
+    'message': string;
 }
 /**
  * 
@@ -316,83 +353,148 @@ export interface AdminBuildingAccessibilityDTO {
     'createdAtMillis': number;
 }
 /**
- * 
+ * Building Division 정보
  * @export
- * @interface AdminBuildingDeduplicationCandidateDTO
+ * @interface AdminBuildingDivisionDTO
  */
-export interface AdminBuildingDeduplicationCandidateDTO {
+export interface AdminBuildingDivisionDTO {
     /**
-     * 
+     * Building Division ID
      * @type {string}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
+     * @memberof AdminBuildingDivisionDTO
      */
     'id': string;
     /**
-     * 
+     * 충돌이 발생한 Building ID
      * @type {string}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
+     * @memberof AdminBuildingDivisionDTO
      */
-    'building1Id': string;
+    'buildingId': string;
     /**
-     * 
+     * 도로명 주소
      * @type {string}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
+     * @memberof AdminBuildingDivisionDTO
      */
-    'building2Id': string;
+    'roadAddress': string;
     /**
      * 
-     * @type {number}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
+     * @type {AdminBuildingDivisionStatusDTO}
+     * @memberof AdminBuildingDivisionDTO
      */
-    'distanceInMeters': number;
+    'status': AdminBuildingDivisionStatusDTO;
     /**
-     * 
+     * 분할 사유
      * @type {string}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
+     * @memberof AdminBuildingDivisionDTO
      */
-    'building1Name'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
-     */
-    'building2Name'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
-     */
-    'normalizedAddress': string;
-    /**
-     * 
-     * @type {LocationDTO}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
-     */
-    'building1Location': LocationDTO;
-    /**
-     * 
-     * @type {LocationDTO}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
-     */
-    'building2Location': LocationDTO;
+    'divisionReason'?: string;
     /**
      * 
      * @type {EpochMillisTimestamp}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
+     * @memberof AdminBuildingDivisionDTO
      */
-    'acceptedAt'?: EpochMillisTimestamp;
+    'confirmedAt'?: EpochMillisTimestamp;
     /**
      * 
      * @type {EpochMillisTimestamp}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
+     * @memberof AdminBuildingDivisionDTO
      */
     'ignoredAt'?: EpochMillisTimestamp;
     /**
      * 
-     * @type {string}
-     * @memberof AdminBuildingDeduplicationCandidateDTO
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminBuildingDivisionDTO
      */
-    'canonicalBuildingId'?: string;
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminBuildingDivisionDTO
+     */
+    'updatedAt': EpochMillisTimestamp;
+}
+/**
+ * Building Division 상세 정보 (SubBuilding 목록 포함)
+ * @export
+ * @interface AdminBuildingDivisionDetailDTO
+ */
+export interface AdminBuildingDivisionDetailDTO {
+    /**
+     * 
+     * @type {AdminBuildingDivisionDTO}
+     * @memberof AdminBuildingDivisionDetailDTO
+     */
+    'division': AdminBuildingDivisionDTO;
+    /**
+     * SubBuilding 목록
+     * @type {Array<AdminSubBuildingDTO>}
+     * @memberof AdminBuildingDivisionDetailDTO
+     */
+    'subBuildings': Array<AdminSubBuildingDTO>;
+}
+/**
+ * Building Division 상태 - PENDING: 대기 중 (관리자가 SubBuilding 생성 및 확정 필요) - CONFIRMED: 확정됨 (SubBuilding 구성 완료 및 확정) - IGNORED: 무시됨 (ID 충돌이 실제로는 문제가 아님을 확인) 
+ * @export
+ * @enum {string}
+ */
+
+export const AdminBuildingDivisionStatusDTO = {
+    Pending: 'PENDING',
+    Confirmed: 'CONFIRMED',
+    Ignored: 'IGNORED'
+} as const;
+
+export type AdminBuildingDivisionStatusDTO = typeof AdminBuildingDivisionStatusDTO[keyof typeof AdminBuildingDivisionStatusDTO];
+
+
+/**
+ * SubBuilding 개수가 포함된 Building Division 정보
+ * @export
+ * @interface AdminBuildingDivisionWithCountDTO
+ */
+export interface AdminBuildingDivisionWithCountDTO {
+    /**
+     * Building Division ID
+     * @type {string}
+     * @memberof AdminBuildingDivisionWithCountDTO
+     */
+    'id': string;
+    /**
+     * 충돌이 발생한 Building ID
+     * @type {string}
+     * @memberof AdminBuildingDivisionWithCountDTO
+     */
+    'buildingId': string;
+    /**
+     * 도로명 주소
+     * @type {string}
+     * @memberof AdminBuildingDivisionWithCountDTO
+     */
+    'roadAddress': string;
+    /**
+     * 
+     * @type {AdminBuildingDivisionStatusDTO}
+     * @memberof AdminBuildingDivisionWithCountDTO
+     */
+    'status': AdminBuildingDivisionStatusDTO;
+    /**
+     * 생성된 SubBuilding 개수
+     * @type {number}
+     * @memberof AdminBuildingDivisionWithCountDTO
+     */
+    'subBuildingsCount': number;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminBuildingDivisionWithCountDTO
+     */
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminBuildingDivisionWithCountDTO
+     */
+    'confirmedAt'?: EpochMillisTimestamp;
 }
 /**
  * 
@@ -760,6 +862,25 @@ export interface AdminCreateBannerRequestDTO {
     'displayOrder': number;
 }
 /**
+ * Building Division 생성 요청
+ * @export
+ * @interface AdminCreateBuildingDivisionRequestDTO
+ */
+export interface AdminCreateBuildingDivisionRequestDTO {
+    /**
+     * 충돌이 발생한 Building ID
+     * @type {string}
+     * @memberof AdminCreateBuildingDivisionRequestDTO
+     */
+    'buildingId': string;
+    /**
+     * 분할 사유
+     * @type {string}
+     * @memberof AdminCreateBuildingDivisionRequestDTO
+     */
+    'divisionReason'?: string;
+}
+/**
  * 
  * @export
  * @interface AdminCreateChallengeRequestDTO
@@ -944,6 +1065,43 @@ export interface AdminCreateSearchPlacePresetRequestDTO {
     'searchText': string;
 }
 /**
+ * SubBuilding 생성 요청
+ * @export
+ * @interface AdminCreateSubBuildingRequestDTO
+ */
+export interface AdminCreateSubBuildingRequestDTO {
+    /**
+     * 서브 건물 이름
+     * @type {string}
+     * @memberof AdminCreateSubBuildingRequestDTO
+     */
+    'subBuildingName': string;
+    /**
+     * 서브 건물 중심 경도
+     * @type {number}
+     * @memberof AdminCreateSubBuildingRequestDTO
+     */
+    'centerLng': number;
+    /**
+     * 서브 건물 중심 위도
+     * @type {number}
+     * @memberof AdminCreateSubBuildingRequestDTO
+     */
+    'centerLat': number;
+    /**
+     * 서브 건물 경계 (WKT Polygon 형식) 예: POLYGON((127.001 37.001, 127.002 37.001, 127.002 37.002, 127.001 37.002, 127.001 37.001)) 
+     * @type {string}
+     * @memberof AdminCreateSubBuildingRequestDTO
+     */
+    'boundaryWkt': string;
+    /**
+     * 메모
+     * @type {string}
+     * @memberof AdminCreateSubBuildingRequestDTO
+     */
+    'notes'?: string;
+}
+/**
  * 
  * @export
  * @interface AdminCrusherGroupDto
@@ -1073,21 +1231,21 @@ export interface AdminListAllBannersResponseDTO {
     'banners': Array<AdminBannerDTO>;
 }
 /**
- * 
+ * Building Division 목록 조회 응답
  * @export
- * @interface AdminListBuildingDeduplicationCandidatesResponseDTO
+ * @interface AdminListBuildingDivisionsResponseDTO
  */
-export interface AdminListBuildingDeduplicationCandidatesResponseDTO {
+export interface AdminListBuildingDivisionsResponseDTO {
     /**
-     * 
-     * @type {Array<AdminBuildingDeduplicationCandidateDTO>}
-     * @memberof AdminListBuildingDeduplicationCandidatesResponseDTO
+     * Building Division 목록
+     * @type {Array<AdminBuildingDivisionWithCountDTO>}
+     * @memberof AdminListBuildingDivisionsResponseDTO
      */
-    'items': Array<AdminBuildingDeduplicationCandidateDTO>;
+    'items': Array<AdminBuildingDivisionWithCountDTO>;
     /**
      * 없으면 다음 페이지가 없다는 의미.
      * @type {string}
-     * @memberof AdminListBuildingDeduplicationCandidatesResponseDTO
+     * @memberof AdminListBuildingDivisionsResponseDTO
      */
     'cursor'?: string;
 }
@@ -1410,6 +1568,67 @@ export type AdminStairInfoDTO = typeof AdminStairInfoDTO[keyof typeof AdminStair
 
 
 /**
+ * SubBuilding 정보
+ * @export
+ * @interface AdminSubBuildingDTO
+ */
+export interface AdminSubBuildingDTO {
+    /**
+     * SubBuilding ID
+     * @type {string}
+     * @memberof AdminSubBuildingDTO
+     */
+    'id': string;
+    /**
+     * 소속된 Building Division ID
+     * @type {string}
+     * @memberof AdminSubBuildingDTO
+     */
+    'buildingDivisionId': string;
+    /**
+     * 서브 건물 이름 예: 연세대학교 신촌캠퍼스 대강당, 연세대학교 신촌캠퍼스 백양관 
+     * @type {string}
+     * @memberof AdminSubBuildingDTO
+     */
+    'subBuildingName': string;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminSubBuildingDTO
+     */
+    'centerLocation': LocationDTO;
+    /**
+     * 서브 건물 경계 (WKT Polygon 형식) 예: POLYGON((127.001 37.001, 127.002 37.001, 127.002 37.002, 127.001 37.002, 127.001 37.001)) 
+     * @type {string}
+     * @memberof AdminSubBuildingDTO
+     */
+    'boundaryWkt': string;
+    /**
+     * 메모
+     * @type {string}
+     * @memberof AdminSubBuildingDTO
+     */
+    'notes'?: string;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminSubBuildingDTO
+     */
+    'confirmedAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminSubBuildingDTO
+     */
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminSubBuildingDTO
+     */
+    'updatedAt': EpochMillisTimestamp;
+}
+/**
  * 
  * @export
  * @interface AdminUpdateBuildingAccessibilityRequestDTO
@@ -1653,6 +1872,124 @@ export interface AdminUpdatePushNotificationScheduleRequestDTO {
      */
     'deepLink'?: string;
 }
+/**
+ * 검수 결과 반영 시 수행된 작업
+ * @export
+ * @enum {string}
+ */
+
+export const AppliedActionDto = {
+    Deleted: 'DELETED',
+    Modified: 'MODIFIED',
+    NoActionNeeded: 'NO_ACTION_NEEDED',
+    Error: 'ERROR'
+} as const;
+
+export type AppliedActionDto = typeof AppliedActionDto[keyof typeof AppliedActionDto];
+
+
+/**
+ * 접근성 검수 결과 일괄 반영 응답
+ * @export
+ * @interface ApplyAccessibilityInspectionResultBatchResponseDto
+ */
+export interface ApplyAccessibilityInspectionResultBatchResponseDto {
+    /**
+     * 각 검수 결과 처리 결과 목록
+     * @type {Array<ApplyAccessibilityInspectionResultItemDto>}
+     * @memberof ApplyAccessibilityInspectionResultBatchResponseDto
+     */
+    'results': Array<ApplyAccessibilityInspectionResultItemDto>;
+}
+/**
+ * 개별 검수 결과 처리 결과
+ * @export
+ * @interface ApplyAccessibilityInspectionResultItemDto
+ */
+export interface ApplyAccessibilityInspectionResultItemDto {
+    /**
+     * 반영된 검수 결과 ID
+     * @type {string}
+     * @memberof ApplyAccessibilityInspectionResultItemDto
+     */
+    'appliedInspectionResultId': string;
+    /**
+     * 
+     * @type {ResultTypeDTO}
+     * @memberof ApplyAccessibilityInspectionResultItemDto
+     */
+    'resultType'?: ResultTypeDTO;
+    /**
+     * 
+     * @type {AppliedActionDto}
+     * @memberof ApplyAccessibilityInspectionResultItemDto
+     */
+    'appliedAction'?: AppliedActionDto;
+    /**
+     * 처리 성공 여부
+     * @type {boolean}
+     * @memberof ApplyAccessibilityInspectionResultItemDto
+     */
+    'success': boolean;
+    /**
+     * 실패한 경우 에러 메시지
+     * @type {string}
+     * @memberof ApplyAccessibilityInspectionResultItemDto
+     */
+    'errorMessage'?: string | null;
+}
+/**
+ * 접근성 검수 결과 반영 응답
+ * @export
+ * @interface ApplyAccessibilityInspectionResultResponseDto
+ */
+export interface ApplyAccessibilityInspectionResultResponseDto {
+    /**
+     * 반영된 검수 결과 ID
+     * @type {string}
+     * @memberof ApplyAccessibilityInspectionResultResponseDto
+     */
+    'appliedInspectionResultId': string;
+    /**
+     * 
+     * @type {ResultTypeDTO}
+     * @memberof ApplyAccessibilityInspectionResultResponseDto
+     */
+    'resultType': ResultTypeDTO;
+    /**
+     * 
+     * @type {AppliedActionDto}
+     * @memberof ApplyAccessibilityInspectionResultResponseDto
+     */
+    'appliedAction': AppliedActionDto;
+}
+/**
+ * 
+ * @export
+ * @interface ApplyAccessibilityInspectionResultsRequest
+ */
+export interface ApplyAccessibilityInspectionResultsRequest {
+    /**
+     * 반영할 검수 결과 ID 목록
+     * @type {Array<string>}
+     * @memberof ApplyAccessibilityInspectionResultsRequest
+     */
+    'inspectionResultIds': Array<string>;
+}
+/**
+ * 검수 결과 반영 상태
+ * @export
+ * @enum {string}
+ */
+
+export const ApplyStateDto = {
+    Applied: 'APPLIED',
+    Error: 'ERROR'
+} as const;
+
+export type ApplyStateDto = typeof ApplyStateDto[keyof typeof ApplyStateDto];
+
+
 /**
  * 
  * @export
@@ -2905,6 +3242,46 @@ export interface UpdateMapMarkerDTO {
 export const AccessibilityApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+         * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
+         * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        applyAccessibilityInspectionResults: async (applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'applyAccessibilityInspectionResultsRequest' is not null or undefined
+            assertParamExists('applyAccessibilityInspectionResults', 'applyAccessibilityInspectionResultsRequest', applyAccessibilityInspectionResultsRequest)
+            const localVarPath = `/accessibility-inspection-results/apply`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(applyAccessibilityInspectionResultsRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
          * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
          * @param {File} file CSV 파일
@@ -3302,6 +3679,17 @@ export const AccessibilityApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AccessibilityApiAxiosParamCreator(configuration)
     return {
         /**
+         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+         * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
+         * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ApplyAccessibilityInspectionResultBatchResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
          * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
          * @param {File} file CSV 파일
@@ -3414,6 +3802,16 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
     const localVarFp = AccessibilityApiFp(configuration)
     return {
         /**
+         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+         * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
+         * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options?: any): AxiosPromise<ApplyAccessibilityInspectionResultBatchResponseDto> {
+            return localVarFp.applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
          * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
          * @param {File} file CSV 파일
@@ -3517,6 +3915,18 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
  * @extends {BaseAPI}
  */
 export class AccessibilityApi extends BaseAPI {
+    /**
+     * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+     * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
+     * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccessibilityApi
+     */
+    public applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options?: AxiosRequestConfig) {
+        return AccessibilityApiFp(this.configuration).applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
      * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
@@ -4332,6 +4742,569 @@ export class BbucleRoadApi extends BaseAPI {
      */
     public updateBbucleRoadPage(id: string, updateBbucleRoadPageRequestDTO: UpdateBbucleRoadPageRequestDTO, options?: AxiosRequestConfig) {
         return BbucleRoadApiFp(this.configuration).updateBbucleRoadPage(id, updateBbucleRoadPageRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * BuildingDivisionApi - axios parameter creator
+ * @export
+ */
+export const BuildingDivisionApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Building Division의 Place들을 SubBuilding에 할당한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        assignPlacesToSubBuildings: async (divisionId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'divisionId' is not null or undefined
+            assertParamExists('assignPlacesToSubBuildings', 'divisionId', divisionId)
+            const localVarPath = `/building-divisions/{divisionId}/assign-places-to-sub-buildings`
+                .replace(`{${"divisionId"}}`, encodeURIComponent(String(divisionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Building Division을 확정한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        confirmBuildingDivision: async (divisionId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'divisionId' is not null or undefined
+            assertParamExists('confirmBuildingDivision', 'divisionId', divisionId)
+            const localVarPath = `/building-divisions/{divisionId}/confirm`
+                .replace(`{${"divisionId"}}`, encodeURIComponent(String(divisionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 새로운 Building Division을 생성한다.
+         * @param {AdminCreateBuildingDivisionRequestDTO} adminCreateBuildingDivisionRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createBuildingDivision: async (adminCreateBuildingDivisionRequestDTO: AdminCreateBuildingDivisionRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminCreateBuildingDivisionRequestDTO' is not null or undefined
+            assertParamExists('createBuildingDivision', 'adminCreateBuildingDivisionRequestDTO', adminCreateBuildingDivisionRequestDTO)
+            const localVarPath = `/building-divisions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreateBuildingDivisionRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Building Division에 SubBuilding을 추가한다.
+         * @param {string} divisionId Building Division ID
+         * @param {AdminCreateSubBuildingRequestDTO} adminCreateSubBuildingRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSubBuilding: async (divisionId: string, adminCreateSubBuildingRequestDTO: AdminCreateSubBuildingRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'divisionId' is not null or undefined
+            assertParamExists('createSubBuilding', 'divisionId', divisionId)
+            // verify required parameter 'adminCreateSubBuildingRequestDTO' is not null or undefined
+            assertParamExists('createSubBuilding', 'adminCreateSubBuildingRequestDTO', adminCreateSubBuildingRequestDTO)
+            const localVarPath = `/building-divisions/{divisionId}/sub-buildings`
+                .replace(`{${"divisionId"}}`, encodeURIComponent(String(divisionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreateSubBuildingRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Building Division 상세 정보를 조회한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBuildingDivision: async (divisionId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'divisionId' is not null or undefined
+            assertParamExists('getBuildingDivision', 'divisionId', divisionId)
+            const localVarPath = `/building-divisions/{divisionId}`
+                .replace(`{${"divisionId"}}`, encodeURIComponent(String(divisionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Building Division을 무시한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        ignoreBuildingDivision: async (divisionId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'divisionId' is not null or undefined
+            assertParamExists('ignoreBuildingDivision', 'divisionId', divisionId)
+            const localVarPath = `/building-divisions/{divisionId}/ignore`
+                .replace(`{${"divisionId"}}`, encodeURIComponent(String(divisionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Building Division 목록을 조회한다.
+         * @param {AdminBuildingDivisionStatusDTO} [status] 상태별 필터링 (미지정시 전체)
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {string} [cursor] 커서 페이지네이션용 커서 값
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listBuildingDivisions: async (status?: AdminBuildingDivisionStatusDTO, limit?: number, cursor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/building-divisions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (status !== undefined) {
+                localVarQueryParameter['status'] = status;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * BuildingDivisionApi - functional programming interface
+ * @export
+ */
+export const BuildingDivisionApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = BuildingDivisionApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Building Division의 Place들을 SubBuilding에 할당한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async assignPlacesToSubBuildings(divisionId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminAssignPlacesToSubBuildingsResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.assignPlacesToSubBuildings(divisionId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Building Division을 확정한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async confirmBuildingDivision(divisionId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminBuildingDivisionDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.confirmBuildingDivision(divisionId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 새로운 Building Division을 생성한다.
+         * @param {AdminCreateBuildingDivisionRequestDTO} adminCreateBuildingDivisionRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createBuildingDivision(adminCreateBuildingDivisionRequestDTO: AdminCreateBuildingDivisionRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminBuildingDivisionDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createBuildingDivision(adminCreateBuildingDivisionRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Building Division에 SubBuilding을 추가한다.
+         * @param {string} divisionId Building Division ID
+         * @param {AdminCreateSubBuildingRequestDTO} adminCreateSubBuildingRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createSubBuilding(divisionId: string, adminCreateSubBuildingRequestDTO: AdminCreateSubBuildingRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSubBuildingDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createSubBuilding(divisionId, adminCreateSubBuildingRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Building Division 상세 정보를 조회한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getBuildingDivision(divisionId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminBuildingDivisionDetailDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBuildingDivision(divisionId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Building Division을 무시한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async ignoreBuildingDivision(divisionId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminBuildingDivisionDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ignoreBuildingDivision(divisionId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Building Division 목록을 조회한다.
+         * @param {AdminBuildingDivisionStatusDTO} [status] 상태별 필터링 (미지정시 전체)
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {string} [cursor] 커서 페이지네이션용 커서 값
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listBuildingDivisions(status?: AdminBuildingDivisionStatusDTO, limit?: number, cursor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListBuildingDivisionsResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listBuildingDivisions(status, limit, cursor, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * BuildingDivisionApi - factory interface
+ * @export
+ */
+export const BuildingDivisionApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = BuildingDivisionApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Building Division의 Place들을 SubBuilding에 할당한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        assignPlacesToSubBuildings(divisionId: string, options?: any): AxiosPromise<AdminAssignPlacesToSubBuildingsResponseDTO> {
+            return localVarFp.assignPlacesToSubBuildings(divisionId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Building Division을 확정한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        confirmBuildingDivision(divisionId: string, options?: any): AxiosPromise<AdminBuildingDivisionDTO> {
+            return localVarFp.confirmBuildingDivision(divisionId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 새로운 Building Division을 생성한다.
+         * @param {AdminCreateBuildingDivisionRequestDTO} adminCreateBuildingDivisionRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createBuildingDivision(adminCreateBuildingDivisionRequestDTO: AdminCreateBuildingDivisionRequestDTO, options?: any): AxiosPromise<AdminBuildingDivisionDTO> {
+            return localVarFp.createBuildingDivision(adminCreateBuildingDivisionRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Building Division에 SubBuilding을 추가한다.
+         * @param {string} divisionId Building Division ID
+         * @param {AdminCreateSubBuildingRequestDTO} adminCreateSubBuildingRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSubBuilding(divisionId: string, adminCreateSubBuildingRequestDTO: AdminCreateSubBuildingRequestDTO, options?: any): AxiosPromise<AdminSubBuildingDTO> {
+            return localVarFp.createSubBuilding(divisionId, adminCreateSubBuildingRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Building Division 상세 정보를 조회한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBuildingDivision(divisionId: string, options?: any): AxiosPromise<AdminBuildingDivisionDetailDTO> {
+            return localVarFp.getBuildingDivision(divisionId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Building Division을 무시한다.
+         * @param {string} divisionId Building Division ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        ignoreBuildingDivision(divisionId: string, options?: any): AxiosPromise<AdminBuildingDivisionDTO> {
+            return localVarFp.ignoreBuildingDivision(divisionId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Building Division 목록을 조회한다.
+         * @param {AdminBuildingDivisionStatusDTO} [status] 상태별 필터링 (미지정시 전체)
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {string} [cursor] 커서 페이지네이션용 커서 값
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listBuildingDivisions(status?: AdminBuildingDivisionStatusDTO, limit?: number, cursor?: string, options?: any): AxiosPromise<AdminListBuildingDivisionsResponseDTO> {
+            return localVarFp.listBuildingDivisions(status, limit, cursor, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * BuildingDivisionApi - object-oriented interface
+ * @export
+ * @class BuildingDivisionApi
+ * @extends {BaseAPI}
+ */
+export class BuildingDivisionApi extends BaseAPI {
+    /**
+     * 
+     * @summary Building Division의 Place들을 SubBuilding에 할당한다.
+     * @param {string} divisionId Building Division ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BuildingDivisionApi
+     */
+    public assignPlacesToSubBuildings(divisionId: string, options?: AxiosRequestConfig) {
+        return BuildingDivisionApiFp(this.configuration).assignPlacesToSubBuildings(divisionId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Building Division을 확정한다.
+     * @param {string} divisionId Building Division ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BuildingDivisionApi
+     */
+    public confirmBuildingDivision(divisionId: string, options?: AxiosRequestConfig) {
+        return BuildingDivisionApiFp(this.configuration).confirmBuildingDivision(divisionId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 새로운 Building Division을 생성한다.
+     * @param {AdminCreateBuildingDivisionRequestDTO} adminCreateBuildingDivisionRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BuildingDivisionApi
+     */
+    public createBuildingDivision(adminCreateBuildingDivisionRequestDTO: AdminCreateBuildingDivisionRequestDTO, options?: AxiosRequestConfig) {
+        return BuildingDivisionApiFp(this.configuration).createBuildingDivision(adminCreateBuildingDivisionRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Building Division에 SubBuilding을 추가한다.
+     * @param {string} divisionId Building Division ID
+     * @param {AdminCreateSubBuildingRequestDTO} adminCreateSubBuildingRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BuildingDivisionApi
+     */
+    public createSubBuilding(divisionId: string, adminCreateSubBuildingRequestDTO: AdminCreateSubBuildingRequestDTO, options?: AxiosRequestConfig) {
+        return BuildingDivisionApiFp(this.configuration).createSubBuilding(divisionId, adminCreateSubBuildingRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Building Division 상세 정보를 조회한다.
+     * @param {string} divisionId Building Division ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BuildingDivisionApi
+     */
+    public getBuildingDivision(divisionId: string, options?: AxiosRequestConfig) {
+        return BuildingDivisionApiFp(this.configuration).getBuildingDivision(divisionId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Building Division을 무시한다.
+     * @param {string} divisionId Building Division ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BuildingDivisionApi
+     */
+    public ignoreBuildingDivision(divisionId: string, options?: AxiosRequestConfig) {
+        return BuildingDivisionApiFp(this.configuration).ignoreBuildingDivision(divisionId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Building Division 목록을 조회한다.
+     * @param {AdminBuildingDivisionStatusDTO} [status] 상태별 필터링 (미지정시 전체)
+     * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+     * @param {string} [cursor] 커서 페이지네이션용 커서 값
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BuildingDivisionApi
+     */
+    public listBuildingDivisions(status?: AdminBuildingDivisionStatusDTO, limit?: number, cursor?: string, options?: AxiosRequestConfig) {
+        return BuildingDivisionApiFp(this.configuration).listBuildingDivisions(status, limit, cursor, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -5493,44 +6466,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary 건물 중복 제거 후보를 조회한다.
-         * @param {string} id 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getBuildingDeduplicationCandidate: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getBuildingDeduplicationCandidate', 'id', id)
-            const localVarPath = `/building-deduplication-candidates/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Admin required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @summary 폐업이 추정되는 장소를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -5709,50 +6644,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             // authentication Admin required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary 건물 중복 제거 후보 목록을 조회한다.
-         * @param {number} [limit] 
-         * @param {string} [cursor] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listBuildingDeduplicationCandidates: async (limit?: number, cursor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/building-deduplication-candidates`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Admin required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (cursor !== undefined) {
-                localVarQueryParameter['cursor'] = cursor;
-            }
 
 
     
@@ -6279,17 +7170,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary 건물 중복 제거 후보를 조회한다.
-         * @param {string} id 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getBuildingDeduplicationCandidate(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminBuildingDeduplicationCandidateDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getBuildingDeduplicationCandidate(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
          * @summary 폐업이 추정되는 장소를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -6341,18 +7221,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async ignoreClosedPlaceCandidate(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminClosedPlaceCandidateDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.ignoreClosedPlaceCandidate(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary 건물 중복 제거 후보 목록을 조회한다.
-         * @param {number} [limit] 
-         * @param {string} [cursor] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async listBuildingDeduplicationCandidates(limit?: number, cursor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListBuildingDeduplicationCandidatesResponseDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listBuildingDeduplicationCandidates(limit, cursor, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6642,16 +7510,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary 건물 중복 제거 후보를 조회한다.
-         * @param {string} id 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getBuildingDeduplicationCandidate(id: string, options?: any): AxiosPromise<AdminBuildingDeduplicationCandidateDTO> {
-            return localVarFp.getBuildingDeduplicationCandidate(id, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary 폐업이 추정되는 장소를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -6699,17 +7557,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         ignoreClosedPlaceCandidate(id: string, options?: any): AxiosPromise<AdminClosedPlaceCandidateDTO> {
             return localVarFp.ignoreClosedPlaceCandidate(id, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary 건물 중복 제거 후보 목록을 조회한다.
-         * @param {number} [limit] 
-         * @param {string} [cursor] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listBuildingDeduplicationCandidates(limit?: number, cursor?: string, options?: any): AxiosPromise<AdminListBuildingDeduplicationCandidatesResponseDTO> {
-            return localVarFp.listBuildingDeduplicationCandidates(limit, cursor, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -7029,18 +7876,6 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
-     * @summary 건물 중복 제거 후보를 조회한다.
-     * @param {string} id 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getBuildingDeduplicationCandidate(id: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getBuildingDeduplicationCandidate(id, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @summary 폐업이 추정되는 장소를 조회한다.
      * @param {string} id 
      * @param {*} [options] Override http request option.
@@ -7097,19 +7932,6 @@ export class DefaultApi extends BaseAPI {
      */
     public ignoreClosedPlaceCandidate(id: string, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).ignoreClosedPlaceCandidate(id, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary 건물 중복 제거 후보 목록을 조회한다.
-     * @param {number} [limit] 
-     * @param {string} [cursor] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public listBuildingDeduplicationCandidates(limit?: number, cursor?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).listBuildingDeduplicationCandidates(limit, cursor, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
