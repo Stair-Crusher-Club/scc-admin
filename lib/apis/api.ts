@@ -24,6 +24,7 @@ import {
   AccessibilityApi,
   BannerApi,
   BbucleRoadApi,
+  BuildingDivisionApi,
   ChallengeApi,
   Configuration,
   DefaultApi,
@@ -47,6 +48,7 @@ const challengeApi = new ChallengeApi(config)
 const bannerApi = new BannerApi(config)
 const accessibilityApi = new AccessibilityApi(config)
 const bbucleRoadApi = new BbucleRoadApi(config)
+const buildingDivisionApi = new BuildingDivisionApi(config)
 
 export const api: {
   default: DefaultApi
@@ -54,12 +56,14 @@ export const api: {
   banner: BannerApi
   accessibility: AccessibilityApi
   bbucleRoad: BbucleRoadApi
+  buildingDivision: BuildingDivisionApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
   banner: bannerApi,
   accessibility: accessibilityApi,
   bbucleRoad: bbucleRoadApi,
+  buildingDivision: buildingDivisionApi,
 }
 
 export function useQuest({ id }: { id: string }) {
