@@ -1,10 +1,10 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { RotateCcw, Upload, CheckCircle2 } from "lucide-react"
+import { RotateCcw, Upload, CheckCircle2, Sparkles } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
 
-import { useAccessibilityInspectionResultsPaginated } from "@/lib/apis/api"
+import { useAccessibilityInspectionResultsPaginated, runImagePipeline } from "@/lib/apis/api"
 import {
   AccessibilityTypeDTO,
   InspectorTypeDTO,
@@ -30,6 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea"
 import { Contents } from "@/components/layout"
 import { api, applyAccessibilityInspectionResults } from "@/lib/apis/api"
 import { useToast } from "@/hooks/use-toast"
@@ -60,6 +61,10 @@ export default function AccessibilityInspectionResultPage() {
   const [isApplying, setIsApplying] = useState(false)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [pendingSelectedIds, setPendingSelectedIds] = useState<string[]>([])
+  const [showBulkInspectionDialog, setShowBulkInspectionDialog] = useState(false)
+  const [bulkInspectionIds, setBulkInspectionIds] = useState("")
+  const [bulkInspectionType, setBulkInspectionType] = useState<AccessibilityTypeDTO>(AccessibilityTypeDTO.Place)
+  const [isRunningBulkInspection, setIsRunningBulkInspection] = useState(false)
 
   const { data, isLoading } = useAccessibilityInspectionResultsPaginated({
     accessibilityType,
@@ -277,6 +282,64 @@ export default function AccessibilityInspectionResultPage() {
     })
     
     return messages
+  }
+
+  const handleBulkInspectionClick = () => {
+    setShowBulkInspectionDialog(true)
+  }
+
+  const handleBulkInspectionConfirm = async () => {
+    if (!bulkInspectionIds.trim()) {
+      toast({
+        variant: "destructive",
+        title: "입력 오류",
+        description: "접근성 ID를 입력해주세요.",
+      })
+      return
+    }
+
+    setIsRunningBulkInspection(true)
+
+    try {
+      const ids = bulkInspectionIds
+        .split(",")
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0)
+
+      if (ids.length === 0) {
+        toast({
+          variant: "destructive",
+          title: "입력 오류",
+          description: "유효한 접근성 ID를 입력해주세요.",
+        })
+        return
+      }
+
+      const items = ids.map((id) => ({
+        accessibilityId: id,
+        accessibilityType: bulkInspectionType,
+      }))
+
+      await runImagePipeline({ items })
+
+      toast({
+        title: "AI 검수 시작",
+        description: `${ids.length}개의 접근성 데이터에 대한 AI 검수가 시작되었습니다.`,
+      })
+
+      setShowBulkInspectionDialog(false)
+      setBulkInspectionIds("")
+      setBulkInspectionType(AccessibilityTypeDTO.Place)
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || "AI 검수 실행 중 오류가 발생했습니다."
+      toast({
+        variant: "destructive",
+        title: "AI 검수 실패",
+        description: errorMessage,
+      })
+    } finally {
+      setIsRunningBulkInspection(false)
+    }
   }
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -568,6 +631,14 @@ export default function AccessibilityInspectionResultPage() {
                 <CheckCircle2 className="h-4 w-4" />
                 {isApplying ? "반영 중..." : `선택 항목 일괄 반영 (${selectedIds.length}개)`}
               </Button>
+              <Button
+                variant="default"
+                onClick={handleBulkInspectionClick}
+                className="gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
+                AI 일괄 검수
+              </Button>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -683,6 +754,71 @@ export default function AccessibilityInspectionResultPage() {
               </Button>
               <Button onClick={handleBulkApplyConfirm}>
                 반영하기
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* AI 일괄 검수 다이얼로그 */}
+        <Dialog open={showBulkInspectionDialog} onOpenChange={setShowBulkInspectionDialog}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>AI 일괄 검수</DialogTitle>
+              <DialogDescription>
+                접근성 ID를 쉼표로 구분하여 입력하고 검수 유형을 선택해주세요.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="bulkInspectionIds">접근성 ID (쉼표로 구분)</Label>
+                <Textarea
+                  id="bulkInspectionIds"
+                  placeholder="예: id1, id2, id3"
+                  value={bulkInspectionIds}
+                  onChange={(e) => setBulkInspectionIds(e.target.value)}
+                  className="min-h-[120px]"
+                />
+                <p className="text-xs text-muted-foreground">
+                  여러 ID를 쉼표(,)로 구분하여 입력하세요. 공백은 자동으로 제거됩니다.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bulkInspectionType">접근성 유형</Label>
+                <Select
+                  value={bulkInspectionType}
+                  onValueChange={(value) => setBulkInspectionType(value as AccessibilityTypeDTO)}
+                >
+                  <SelectTrigger id="bulkInspectionType">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Place">Place</SelectItem>
+                    <SelectItem value="Building">Building</SelectItem>
+                    <SelectItem value="PlaceReview">PlaceReview</SelectItem>
+                    <SelectItem value="ToiletReview">ToiletReview</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowBulkInspectionDialog(false)
+                  setBulkInspectionIds("")
+                  setBulkInspectionType(AccessibilityTypeDTO.Place)
+                }}
+                disabled={isRunningBulkInspection}
+              >
+                취소
+              </Button>
+              <Button
+                onClick={handleBulkInspectionConfirm}
+                disabled={isRunningBulkInspection}
+                className="gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
+                {isRunningBulkInspection ? "검수 시작 중..." : "AI 검수 시작"}
               </Button>
             </DialogFooter>
           </DialogContent>
