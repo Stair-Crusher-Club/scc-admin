@@ -149,6 +149,12 @@ export interface AdminAccessibilityInspectionResultDTO {
      */
     'handledAtMillis'?: number | null;
     /**
+     * 검수 결과 반영 상태 (APPLIED, ERROR)
+     * @type {ApplyStateDto}
+     * @memberof AdminAccessibilityInspectionResultDTO
+     */
+    'applyState'?: ApplyStateDto | null;
+    /**
      * 
      * @type {number}
      * @memberof AdminAccessibilityInspectionResultDTO
@@ -1654,6 +1660,124 @@ export interface AdminUpdatePushNotificationScheduleRequestDTO {
     'deepLink'?: string;
 }
 /**
+ * 검수 결과 반영 시 수행된 작업
+ * @export
+ * @enum {string}
+ */
+
+export const AppliedActionDto = {
+    Deleted: 'DELETED',
+    Modified: 'MODIFIED',
+    NoActionNeeded: 'NO_ACTION_NEEDED',
+    Error: 'ERROR'
+} as const;
+
+export type AppliedActionDto = typeof AppliedActionDto[keyof typeof AppliedActionDto];
+
+
+/**
+ * 접근성 검수 결과 일괄 반영 응답
+ * @export
+ * @interface ApplyAccessibilityInspectionResultBatchResponseDto
+ */
+export interface ApplyAccessibilityInspectionResultBatchResponseDto {
+    /**
+     * 각 검수 결과 처리 결과 목록
+     * @type {Array<ApplyAccessibilityInspectionResultItemDto>}
+     * @memberof ApplyAccessibilityInspectionResultBatchResponseDto
+     */
+    'results': Array<ApplyAccessibilityInspectionResultItemDto>;
+}
+/**
+ * 개별 검수 결과 처리 결과
+ * @export
+ * @interface ApplyAccessibilityInspectionResultItemDto
+ */
+export interface ApplyAccessibilityInspectionResultItemDto {
+    /**
+     * 반영된 검수 결과 ID
+     * @type {string}
+     * @memberof ApplyAccessibilityInspectionResultItemDto
+     */
+    'appliedInspectionResultId': string;
+    /**
+     * 
+     * @type {ResultTypeDTO}
+     * @memberof ApplyAccessibilityInspectionResultItemDto
+     */
+    'resultType'?: ResultTypeDTO;
+    /**
+     * 
+     * @type {AppliedActionDto}
+     * @memberof ApplyAccessibilityInspectionResultItemDto
+     */
+    'appliedAction'?: AppliedActionDto;
+    /**
+     * 처리 성공 여부
+     * @type {boolean}
+     * @memberof ApplyAccessibilityInspectionResultItemDto
+     */
+    'success': boolean;
+    /**
+     * 실패한 경우 에러 메시지
+     * @type {string}
+     * @memberof ApplyAccessibilityInspectionResultItemDto
+     */
+    'errorMessage'?: string | null;
+}
+/**
+ * 접근성 검수 결과 반영 응답
+ * @export
+ * @interface ApplyAccessibilityInspectionResultResponseDto
+ */
+export interface ApplyAccessibilityInspectionResultResponseDto {
+    /**
+     * 반영된 검수 결과 ID
+     * @type {string}
+     * @memberof ApplyAccessibilityInspectionResultResponseDto
+     */
+    'appliedInspectionResultId': string;
+    /**
+     * 
+     * @type {ResultTypeDTO}
+     * @memberof ApplyAccessibilityInspectionResultResponseDto
+     */
+    'resultType': ResultTypeDTO;
+    /**
+     * 
+     * @type {AppliedActionDto}
+     * @memberof ApplyAccessibilityInspectionResultResponseDto
+     */
+    'appliedAction': AppliedActionDto;
+}
+/**
+ * 
+ * @export
+ * @interface ApplyAccessibilityInspectionResultsRequest
+ */
+export interface ApplyAccessibilityInspectionResultsRequest {
+    /**
+     * 반영할 검수 결과 ID 목록
+     * @type {Array<string>}
+     * @memberof ApplyAccessibilityInspectionResultsRequest
+     */
+    'inspectionResultIds': Array<string>;
+}
+/**
+ * 검수 결과 반영 상태
+ * @export
+ * @enum {string}
+ */
+
+export const ApplyStateDto = {
+    Applied: 'APPLIED',
+    Error: 'ERROR'
+} as const;
+
+export type ApplyStateDto = typeof ApplyStateDto[keyof typeof ApplyStateDto];
+
+
+/**
  * 
  * @export
  * @interface BbucleRoadPageDTO
@@ -2905,6 +3029,46 @@ export interface UpdateMapMarkerDTO {
 export const AccessibilityApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+         * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
+         * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        applyAccessibilityInspectionResults: async (applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'applyAccessibilityInspectionResultsRequest' is not null or undefined
+            assertParamExists('applyAccessibilityInspectionResults', 'applyAccessibilityInspectionResultsRequest', applyAccessibilityInspectionResultsRequest)
+            const localVarPath = `/accessibility-inspection-results/apply`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(applyAccessibilityInspectionResultsRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
          * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
          * @param {File} file CSV 파일
@@ -3302,6 +3466,17 @@ export const AccessibilityApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AccessibilityApiAxiosParamCreator(configuration)
     return {
         /**
+         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+         * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
+         * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ApplyAccessibilityInspectionResultBatchResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
          * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
          * @param {File} file CSV 파일
@@ -3414,6 +3589,16 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
     const localVarFp = AccessibilityApiFp(configuration)
     return {
         /**
+         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+         * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
+         * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options?: any): AxiosPromise<ApplyAccessibilityInspectionResultBatchResponseDto> {
+            return localVarFp.applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
          * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.
          * @param {File} file CSV 파일
@@ -3517,6 +3702,18 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
  * @extends {BaseAPI}
  */
 export class AccessibilityApi extends BaseAPI {
+    /**
+     * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+     * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
+     * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccessibilityApi
+     */
+    public applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options?: AxiosRequestConfig) {
+        return AccessibilityApiFp(this.configuration).applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
      * @summary CSV 파일을 업로드하여 인간 검수 결과를 일괄 등록한다.

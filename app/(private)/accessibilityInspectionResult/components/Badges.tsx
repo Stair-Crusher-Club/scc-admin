@@ -9,7 +9,11 @@ import {
   HelpCircleIcon,
 } from "lucide-react"
 
-import { ResultTypeDTO, InspectorTypeDTO } from "@/lib/generated-sources/openapi"
+import {
+  ResultTypeDTO,
+  InspectorTypeDTO,
+  ApplyStateDto,
+} from "@/lib/generated-sources/openapi"
 
 import { Badge } from "@/components/ui/badge"
 
@@ -67,6 +71,18 @@ export function InspectorTypeBadge({
     >
       {getInspectorIcon(inspectorType)}
       {inspectorType}
+    </Badge>
+  )
+}
+
+export function HandledActionBadge({
+  applyState,
+}: {
+  applyState: ApplyStateDto | null | undefined
+}) {
+  return (
+    <Badge variant="outline" className="text-muted-foreground w-fit">
+      {applyState === "APPLIED" ? "반영" : applyState === "ERROR" ? "에러" : "미반영"}
     </Badge>
   )
 }
