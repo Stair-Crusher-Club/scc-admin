@@ -22,6 +22,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Contents } from "@/components/layout"
 import { api, applyAccessibilityInspectionResults } from "@/lib/apis/api"
 import { useToast } from "@/hooks/use-toast"
@@ -50,6 +58,8 @@ export default function AccessibilityInspectionResultPage() {
   const [pageSize, setPageSize] = useState(20)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isApplying, setIsApplying] = useState(false)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [pendingSelectedIds, setPendingSelectedIds] = useState<string[]>([])
 
   const { data, isLoading } = useAccessibilityInspectionResultsPaginated({
     accessibilityType,
@@ -110,7 +120,46 @@ export default function AccessibilityInspectionResultPage() {
     fileInputRef.current?.click()
   }
 
-  const handleBulkApply = async () => {
+  // 선택된 항목들을 검수자 유형별로 그룹화하여 통계 계산
+  const calculateStatistics = (ids: string[]) => {
+    const selectedItems = items.filter((item) => ids.includes(item.id))
+    
+    const statsByInspectorType: Record<
+      InspectorTypeDTO,
+      { delete: number; modify: number; ok: number }
+    > = {
+      HUMAN: { delete: 0, modify: 0, ok: 0 },
+      AI: { delete: 0, modify: 0, ok: 0 },
+      UNKNOWN: { delete: 0, modify: 0, ok: 0 },
+    }
+
+    selectedItems.forEach((item) => {
+      const inspectorType = item.inspectorType
+      const resultType = item.resultType
+
+      if (resultType === "DELETE") {
+        statsByInspectorType[inspectorType].delete++
+      } else if (resultType === "MODIFY") {
+        statsByInspectorType[inspectorType].modify++
+      } else if (resultType === "OK") {
+        statsByInspectorType[inspectorType].ok++
+      }
+    })
+
+    return statsByInspectorType
+  }
+
+  // 검수자 유형 라벨
+  const getInspectorTypeLabel = (type: InspectorTypeDTO): string => {
+    const labels: Record<InspectorTypeDTO, string> = {
+      HUMAN: "인간",
+      AI: "AI",
+      UNKNOWN: "알 수 없음",
+    }
+    return labels[type] || type
+  }
+
+  const handleBulkApplyClick = () => {
     if (selectedIds.length === 0) {
       toast({
         variant: "destructive",
@@ -120,10 +169,17 @@ export default function AccessibilityInspectionResultPage() {
       return
     }
 
+    setPendingSelectedIds([...selectedIds])
+    setShowConfirmDialog(true)
+  }
+
+  const handleBulkApplyConfirm = async () => {
+    setShowConfirmDialog(false)
+    
     setIsApplying(true)
     try {
       const response = await applyAccessibilityInspectionResults({
-        inspectionResultIds: selectedIds,
+        inspectionResultIds: pendingSelectedIds,
       })
 
       const result = response.data
@@ -187,6 +243,40 @@ export default function AccessibilityInspectionResultPage() {
     } finally {
       setIsApplying(false)
     }
+  }
+
+  // 확인 다이얼로그에 표시할 메시지 생성
+  const getConfirmMessage = () => {
+    if (pendingSelectedIds.length === 0) {
+      return []
+    }
+
+    const statistics = calculateStatistics(pendingSelectedIds)
+    const messages: string[] = []
+    
+    Object.entries(statistics).forEach(([inspectorType, stats]) => {
+      const typeLabel = getInspectorTypeLabel(inspectorType as InspectorTypeDTO)
+      const totalCount = stats.delete + stats.modify + stats.ok
+      
+      if (totalCount > 0) {
+        const parts: string[] = []
+        if (stats.delete > 0) {
+          parts.push(`${stats.delete}개 삭제`)
+        }
+        if (stats.modify > 0) {
+          parts.push(`${stats.modify}개 수정`)
+        }
+        if (stats.ok > 0) {
+          parts.push(`${stats.ok}개 조치 불필요`)
+        }
+        
+        if (parts.length > 0) {
+          messages.push(`검수자 유형 ${typeLabel}의 검수 ${parts.join(", ")}됩니다`)
+        }
+      }
+    })
+    
+    return messages
   }
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -471,7 +561,7 @@ export default function AccessibilityInspectionResultPage() {
               </Button>
               <Button
                 variant="default"
-                onClick={handleBulkApply}
+                onClick={handleBulkApplyClick}
                 disabled={isApplying || selectedIds.length === 0}
                 className="gap-2"
               >
@@ -557,6 +647,46 @@ export default function AccessibilityInspectionResultPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* 확인 다이얼로그 */}
+        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>일괄 반영 확인</DialogTitle>
+              <DialogDescription>
+                아래 내용을 확인하고 반영 여부를 결정해주세요.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              {getConfirmMessage().map((message, index) => (
+                <p key={index} className="mb-2 text-sm">
+                  {message}
+                </p>
+              ))}
+              {getConfirmMessage().length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  선택된 항목이 없습니다.
+                </p>
+              )}
+              {getConfirmMessage().length > 0 && (
+                <p className="mt-4 text-sm font-medium">
+                  반영하시겠습니까?
+                </p>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowConfirmDialog(false)}
+              >
+                취소
+              </Button>
+              <Button onClick={handleBulkApplyConfirm}>
+                반영하기
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </Contents.Normal>
     </>
   )
