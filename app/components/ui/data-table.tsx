@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -29,6 +30,9 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   onLoadMore?: () => void
   hasMore?: boolean
+  columnFilters?: ColumnFiltersState
+  onColumnFiltersChange?: (filters: ColumnFiltersState) => void
+  renderExpandedRow?: (row: TData) => React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
@@ -36,10 +40,29 @@ export function DataTable<TData, TValue>({
   data,
   onLoadMore,
   hasMore,
+  columnFilters: externalColumnFilters,
+  onColumnFiltersChange: externalOnColumnFiltersChange,
+  renderExpandedRow,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [internalColumnFilters, setInternalColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+
+  const columnFilters = externalColumnFilters ?? internalColumnFilters
+  const setColumnFilters = externalOnColumnFiltersChange ?? setInternalColumnFilters
+
+  const toggleRowExpansion = (rowId: string) => {
+    setExpandedRows((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(rowId)) {
+        newSet.delete(rowId)
+      } else {
+        newSet.add(rowId)
+      }
+      return newSet
+    })
+  }
 
   const table = useReactTable({
     data,
@@ -85,21 +108,35 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const isExpanded = expandedRows.has(row.id)
+                return (
+                  <>
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      onClick={() => renderExpandedRow && toggleRowExpansion(row.id)}
+                      className={renderExpandedRow ? "cursor-pointer hover:bg-muted/50" : ""}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    {isExpanded && renderExpandedRow && (
+                      <TableRow key={`${row.id}-expanded`}>
+                        <TableCell colSpan={columns.length} className="p-0">
+                          {renderExpandedRow(row.original)}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell

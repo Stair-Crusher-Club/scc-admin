@@ -2,15 +2,12 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import dayjs from "dayjs"
-import { Filter } from "lucide-react"
 
 import { AdminAccessibilityDTO } from "@/lib/generated-sources/openapi"
 import { SearchAccessibilitiesPayload } from "@/lib/apis/api"
 
 import { DataTableColumnHeader } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 
 import { ActionsCell, ImagesCell } from "./Cells"
 
@@ -21,15 +18,7 @@ export function getColumns(
     {
       accessorKey: "placeAccessibility.placeName",
       header: ({ column }) => (
-        <div className="flex flex-col gap-2">
-          <DataTableColumnHeader column={column} title="장소명" />
-          <Input
-            placeholder="필터..."
-            value={(column.getFilterValue() as string) ?? ""}
-            onChange={(event) => column.setFilterValue(event.target.value)}
-            className="h-8 w-[150px]"
-          />
-        </div>
+        <DataTableColumnHeader column={column} title="장소명" />
       ),
       cell: ({ row }) => {
         const placeName = row.original.placeAccessibility.placeName
@@ -71,15 +60,7 @@ export function getColumns(
     {
       accessorKey: "placeAccessibility.registeredUserName",
       header: ({ column }) => (
-        <div className="flex flex-col gap-2">
-          <DataTableColumnHeader column={column} title="촬영자" />
-          <Input
-            placeholder="필터..."
-            value={(column.getFilterValue() as string) ?? ""}
-            onChange={(event) => column.setFilterValue(event.target.value)}
-            className="h-8 w-[120px]"
-          />
-        </div>
+        <DataTableColumnHeader column={column} title="촬영자" />
       ),
       cell: ({ row }) => {
         return (
@@ -125,7 +106,7 @@ export function getColumns(
     },
     {
       accessorKey: "placeAccessibility.stairInfo",
-      header: () => <div className="text-center font-semibold">계단 정보</div>,
+      header: () => <div className="text-center font-semibold whitespace-nowrap">계단 정보</div>,
       cell: ({ row }) => {
         const stairInfo = row.original.placeAccessibility.stairInfo
         const stairMap: Record<string, string> = {
@@ -134,9 +115,11 @@ export function getColumns(
           TWO_TO_FIVE: "2~5개",
           OVER_SIX: "6개 이상",
         }
-        return <div className="text-sm">{stairMap[stairInfo] || stairInfo}</div>
+        return <div className="text-sm text-center whitespace-nowrap">{stairMap[stairInfo] || stairInfo}</div>
       },
       enableSorting: false,
+      size: 100,
+      minSize: 100,
     },
     {
       accessorKey: "buildingAccessibility.hasElevator",
