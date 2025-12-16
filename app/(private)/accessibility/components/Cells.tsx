@@ -20,7 +20,12 @@ import { AdminAccessibilityDTO, AccessibilityTypeDTO } from "@/lib/generated-sou
 import { NetworkError } from "@/lib/http"
 
 import { Button } from "@/components/ui/button"
-import { useModal } from "@/hooks/useModal"
+import {
+  Dialog,
+  DialogContent,
+  DialogOverlay,
+  DialogPortal,
+} from "@/components/ui/dialog"
 
 import * as S from "./Cells.style"
 import {
@@ -36,57 +41,66 @@ import {
 } from "./EditAccessibility"
 
 export function ImagesCell({ images }: { images: string[] }) {
-  const { openModal } = useModal()
-  function seeDetails(url: string) {
-    openModal({ type: "AccessibilityImage", props: { imageUrl: url } })
-  }
-
-  if (images.length === 0) {
-    return (
-      <div className="w-[180px] h-[180px] bg-gray-100 rounded-md flex items-center justify-center text-gray-400 text-sm">
-        사진 없음
-      </div>
-    )
-  }
-
-  if (images.length === 1) {
-    const imageUrl = images[0]
-    return (
-      <div className="w-[180px] h-[180px] relative cursor-pointer overflow-hidden rounded-md">
-        <Image
-          key={imageUrl}
-          src={imageUrl}
-          fill
-          alt=""
-          className="object-cover hover:scale-105 transition-transform"
-          onClick={() => seeDetails(imageUrl)}
-          unoptimized
-        />
-      </div>
-    )
-  }
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   return (
-    <div className="grid grid-cols-2 gap-1 w-[180px] h-[180px]">
-      {images.slice(0, 4).map((imageUrl) => (
-        <div
-          key={imageUrl}
-          className="relative cursor-pointer overflow-hidden rounded-sm"
-        >
+    <>
+      {images.length === 0 ? (
+        <div className="w-[180px] h-[180px] bg-gray-100 rounded-md flex items-center justify-center text-gray-400 text-sm">
+          사진 없음
+        </div>
+      ) : images.length === 1 ? (
+        <div className="w-[180px] h-[180px] relative cursor-pointer overflow-hidden rounded-md">
           <Image
-            src={imageUrl}
-            alt=""
+            key={images[0]}
+            src={images[0]}
             fill
+            alt=""
             className="object-cover hover:scale-105 transition-transform"
-            onClick={() => seeDetails(imageUrl)}
+            onClick={() => setSelectedImage(images[0])}
             unoptimized
           />
         </div>
-      ))}
-      {Array.from({ length: Math.max(0, 4 - images.length) }).map((_, idx) => (
-        <div key={idx} className="bg-gray-100 rounded-sm" />
-      ))}
-    </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-1 w-[180px] h-[180px]">
+          {images.slice(0, 4).map((imageUrl) => (
+            <div
+              key={imageUrl}
+              className="relative cursor-pointer overflow-hidden rounded-sm"
+            >
+              <Image
+                src={imageUrl}
+                alt=""
+                fill
+                className="object-cover hover:scale-105 transition-transform"
+                onClick={() => setSelectedImage(imageUrl)}
+                unoptimized
+              />
+            </div>
+          ))}
+          {Array.from({ length: Math.max(0, 4 - images.length) }).map((_, idx) => (
+            <div key={idx} className="bg-gray-100 rounded-sm" />
+          ))}
+        </div>
+      )}
+
+      <Dialog open={selectedImage !== null} onOpenChange={(open) => !open && setSelectedImage(null)}>
+        <DialogPortal>
+          <DialogOverlay className="bg-black/90" />
+          <DialogContent className="max-w-[95vw] max-h-[95vh] w-fit h-fit border-0 p-0 bg-transparent shadow-none">
+            <div className="relative w-full h-full flex items-center justify-center">
+              {selectedImage && (
+                <img
+                  src={selectedImage}
+                  alt="접근성 이미지"
+                  className="max-w-full max-h-[95vh] object-contain"
+                />
+              )}
+            </div>
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
+    </>
   )
 }
 

@@ -1,5 +1,6 @@
 "use client"
 
+import { ColumnFiltersState } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { Search } from "lucide-react"
 import { useState } from "react"
@@ -16,6 +17,7 @@ import { DataTable } from "@/components/ui/data-table"
 
 import { getColumns } from "./components/columns"
 import { useAccessibilities } from "./query"
+import { AccessibilityDetailRow } from "./components/AccessibilityDetailRow"
 
 export default function AccessibilityList() {
   const form = useForm<SearchAccessibilitiesPayload>()
@@ -24,6 +26,7 @@ export default function AccessibilityList() {
     createdAtFromLocalDate: "",
     createdAtToLocalDate: "",
   })
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const { data, fetchNextPage, hasNextPage } = useAccessibilities(formInput)
   const accessibilities = data?.pages.flatMap((p) => p.items) ?? []
 
@@ -31,6 +34,7 @@ export default function AccessibilityList() {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const placeName = formData.get("placeName") as string
+    const registeredUserName = formData.get("registeredUserName") as string
     const createdAtFrom = formData.get("createdAtFromLocalDate") as string
     const createdAtTo = formData.get("createdAtToLocalDate") as string
 
@@ -43,6 +47,15 @@ export default function AccessibilityList() {
         ? format(new Date(createdAtTo), "yyyy-MM-dd")
         : "",
     })
+
+    const filters: ColumnFiltersState = []
+    if (placeName) {
+      filters.push({ id: "placeAccessibility.placeName", value: placeName })
+    }
+    if (registeredUserName) {
+      filters.push({ id: "placeAccessibility.registeredUserName", value: registeredUserName })
+    }
+    setColumnFilters(filters)
   }
 
   const columns = getColumns(formInput)
@@ -57,15 +70,25 @@ export default function AccessibilityList() {
           <CardContent>
             <form id="search-accessibilities" onSubmit={updateFormInput}>
               <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="placeName">장소명</Label>
-                  <Input
-                    id="placeName"
-                    name="placeName"
-                    type="text"
-                    placeholder="등록 최신순 검색"
-                    defaultValue={formInput.placeName}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="placeName">장소명</Label>
+                    <Input
+                      id="placeName"
+                      name="placeName"
+                      type="text"
+                      placeholder="장소명으로 필터링"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="registeredUserName">촬영자</Label>
+                    <Input
+                      id="registeredUserName"
+                      name="registeredUserName"
+                      type="text"
+                      placeholder="촬영자 이름으로 필터링"
+                    />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
@@ -105,6 +128,9 @@ export default function AccessibilityList() {
               data={accessibilities}
               onLoadMore={() => fetchNextPage()}
               hasMore={hasNextPage}
+              columnFilters={columnFilters}
+              onColumnFiltersChange={setColumnFilters}
+              renderExpandedRow={(row) => <AccessibilityDetailRow accessibility={row} />}
             />
           </CardContent>
         </Card>

@@ -1,10 +1,10 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { RotateCcw, Upload } from "lucide-react"
+import { RotateCcw, Upload, CheckCircle2, Sparkles } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
 
-import { useAccessibilityInspectionResultsPaginated } from "@/lib/apis/api"
+import { useAccessibilityInspectionResultsPaginated, runImagePipeline } from "@/lib/apis/api"
 import {
   AccessibilityTypeDTO,
   InspectorTypeDTO,
@@ -22,8 +22,17 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea"
 import { Contents } from "@/components/layout"
-import { api } from "@/lib/apis/api"
+import { api, applyAccessibilityInspectionResults } from "@/lib/apis/api"
 import { useToast } from "@/hooks/use-toast"
 
 import { getColumns } from "./components/columns"
@@ -48,6 +57,14 @@ export default function AccessibilityInspectionResultPage() {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [isApplying, setIsApplying] = useState(false)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [pendingSelectedIds, setPendingSelectedIds] = useState<string[]>([])
+  const [showBulkInspectionDialog, setShowBulkInspectionDialog] = useState(false)
+  const [bulkInspectionIds, setBulkInspectionIds] = useState("")
+  const [bulkInspectionType, setBulkInspectionType] = useState<AccessibilityTypeDTO>(AccessibilityTypeDTO.Place)
+  const [isRunningBulkInspection, setIsRunningBulkInspection] = useState(false)
 
   const { data, isLoading } = useAccessibilityInspectionResultsPaginated({
     accessibilityType,
@@ -106,6 +123,223 @@ export default function AccessibilityInspectionResultPage() {
 
   const handleBulkImportClick = () => {
     fileInputRef.current?.click()
+  }
+
+  // 선택된 항목들을 검수자 유형별로 그룹화하여 통계 계산
+  const calculateStatistics = (ids: string[]) => {
+    const selectedItems = items.filter((item) => ids.includes(item.id))
+    
+    const statsByInspectorType: Record<
+      InspectorTypeDTO,
+      { delete: number; modify: number; ok: number }
+    > = {
+      HUMAN: { delete: 0, modify: 0, ok: 0 },
+      AI: { delete: 0, modify: 0, ok: 0 },
+      UNKNOWN: { delete: 0, modify: 0, ok: 0 },
+    }
+
+    selectedItems.forEach((item) => {
+      const inspectorType = item.inspectorType
+      const resultType = item.resultType
+
+      if (resultType === "DELETE") {
+        statsByInspectorType[inspectorType].delete++
+      } else if (resultType === "MODIFY") {
+        statsByInspectorType[inspectorType].modify++
+      } else if (resultType === "OK") {
+        statsByInspectorType[inspectorType].ok++
+      }
+    })
+
+    return statsByInspectorType
+  }
+
+  // 검수자 유형 라벨
+  const getInspectorTypeLabel = (type: InspectorTypeDTO): string => {
+    const labels: Record<InspectorTypeDTO, string> = {
+      HUMAN: "인간",
+      AI: "AI",
+      UNKNOWN: "알 수 없음",
+    }
+    return labels[type] || type
+  }
+
+  const handleBulkApplyClick = () => {
+    if (selectedIds.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "선택된 항목 없음",
+        description: "일괄 반영할 항목을 선택해주세요.",
+      })
+      return
+    }
+
+    setPendingSelectedIds([...selectedIds])
+    setShowConfirmDialog(true)
+  }
+
+  const handleBulkApplyConfirm = async () => {
+    setShowConfirmDialog(false)
+    
+    setIsApplying(true)
+    try {
+      const response = await applyAccessibilityInspectionResults({
+        inspectionResultIds: pendingSelectedIds,
+      })
+
+      const result = response.data
+      const successCount = result.results.filter((r) => r.success).length
+      const failureCount = result.results.filter((r) => !r.success).length
+
+      // appliedAction별 통계
+      const actionStats = result.results.reduce(
+        (acc: Record<string, number>, r) => {
+          if (r.success && r.appliedAction) {
+            const action = r.appliedAction
+            acc[action] = (acc[action] || 0) + 1
+          }
+          return acc
+        },
+        {} as Record<string, number>
+      )
+
+      const actionSummary = Object.entries(actionStats)
+        .map(([action, count]) => {
+          const actionLabels: Record<string, string> = {
+            DELETED: "삭제",
+            MODIFIED: "수정",
+            NO_ACTION_NEEDED: "조치 불필요",
+            ERROR: "에러",
+          }
+          return `${actionLabels[action] || action}: ${count}개`
+        })
+        .join(", ")
+
+      if (failureCount > 0) {
+        const errorMessages = result.results
+          .filter((r) => !r.success)
+          .map((r) => r.errorMessage)
+          .filter((msg) => msg)
+          .slice(0, 5)
+          .join("\n")
+
+        toast({
+          variant: "destructive",
+          title: "일괄 반영 완료 (일부 실패)",
+          description: `성공: ${successCount}개, 실패: ${failureCount}개${actionSummary ? `\n처리 내역: ${actionSummary}` : ""}${errorMessages ? `\n\n에러:\n${errorMessages}` : ""}`,
+        })
+      } else {
+        toast({
+          title: "일괄 반영 성공",
+          description: `${successCount}개의 검수 결과가 반영되었습니다.${actionSummary ? `\n처리 내역: ${actionSummary}` : ""}`,
+        })
+      }
+
+      // Refresh data after successful apply
+      queryClient.invalidateQueries({ queryKey: ["@accessibilityInspectionResultsPaginated"] })
+      setSelectedIds([])
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || "일괄 반영 중 오류가 발생했습니다."
+      toast({
+        variant: "destructive",
+        title: "일괄 반영 실패",
+        description: errorMessage,
+      })
+    } finally {
+      setIsApplying(false)
+    }
+  }
+
+  // 확인 다이얼로그에 표시할 메시지 생성
+  const getConfirmMessage = () => {
+    if (pendingSelectedIds.length === 0) {
+      return []
+    }
+
+    const statistics = calculateStatistics(pendingSelectedIds)
+    const messages: string[] = []
+    
+    Object.entries(statistics).forEach(([inspectorType, stats]) => {
+      const typeLabel = getInspectorTypeLabel(inspectorType as InspectorTypeDTO)
+      const totalCount = stats.delete + stats.modify + stats.ok
+      
+      if (totalCount > 0) {
+        const parts: string[] = []
+        if (stats.delete > 0) {
+          parts.push(`${stats.delete}개 삭제`)
+        }
+        if (stats.modify > 0) {
+          parts.push(`${stats.modify}개 수정`)
+        }
+        if (stats.ok > 0) {
+          parts.push(`${stats.ok}개 조치 불필요`)
+        }
+        
+        if (parts.length > 0) {
+          messages.push(`검수자 유형 ${typeLabel}의 검수 ${parts.join(", ")}됩니다`)
+        }
+      }
+    })
+    
+    return messages
+  }
+
+  const handleBulkInspectionClick = () => {
+    setShowBulkInspectionDialog(true)
+  }
+
+  const handleBulkInspectionConfirm = async () => {
+    if (!bulkInspectionIds.trim()) {
+      toast({
+        variant: "destructive",
+        title: "입력 오류",
+        description: "접근성 ID를 입력해주세요.",
+      })
+      return
+    }
+
+    setIsRunningBulkInspection(true)
+
+    try {
+      const ids = bulkInspectionIds
+        .split(",")
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0)
+
+      if (ids.length === 0) {
+        toast({
+          variant: "destructive",
+          title: "입력 오류",
+          description: "유효한 접근성 ID를 입력해주세요.",
+        })
+        return
+      }
+
+      const items = ids.map((id) => ({
+        accessibilityId: id,
+        accessibilityType: bulkInspectionType,
+      }))
+
+      await runImagePipeline({ items })
+
+      toast({
+        title: "AI 검수 시작",
+        description: `${ids.length}개의 접근성 데이터에 대한 AI 검수가 시작되었습니다.`,
+      })
+
+      setShowBulkInspectionDialog(false)
+      setBulkInspectionIds("")
+      setBulkInspectionType(AccessibilityTypeDTO.Place)
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || "AI 검수 실행 중 오류가 발생했습니다."
+      toast({
+        variant: "destructive",
+        title: "AI 검수 실패",
+        description: errorMessage,
+      })
+    } finally {
+      setIsRunningBulkInspection(false)
+    }
   }
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -388,6 +622,23 @@ export default function AccessibilityInspectionResultPage() {
                 <Upload className="h-4 w-4" />
                 {isUploading ? "업로드 중..." : "CSV 일괄 등록"}
               </Button>
+              <Button
+                variant="default"
+                onClick={handleBulkApplyClick}
+                disabled={isApplying || selectedIds.length === 0}
+                className="gap-2"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                {isApplying ? "반영 중..." : `선택 항목 일괄 반영 (${selectedIds.length}개)`}
+              </Button>
+              <Button
+                variant="default"
+                onClick={handleBulkInspectionClick}
+                className="gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
+                AI 일괄 검수
+              </Button>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -430,6 +681,7 @@ export default function AccessibilityInspectionResultPage() {
                 enableRowSelection={true}
                 enablePagination={false}
                 pageSize={pageSize}
+                onSelectionChange={setSelectedIds}
               />
             )}
           </CardContent>
@@ -466,6 +718,111 @@ export default function AccessibilityInspectionResultPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* 확인 다이얼로그 */}
+        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>일괄 반영 확인</DialogTitle>
+              <DialogDescription>
+                아래 내용을 확인하고 반영 여부를 결정해주세요.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              {getConfirmMessage().map((message, index) => (
+                <p key={index} className="mb-2 text-sm">
+                  {message}
+                </p>
+              ))}
+              {getConfirmMessage().length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  선택된 항목이 없습니다.
+                </p>
+              )}
+              {getConfirmMessage().length > 0 && (
+                <p className="mt-4 text-sm font-medium">
+                  반영하시겠습니까?
+                </p>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowConfirmDialog(false)}
+              >
+                취소
+              </Button>
+              <Button onClick={handleBulkApplyConfirm}>
+                반영하기
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* AI 일괄 검수 다이얼로그 */}
+        <Dialog open={showBulkInspectionDialog} onOpenChange={setShowBulkInspectionDialog}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>AI 일괄 검수</DialogTitle>
+              <DialogDescription>
+                접근성 ID를 쉼표로 구분하여 입력하고 검수 유형을 선택해주세요.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="bulkInspectionIds">접근성 ID (쉼표로 구분)</Label>
+                <Textarea
+                  id="bulkInspectionIds"
+                  placeholder="예: id1, id2, id3"
+                  value={bulkInspectionIds}
+                  onChange={(e) => setBulkInspectionIds(e.target.value)}
+                  className="min-h-[120px]"
+                />
+                <p className="text-xs text-muted-foreground">
+                  여러 ID를 쉼표(,)로 구분하여 입력하세요. 공백은 자동으로 제거됩니다.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bulkInspectionType">접근성 유형</Label>
+                <Select
+                  value={bulkInspectionType}
+                  onValueChange={(value) => setBulkInspectionType(value as AccessibilityTypeDTO)}
+                >
+                  <SelectTrigger id="bulkInspectionType">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Place">Place</SelectItem>
+                    <SelectItem value="Building">Building</SelectItem>
+                    <SelectItem value="PlaceReview">PlaceReview</SelectItem>
+                    <SelectItem value="ToiletReview">ToiletReview</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowBulkInspectionDialog(false)
+                  setBulkInspectionIds("")
+                  setBulkInspectionType(AccessibilityTypeDTO.Place)
+                }}
+                disabled={isRunningBulkInspection}
+              >
+                취소
+              </Button>
+              <Button
+                onClick={handleBulkInspectionConfirm}
+                disabled={isRunningBulkInspection}
+                className="gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
+                {isRunningBulkInspection ? "검수 시작 중..." : "AI 검수 시작"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </Contents.Normal>
     </>
   )

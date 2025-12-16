@@ -560,3 +560,11 @@ export interface RunImagePipelinePayload {
 export function runImagePipeline(payload: RunImagePipelinePayload) {
   return accessibilityApi.runAccessibilityImagePipeline(payload)
 }
+
+export interface ApplyAccessibilityInspectionResultsPayload {
+  inspectionResultIds: string[]
+}
+
+export function applyAccessibilityInspectionResults(payload: ApplyAccessibilityInspectionResultsPayload) {
+  return accessibilityApi.applyAccessibilityInspectionResults(payload)
+}
