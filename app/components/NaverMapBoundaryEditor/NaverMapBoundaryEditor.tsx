@@ -248,7 +248,8 @@ export default function NaverMapBoundaryEditor({
     } else {
       onBoundaryChange(null)
     }
-  }, [points, onBoundaryChange])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [points])
 
   // Actions
   const handleStartDrawing = () => {
