@@ -5,22 +5,23 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 import dayjs from "dayjs"
 
-import { AdminSubBuildingDTO } from "@/lib/generated-sources/openapi"
 import { Contents } from "@/components/layout"
-import NaverMapBoundaryEditor, { BoundaryData } from "@/components/NaverMapBoundaryEditor"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import {
   useBuildingDivision,
   useConfirmBuildingDivision,
   useIgnoreBuildingDivision,
-  useCreateSubBuilding,
+  useDeleteSubBuilding,
   useAssignPlacesToSubBuildings,
 } from "../query"
+import SubBuildingCard from "../components/SubBuildingCard"
+import SubBuildingForm from "../components/SubBuildingForm"
+import SubBuildingEditForm from "../components/SubBuildingEditForm"
+import SubBuildingsMapView from "../components/SubBuildingsMapView"
 
 interface PageProps {
   params: {
@@ -35,7 +36,9 @@ export default function BuildingDivisionDetailPage({ params }: PageProps) {
   const confirmMutation = useConfirmBuildingDivision()
   const ignoreMutation = useIgnoreBuildingDivision()
   const assignPlacesMutation = useAssignPlacesToSubBuildings(divisionId)
+  const deleteMutation = useDeleteSubBuilding(divisionId)
   const [isAddingSubBuilding, setIsAddingSubBuilding] = useState(false)
+  const [editingSubBuildingId, setEditingSubBuildingId] = useState<string | null>(null)
 
   if (isLoading || !data) {
     return (
@@ -86,6 +89,20 @@ export default function BuildingDivisionDetailPage({ params }: PageProps) {
       toast.success("Place 할당이 완료되었습니다.")
     } catch (error) {
       toast.error("Place 할당에 실패했습니다.")
+      console.error(error)
+    }
+  }
+
+  const handleDeleteSubBuilding = async (subBuildingId: string) => {
+    if (!confirm("이 SubBuilding을 삭제하시겠습니까?")) {
+      return
+    }
+
+    try {
+      await deleteMutation.mutateAsync(subBuildingId)
+      toast.success("SubBuilding이 삭제되었습니다.")
+    } catch (error) {
+      toast.error("SubBuilding 삭제에 실패했습니다.")
       console.error(error)
     }
   }
@@ -176,21 +193,54 @@ export default function BuildingDivisionDetailPage({ params }: PageProps) {
           {isAddingSubBuilding && (
             <SubBuildingForm
               divisionId={divisionId}
+              buildingLocation={division.buildingLocation}
               onClose={() => setIsAddingSubBuilding(false)}
             />
           )}
 
-          {subBuildings.length === 0 ? (
-            <p className="p-8 text-center text-gray-500">
-              SubBuilding이 없습니다. 추가 버튼을 눌러 생성하세요.
-            </p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {subBuildings.map((subBuilding) => (
-                <SubBuildingCard key={subBuilding.id} subBuilding={subBuilding} />
-              ))}
-            </div>
-          )}
+          <Tabs defaultValue="map" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 max-w-[400px]">
+              <TabsTrigger value="map">지도 보기</TabsTrigger>
+              <TabsTrigger value="list">목록 보기</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="map" className="mt-4">
+              <SubBuildingsMapView
+                subBuildings={subBuildings}
+                buildingLocation={division.buildingLocation}
+              />
+            </TabsContent>
+
+            <TabsContent value="list" className="mt-4">
+              {subBuildings.length === 0 ? (
+                <p className="p-8 text-center text-gray-500">
+                  SubBuilding이 없습니다. 추가 버튼을 눌러 생성하세요.
+                </p>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {subBuildings.map((subBuilding) => (
+                    editingSubBuildingId === subBuilding.id ? (
+                      <SubBuildingEditForm
+                        key={subBuilding.id}
+                        divisionId={divisionId}
+                        subBuilding={subBuilding}
+                        buildingLocation={division.buildingLocation}
+                        onClose={() => setEditingSubBuildingId(null)}
+                      />
+                    ) : (
+                      <SubBuildingCard
+                        key={subBuilding.id}
+                        subBuilding={subBuilding}
+                        isPending={isPending}
+                        onEdit={() => setEditingSubBuildingId(subBuilding.id)}
+                        onDelete={() => handleDeleteSubBuilding(subBuilding.id)}
+                      />
+                    )
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </Contents.Normal>
@@ -228,124 +278,3 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   )
 }
 
-function SubBuildingCard({ subBuilding }: { subBuilding: any }) {
-  return (
-    <div className="p-4 bg-gray-50 rounded-md border border-gray-200">
-      <h3 className="text-base font-semibold mb-3">{subBuilding.subBuildingName}</h3>
-      <div className="flex flex-col gap-2">
-        <SubBuildingInfoRow
-          label="중심 위치"
-          value={`${subBuilding.centerLocation.lat.toFixed(6)}, ${subBuilding.centerLocation.lng.toFixed(6)}`}
-        />
-        <SubBuildingInfoRow label="경계 (WKT)" value={subBuilding.boundaryWkt} />
-        {subBuilding.notes && (
-          <SubBuildingInfoRow label="메모" value={subBuilding.notes} />
-        )}
-        <SubBuildingInfoRow
-          label="생성일"
-          value={dayjs(subBuilding.createdAt?.value).format("YYYY-MM-DD HH:mm")}
-        />
-      </div>
-    </div>
-  )
-}
-
-function SubBuildingInfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex text-sm">
-      <span className="w-[120px] font-medium text-gray-600">{label}</span>
-      <span className="flex-1 text-gray-900 break-all">{value}</span>
-    </div>
-  )
-}
-
-function SubBuildingForm({ divisionId, onClose }: { divisionId: string; onClose: () => void }) {
-  const createMutation = useCreateSubBuilding(divisionId)
-  const [formData, setFormData] = useState({
-    subBuildingName: "",
-    notes: "",
-  })
-  const [boundaryData, setBoundaryData] = useState<BoundaryData | null>(null)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!boundaryData) {
-      toast.error("지도에서 경계를 그려주세요.")
-      return
-    }
-
-    try {
-      await createMutation.mutateAsync({
-        subBuildingName: formData.subBuildingName,
-        centerLng: boundaryData.center.lng,
-        centerLat: boundaryData.center.lat,
-        boundaryWkt: boundaryData.wkt,
-        notes: formData.notes || undefined,
-      })
-      toast.success("SubBuilding이 생성되었습니다.")
-      onClose()
-    } catch (error) {
-      toast.error("SubBuilding 생성에 실패했습니다.")
-      console.error(error)
-    }
-  }
-
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="p-5 bg-blue-50 rounded-md border border-blue-200 mb-4"
-    >
-      <h3 className="text-base font-semibold mb-4">SubBuilding 추가</h3>
-
-      <div className="mb-4">
-        <Label htmlFor="subBuildingName" className="mb-1.5">
-          서브 건물 이름 *
-        </Label>
-        <Input
-          id="subBuildingName"
-          type="text"
-          value={formData.subBuildingName}
-          onChange={(e) => setFormData({ ...formData, subBuildingName: e.target.value })}
-          placeholder="예: 연세대학교 신촌캠퍼스 백양관"
-          required
-        />
-      </div>
-
-      <div className="mb-4">
-        <Label className="mb-1.5">경계 설정 *</Label>
-        <NaverMapBoundaryEditor onBoundaryChange={setBoundaryData} height="400px" />
-        {boundaryData && (
-          <div className="mt-2 p-3 bg-gray-50 rounded-md text-sm text-gray-700 flex flex-col gap-1">
-            <div>
-              중심 좌표: {boundaryData.center.lat.toFixed(6)}, {boundaryData.center.lng.toFixed(6)}
-            </div>
-            <div>점 개수: {boundaryData.points.length}개</div>
-          </div>
-        )}
-      </div>
-
-      <div className="mb-4">
-        <Label htmlFor="notes" className="mb-1.5">
-          메모
-        </Label>
-        <textarea
-          id="notes"
-          value={formData.notes}
-          onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-          placeholder="추가 정보 입력"
-          className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-md min-h-[80px] resize-y font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-      </div>
-
-      <div className="flex gap-2">
-        <Button type="submit" disabled={createMutation.isPending || !boundaryData}>
-          추가
-        </Button>
-        <Button type="button" variant="outline" onClick={onClose}>
-          취소
-        </Button>
-      </div>
-    </form>
-  )
-}

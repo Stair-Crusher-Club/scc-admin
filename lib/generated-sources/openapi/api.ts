@@ -371,6 +371,12 @@ export interface AdminBuildingDivisionDTO {
      */
     'buildingId': string;
     /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminBuildingDivisionDTO
+     */
+    'buildingLocation': LocationDTO;
+    /**
      * 도로명 주소
      * @type {string}
      * @memberof AdminBuildingDivisionDTO
@@ -388,6 +394,12 @@ export interface AdminBuildingDivisionDTO {
      * @memberof AdminBuildingDivisionDTO
      */
     'divisionReason'?: string;
+    /**
+     * 생성된 SubBuilding 개수
+     * @type {number}
+     * @memberof AdminBuildingDivisionDTO
+     */
+    'subBuildingsCount'?: number;
     /**
      * 
      * @type {EpochMillisTimestamp}
@@ -433,7 +445,7 @@ export interface AdminBuildingDivisionDetailDTO {
     'subBuildings': Array<AdminSubBuildingDTO>;
 }
 /**
- * Building Division 상태 - PENDING: 대기 중 (관리자가 SubBuilding 생성 및 확정 필요) - CONFIRMED: 확정됨 (SubBuilding 구성 완료 및 확정) - IGNORED: 무시됨 (ID 충돌이 실제로는 문제가 아님을 확인) 
+ * Building Division 상태 - PENDING: 대기 중 (관리자 검토 필요) - CONFIRMED: 확정됨 (분할 필요, SubBuilding 관리 가능) - IGNORED: 무시됨 (분할 불필요) 
  * @export
  * @enum {string}
  */
@@ -447,55 +459,6 @@ export const AdminBuildingDivisionStatusDTO = {
 export type AdminBuildingDivisionStatusDTO = typeof AdminBuildingDivisionStatusDTO[keyof typeof AdminBuildingDivisionStatusDTO];
 
 
-/**
- * SubBuilding 개수가 포함된 Building Division 정보
- * @export
- * @interface AdminBuildingDivisionWithCountDTO
- */
-export interface AdminBuildingDivisionWithCountDTO {
-    /**
-     * Building Division ID
-     * @type {string}
-     * @memberof AdminBuildingDivisionWithCountDTO
-     */
-    'id': string;
-    /**
-     * 충돌이 발생한 Building ID
-     * @type {string}
-     * @memberof AdminBuildingDivisionWithCountDTO
-     */
-    'buildingId': string;
-    /**
-     * 도로명 주소
-     * @type {string}
-     * @memberof AdminBuildingDivisionWithCountDTO
-     */
-    'roadAddress': string;
-    /**
-     * 
-     * @type {AdminBuildingDivisionStatusDTO}
-     * @memberof AdminBuildingDivisionWithCountDTO
-     */
-    'status': AdminBuildingDivisionStatusDTO;
-    /**
-     * 생성된 SubBuilding 개수
-     * @type {number}
-     * @memberof AdminBuildingDivisionWithCountDTO
-     */
-    'subBuildingsCount': number;
-    /**
-     * 
-     * @type {EpochMillisTimestamp}
-     * @memberof AdminBuildingDivisionWithCountDTO
-     */
-    'createdAt': EpochMillisTimestamp;
-    /**
-     * 
-     * @type {EpochMillisTimestamp}
-     * @memberof AdminBuildingDivisionWithCountDTO
-     */
-    'confirmedAt'?: EpochMillisTimestamp;
-}
 /**
  * 
  * @export
@@ -1238,10 +1201,10 @@ export interface AdminListAllBannersResponseDTO {
 export interface AdminListBuildingDivisionsResponseDTO {
     /**
      * Building Division 목록
-     * @type {Array<AdminBuildingDivisionWithCountDTO>}
+     * @type {Array<AdminBuildingDivisionDTO>}
      * @memberof AdminListBuildingDivisionsResponseDTO
      */
-    'items': Array<AdminBuildingDivisionWithCountDTO>;
+    'items': Array<AdminBuildingDivisionDTO>;
     /**
      * 없으면 다음 페이지가 없다는 의미.
      * @type {string}
@@ -1871,6 +1834,43 @@ export interface AdminUpdatePushNotificationScheduleRequestDTO {
      * @memberof AdminUpdatePushNotificationScheduleRequestDTO
      */
     'deepLink'?: string;
+}
+/**
+ * SubBuilding 수정 요청
+ * @export
+ * @interface AdminUpdateSubBuildingRequestDTO
+ */
+export interface AdminUpdateSubBuildingRequestDTO {
+    /**
+     * 서브 건물 이름
+     * @type {string}
+     * @memberof AdminUpdateSubBuildingRequestDTO
+     */
+    'subBuildingName': string;
+    /**
+     * 서브 건물 중심 경도
+     * @type {number}
+     * @memberof AdminUpdateSubBuildingRequestDTO
+     */
+    'centerLng': number;
+    /**
+     * 서브 건물 중심 위도
+     * @type {number}
+     * @memberof AdminUpdateSubBuildingRequestDTO
+     */
+    'centerLat': number;
+    /**
+     * 서브 건물 경계 (WKT Polygon 형식) 예: POLYGON((127.001 37.001, 127.002 37.001, 127.002 37.002, 127.001 37.002, 127.001 37.001)) 
+     * @type {string}
+     * @memberof AdminUpdateSubBuildingRequestDTO
+     */
+    'boundaryWkt': string;
+    /**
+     * 메모
+     * @type {string}
+     * @memberof AdminUpdateSubBuildingRequestDTO
+     */
+    'notes'?: string;
 }
 /**
  * 검수 결과 반영 시 수행된 작업
@@ -4914,6 +4914,48 @@ export const BuildingDivisionApiAxiosParamCreator = function (configuration?: Co
         },
         /**
          * 
+         * @summary SubBuilding을 삭제한다.
+         * @param {string} divisionId Building Division ID
+         * @param {string} subBuildingId SubBuilding ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSubBuilding: async (divisionId: string, subBuildingId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'divisionId' is not null or undefined
+            assertParamExists('deleteSubBuilding', 'divisionId', divisionId)
+            // verify required parameter 'subBuildingId' is not null or undefined
+            assertParamExists('deleteSubBuilding', 'subBuildingId', subBuildingId)
+            const localVarPath = `/building-divisions/{divisionId}/sub-buildings/{subBuildingId}`
+                .replace(`{${"divisionId"}}`, encodeURIComponent(String(divisionId)))
+                .replace(`{${"subBuildingId"}}`, encodeURIComponent(String(subBuildingId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Building Division 상세 정보를 조회한다.
          * @param {string} divisionId Building Division ID
          * @param {*} [options] Override http request option.
@@ -5037,6 +5079,54 @@ export const BuildingDivisionApiAxiosParamCreator = function (configuration?: Co
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary SubBuilding 정보를 수정한다.
+         * @param {string} divisionId Building Division ID
+         * @param {string} subBuildingId SubBuilding ID
+         * @param {AdminUpdateSubBuildingRequestDTO} adminUpdateSubBuildingRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateSubBuilding: async (divisionId: string, subBuildingId: string, adminUpdateSubBuildingRequestDTO: AdminUpdateSubBuildingRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'divisionId' is not null or undefined
+            assertParamExists('updateSubBuilding', 'divisionId', divisionId)
+            // verify required parameter 'subBuildingId' is not null or undefined
+            assertParamExists('updateSubBuilding', 'subBuildingId', subBuildingId)
+            // verify required parameter 'adminUpdateSubBuildingRequestDTO' is not null or undefined
+            assertParamExists('updateSubBuilding', 'adminUpdateSubBuildingRequestDTO', adminUpdateSubBuildingRequestDTO)
+            const localVarPath = `/building-divisions/{divisionId}/sub-buildings/{subBuildingId}`
+                .replace(`{${"divisionId"}}`, encodeURIComponent(String(divisionId)))
+                .replace(`{${"subBuildingId"}}`, encodeURIComponent(String(subBuildingId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminUpdateSubBuildingRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -5094,6 +5184,18 @@ export const BuildingDivisionApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary SubBuilding을 삭제한다.
+         * @param {string} divisionId Building Division ID
+         * @param {string} subBuildingId SubBuilding ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteSubBuilding(divisionId: string, subBuildingId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteSubBuilding(divisionId, subBuildingId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Building Division 상세 정보를 조회한다.
          * @param {string} divisionId Building Division ID
          * @param {*} [options] Override http request option.
@@ -5125,6 +5227,19 @@ export const BuildingDivisionApiFp = function(configuration?: Configuration) {
          */
         async listBuildingDivisions(status?: AdminBuildingDivisionStatusDTO, limit?: number, cursor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListBuildingDivisionsResponseDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listBuildingDivisions(status, limit, cursor, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary SubBuilding 정보를 수정한다.
+         * @param {string} divisionId Building Division ID
+         * @param {string} subBuildingId SubBuilding ID
+         * @param {AdminUpdateSubBuildingRequestDTO} adminUpdateSubBuildingRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateSubBuilding(divisionId: string, subBuildingId: string, adminUpdateSubBuildingRequestDTO: AdminUpdateSubBuildingRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSubBuildingDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateSubBuilding(divisionId, subBuildingId, adminUpdateSubBuildingRequestDTO, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -5180,6 +5295,17 @@ export const BuildingDivisionApiFactory = function (configuration?: Configuratio
         },
         /**
          * 
+         * @summary SubBuilding을 삭제한다.
+         * @param {string} divisionId Building Division ID
+         * @param {string} subBuildingId SubBuilding ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSubBuilding(divisionId: string, subBuildingId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteSubBuilding(divisionId, subBuildingId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Building Division 상세 정보를 조회한다.
          * @param {string} divisionId Building Division ID
          * @param {*} [options] Override http request option.
@@ -5209,6 +5335,18 @@ export const BuildingDivisionApiFactory = function (configuration?: Configuratio
          */
         listBuildingDivisions(status?: AdminBuildingDivisionStatusDTO, limit?: number, cursor?: string, options?: any): AxiosPromise<AdminListBuildingDivisionsResponseDTO> {
             return localVarFp.listBuildingDivisions(status, limit, cursor, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary SubBuilding 정보를 수정한다.
+         * @param {string} divisionId Building Division ID
+         * @param {string} subBuildingId SubBuilding ID
+         * @param {AdminUpdateSubBuildingRequestDTO} adminUpdateSubBuildingRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateSubBuilding(divisionId: string, subBuildingId: string, adminUpdateSubBuildingRequestDTO: AdminUpdateSubBuildingRequestDTO, options?: any): AxiosPromise<AdminSubBuildingDTO> {
+            return localVarFp.updateSubBuilding(divisionId, subBuildingId, adminUpdateSubBuildingRequestDTO, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -5271,6 +5409,19 @@ export class BuildingDivisionApi extends BaseAPI {
 
     /**
      * 
+     * @summary SubBuilding을 삭제한다.
+     * @param {string} divisionId Building Division ID
+     * @param {string} subBuildingId SubBuilding ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BuildingDivisionApi
+     */
+    public deleteSubBuilding(divisionId: string, subBuildingId: string, options?: AxiosRequestConfig) {
+        return BuildingDivisionApiFp(this.configuration).deleteSubBuilding(divisionId, subBuildingId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Building Division 상세 정보를 조회한다.
      * @param {string} divisionId Building Division ID
      * @param {*} [options] Override http request option.
@@ -5305,6 +5456,20 @@ export class BuildingDivisionApi extends BaseAPI {
      */
     public listBuildingDivisions(status?: AdminBuildingDivisionStatusDTO, limit?: number, cursor?: string, options?: AxiosRequestConfig) {
         return BuildingDivisionApiFp(this.configuration).listBuildingDivisions(status, limit, cursor, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary SubBuilding 정보를 수정한다.
+     * @param {string} divisionId Building Division ID
+     * @param {string} subBuildingId SubBuilding ID
+     * @param {AdminUpdateSubBuildingRequestDTO} adminUpdateSubBuildingRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BuildingDivisionApi
+     */
+    public updateSubBuilding(divisionId: string, subBuildingId: string, adminUpdateSubBuildingRequestDTO: AdminUpdateSubBuildingRequestDTO, options?: AxiosRequestConfig) {
+        return BuildingDivisionApiFp(this.configuration).updateSubBuilding(divisionId, subBuildingId, adminUpdateSubBuildingRequestDTO, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

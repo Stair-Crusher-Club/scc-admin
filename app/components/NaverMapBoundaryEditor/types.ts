@@ -13,6 +13,7 @@ export interface BoundaryData {
 export interface NaverMapBoundaryEditorProps {
   initialCenter?: BoundaryPoint
   initialBoundary?: string // WKT format
+  buildingMarkerLocation?: BoundaryPoint // Building location to show as a marker
   onBoundaryChange: (boundary: BoundaryData | null) => void
   height?: string
   disabled?: boolean

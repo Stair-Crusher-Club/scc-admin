@@ -3,14 +3,15 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tansta
 import { api } from "@/lib/apis/api"
 import {
   AdminBuildingDivisionDetailDTO,
+  AdminBuildingDivisionDTO,
   AdminBuildingDivisionStatusDTO,
-  AdminBuildingDivisionWithCountDTO,
   AdminCreateSubBuildingRequestDTO,
   AdminSubBuildingDTO,
+  AdminUpdateSubBuildingRequestDTO,
 } from "@/lib/generated-sources/openapi"
 
 export interface ListBuildingDivisionsResult {
-  items: AdminBuildingDivisionWithCountDTO[]
+  items: AdminBuildingDivisionDTO[]
   cursor: string | null
 }
 
@@ -70,6 +71,28 @@ export function useAssignPlacesToSubBuildings(divisionId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: () => api.buildingDivision.assignPlacesToSubBuildings(divisionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["@buildingDivision", divisionId] })
+    },
+  })
+}
+
+export function useUpdateSubBuilding(divisionId: string, subBuildingId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: AdminUpdateSubBuildingRequestDTO) =>
+      api.buildingDivision.updateSubBuilding(divisionId, subBuildingId, data).then((res) => res.data as AdminSubBuildingDTO),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["@buildingDivision", divisionId] })
+    },
+  })
+}
+
+export function useDeleteSubBuilding(divisionId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (subBuildingId: string) =>
+      api.buildingDivision.deleteSubBuilding(divisionId, subBuildingId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["@buildingDivision", divisionId] })
     },

@@ -4,12 +4,21 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import dayjs from "dayjs"
 
-import { AdminBuildingDivisionStatusDTO, AdminBuildingDivisionWithCountDTO } from "@/lib/generated-sources/openapi"
+import { AdminBuildingDivisionDTO, AdminBuildingDivisionStatusDTO } from "@/lib/generated-sources/openapi"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { Contents } from "@/components/layout"
 
 import { useBuildingDivisions } from "./query"
-import * as S from "./page.style"
 
 const STATUS_LABELS: Record<AdminBuildingDivisionStatusDTO, string> = {
   PENDING: "대기 중",
@@ -20,74 +29,140 @@ const STATUS_LABELS: Record<AdminBuildingDivisionStatusDTO, string> = {
 export default function BuildingDivisionPage() {
   const router = useRouter()
   const [statusFilter, setStatusFilter] = useState<AdminBuildingDivisionStatusDTO | undefined>("PENDING")
-  const { data, fetchNextPage, hasNextPage } = useBuildingDivisions(statusFilter)
-  const divisions: AdminBuildingDivisionWithCountDTO[] =
+  const { data, fetchNextPage, hasNextPage, isLoading, error } = useBuildingDivisions(statusFilter)
+  const divisions: AdminBuildingDivisionDTO[] =
     data?.pages.flatMap((p) => p.items)?.filter((it) => it !== undefined) ?? []
+
+  // Debug logging
+  console.log("[BuildingDivision Page]", {
+    isLoading,
+    error,
+    dataPages: data?.pages?.length,
+    divisionsCount: divisions.length,
+    statusFilter
+  })
+
+  if (isLoading) {
+    return (
+      <Contents.Normal>
+        <div className="p-8 text-center text-gray-500">로딩 중...</div>
+      </Contents.Normal>
+    )
+  }
+
+  if (error) {
+    return (
+      <Contents.Normal>
+        <div className="p-8 text-center text-red-500">
+          에러: {error instanceof Error ? error.message : '알 수 없는 에러'}
+        </div>
+      </Contents.Normal>
+    )
+  }
 
   return (
     <Contents.Normal>
-      <S.Header>
-        <S.Title>Building Division 관리</S.Title>
-        <S.Description>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-2">Building Division 관리</h1>
+        <p className="text-sm text-gray-600">
           하나의 Building ID에 여러 건물이 존재하는 경우 SubBuilding으로 분할하여 관리합니다.
-        </S.Description>
-      </S.Header>
+        </p>
+      </div>
 
-      <S.FilterContainer>
-        <S.FilterButton active={statusFilter === undefined} onClick={() => setStatusFilter(undefined)}>
+      <div className="flex gap-2 mb-4">
+        <Button
+          variant={statusFilter === undefined ? "default" : "outline"}
+          onClick={() => setStatusFilter(undefined)}
+          size="sm"
+        >
           전체
-        </S.FilterButton>
-        <S.FilterButton active={statusFilter === "PENDING"} onClick={() => setStatusFilter("PENDING")}>
+        </Button>
+        <Button
+          variant={statusFilter === "PENDING" ? "default" : "outline"}
+          onClick={() => setStatusFilter("PENDING")}
+          size="sm"
+        >
           대기 중
-        </S.FilterButton>
-        <S.FilterButton active={statusFilter === "CONFIRMED"} onClick={() => setStatusFilter("CONFIRMED")}>
+        </Button>
+        <Button
+          variant={statusFilter === "CONFIRMED" ? "default" : "outline"}
+          onClick={() => setStatusFilter("CONFIRMED")}
+          size="sm"
+        >
           확정됨
-        </S.FilterButton>
-        <S.FilterButton active={statusFilter === "IGNORED"} onClick={() => setStatusFilter("IGNORED")}>
+        </Button>
+        <Button
+          variant={statusFilter === "IGNORED" ? "default" : "outline"}
+          onClick={() => setStatusFilter("IGNORED")}
+          size="sm"
+        >
           무시됨
-        </S.FilterButton>
-      </S.FilterContainer>
+        </Button>
+      </div>
 
-      <S.TableWrapper>
+      <Card>
         {divisions.length === 0 ? (
-          <S.EmptyMessage>Building Division이 없습니다.</S.EmptyMessage>
+          <div className="p-8 text-center text-gray-500">
+            Building Division이 없습니다.
+          </div>
         ) : (
-          <S.Table>
-            <S.TableHeader>
-              <S.TableRow>
-                <S.TableHeaderCell>상태</S.TableHeaderCell>
-                <S.TableHeaderCell>Building ID</S.TableHeaderCell>
-                <S.TableHeaderCell>주소</S.TableHeaderCell>
-                <S.TableHeaderCell>SubBuilding 수</S.TableHeaderCell>
-                <S.TableHeaderCell>생성일</S.TableHeaderCell>
-                <S.TableHeaderCell>확정일</S.TableHeaderCell>
-              </S.TableRow>
-            </S.TableHeader>
-            <S.TableBody>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>상태</TableHead>
+                <TableHead>Building ID</TableHead>
+                <TableHead>주소</TableHead>
+                <TableHead>SubBuilding 수</TableHead>
+                <TableHead>생성일</TableHead>
+                <TableHead>확정일</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {divisions.map((division) => (
-                <S.TableRow
+                <TableRow
                   key={division.id}
                   onClick={() => router.push(`/buildingDivision/${division.id}`)}
-                  clickable
+                  className="cursor-pointer"
                 >
-                  <S.TableCell>
-                    <Badge variant="outline">{STATUS_LABELS[division.status]}</Badge>
-                  </S.TableCell>
-                  <S.TableCell>{division.buildingId}</S.TableCell>
-                  <S.TableCell>{division.roadAddress}</S.TableCell>
-                  <S.TableCell>{division.subBuildingsCount}개</S.TableCell>
-                  <S.TableCell>{dayjs(division.createdAt?.value).format("YYYY-MM-DD HH:mm")}</S.TableCell>
-                  <S.TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className={
+                        division.status === "PENDING"
+                          ? "bg-yellow-50 text-yellow-700 border-yellow-300"
+                          : division.status === "CONFIRMED"
+                          ? "bg-green-50 text-green-700 border-green-300"
+                          : "bg-gray-50 text-gray-700 border-gray-300"
+                      }
+                    >
+                      {STATUS_LABELS[division.status]}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-medium">{division.buildingId}</TableCell>
+                  <TableCell>{division.roadAddress}</TableCell>
+                  <TableCell>{division.subBuildingsCount}개</TableCell>
+                  <TableCell className="text-gray-600">
+                    {dayjs(division.createdAt?.value).format("YYYY-MM-DD HH:mm")}
+                  </TableCell>
+                  <TableCell className="text-gray-600">
                     {division.confirmedAt ? dayjs(division.confirmedAt.value).format("YYYY-MM-DD HH:mm") : "-"}
-                  </S.TableCell>
-                </S.TableRow>
+                  </TableCell>
+                </TableRow>
               ))}
-            </S.TableBody>
-          </S.Table>
+            </TableBody>
+          </Table>
         )}
-      </S.TableWrapper>
+      </Card>
 
-      {hasNextPage && <S.LoadMoreButton onClick={() => fetchNextPage()}>더 불러오기</S.LoadMoreButton>}
+      {hasNextPage && (
+        <Button
+          variant="outline"
+          onClick={() => fetchNextPage()}
+          className="w-full mt-4"
+        >
+          더 불러오기
+        </Button>
+      )}
     </Contents.Normal>
   )
 }

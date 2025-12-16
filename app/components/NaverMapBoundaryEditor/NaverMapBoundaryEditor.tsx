@@ -3,14 +3,17 @@
 import { useEffect, useRef, useState } from "react"
 import { toast } from "react-toastify"
 
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+
 import { BoundaryData, BoundaryPoint, NaverMapBoundaryEditorProps } from "./types"
-import * as S from "./NaverMapBoundaryEditor.style"
 import { pointsToWkt, wktToPoints } from "@/lib/utils/wkt"
 import { calculatePolygonCentroid } from "@/lib/utils/geometry"
 
 export default function NaverMapBoundaryEditor({
   initialCenter = { lat: 37.5665, lng: 126.978 }, // Seoul City Hall
   initialBoundary,
+  buildingMarkerLocation,
   onBoundaryChange,
   height = "500px",
   disabled = false,
@@ -23,6 +26,7 @@ export default function NaverMapBoundaryEditor({
 
   // Refs for map objects
   const markersRef = useRef<any[]>([])
+  const buildingMarkerRef = useRef<any>(null)
   const polylineRef = useRef<any>(null)
   const polygonRef = useRef<any>(null)
   const clickListenerRef = useRef<any>(null)
@@ -64,12 +68,61 @@ export default function NaverMapBoundaryEditor({
       if (clickListenerRef.current) {
         naver.maps.Event.removeListener(clickListenerRef.current)
       }
+      if (buildingMarkerRef.current) {
+        buildingMarkerRef.current.setMap(null)
+        buildingMarkerRef.current = null
+      }
       if (mapRef.current) {
         mapRef.current.destroy()
         mapRef.current = null
       }
     }
   }, [])
+
+  // Render building marker
+  useEffect(() => {
+    if (!mapRef.current || !buildingMarkerLocation) {
+      // Clear existing building marker if location is removed
+      if (buildingMarkerRef.current) {
+        buildingMarkerRef.current.setMap(null)
+        buildingMarkerRef.current = null
+      }
+      return
+    }
+
+    // Clear existing building marker
+    if (buildingMarkerRef.current) {
+      buildingMarkerRef.current.setMap(null)
+    }
+
+    // Create building marker with distinct appearance
+    const buildingMarker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(buildingMarkerLocation.lat, buildingMarkerLocation.lng),
+      map: mapRef.current,
+      icon: {
+        content: `<div style="
+          width: 36px;
+          height: 36px;
+          background-color: #ef4444;
+          border: 3px solid white;
+          border-radius: 50%;
+          box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          color: white;
+          font-weight: bold;
+          font-family: sans-serif;
+        ">🏢</div>`,
+        anchor: new naver.maps.Point(18, 18),
+      },
+      title: "건물 위치",
+      zIndex: 1000, // Higher z-index to appear above other markers
+    })
+
+    buildingMarkerRef.current = buildingMarker
+  }, [buildingMarkerLocation])
 
   // Map click handler for adding points
   useEffect(() => {
@@ -230,65 +283,67 @@ export default function NaverMapBoundaryEditor({
   // Error state if Naver Maps not loaded
   if (typeof naver === 'undefined' || !naver.maps) {
     return (
-      <S.Container>
-        <S.ErrorContainer>
-          <S.ErrorMessage>지도를 불러올 수 없습니다. 페이지를 새로고침해주세요.</S.ErrorMessage>
-        </S.ErrorContainer>
-      </S.Container>
+      <div className="flex flex-col gap-4 w-full">
+        <div className="p-8 text-center bg-red-50 rounded-md border border-red-200">
+          <p className="text-sm text-red-700">지도를 불러올 수 없습니다. 페이지를 새로고침해주세요.</p>
+        </div>
+      </div>
     )
   }
 
   return (
-    <S.Container>
-      <S.MapContainer ref={mapContainer} style={{ height }} />
+    <div className="flex flex-col gap-4 w-full">
+      <div ref={mapContainer} style={{ height }} className="w-full rounded-md border border-gray-300 overflow-hidden" />
 
-      <S.ControlPanel>
-        <S.InfoSection>
-          <S.InfoText>
+      <div className="flex flex-col gap-3 p-4 bg-white rounded-md border border-gray-200">
+        <div className="flex justify-between items-center flex-wrap gap-2">
+          <div className="flex items-center gap-2 text-sm text-gray-700">
             {isDrawing ? (
               <>
-                <S.StatusBadge status="drawing">그리기 모드</S.StatusBadge>
+                <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">그리기 모드</Badge>
                 <span>지도를 클릭하여 경계를 그리세요</span>
               </>
             ) : points.length >= 3 ? (
               <>
-                <S.StatusBadge status="complete">완료</S.StatusBadge>
+                <Badge className="bg-green-100 text-green-700 hover:bg-green-100">완료</Badge>
                 <span>경계 설정 완료 ({points.length}개 점)</span>
               </>
             ) : (
               <span>시작 버튼을 눌러 경계를 그리세요</span>
             )}
-          </S.InfoText>
-          {points.length > 0 && <S.PointCount>점: {points.length}개</S.PointCount>}
-        </S.InfoSection>
+          </div>
+          {points.length > 0 && (
+            <span className="text-sm font-medium text-gray-600">점: {points.length}개</span>
+          )}
+        </div>
 
-        <S.ButtonGroup>
+        <div className="flex gap-2 flex-wrap">
           {!isDrawing ? (
-            <S.ActionButton type="button" onClick={handleStartDrawing} disabled={disabled} variant="primary">
+            <Button type="button" onClick={handleStartDrawing} disabled={disabled}>
               {points.length > 0 ? "다시 그리기" : "그리기 시작"}
-            </S.ActionButton>
+            </Button>
           ) : (
             <>
-              <S.ActionButton
+              <Button
                 type="button"
                 onClick={handleUndo}
                 disabled={points.length === 0}
-                variant="secondary"
+                variant="outline"
               >
                 실행 취소
-              </S.ActionButton>
-              <S.ActionButton type="button" onClick={handleComplete} disabled={points.length < 3} variant="primary">
+              </Button>
+              <Button type="button" onClick={handleComplete} disabled={points.length < 3}>
                 완료
-              </S.ActionButton>
+              </Button>
             </>
           )}
           {points.length > 0 && (
-            <S.ActionButton type="button" onClick={handleClear} disabled={disabled} variant="danger">
+            <Button type="button" onClick={handleClear} disabled={disabled} variant="destructive">
               모두 지우기
-            </S.ActionButton>
+            </Button>
           )}
-        </S.ButtonGroup>
-      </S.ControlPanel>
-    </S.Container>
+        </div>
+      </div>
+    </div>
   )
 }
