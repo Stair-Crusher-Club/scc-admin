@@ -31,7 +31,7 @@ interface DataTableProps<TData, TValue> {
   onLoadMore?: () => void
   hasMore?: boolean
   columnFilters?: ColumnFiltersState
-  onColumnFiltersChange?: (filters: ColumnFiltersState) => void
+  onColumnFiltersChange?: (updaterOrValue: ColumnFiltersState | ((old: ColumnFiltersState) => ColumnFiltersState)) => void
   renderExpandedRow?: (row: TData) => React.ReactNode
 }
 
@@ -50,7 +50,14 @@ export function DataTable<TData, TValue>({
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
 
   const columnFilters = externalColumnFilters ?? internalColumnFilters
-  const setColumnFilters = externalOnColumnFiltersChange ?? setInternalColumnFilters
+  const setColumnFilters = externalOnColumnFiltersChange
+    ? (updaterOrValue: ColumnFiltersState | ((old: ColumnFiltersState) => ColumnFiltersState)) => {
+        const newValue = typeof updaterOrValue === 'function'
+          ? updaterOrValue(columnFilters)
+          : updaterOrValue
+        externalOnColumnFiltersChange(newValue)
+      }
+    : setInternalColumnFilters
 
   const toggleRowExpansion = (rowId: string) => {
     setExpandedRows((prev) => {
