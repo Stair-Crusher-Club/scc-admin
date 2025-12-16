@@ -33,15 +33,6 @@ export default function BuildingDivisionPage() {
   const divisions: AdminBuildingDivisionDTO[] =
     data?.pages.flatMap((p) => p.items)?.filter((it) => it !== undefined) ?? []
 
-  // Debug logging
-  console.log("[BuildingDivision Page]", {
-    isLoading,
-    error,
-    dataPages: data?.pages?.length,
-    divisionsCount: divisions.length,
-    statusFilter
-  })
-
   if (isLoading) {
     return (
       <Contents.Normal>
