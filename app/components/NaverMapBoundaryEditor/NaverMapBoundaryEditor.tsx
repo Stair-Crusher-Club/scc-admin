@@ -33,13 +33,13 @@ export default function NaverMapBoundaryEditor({
     if (mapRef.current) return
 
     // Check if Naver Maps is loaded
-    if (!window.naver?.maps) {
+    if (typeof naver === 'undefined' || !naver.maps) {
       console.error("Naver Maps is not loaded")
       return
     }
 
-    const center = new window.naver.maps.LatLng(initialCenter.lat, initialCenter.lng)
-    const map = new window.naver.maps.Map(mapContainer.current, {
+    const center = new naver.maps.LatLng(initialCenter.lat, initialCenter.lng)
+    const map = new naver.maps.Map(mapContainer.current, {
       center,
       zoom: 17,
       minZoom: 10,
@@ -62,7 +62,7 @@ export default function NaverMapBoundaryEditor({
     return () => {
       // Cleanup
       if (clickListenerRef.current) {
-        window.naver.maps.Event.removeListener(clickListenerRef.current)
+        naver.maps.Event.removeListener(clickListenerRef.current)
       }
       if (mapRef.current) {
         mapRef.current.destroy()
@@ -76,13 +76,13 @@ export default function NaverMapBoundaryEditor({
     if (!mapRef.current || !isDrawing || disabled) {
       // Remove listener if exists
       if (clickListenerRef.current) {
-        window.naver.maps.Event.removeListener(clickListenerRef.current)
+        naver.maps.Event.removeListener(clickListenerRef.current)
         clickListenerRef.current = null
       }
       return
     }
 
-    const listener = window.naver.maps.Event.addListener(mapRef.current, "click", (e: any) => {
+    const listener = naver.maps.Event.addListener(mapRef.current, "click", (e: any) => {
       const latlng = e.coord
       const newPoint: BoundaryPoint = {
         lat: latlng.lat(),
@@ -95,7 +95,7 @@ export default function NaverMapBoundaryEditor({
 
     return () => {
       if (clickListenerRef.current) {
-        window.naver.maps.Event.removeListener(clickListenerRef.current)
+        naver.maps.Event.removeListener(clickListenerRef.current)
         clickListenerRef.current = null
       }
     }
@@ -126,8 +126,8 @@ export default function NaverMapBoundaryEditor({
 
     // Add markers for each point
     points.forEach((point, index) => {
-      const marker = new window.naver.maps.Marker({
-        position: new window.naver.maps.LatLng(point.lat, point.lng),
+      const marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(point.lat, point.lng),
         map: mapRef.current,
         icon: {
           content: `<div style="
@@ -145,20 +145,20 @@ export default function NaverMapBoundaryEditor({
             font-weight: bold;
             font-family: sans-serif;
           ">${index + 1}</div>`,
-          anchor: new window.naver.maps.Point(12, 12),
+          anchor: new naver.maps.Point(12, 12),
         },
       })
       markersRef.current.push(marker)
     })
 
     // Draw polyline or polygon
-    const path = points.map((p) => new window.naver.maps.LatLng(p.lat, p.lng))
+    const path = points.map((p) => new naver.maps.LatLng(p.lat, p.lng))
 
     if (points.length >= 3) {
       // Draw filled polygon
-      const polygon = new window.naver.maps.Polygon({
+      const polygon = new naver.maps.Polygon({
         map: mapRef.current,
-        paths: path,
+        paths: [path],
         fillColor: "#3b82f6",
         fillOpacity: 0.2,
         strokeColor: "#3b82f6",
@@ -183,7 +183,7 @@ export default function NaverMapBoundaryEditor({
       }
     } else if (points.length === 2) {
       // Draw polyline
-      const polyline = new window.naver.maps.Polyline({
+      const polyline = new naver.maps.Polyline({
         map: mapRef.current,
         path,
         strokeColor: "#3b82f6",
@@ -228,7 +228,7 @@ export default function NaverMapBoundaryEditor({
   }
 
   // Error state if Naver Maps not loaded
-  if (!window.naver?.maps) {
+  if (typeof naver === 'undefined' || !naver.maps) {
     return (
       <S.Container>
         <S.ErrorContainer>
