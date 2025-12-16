@@ -131,7 +131,7 @@ export default function BuildingDivisionPage() {
                   </TableCell>
                   <TableCell className="font-medium">{division.buildingId}</TableCell>
                   <TableCell>{division.roadAddress}</TableCell>
-                  <TableCell>{division.subBuildingsCount}개</TableCell>
+                  <TableCell>{division.subBuildingsCount ?? 0}개</TableCell>
                   <TableCell className="text-gray-600">
                     {dayjs(division.createdAt?.value).format("YYYY-MM-DD HH:mm")}
                   </TableCell>
