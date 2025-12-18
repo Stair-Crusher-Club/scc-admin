@@ -1,4 +1,9 @@
-import { AdminAccessibilityInspectionResultDTO, AccessibilityTypeDTO, InspectorTypeDTO, ResultTypeDTO } from "@/lib/generated-sources/openapi"
+import {
+  AccessibilityTypeDTO,
+  AdminAccessibilityInspectionResultDTO,
+  InspectorTypeDTO,
+  ResultTypeDTO,
+} from "@/lib/generated-sources/openapi"
 
 const now = Date.now()
 const dayMs = 24 * 60 * 60 * 1000
@@ -89,13 +94,13 @@ function generateMockItem(index: number): AdminAccessibilityInspectionResultDTO 
     url: img.imageUrl,
     reasonCodes: Array.from(
       { length: (imgIdx % 3) + 1 },
-      (_, codeIdx) => reasonCodes[(index + imgIdx + codeIdx) % reasonCodes.length]
+      (_, codeIdx) => reasonCodes[(index + imgIdx + codeIdx) % reasonCodes.length],
     ),
   }))
 
   const overallCodes = Array.from(
     { length: (index % 4) + 1 },
-    (_, codeIdx) => reasonCodes[(index + codeIdx) % reasonCodes.length]
+    (_, codeIdx) => reasonCodes[(index + codeIdx) % reasonCodes.length],
   )
 
   const contents = JSON.stringify({
@@ -112,9 +117,9 @@ function generateMockItem(index: number): AdminAccessibilityInspectionResultDTO 
     resultType,
     inspectorId: `inspector-${(index % 10) + 1}`,
     inspectorType,
-    handledAtMillis: isHandled ? now - (index * dayMs * 0.2) : null,
-    createdAtMillis: now - (index * dayMs * 0.5),
-    updatedAtMillis: now - (index * dayMs * 0.3),
+    handledAtMillis: isHandled ? now - index * dayMs * 0.2 : null,
+    createdAtMillis: now - index * dayMs * 0.5,
+    updatedAtMillis: now - index * dayMs * 0.3,
     images,
     contents,
   }
@@ -123,7 +128,7 @@ function generateMockItem(index: number): AdminAccessibilityInspectionResultDTO 
 // Generate 100 mock items
 export const mockAccessibilityInspectionResults: AdminAccessibilityInspectionResultDTO[] = Array.from(
   { length: 100 },
-  (_, i) => generateMockItem(i)
+  (_, i) => generateMockItem(i),
 )
 
 export function getMockAccessibilityInspectionResults({

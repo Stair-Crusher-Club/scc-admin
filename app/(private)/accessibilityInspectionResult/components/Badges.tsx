@@ -1,19 +1,8 @@
 "use client"
 
-import {
-  CheckCircle2Icon,
-  PencilIcon,
-  Trash2Icon,
-  UserIcon,
-  SparklesIcon,
-  HelpCircleIcon,
-} from "lucide-react"
+import { CheckCircle2Icon, HelpCircleIcon, PencilIcon, SparklesIcon, Trash2Icon, UserIcon } from "lucide-react"
 
-import {
-  ResultTypeDTO,
-  InspectorTypeDTO,
-  ApplyStateDto,
-} from "@/lib/generated-sources/openapi"
+import { ApplyStateDto, InspectorTypeDTO, ResultTypeDTO } from "@/lib/generated-sources/openapi"
 
 import { Badge } from "@/components/ui/badge"
 
@@ -21,9 +10,7 @@ export function ResultTypeBadge({ resultType }: { resultType: ResultTypeDTO }) {
   const getResultIcon = (resultType: ResultTypeDTO) => {
     switch (resultType) {
       case "OK":
-        return (
-          <CheckCircle2Icon className="text-green-500 dark:text-green-400" />
-        )
+        return <CheckCircle2Icon className="text-green-500 dark:text-green-400" />
       case "MODIFY":
         return <PencilIcon className="text-blue-500 dark:text-blue-400" />
       case "DELETE":
@@ -36,21 +23,14 @@ export function ResultTypeBadge({ resultType }: { resultType: ResultTypeDTO }) {
   }
 
   return (
-    <Badge
-      variant="outline"
-      className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3 w-fit"
-    >
+    <Badge variant="outline" className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3 w-fit">
       {getResultIcon(resultType)}
       {resultType}
     </Badge>
   )
 }
 
-export function InspectorTypeBadge({
-  inspectorType,
-}: {
-  inspectorType: InspectorTypeDTO
-}) {
+export function InspectorTypeBadge({ inspectorType }: { inspectorType: InspectorTypeDTO }) {
   const getInspectorIcon = (inspectorType: InspectorTypeDTO) => {
     switch (inspectorType) {
       case "HUMAN":
@@ -65,25 +45,17 @@ export function InspectorTypeBadge({
   }
 
   return (
-    <Badge
-      variant="outline"
-      className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3 w-fit"
-    >
+    <Badge variant="outline" className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3 w-fit">
       {getInspectorIcon(inspectorType)}
       {inspectorType}
     </Badge>
   )
 }
 
-export function HandledActionBadge({
-  applyState,
-}: {
-  applyState: ApplyStateDto | null | undefined
-}) {
+export function HandledActionBadge({ applyState }: { applyState: ApplyStateDto | null | undefined }) {
   return (
     <Badge variant="outline" className="text-muted-foreground w-fit">
       {applyState === "APPLIED" ? "반영" : applyState === "ERROR" ? "에러" : "미반영"}
     </Badge>
   )
 }
-
