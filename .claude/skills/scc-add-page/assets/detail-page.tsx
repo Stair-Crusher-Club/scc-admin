@@ -44,7 +44,7 @@ export default function FeatureDetail() {
         ...data,
       })
     }
-  }, [data, form])
+  }, [data])
 
   async function onSubmit(values: FormValues) {
     try {
