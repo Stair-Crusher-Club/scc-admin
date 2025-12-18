@@ -8,6 +8,8 @@ import { runImagePipeline, useAccessibilityInspectionResultsPaginated } from "@/
 import { api, applyAccessibilityInspectionResults } from "@/lib/apis/api"
 import {
   AccessibilityTypeDTO,
+  ApplyFilterDtoInspectorTypeEnum,
+  ApplyFilterDtoResultTypeEnum,
   InspectorTypeDTO,
   ResultTypeDTO,
 } from "@/lib/generated-sources/openapi"
@@ -61,11 +63,11 @@ export default function AccessibilityInspectionResultPage() {
   const [bulkInspectionIds, setBulkInspectionIds] = useState("")
   const [bulkInspectionType, setBulkInspectionType] = useState<AccessibilityTypeDTO>(AccessibilityTypeDTO.Place)
   const [isRunningBulkInspection, setIsRunningBulkInspection] = useState(false)
-  const [showBulkApplyByFilterDialog, setShowBulkApplyByFilterDialog] = useState(false)
-  const [filterInspectorType, setFilterInspectorType] = useState<InspectorTypeDTO | undefined>()
-  const [filterResultType, setFilterResultType] = useState<ResultTypeDTO | undefined>()
-  const [isApplyingByFilter, setIsApplyingByFilter] = useState(false)
   const [showCsvFormatDialog, setShowCsvFormatDialog] = useState(false)
+  const [showBulkApplyByFilterDialog, setShowBulkApplyByFilterDialog] = useState(false)
+  const [filterInspectorType, setFilterInspectorType] = useState<ApplyFilterDtoInspectorTypeEnum | undefined>()
+  const [filterResultType, setFilterResultType] = useState<ApplyFilterDtoResultTypeEnum | undefined>()
+  const [isApplyingByFilter, setIsApplyingByFilter] = useState(false)
 
   const { data, isLoading } = useAccessibilityInspectionResultsPaginated({
     accessibilityType,
@@ -191,9 +193,7 @@ export default function AccessibilityInspectionResultPage() {
       })
 
       const result = response.data
-      const totalProcessed = result.results.length
-      const successCount = result.results.filter((r) => r.success).length
-      const failureCount = result.results.filter((r) => !r.success).length
+      const { totalProcessed, successCount, failureCount } = result.summary
 
       if (failureCount > 0) {
         toast({
@@ -332,33 +332,15 @@ export default function AccessibilityInspectionResultPage() {
     setIsApplyingByFilter(true)
 
     try {
-      // Filter items based on selected criteria
-      const filteredIds = items
-        .filter((item) => {
-          if (filterInspectorType && item.inspectorType !== filterInspectorType) return false
-          if (filterResultType && item.resultType !== filterResultType) return false
-          return true
-        })
-        .map((item) => item.id)
-
-      if (filteredIds.length === 0) {
-        toast({
-          variant: "destructive",
-          title: "필터 조건에 맞는 항목 없음",
-          description: "선택한 조건에 맞는 미처리 항목이 없습니다.",
-        })
-        setIsApplyingByFilter(false)
-        return
-      }
-
       const response = await applyAccessibilityInspectionResults({
-        inspectionResultIds: filteredIds,
+        filter: {
+          inspectorType: filterInspectorType,
+          resultType: filterResultType,
+        },
       })
 
       const result = response.data
-      const totalProcessed = result.results.length
-      const successCount = result.results.filter((r) => r.success).length
-      const failureCount = result.results.filter((r) => !r.success).length
+      const { totalProcessed, successCount, failureCount } = result.summary
 
       if (failureCount > 0) {
         toast({
@@ -979,7 +961,9 @@ export default function AccessibilityInspectionResultPage() {
                 <Select
                   value={filterInspectorType ?? "none"}
                   onValueChange={(value) =>
-                    setFilterInspectorType(value === "none" ? undefined : (value as InspectorTypeDTO))
+                    setFilterInspectorType(
+                      value === "none" ? undefined : (value as ApplyFilterDtoInspectorTypeEnum)
+                    )
                   }
                 >
                   <SelectTrigger id="filterInspectorType">
@@ -987,9 +971,9 @@ export default function AccessibilityInspectionResultPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">선택하지 않음</SelectItem>
-                    <SelectItem value={InspectorTypeDTO.Human}>HUMAN</SelectItem>
-                    <SelectItem value={InspectorTypeDTO.Ai}>AI</SelectItem>
-                    <SelectItem value={InspectorTypeDTO.Unknown}>UNKNOWN</SelectItem>
+                    <SelectItem value={ApplyFilterDtoInspectorTypeEnum.Ai}>AI</SelectItem>
+                    <SelectItem value={ApplyFilterDtoInspectorTypeEnum.User}>USER</SelectItem>
+                    <SelectItem value={ApplyFilterDtoInspectorTypeEnum.Bulk}>BULK</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -998,7 +982,7 @@ export default function AccessibilityInspectionResultPage() {
                 <Select
                   value={filterResultType ?? "none"}
                   onValueChange={(value) =>
-                    setFilterResultType(value === "none" ? undefined : (value as ResultTypeDTO))
+                    setFilterResultType(value === "none" ? undefined : (value as ApplyFilterDtoResultTypeEnum))
                   }
                 >
                   <SelectTrigger id="filterResultType">
@@ -1006,10 +990,10 @@ export default function AccessibilityInspectionResultPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">선택하지 않음</SelectItem>
-                    <SelectItem value={ResultTypeDTO.Ok}>OK</SelectItem>
-                    <SelectItem value={ResultTypeDTO.Modify}>MODIFY</SelectItem>
-                    <SelectItem value={ResultTypeDTO.Delete}>DELETE</SelectItem>
-                    <SelectItem value={ResultTypeDTO.Unknown}>UNKNOWN</SelectItem>
+                    <SelectItem value={ApplyFilterDtoResultTypeEnum.Ok}>OK</SelectItem>
+                    <SelectItem value={ApplyFilterDtoResultTypeEnum.Modify}>MODIFY</SelectItem>
+                    <SelectItem value={ApplyFilterDtoResultTypeEnum.Delete}>DELETE</SelectItem>
+                    <SelectItem value={ApplyFilterDtoResultTypeEnum.Unknown}>UNKNOWN</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
