@@ -6,7 +6,6 @@ import dayjs from "dayjs"
 import { AdminAccessibilityDTO } from "@/lib/generated-sources/openapi"
 import { SearchAccessibilitiesPayload } from "@/lib/apis/api"
 
-import { DataTableColumnHeader } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 
 import { ActionsCell, ImagesCell } from "./Cells"
@@ -17,9 +16,7 @@ export function getColumns(
   return [
     {
       accessorKey: "placeAccessibility.placeName",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="장소명" />
-      ),
+      header: () => <div className="text-center font-semibold">장소명</div>,
       cell: ({ row }) => {
         const placeName = row.original.placeAccessibility.placeName
         return (
@@ -28,9 +25,8 @@ export function getColumns(
           </div>
         )
       },
-      enableSorting: true,
+      enableSorting: false,
       enableColumnFilter: true,
-      sortingFn: "alphanumeric",
       filterFn: "includesString",
     },
     {
@@ -59,50 +55,45 @@ export function getColumns(
     },
     {
       accessorKey: "placeAccessibility.registeredUserName",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="촬영자" />
-      ),
+      header: () => <div className="text-center font-semibold">촬영자</div>,
       cell: ({ row }) => {
         return (
-          <div className="text-sm">
+          <div className="text-sm text-center">
             {row.original.placeAccessibility.registeredUserName}
           </div>
         )
       },
-      enableSorting: true,
+      enableSorting: false,
       enableColumnFilter: true,
       filterFn: "includesString",
     },
     {
       accessorKey: "placeAccessibility.createdAtMillis",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="촬영 일시" />
-      ),
+      header: () => <div className="text-center font-semibold whitespace-nowrap">촬영 일시</div>,
       cell: ({ row }) => {
         const date = dayjs(row.original.placeAccessibility.createdAtMillis)
         return (
-          <div className="text-sm whitespace-nowrap">
+          <div className="text-sm text-center whitespace-nowrap">
             {date.format("YYYY-MM-DD HH:mm")}
           </div>
         )
       },
-      enableSorting: true,
-      sortingFn: "basic",
+      enableSorting: false,
     },
     {
       accessorKey: "placeAccessibility.isFirstFloor",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="1층 여부" />
-      ),
+      header: () => <div className="text-center font-semibold whitespace-nowrap">1층 여부</div>,
       cell: ({ row }) => {
         const isFirstFloor = row.original.placeAccessibility.isFirstFloor
         return (
-          <Badge variant={isFirstFloor ? "default" : "secondary"}>
-            {isFirstFloor ? "1층" : "1층 아님"}
-          </Badge>
+          <div className="flex justify-center">
+            <Badge variant={isFirstFloor ? "default" : "secondary"}>
+              {isFirstFloor ? "1층" : "1층 아님"}
+            </Badge>
+          </div>
         )
       },
-      enableSorting: true,
+      enableSorting: false,
     },
     {
       accessorKey: "placeAccessibility.stairInfo",
@@ -123,19 +114,19 @@ export function getColumns(
     },
     {
       accessorKey: "buildingAccessibility.hasElevator",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="엘리베이터" />
-      ),
+      header: () => <div className="text-center font-semibold whitespace-nowrap">엘리베이터</div>,
       cell: ({ row }) => {
         const hasElevator = row.original.buildingAccessibility?.hasElevator
-        if (hasElevator === undefined) return <div className="text-sm text-muted-foreground">-</div>
+        if (hasElevator === undefined) return <div className="text-sm text-center text-muted-foreground">-</div>
         return (
-          <Badge variant={hasElevator ? "default" : "secondary"}>
-            {hasElevator ? "있음" : "없음"}
-          </Badge>
+          <div className="flex justify-center">
+            <Badge variant={hasElevator ? "default" : "secondary"}>
+              {hasElevator ? "있음" : "없음"}
+            </Badge>
+          </div>
         )
       },
-      enableSorting: true,
+      enableSorting: false,
     },
     {
       id: "actions",
