@@ -191,7 +191,9 @@ export default function AccessibilityInspectionResultPage() {
       })
 
       const result = response.data
-      const { totalProcessed, successCount, failureCount } = result.summary
+      const totalProcessed = result.results.length
+      const successCount = result.results.filter((r) => r.success).length
+      const failureCount = result.results.filter((r) => !r.success).length
 
       if (failureCount > 0) {
         toast({
@@ -330,15 +332,33 @@ export default function AccessibilityInspectionResultPage() {
     setIsApplyingByFilter(true)
 
     try {
+      // Filter items based on selected criteria
+      const filteredIds = items
+        .filter((item) => {
+          if (filterInspectorType && item.inspectorType !== filterInspectorType) return false
+          if (filterResultType && item.resultType !== filterResultType) return false
+          return true
+        })
+        .map((item) => item.id)
+
+      if (filteredIds.length === 0) {
+        toast({
+          variant: "destructive",
+          title: "필터 조건에 맞는 항목 없음",
+          description: "선택한 조건에 맞는 미처리 항목이 없습니다.",
+        })
+        setIsApplyingByFilter(false)
+        return
+      }
+
       const response = await applyAccessibilityInspectionResults({
-        filter: {
-          inspectorType: filterInspectorType,
-          resultType: filterResultType,
-        },
+        inspectionResultIds: filteredIds,
       })
 
       const result = response.data
-      const { totalProcessed, successCount, failureCount } = result.summary
+      const totalProcessed = result.results.length
+      const successCount = result.results.filter((r) => r.success).length
+      const failureCount = result.results.filter((r) => !r.success).length
 
       if (failureCount > 0) {
         toast({
