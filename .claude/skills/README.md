@@ -19,7 +19,7 @@ Add new pages to the SCC Admin dashboard following Next.js 14 App Router convent
 - Template files for common patterns (list, detail, create pages)
 - React Query integration for data fetching
 - Form handling with React Hook Form
-- Styling with Panda CSS
+- Styling with Tailwind CSS and shadcn/ui (no Panda CSS styled-components for new files)
 - Navigation integration
 - Comprehensive troubleshooting guide
 

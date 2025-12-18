@@ -309,6 +309,8 @@ const form = useForm<FormValues>({ defaultValues })
 
 ## Styling Conventions
 
+**IMPORTANT**: For new files, use only **Tailwind CSS** and **shadcn/ui** components. Do not create new Panda CSS styled-components.
+
 ### Layout Wrappers
 
 **Contents.Normal:**
@@ -317,9 +319,9 @@ const form = useForm<FormValues>({ defaultValues })
   {/* Page content with padding */}
 </Contents.Normal>
 ```
-- Default padding: p-8
-- Max width constraints
-- Vertical spacing between cards
+- Uses Tailwind CSS internally: `className="w-full p-8"`
+- Standard padding and width
+- Clean wrapper for page content
 
 **Contents.Columns:**
 ```typescript
@@ -328,40 +330,95 @@ const form = useForm<FormValues>({ defaultValues })
   <div>{/* Right column */}</div>
 </Contents.Columns>
 ```
+- Uses Tailwind CSS: `className="flex h-full"`
 - Two-column flex layout
 - Used for side-by-side content
 
-### Card Component
+**Custom Layouts:**
+```typescript
+// Use Tailwind directly for custom layouts
+<main className="w-full p-8 max-w-7xl mx-auto">
+  {/* Custom content */}
+</main>
+```
+
+### Card Component (shadcn/ui)
 
 ```typescript
-<Card>
+import { Card } from "@/components/ui/card"
+
+<Card className="p-6">
   {/* Card content */}
 </Card>
 ```
-- Standard container for sections
-- Built-in padding and borders
-- Responsive spacing
+- shadcn/ui component
+- Style with Tailwind classes
+- Consistent design system
 
-### Panda CSS Styling
+### Tailwind CSS Styling
 
-**Inline Styles:**
+**Spacing and Layout:**
 ```typescript
-import { css } from "@/styles/css"
-
-<div className={css({ p: "4", bg: "white" })} />
+<div className="p-4 m-2 space-y-4">
+<div className="px-6 py-4">
+<div className="flex gap-4 items-center justify-between">
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 ```
 
-**Style Files:**
+**Typography:**
 ```typescript
-// feature.style.ts
-import { styled } from "@/styles/jsx"
+<h1 className="text-2xl font-bold mb-4">
+<p className="text-sm text-gray-600">
+<span className="text-red-500 font-semibold">
+```
 
-export const Container = styled("div", {
-  base: {
-    padding: "1rem",
-    borderRadius: "0.5rem",
-  },
-})
+**Colors and Backgrounds:**
+```typescript
+<div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+<button className="bg-blue-500 hover:bg-blue-600 text-white">
+```
+
+**Responsive Design:**
+```typescript
+<div className="w-full md:w-1/2 lg:w-1/3">
+<div className="hidden md:block">
+<div className="flex flex-col md:flex-row">
+```
+
+### shadcn/ui Components
+
+Use shadcn/ui components for consistent UI:
+
+```typescript
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog"
+
+// Button variants
+<Button>Default</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="destructive">Delete</Button>
+<Button variant="ghost">Ghost</Button>
+
+// Form elements
+<div className="space-y-2">
+  <Label htmlFor="name">Name</Label>
+  <Input id="name" placeholder="Enter name" />
+</div>
+```
+
+### Combining Classes with cn Utility
+
+```typescript
+import { cn } from "@/lib/utils"
+
+<div className={cn(
+  "base-class",
+  condition && "conditional-class",
+  className
+)} />
 ```
 
 ## Navigation Integration

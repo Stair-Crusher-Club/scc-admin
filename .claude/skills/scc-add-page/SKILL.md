@@ -1,6 +1,6 @@
 ---
 name: scc-add-page
-description: Add new pages to SCC Admin project (Next.js 14 App Router). Use when implementing new admin pages for accessibility management, quest management, challenge management, or other features. Covers route group selection, page structure, React Query integration, form handling, navigation setup, and styling with Panda CSS. Use for tasks like "Add new page for X", "Create admin interface for Y", or "Implement listing/detail page for Z".
+description: Add new pages to SCC Admin project (Next.js 14 App Router). Use when implementing new admin pages for accessibility management, quest management, challenge management, or other features. Covers route group selection, page structure, React Query integration, form handling, navigation setup, and styling with Tailwind CSS and shadcn/ui. Use for tasks like "Add new page for X", "Create admin interface for Y", or "Implement listing/detail page for Z".
 ---
 
 # SCC Admin Page Creation
@@ -216,6 +216,8 @@ touch app/(public)/[feature-name]/page.tsx
 
 ## Styling Guidelines
 
+**IMPORTANT**: For new files, use only **Tailwind CSS** and **shadcn/ui** components. Do not use Panda CSS styled-components.
+
 ### Layout Components
 
 Use appropriate layout wrapper:
@@ -223,7 +225,7 @@ Use appropriate layout wrapper:
 ```typescript
 import { Contents } from "@/components/layout/Contents"
 
-// Standard single-column layout
+// Standard single-column layout (uses Tailwind internally)
 <Contents.Normal>
   {/* Page content */}
 </Contents.Normal>
@@ -233,11 +235,16 @@ import { Contents } from "@/components/layout/Contents"
   <div>{/* Left column */}</div>
   <div>{/* Right column */}</div>
 </Contents.Columns>
+
+// Custom layout with Tailwind
+<main className="w-full p-8">
+  {/* Custom content */}
+</main>
 ```
 
 ### Card Components
 
-Organize content in cards:
+Organize content in cards using shadcn/ui:
 
 ```typescript
 import { Card } from "@/components/ui/card"
@@ -247,28 +254,57 @@ import { Card } from "@/components/ui/card"
 </Card>
 ```
 
-### Panda CSS
+### Tailwind CSS Styling
 
-Use Panda CSS for custom styling:
+Use Tailwind utility classes for all styling:
 
 ```typescript
-import { css } from "@/styles/css"
+// Spacing and layout
+<div className="p-4 m-2 space-y-4">
 
-<div className={css({ p: "4", bg: "white", borderRadius: "md" })} />
+// Flexbox and grid
+<div className="flex gap-4 items-center">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+// Colors and backgrounds
+<div className="bg-white text-gray-900 border border-gray-200">
+
+// Responsive design
+<div className="w-full md:w-1/2 lg:w-1/3">
+
+// Hover and focus states
+<button className="hover:bg-gray-100 focus:ring-2">
 ```
 
-For complex styles, create a `*.style.ts` file:
+### Using shadcn/ui Components
+
+Leverage shadcn/ui components for consistent UI:
 
 ```typescript
-import { styled } from "@/styles/jsx"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card } from "@/components/ui/card"
 
-export const Container = styled("div", {
-  base: {
-    padding: "1rem",
-    display: "flex",
-    gap: "0.5rem",
-  },
-})
+<Card className="p-6">
+  <Label htmlFor="name">Name</Label>
+  <Input id="name" placeholder="Enter name" className="mt-2" />
+  <Button className="mt-4">Submit</Button>
+</Card>
+```
+
+### Combining Classes with cn Utility
+
+Use the `cn` utility from shadcn to combine classes conditionally:
+
+```typescript
+import { cn } from "@/lib/utils"
+
+<div className={cn(
+  "base-class",
+  condition && "conditional-class",
+  className // Allow external className override
+)} />
 ```
 
 ## API Integration
@@ -387,9 +423,10 @@ For detailed patterns, examples, and conventions, see:
 
 ### Styling Not Applied
 
-- Ensure Panda CSS is generated: `pnpm panda`
-- Check import paths for styled-system
-- Verify Tailwind classes are supported
+- Verify Tailwind CSS is properly configured
+- Check that className props are passed correctly
+- Ensure shadcn/ui components are installed
+- Clear build cache: `rm -rf .next` and rebuild
 
 ### Data Not Updating
 
