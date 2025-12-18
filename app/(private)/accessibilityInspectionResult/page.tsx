@@ -1,14 +1,21 @@
 "use client"
 
 import { useQueryClient } from "@tanstack/react-query"
-import { CheckCircle2, RotateCcw, Sparkles, Upload } from "lucide-react"
+import { CheckCircle2, Filter, RotateCcw, Sparkles, Upload } from "lucide-react"
 import { useRef, useState } from "react"
 
 import { runImagePipeline, useAccessibilityInspectionResultsPaginated } from "@/lib/apis/api"
 import { api, applyAccessibilityInspectionResults } from "@/lib/apis/api"
-import { AccessibilityTypeDTO, InspectorTypeDTO, ResultTypeDTO } from "@/lib/generated-sources/openapi"
+import {
+  AccessibilityTypeDTO,
+  ApplyFilterDtoInspectorTypeEnum,
+  ApplyFilterDtoResultTypeEnum,
+  InspectorTypeDTO,
+  ResultTypeDTO,
+} from "@/lib/generated-sources/openapi"
 
 import { Contents } from "@/components/layout"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -22,6 +29,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 
@@ -55,6 +63,11 @@ export default function AccessibilityInspectionResultPage() {
   const [bulkInspectionIds, setBulkInspectionIds] = useState("")
   const [bulkInspectionType, setBulkInspectionType] = useState<AccessibilityTypeDTO>(AccessibilityTypeDTO.Place)
   const [isRunningBulkInspection, setIsRunningBulkInspection] = useState(false)
+  const [showBulkApplyByFilterDialog, setShowBulkApplyByFilterDialog] = useState(false)
+  const [filterInspectorType, setFilterInspectorType] = useState<ApplyFilterDtoInspectorTypeEnum | undefined>()
+  const [filterResultType, setFilterResultType] = useState<ApplyFilterDtoResultTypeEnum | undefined>()
+  const [isApplyingByFilter, setIsApplyingByFilter] = useState(false)
+  const [showCsvFormatDialog, setShowCsvFormatDialog] = useState(false)
 
   const { data, isLoading } = useAccessibilityInspectionResultsPaginated({
     accessibilityType,
@@ -112,6 +125,11 @@ export default function AccessibilityInspectionResultPage() {
   }
 
   const handleBulkImportClick = () => {
+    setShowCsvFormatDialog(true)
+  }
+
+  const handleCsvFileSelectClick = () => {
+    setShowCsvFormatDialog(false)
     fileInputRef.current?.click()
   }
 
@@ -175,50 +193,18 @@ export default function AccessibilityInspectionResultPage() {
       })
 
       const result = response.data
-      const successCount = result.results.filter((r) => r.success).length
-      const failureCount = result.results.filter((r) => !r.success).length
-
-      // appliedAction별 통계
-      const actionStats = result.results.reduce(
-        (acc: Record<string, number>, r) => {
-          if (r.success && r.appliedAction) {
-            const action = r.appliedAction
-            acc[action] = (acc[action] || 0) + 1
-          }
-          return acc
-        },
-        {} as Record<string, number>,
-      )
-
-      const actionSummary = Object.entries(actionStats)
-        .map(([action, count]) => {
-          const actionLabels: Record<string, string> = {
-            DELETED: "삭제",
-            MODIFIED: "수정",
-            NO_ACTION_NEEDED: "조치 불필요",
-            ERROR: "에러",
-          }
-          return `${actionLabels[action] || action}: ${count}개`
-        })
-        .join(", ")
+      const { totalProcessed, successCount, failureCount } = result.summary
 
       if (failureCount > 0) {
-        const errorMessages = result.results
-          .filter((r) => !r.success)
-          .map((r) => r.errorMessage)
-          .filter((msg) => msg)
-          .slice(0, 5)
-          .join("\n")
-
         toast({
           variant: "destructive",
           title: "일괄 반영 완료 (일부 실패)",
-          description: `성공: ${successCount}개, 실패: ${failureCount}개${actionSummary ? `\n처리 내역: ${actionSummary}` : ""}${errorMessages ? `\n\n에러:\n${errorMessages}` : ""}`,
+          description: `총 처리: ${totalProcessed}개\n성공: ${successCount}개, 실패: ${failureCount}개`,
         })
       } else {
         toast({
           title: "일괄 반영 성공",
-          description: `${successCount}개의 검수 결과가 반영되었습니다.${actionSummary ? `\n처리 내역: ${actionSummary}` : ""}`,
+          description: `${successCount}개의 검수 결과가 반영되었습니다.`,
         })
       }
 
@@ -326,6 +312,65 @@ export default function AccessibilityInspectionResultPage() {
       })
     } finally {
       setIsRunningBulkInspection(false)
+    }
+  }
+
+  const handleBulkApplyByFilterClick = () => {
+    setShowBulkApplyByFilterDialog(true)
+  }
+
+  const handleBulkApplyByFilterConfirm = async () => {
+    if (!filterInspectorType && !filterResultType) {
+      toast({
+        variant: "destructive",
+        title: "입력 오류",
+        description: "검수자 유형 또는 검수 결과 유형 중 하나 이상을 선택해주세요.",
+      })
+      return
+    }
+
+    setIsApplyingByFilter(true)
+
+    try {
+      const response = await applyAccessibilityInspectionResults({
+        filter: {
+          inspectorType: filterInspectorType,
+          resultType: filterResultType,
+        },
+      })
+
+      const result = response.data
+      const { totalProcessed, successCount, failureCount } = result.summary
+
+      if (failureCount > 0) {
+        toast({
+          variant: "destructive",
+          title: "필터 기반 일괄 반영 완료 (일부 실패)",
+          description: `총 처리: ${totalProcessed}개\n성공: ${successCount}개, 실패: ${failureCount}개`,
+        })
+      } else {
+        toast({
+          title: "필터 기반 일괄 반영 성공",
+          description: `${successCount}개의 검수 결과가 반영되었습니다.`,
+        })
+      }
+
+      setShowBulkApplyByFilterDialog(false)
+      setFilterInspectorType(undefined)
+      setFilterResultType(undefined)
+
+      // Refresh data after successful apply
+      queryClient.invalidateQueries({ queryKey: ["@accessibilityInspectionResultsPaginated"] })
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || error.message || "필터 기반 일괄 반영 중 오류가 발생했습니다."
+      toast({
+        variant: "destructive",
+        title: "필터 기반 일괄 반영 실패",
+        description: errorMessage,
+      })
+    } finally {
+      setIsApplyingByFilter(false)
     }
   }
 
@@ -617,6 +662,10 @@ export default function AccessibilityInspectionResultPage() {
                 <Sparkles className="h-4 w-4" />
                 AI 일괄 검수
               </Button>
+              <Button variant="default" onClick={handleBulkApplyByFilterClick} className="gap-2">
+                <Filter className="h-4 w-4" />
+                필터 기반 일괄 반영
+              </Button>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -773,6 +822,194 @@ export default function AccessibilityInspectionResultPage() {
               <Button onClick={handleBulkInspectionConfirm} disabled={isRunningBulkInspection} className="gap-2">
                 <Sparkles className="h-4 w-4" />
                 {isRunningBulkInspection ? "검수 시작 중..." : "AI 검수 시작"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* CSV 형식 안내 다이얼로그 */}
+        <Dialog open={showCsvFormatDialog} onOpenChange={setShowCsvFormatDialog}>
+          <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col">
+            <DialogHeader>
+              <DialogTitle>CSV 일괄 등록 형식 안내</DialogTitle>
+              <DialogDescription>아래 형식에 맞춰 CSV 파일을 준비해주세요.</DialogDescription>
+            </DialogHeader>
+            <div className="overflow-y-auto flex-1 pr-4">
+              <div className="space-y-3">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">기본 요구사항</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-2">
+                    <ul className="list-disc pl-5 text-xs space-y-0.5">
+                      <li>총 30개 컬럼으로 구성된 CSV 파일</li>
+                      <li>첫 번째 행은 헤더 행 (컬럼명) 포함</li>
+                      <li>인코딩: UTF-8</li>
+                      <li>최대 파일 크기: 10MB</li>
+                      <li>100개 이하: 동기 처리, 100개 초과: 비동기 처리</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">필수 컬럼 정보</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-xs pt-2">
+                    <div>
+                      <span className="font-semibold">컬럼 1 (장소 id):</span> 검수 대상 장소의 고유 ID
+                    </div>
+                    <Separator />
+                    <div>
+                      <span className="font-semibold">컬럼 10 (코멘트):</span> 검수 시 작성된 원본 코멘트
+                    </div>
+                    <Separator />
+                    <div>
+                      <div className="font-semibold mb-1">컬럼 16 (판정): 검수 결과 판정</div>
+                      <div className="flex flex-wrap gap-1.5 items-center">
+                        <Badge variant="secondary" className="text-xs">정상</Badge>
+                        <Badge variant="destructive" className="text-xs">삭제 대상</Badge>
+                        <Badge variant="outline" className="text-xs">수정 대상</Badge>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div>
+                      <span className="font-semibold">컬럼 17 (추가 의견):</span>{" "}
+                      <Badge variant="outline" className="ml-1">
+                        선택
+                      </Badge>{" "}
+                      검수자의 추가 의견
+                    </div>
+                    <Separator />
+                    <div>
+                      <div className="font-semibold mb-1">컬럼 21-26 (수정 요청 정보): 수정 대상인 경우 입력</div>
+                      <div className="text-xs space-y-0.5 pl-3">
+                        <div>• 컬럼 21: 1층 여부 (TRUE/FALSE)</div>
+                        <div>• 컬럼 22: 층 수</div>
+                        <div>• 컬럼 23: 계단 개수 (NONE, ONE, TWO_TO_FIVE, OVER_SIX)</div>
+                        <div>• 컬럼 24: 계단 높이 (HALF_THUMB, THUMB, OVER_THUMB)</div>
+                        <div>• 컬럼 25: 경사로 유무 (TRUE/FALSE)</div>
+                        <div>• 컬럼 26: 문 유형 (None, Hinged, Sliding, Revolving, Automatic, ETC)</div>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div>
+                      <span className="font-semibold">컬럼 30 (검수자):</span> 검수를 수행한 사람의 이름
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">전체 컬럼 목록 (30개)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-2">
+                    <pre className="text-[10px] leading-tight whitespace-pre-wrap font-mono bg-muted p-2 rounded-md">
+                      {`장소 id, 장소 이름, 정복 시점, 1층 여부, 층 수, 계단 개수,
+계단 높이 (1칸인 경우), 경사로 유무, 문 유형, 코멘트, 이미지,
+정복자, 사진 1, 사진 2, 사진 3, 판정, (선택) 추가 의견,
+사진 1, 사진 2, 사진 3, 1층 여부, 층 수, 계단 개수,
+계단 높이 (1칸인 경우), 경사로 유무, 문 유형, 사진 1,
+사진 2, 사진 3, 검수자`}
+                    </pre>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-blue-200 bg-blue-50">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm text-blue-900">참고사항</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-2">
+                    <ul className="list-disc pl-5 text-xs text-blue-800 space-y-0.5">
+                      <li>빈 컬럼은 빈 문자열로 유지</li>
+                      <li>이미지 URL은 쉼표로 구분하여 입력</li>
+                      <li>파싱 실패한 레코드는 자동으로 제외됩니다</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+            <DialogFooter className="flex-shrink-0">
+              <Button variant="outline" onClick={() => setShowCsvFormatDialog(false)}>
+                취소
+              </Button>
+              <Button onClick={handleCsvFileSelectClick} className="gap-2">
+                <Upload className="h-4 w-4" />
+                파일 선택
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* 필터 기반 일괄 반영 다이얼로그 */}
+        <Dialog open={showBulkApplyByFilterDialog} onOpenChange={setShowBulkApplyByFilterDialog}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>필터 기반 일괄 반영</DialogTitle>
+              <DialogDescription>
+                검수자 유형 또는 검수 결과 유형을 선택하여 조건에 맞는 모든 미처리 검수 결과를 일괄 반영합니다.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="filterInspectorType">검수자 유형 (선택)</Label>
+                <Select
+                  value={filterInspectorType ?? "none"}
+                  onValueChange={(value) =>
+                    setFilterInspectorType(value === "none" ? undefined : (value as ApplyFilterDtoInspectorTypeEnum))
+                  }
+                >
+                  <SelectTrigger id="filterInspectorType">
+                    <SelectValue placeholder="선택하지 않음" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">선택하지 않음</SelectItem>
+                    <SelectItem value={ApplyFilterDtoInspectorTypeEnum.Ai}>AI</SelectItem>
+                    <SelectItem value={ApplyFilterDtoInspectorTypeEnum.User}>USER</SelectItem>
+                    <SelectItem value={ApplyFilterDtoInspectorTypeEnum.Bulk}>BULK</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="filterResultType">검수 결과 유형 (선택)</Label>
+                <Select
+                  value={filterResultType ?? "none"}
+                  onValueChange={(value) =>
+                    setFilterResultType(value === "none" ? undefined : (value as ApplyFilterDtoResultTypeEnum))
+                  }
+                >
+                  <SelectTrigger id="filterResultType">
+                    <SelectValue placeholder="선택하지 않음" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">선택하지 않음</SelectItem>
+                    <SelectItem value={ApplyFilterDtoResultTypeEnum.Ok}>OK</SelectItem>
+                    <SelectItem value={ApplyFilterDtoResultTypeEnum.Modify}>MODIFY</SelectItem>
+                    <SelectItem value={ApplyFilterDtoResultTypeEnum.Delete}>DELETE</SelectItem>
+                    <SelectItem value={ApplyFilterDtoResultTypeEnum.Unknown}>UNKNOWN</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="rounded-md bg-yellow-50 p-4 text-sm text-yellow-800">
+                <strong>주의:</strong> 이 작업은 선택한 조건에 맞는 모든 미처리 검수 결과를 반영합니다. 신중하게
+                사용하세요.
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowBulkApplyByFilterDialog(false)
+                  setFilterInspectorType(undefined)
+                  setFilterResultType(undefined)
+                }}
+                disabled={isApplyingByFilter}
+              >
+                취소
+              </Button>
+              <Button onClick={handleBulkApplyByFilterConfirm} disabled={isApplyingByFilter} className="gap-2">
+                <Filter className="h-4 w-4" />
+                {isApplyingByFilter ? "반영 중..." : "일괄 반영"}
               </Button>
             </DialogFooter>
           </DialogContent>
