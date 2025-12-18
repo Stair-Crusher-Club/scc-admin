@@ -41,7 +41,7 @@ app/
 - Uses `Contents.Normal` or `Contents.Columns` wrapper
 - Token stored in localStorage
 
-**Layout Reference:** `/Users/sanggggg/Project/scc-admin/app/(private)/layout.tsx`
+**Layout Reference:** `app/(private)/layout.tsx`
 
 ### Public Routes: `app/(public)/[feature]/`
 
@@ -50,7 +50,7 @@ app/
 - Minimal layout without sidebar
 - Used for login, public guides, etc.
 
-**Layout Reference:** `/Users/sanggggg/Project/scc-admin/app/(public)/layout.tsx`
+**Layout Reference:** `app/(public)/layout.tsx`
 
 ## Page Types
 
