@@ -556,9 +556,9 @@ export function runImagePipeline(payload: RunImagePipelinePayload) {
   return accessibilityApi.runAccessibilityImagePipeline(payload)
 }
 
-export interface ApplyAccessibilityInspectionResultsPayload {
-  inspectionResultIds: string[]
-}
+import type { ApplyAccessibilityInspectionResultsRequestDto } from "@/lib/generated-sources/openapi"
+
+export type ApplyAccessibilityInspectionResultsPayload = ApplyAccessibilityInspectionResultsRequestDto
 
 export function applyAccessibilityInspectionResults(payload: ApplyAccessibilityInspectionResultsPayload) {
   return accessibilityApi.applyAccessibilityInspectionResults(payload)

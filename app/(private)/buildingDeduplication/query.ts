@@ -9,10 +9,10 @@ export interface ListBuildingDeduplicationCandidatesResult {
 }
 
 export function useBuildingDeduplicationCandidates() {
+  // TODO: API endpoint was removed, needs to be re-implemented
   return useInfiniteQuery({
     queryKey: ["@buildingDeduplicationCandidates"],
-    queryFn: ({ pageParam }) =>
-      api.default.listBuildingDeduplicationCandidates(10, pageParam ?? undefined).then((res) => res.data),
+    queryFn: () => Promise.resolve({ items: [], cursor: null }),
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => lastPage.cursor,
   })
