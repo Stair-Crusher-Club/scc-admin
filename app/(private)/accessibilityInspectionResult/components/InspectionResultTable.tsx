@@ -16,31 +16,23 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { format as formatDate } from "date-fns"
-import React, { useState, useEffect } from "react"
 import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  ColumnsIcon,
-  ImageIcon,
-  DoorOpenIcon,
   CodeIcon,
+  ColumnsIcon,
+  DoorOpenIcon,
+  ImageIcon,
   TagIcon,
 } from "lucide-react"
+import React, { useEffect, useState } from "react"
 
 import { AdminAccessibilityInspectionResultDTO } from "@/lib/generated-sources/openapi"
-import { ResultTypeBadge, InspectorTypeBadge } from "./Badges"
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import RemoteImage from "@/components/RemoteImage"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -51,14 +43,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import RemoteImage from "@/components/RemoteImage"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+
+import { InspectorTypeBadge, ResultTypeBadge } from "./Badges"
 
 // AI Inspection Detail Component
 function AIInspectionDetail({
@@ -102,11 +90,7 @@ function AIInspectionDetail({
         <div className="flex flex-wrap gap-2">
           {result?.overallCodes?.length > 0 ? (
             result.overallCodes.map((code: string, idx: number) => (
-              <Badge
-                key={idx}
-                variant="outline"
-                className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3"
-              >
+              <Badge key={idx} variant="outline" className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3">
                 <CodeIcon className="text-purple-500 dark:text-purple-400" />
                 {code}
               </Badge>
@@ -187,16 +171,12 @@ function HumanInspectionDetail({
 
       <div>
         <Label className="text-sm font-semibold mb-2 block">코멘트</Label>
-        <p className="text-sm bg-background border rounded-lg p-4">
-          {result?.comment || "코멘트 없음"}
-        </p>
+        <p className="text-sm bg-background border rounded-lg p-4">{result?.comment || "코멘트 없음"}</p>
       </div>
 
       <div>
         <Label className="text-sm font-semibold mb-2 block">사유</Label>
-        <p className="text-sm bg-background border rounded-lg p-4">
-          {result?.reason || "사유 없음"}
-        </p>
+        <p className="text-sm bg-background border rounded-lg p-4">{result?.reason || "사유 없음"}</p>
       </div>
 
       {images.length > 0 && (
@@ -224,18 +204,13 @@ function HumanInspectionDetail({
             {result.imageReasons.map((imgReason: any, idx: number) => (
               <div key={idx} className="bg-background border rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <Badge
-                    variant="outline"
-                    className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3 shrink-0"
-                  >
+                  <Badge variant="outline" className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3 shrink-0">
                     <ImageIcon className="text-blue-500 dark:text-blue-400" />
                     이미지 #{imgReason.imageIndex}
                   </Badge>
                   <div className="flex-1">
                     {imgReason.imageUrl && (
-                      <p className="text-xs font-mono text-muted-foreground mb-2 break-all">
-                        {imgReason.imageUrl}
-                      </p>
+                      <p className="text-xs font-mono text-muted-foreground mb-2 break-all">{imgReason.imageUrl}</p>
                     )}
                     <p className="text-sm">{imgReason.reason}</p>
                   </div>
@@ -263,39 +238,30 @@ function HumanInspectionDetail({
             {result.modificationRequest.floors && result.modificationRequest.floors.length > 0 && (
               <div className="grid grid-cols-3 gap-2">
                 <span className="text-sm font-medium text-muted-foreground">층수:</span>
-                <span className="text-sm col-span-2">
-                  {result.modificationRequest.floors.join(", ")}층
-                </span>
+                <span className="text-sm col-span-2">{result.modificationRequest.floors.join(", ")}층</span>
               </div>
             )}
 
             {result.modificationRequest.stairInfo && (
               <div className="grid grid-cols-3 gap-2">
                 <span className="text-sm font-medium text-muted-foreground">계단 정보:</span>
-                <span className="text-sm col-span-2">
-                  {result.modificationRequest.stairInfo}
-                </span>
+                <span className="text-sm col-span-2">{result.modificationRequest.stairInfo}</span>
               </div>
             )}
 
             {result.modificationRequest.stairHeightLevel && (
               <div className="grid grid-cols-3 gap-2">
                 <span className="text-sm font-medium text-muted-foreground">계단 높이:</span>
-                <span className="text-sm col-span-2">
-                  {result.modificationRequest.stairHeightLevel}
-                </span>
+                <span className="text-sm col-span-2">{result.modificationRequest.stairHeightLevel}</span>
               </div>
             )}
 
-            {result.modificationRequest.hasSlope !== null &&
-              result.modificationRequest.hasSlope !== undefined && (
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">경사로 유무:</span>
-                  <span className="text-sm col-span-2">
-                    {result.modificationRequest.hasSlope ? "있음" : "없음"}
-                  </span>
-                </div>
-              )}
+            {result.modificationRequest.hasSlope !== null && result.modificationRequest.hasSlope !== undefined && (
+              <div className="grid grid-cols-3 gap-2">
+                <span className="text-sm font-medium text-muted-foreground">경사로 유무:</span>
+                <span className="text-sm col-span-2">{result.modificationRequest.hasSlope ? "있음" : "없음"}</span>
+              </div>
+            )}
 
             {result.modificationRequest.entranceDoorTypes &&
               result.modificationRequest.entranceDoorTypes.length > 0 && (
@@ -384,27 +350,16 @@ export function InspectionResultTable({
         {
           id: "select",
           header: ({ table }: any) => (
-            <div 
-              className="flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
               <Checkbox
-                checked={
-                  table.getIsAllPageRowsSelected() ||
-                  (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) =>
-                  table.toggleAllPageRowsSelected(!!value)
-                }
+                checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
                 aria-label="Select all"
               />
             </div>
           ),
           cell: ({ row }: any) => (
-            <div 
-              className="flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
               <Checkbox
                 checked={row.getIsSelected()}
                 onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -430,9 +385,7 @@ export function InspectionResultTable({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
-    getPaginationRowModel: enablePagination
-      ? getPaginationRowModel()
-      : undefined,
+    getPaginationRowModel: enablePagination ? getPaginationRowModel() : undefined,
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     enableRowSelection: enableRowSelection,
@@ -460,8 +413,8 @@ export function InspectionResultTable({
       <div className="flex items-center justify-between">
         {enableRowSelection && (
           <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
+            selected.
           </div>
         )}
         <div className="ml-auto flex items-center gap-2">
@@ -477,20 +430,14 @@ export function InspectionResultTable({
             <DropdownMenuContent align="end" className="w-56">
               {table
                 .getAllColumns()
-                .filter(
-                  (column) =>
-                    typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide()
-                )
+                .filter((column) => typeof column.accessorFn !== "undefined" && column.getCanHide())
                 .map((column) => {
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     >
                       {column.id}
                     </DropdownMenuCheckboxItem>
@@ -509,16 +456,8 @@ export function InspectionResultTable({
                   {headerGroup.headers.map((header) => {
                     const isSorted = header.column.getIsSorted()
                     return (
-                      <TableHead
-                        key={header.id}
-                        className={isSorted ? "bg-primary/5" : ""}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                      <TableHead key={header.id} className={isSorted ? "bg-primary/5" : ""}>
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </TableHead>
                     )
                   })}
@@ -549,19 +488,13 @@ export function InspectionResultTable({
                       >
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </TableCell>
                         ))}
                       </TableRow>
                       {isExpanded && (
                         <TableRow key={`${row.id}-expanded`}>
-                          <TableCell
-                            colSpan={columnsWithSelection.length}
-                            className="bg-muted/30 p-6"
-                          >
+                          <TableCell colSpan={columnsWithSelection.length} className="bg-muted/30 p-6">
                             {row.original.inspectorType === "HUMAN" ? (
                               <HumanInspectionDetail
                                 result={imageInspectionResult}
@@ -569,11 +502,7 @@ export function InspectionResultTable({
                                 item={row.original}
                               />
                             ) : (
-                              <AIInspectionDetail
-                                result={imageInspectionResult}
-                                images={images}
-                                item={row.original}
-                              />
+                              <AIInspectionDetail result={imageInspectionResult} images={images} item={row.original} />
                             )}
                           </TableCell>
                         </TableRow>
@@ -583,10 +512,7 @@ export function InspectionResultTable({
                 })
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columnsWithSelection.length}
-                    className="h-24 text-center"
-                  >
+                  <TableCell colSpan={columnsWithSelection.length} className="h-24 text-center">
                     검색 결과가 없습니다.
                   </TableCell>
                 </TableRow>
@@ -613,9 +539,7 @@ export function InspectionResultTable({
                 }}
               >
                 <SelectTrigger className="w-20" id="rows-per-page">
-                  <SelectValue
-                    placeholder={table.getState().pagination.pageSize}
-                  />
+                  <SelectValue placeholder={table.getState().pagination.pageSize} />
                 </SelectTrigger>
                 <SelectContent side="top">
                   {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -627,8 +551,7 @@ export function InspectionResultTable({
               </Select>
             </div>
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
+              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
               <Button

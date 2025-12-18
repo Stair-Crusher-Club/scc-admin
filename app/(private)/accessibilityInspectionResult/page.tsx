@@ -1,26 +1,15 @@
 "use client"
 
-import { useRef, useState } from "react"
-import { RotateCcw, Upload, CheckCircle2, Sparkles } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
+import { CheckCircle2, RotateCcw, Sparkles, Upload } from "lucide-react"
+import { useRef, useState } from "react"
 
-import { useAccessibilityInspectionResultsPaginated, runImagePipeline } from "@/lib/apis/api"
-import {
-  AccessibilityTypeDTO,
-  InspectorTypeDTO,
-  ResultTypeDTO,
-} from "@/lib/generated-sources/openapi"
+import { runImagePipeline, useAccessibilityInspectionResultsPaginated } from "@/lib/apis/api"
+import { api, applyAccessibilityInspectionResults } from "@/lib/apis/api"
+import { AccessibilityTypeDTO, InspectorTypeDTO, ResultTypeDTO } from "@/lib/generated-sources/openapi"
 
+import { Contents } from "@/components/layout"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
@@ -30,13 +19,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Contents } from "@/components/layout"
-import { api, applyAccessibilityInspectionResults } from "@/lib/apis/api"
 import { useToast } from "@/hooks/use-toast"
 
-import { getColumns } from "./components/columns"
 import { InspectionResultTable } from "./components/InspectionResultTable"
+import { getColumns } from "./components/columns"
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
@@ -128,11 +118,8 @@ export default function AccessibilityInspectionResultPage() {
   // 선택된 항목들을 검수자 유형별로 그룹화하여 통계 계산
   const calculateStatistics = (ids: string[]) => {
     const selectedItems = items.filter((item) => ids.includes(item.id))
-    
-    const statsByInspectorType: Record<
-      InspectorTypeDTO,
-      { delete: number; modify: number; ok: number }
-    > = {
+
+    const statsByInspectorType: Record<InspectorTypeDTO, { delete: number; modify: number; ok: number }> = {
       HUMAN: { delete: 0, modify: 0, ok: 0 },
       AI: { delete: 0, modify: 0, ok: 0 },
       UNKNOWN: { delete: 0, modify: 0, ok: 0 },
@@ -180,7 +167,7 @@ export default function AccessibilityInspectionResultPage() {
 
   const handleBulkApplyConfirm = async () => {
     setShowConfirmDialog(false)
-    
+
     setIsApplying(true)
     try {
       const response = await applyAccessibilityInspectionResults({
@@ -200,7 +187,7 @@ export default function AccessibilityInspectionResultPage() {
           }
           return acc
         },
-        {} as Record<string, number>
+        {} as Record<string, number>,
       )
 
       const actionSummary = Object.entries(actionStats)
@@ -258,11 +245,11 @@ export default function AccessibilityInspectionResultPage() {
 
     const statistics = calculateStatistics(pendingSelectedIds)
     const messages: string[] = []
-    
+
     Object.entries(statistics).forEach(([inspectorType, stats]) => {
       const typeLabel = getInspectorTypeLabel(inspectorType as InspectorTypeDTO)
       const totalCount = stats.delete + stats.modify + stats.ok
-      
+
       if (totalCount > 0) {
         const parts: string[] = []
         if (stats.delete > 0) {
@@ -274,13 +261,13 @@ export default function AccessibilityInspectionResultPage() {
         if (stats.ok > 0) {
           parts.push(`${stats.ok}개 조치 불필요`)
         }
-        
+
         if (parts.length > 0) {
           messages.push(`검수자 유형 ${typeLabel}의 검수 ${parts.join(", ")}됩니다`)
         }
       }
     })
-    
+
     return messages
   }
 
@@ -613,12 +600,7 @@ export default function AccessibilityInspectionResultPage() {
                 <RotateCcw className="h-4 w-4" />
                 초기화
               </Button>
-              <Button
-                variant="default"
-                onClick={handleBulkImportClick}
-                disabled={isUploading}
-                className="gap-2"
-              >
+              <Button variant="default" onClick={handleBulkImportClick} disabled={isUploading} className="gap-2">
                 <Upload className="h-4 w-4" />
                 {isUploading ? "업로드 중..." : "CSV 일괄 등록"}
               </Button>
@@ -631,11 +613,7 @@ export default function AccessibilityInspectionResultPage() {
                 <CheckCircle2 className="h-4 w-4" />
                 {isApplying ? "반영 중..." : `선택 항목 일괄 반영 (${selectedIds.length}개)`}
               </Button>
-              <Button
-                variant="default"
-                onClick={handleBulkInspectionClick}
-                className="gap-2"
-              >
+              <Button variant="default" onClick={handleBulkInspectionClick} className="gap-2">
                 <Sparkles className="h-4 w-4" />
                 AI 일괄 검수
               </Button>
@@ -653,12 +631,7 @@ export default function AccessibilityInspectionResultPage() {
         {uploadMessage && (
           <Card className="mt-6 border-blue-200 bg-blue-50">
             <CardContent className="pt-6 relative">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute top-2 right-2"
-                onClick={() => setUploadMessage("")}
-              >
+              <Button variant="ghost" size="sm" className="absolute top-2 right-2" onClick={() => setUploadMessage("")}>
                 ✕
               </Button>
               <pre className="text-sm whitespace-pre-wrap font-mono pr-8">{uploadMessage}</pre>
@@ -724,9 +697,7 @@ export default function AccessibilityInspectionResultPage() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>일괄 반영 확인</DialogTitle>
-              <DialogDescription>
-                아래 내용을 확인하고 반영 여부를 결정해주세요.
-              </DialogDescription>
+              <DialogDescription>아래 내용을 확인하고 반영 여부를 결정해주세요.</DialogDescription>
             </DialogHeader>
             <div className="py-4">
               {getConfirmMessage().map((message, index) => (
@@ -735,26 +706,15 @@ export default function AccessibilityInspectionResultPage() {
                 </p>
               ))}
               {getConfirmMessage().length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  선택된 항목이 없습니다.
-                </p>
+                <p className="text-sm text-muted-foreground">선택된 항목이 없습니다.</p>
               )}
-              {getConfirmMessage().length > 0 && (
-                <p className="mt-4 text-sm font-medium">
-                  반영하시겠습니까?
-                </p>
-              )}
+              {getConfirmMessage().length > 0 && <p className="mt-4 text-sm font-medium">반영하시겠습니까?</p>}
             </div>
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setShowConfirmDialog(false)}
-              >
+              <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
                 취소
               </Button>
-              <Button onClick={handleBulkApplyConfirm}>
-                반영하기
-              </Button>
+              <Button onClick={handleBulkApplyConfirm}>반영하기</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -764,9 +724,7 @@ export default function AccessibilityInspectionResultPage() {
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>AI 일괄 검수</DialogTitle>
-              <DialogDescription>
-                접근성 ID를 쉼표로 구분하여 입력하고 검수 유형을 선택해주세요.
-              </DialogDescription>
+              <DialogDescription>접근성 ID를 쉼표로 구분하여 입력하고 검수 유형을 선택해주세요.</DialogDescription>
             </DialogHeader>
             <div className="py-4 space-y-4">
               <div className="space-y-2">
@@ -812,11 +770,7 @@ export default function AccessibilityInspectionResultPage() {
               >
                 취소
               </Button>
-              <Button
-                onClick={handleBulkInspectionConfirm}
-                disabled={isRunningBulkInspection}
-                className="gap-2"
-              >
+              <Button onClick={handleBulkInspectionConfirm} disabled={isRunningBulkInspection} className="gap-2">
                 <Sparkles className="h-4 w-4" />
                 {isRunningBulkInspection ? "검수 시작 중..." : "AI 검수 시작"}
               </Button>
