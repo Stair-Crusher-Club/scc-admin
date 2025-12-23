@@ -266,6 +266,7 @@ export default function PlaceCategoryCachePage() {
               e.stopPropagation()
               handleEditOpen(row.original)
             }}
+            aria-label="수정"
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -276,6 +277,7 @@ export default function PlaceCategoryCachePage() {
               e.stopPropagation()
               handleDeleteOpen(row.original)
             }}
+            aria-label="삭제"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -324,7 +326,7 @@ export default function PlaceCategoryCachePage() {
                   onChange={(e) => setSearchInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
-                <Button variant="outline" onClick={handleSearch}>
+                <Button variant="outline" onClick={handleSearch} aria-label="검색">
                   <Search className="h-4 w-4" />
                 </Button>
               </div>
@@ -381,7 +383,9 @@ export default function PlaceCategoryCachePage() {
                 {createForm.formState.errors.categoryString && (
                   <p className="text-xs text-destructive">{createForm.formState.errors.categoryString.message}</p>
                 )}
-                <p className="text-xs text-muted-foreground">지도 API에서 반환되는 원본 카테고리 문자열을 입력하세요.</p>
+                <p className="text-xs text-muted-foreground">
+                  지도 API에서 반환되는 원본 카테고리 문자열을 입력하세요.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="placeCategory">장소 카테고리</Label>
@@ -410,7 +414,12 @@ export default function PlaceCategoryCachePage() {
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)} disabled={createForm.formState.isSubmitting}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowCreateDialog(false)}
+                disabled={createForm.formState.isSubmitting}
+              >
                 취소
               </Button>
               <Button type="submit" disabled={createForm.formState.isSubmitting}>
@@ -461,7 +470,12 @@ export default function PlaceCategoryCachePage() {
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setShowEditDialog(false)} disabled={editForm.formState.isSubmitting}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowEditDialog(false)}
+                disabled={editForm.formState.isSubmitting}
+              >
                 취소
               </Button>
               <Button type="submit" disabled={editForm.formState.isSubmitting}>
