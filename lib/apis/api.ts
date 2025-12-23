@@ -27,6 +27,7 @@ import {
   ChallengeApi,
   Configuration,
   DefaultApi,
+  PlaceCategoryCacheApi,
 } from "../../lib/generated-sources/openapi"
 import {
   ClubQuestPurposeTypeEnumDTO,
@@ -47,6 +48,7 @@ const challengeApi = new ChallengeApi(config)
 const bannerApi = new BannerApi(config)
 const accessibilityApi = new AccessibilityApi(config)
 const bbucleRoadApi = new BbucleRoadApi(config)
+const placeCategoryCacheApi = new PlaceCategoryCacheApi(config)
 
 export const api: {
   default: DefaultApi
@@ -54,12 +56,14 @@ export const api: {
   banner: BannerApi
   accessibility: AccessibilityApi
   bbucleRoad: BbucleRoadApi
+  placeCategoryCache: PlaceCategoryCacheApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
   banner: bannerApi,
   accessibility: accessibilityApi,
   bbucleRoad: bbucleRoadApi,
+  placeCategoryCache: placeCategoryCacheApi,
 }
 
 export function useQuest({ id }: { id: string }) {
@@ -585,4 +589,56 @@ export type ApplyAccessibilityInspectionResultsPayload = ApplyAccessibilityInspe
 
 export function applyAccessibilityInspectionResults(payload: ApplyAccessibilityInspectionResultsPayload) {
   return accessibilityApi.applyAccessibilityInspectionResults(payload)
+}
+
+import type {
+  AdminCreatePlaceCategoryCacheRequestDto,
+  AdminUpdatePlaceCategoryCacheRequestDto,
+  PlaceCategoryDto,
+} from "@/lib/generated-sources/openapi"
+
+export function usePlaceCategoryCaches({
+  placeCategory,
+  categoryStringContains,
+  limit = 20,
+}: {
+  placeCategory?: PlaceCategoryDto
+  categoryStringContains?: string
+  limit?: number
+} = {}) {
+  return useInfiniteQuery({
+    queryKey: ["@placeCategoryCaches", placeCategory ?? null, categoryStringContains ?? null, limit],
+    queryFn: ({ pageParam }) =>
+      placeCategoryCacheApi
+        .listPlaceCategoryCaches(pageParam ?? undefined, limit, placeCategory, categoryStringContains)
+        .then((res) => res.data),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.cursor,
+  })
+}
+
+export function usePlaceCategoryCache({ id }: { id: string }) {
+  return useQuery({
+    queryKey: ["@placeCategoryCaches", id],
+    queryFn: () => placeCategoryCacheApi.getPlaceCategoryCache(id).then((res) => res.data),
+    enabled: !!id,
+  })
+}
+
+export function createPlaceCategoryCache(payload: AdminCreatePlaceCategoryCacheRequestDto) {
+  return placeCategoryCacheApi.createPlaceCategoryCache(payload)
+}
+
+export function updatePlaceCategoryCache({
+  id,
+  payload,
+}: {
+  id: string
+  payload: AdminUpdatePlaceCategoryCacheRequestDto
+}) {
+  return placeCategoryCacheApi.updatePlaceCategoryCache(id, payload)
+}
+
+export function deletePlaceCategoryCache({ id }: { id: string }) {
+  return placeCategoryCacheApi.deletePlaceCategoryCache(id)
 }

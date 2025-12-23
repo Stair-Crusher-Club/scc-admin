@@ -1088,6 +1088,25 @@ export interface AdminCreateImageUploadUrlsResponseDTO {
     'urls': Array<AdminImageUploadUrlDTO>;
 }
 /**
+ * 장소 카테고리 캐시 생성 요청
+ * @export
+ * @interface AdminCreatePlaceCategoryCacheRequestDto
+ */
+export interface AdminCreatePlaceCategoryCacheRequestDto {
+    /**
+     * 지도 API에서 반환된 원본 카테고리 문자열
+     * @type {string}
+     * @memberof AdminCreatePlaceCategoryCacheRequestDto
+     */
+    'categoryString': string;
+    /**
+     * 
+     * @type {PlaceCategoryDto}
+     * @memberof AdminCreatePlaceCategoryCacheRequestDto
+     */
+    'placeCategory': PlaceCategoryDto;
+}
+/**
  * 
  * @export
  * @interface AdminCreateSearchPlacePresetRequestDTO
@@ -1343,6 +1362,25 @@ export interface AdminListHomeBannersResponseDTO {
     'banners': Array<AdminBannerDTO>;
 }
 /**
+ * 장소 카테고리 캐시 목록 응답
+ * @export
+ * @interface AdminListPlaceCategoryCachesResponseDto
+ */
+export interface AdminListPlaceCategoryCachesResponseDto {
+    /**
+     * 
+     * @type {Array<AdminPlaceCategoryCacheDto>}
+     * @memberof AdminListPlaceCategoryCachesResponseDto
+     */
+    'items': Array<AdminPlaceCategoryCacheDto>;
+    /**
+     * 다음 페이지 커서 (없으면 마지막 페이지)
+     * @type {string}
+     * @memberof AdminListPlaceCategoryCachesResponseDto
+     */
+    'cursor'?: string | null;
+}
+/**
  * 
  * @export
  * @interface AdminListPushNotificationSchedulesResponseDTO
@@ -1446,6 +1484,43 @@ export interface AdminPlaceAccessibilityDTO {
      * @memberof AdminPlaceAccessibilityDTO
      */
     'createdAtMillis': number;
+}
+/**
+ * 장소 카테고리 캐시 정보
+ * @export
+ * @interface AdminPlaceCategoryCacheDto
+ */
+export interface AdminPlaceCategoryCacheDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceCategoryCacheDto
+     */
+    'id': string;
+    /**
+     * 지도 API에서 반환된 원본 카테고리 문자열
+     * @type {string}
+     * @memberof AdminPlaceCategoryCacheDto
+     */
+    'categoryString': string;
+    /**
+     * 
+     * @type {PlaceCategoryDto}
+     * @memberof AdminPlaceCategoryCacheDto
+     */
+    'placeCategory': PlaceCategoryDto;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceCategoryCacheDto
+     */
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceCategoryCacheDto
+     */
+    'updatedAt': EpochMillisTimestamp;
 }
 /**
  * 
@@ -1901,6 +1976,19 @@ export interface AdminUpdatePlaceAccessibilityRequestDTO {
      * @memberof AdminUpdatePlaceAccessibilityRequestDTO
      */
     'entranceDoorTypes'?: Array<AdminEntranceDoorType>;
+}
+/**
+ * 장소 카테고리 캐시 수정 요청
+ * @export
+ * @interface AdminUpdatePlaceCategoryCacheRequestDto
+ */
+export interface AdminUpdatePlaceCategoryCacheRequestDto {
+    /**
+     * 
+     * @type {PlaceCategoryDto}
+     * @memberof AdminUpdatePlaceCategoryCacheRequestDto
+     */
+    'placeCategory': PlaceCategoryDto;
 }
 /**
  * 
@@ -3160,6 +3248,36 @@ export interface MoveClubQuestTargetPlaceResponse {
      */
     'targetQuest': ClubQuestDTO;
 }
+/**
+ * 장소 카테고리 enum
+ * @export
+ * @enum {string}
+ */
+
+export const PlaceCategoryDto = {
+    Market: 'MARKET',
+    ConvenienceStore: 'CONVENIENCE_STORE',
+    Kindergarten: 'KINDERGARTEN',
+    School: 'SCHOOL',
+    Academy: 'ACADEMY',
+    ParkingLot: 'PARKING_LOT',
+    GasStation: 'GAS_STATION',
+    SubwayStation: 'SUBWAY_STATION',
+    Bank: 'BANK',
+    CulturalFacilities: 'CULTURAL_FACILITIES',
+    Agency: 'AGENCY',
+    PublicOffice: 'PUBLIC_OFFICE',
+    Attraction: 'ATTRACTION',
+    Accomodation: 'ACCOMODATION',
+    Restaurant: 'RESTAURANT',
+    Cafe: 'CAFE',
+    Hospital: 'HOSPITAL',
+    Pharmacy: 'PHARMACY'
+} as const;
+
+export type PlaceCategoryDto = typeof PlaceCategoryDto[keyof typeof PlaceCategoryDto];
+
+
 /**
  * 
  * @export
@@ -8319,6 +8437,435 @@ export class DefaultApi extends BaseAPI {
      */
     public startPlaceCrawling(startPlaceCrawlingRequestDTO: StartPlaceCrawlingRequestDTO, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).startPlaceCrawling(startPlaceCrawlingRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * PlaceCategoryCacheApi - axios parameter creator
+ * @export
+ */
+export const PlaceCategoryCacheApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 수동으로 생성한다.
+         * @param {AdminCreatePlaceCategoryCacheRequestDto} adminCreatePlaceCategoryCacheRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPlaceCategoryCache: async (adminCreatePlaceCategoryCacheRequestDto: AdminCreatePlaceCategoryCacheRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminCreatePlaceCategoryCacheRequestDto' is not null or undefined
+            assertParamExists('createPlaceCategoryCache', 'adminCreatePlaceCategoryCacheRequestDto', adminCreatePlaceCategoryCacheRequestDto)
+            const localVarPath = `/place-category-caches`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreatePlaceCategoryCacheRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 삭제한다. 삭제 후 다음 조회시 AI가 다시 카테고리를 판정한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlaceCategoryCache: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deletePlaceCategoryCache', 'id', id)
+            const localVarPath = `/place-category-caches/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 단건 조회한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPlaceCategoryCache: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getPlaceCategoryCache', 'id', id)
+            const localVarPath = `/place-category-caches/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시 목록을 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {PlaceCategoryDto} [placeCategory] 카테고리별 필터링
+         * @param {string} [categoryStringContains] categoryString 검색 (포함 검색)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPlaceCategoryCaches: async (cursor?: string, limit?: number, placeCategory?: PlaceCategoryDto, categoryStringContains?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/place-category-caches`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (placeCategory !== undefined) {
+                localVarQueryParameter['placeCategory'] = placeCategory;
+            }
+
+            if (categoryStringContains !== undefined) {
+                localVarQueryParameter['categoryStringContains'] = categoryStringContains;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 수정한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {AdminUpdatePlaceCategoryCacheRequestDto} adminUpdatePlaceCategoryCacheRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceCategoryCache: async (id: string, adminUpdatePlaceCategoryCacheRequestDto: AdminUpdatePlaceCategoryCacheRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updatePlaceCategoryCache', 'id', id)
+            // verify required parameter 'adminUpdatePlaceCategoryCacheRequestDto' is not null or undefined
+            assertParamExists('updatePlaceCategoryCache', 'adminUpdatePlaceCategoryCacheRequestDto', adminUpdatePlaceCategoryCacheRequestDto)
+            const localVarPath = `/place-category-caches/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminUpdatePlaceCategoryCacheRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * PlaceCategoryCacheApi - functional programming interface
+ * @export
+ */
+export const PlaceCategoryCacheApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = PlaceCategoryCacheApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 수동으로 생성한다.
+         * @param {AdminCreatePlaceCategoryCacheRequestDto} adminCreatePlaceCategoryCacheRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto: AdminCreatePlaceCategoryCacheRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceCategoryCacheDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 삭제한다. 삭제 후 다음 조회시 AI가 다시 카테고리를 판정한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePlaceCategoryCache(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePlaceCategoryCache(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 단건 조회한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPlaceCategoryCache(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceCategoryCacheDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlaceCategoryCache(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시 목록을 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {PlaceCategoryDto} [placeCategory] 카테고리별 필터링
+         * @param {string} [categoryStringContains] categoryString 검색 (포함 검색)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPlaceCategoryCaches(cursor?: string, limit?: number, placeCategory?: PlaceCategoryDto, categoryStringContains?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListPlaceCategoryCachesResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPlaceCategoryCaches(cursor, limit, placeCategory, categoryStringContains, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 수정한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {AdminUpdatePlaceCategoryCacheRequestDto} adminUpdatePlaceCategoryCacheRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePlaceCategoryCache(id: string, adminUpdatePlaceCategoryCacheRequestDto: AdminUpdatePlaceCategoryCacheRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceCategoryCacheDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlaceCategoryCache(id, adminUpdatePlaceCategoryCacheRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * PlaceCategoryCacheApi - factory interface
+ * @export
+ */
+export const PlaceCategoryCacheApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = PlaceCategoryCacheApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 수동으로 생성한다.
+         * @param {AdminCreatePlaceCategoryCacheRequestDto} adminCreatePlaceCategoryCacheRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto: AdminCreatePlaceCategoryCacheRequestDto, options?: any): AxiosPromise<AdminPlaceCategoryCacheDto> {
+            return localVarFp.createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 삭제한다. 삭제 후 다음 조회시 AI가 다시 카테고리를 판정한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlaceCategoryCache(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePlaceCategoryCache(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 단건 조회한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPlaceCategoryCache(id: string, options?: any): AxiosPromise<AdminPlaceCategoryCacheDto> {
+            return localVarFp.getPlaceCategoryCache(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시 목록을 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {PlaceCategoryDto} [placeCategory] 카테고리별 필터링
+         * @param {string} [categoryStringContains] categoryString 검색 (포함 검색)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPlaceCategoryCaches(cursor?: string, limit?: number, placeCategory?: PlaceCategoryDto, categoryStringContains?: string, options?: any): AxiosPromise<AdminListPlaceCategoryCachesResponseDto> {
+            return localVarFp.listPlaceCategoryCaches(cursor, limit, placeCategory, categoryStringContains, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 수정한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {AdminUpdatePlaceCategoryCacheRequestDto} adminUpdatePlaceCategoryCacheRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceCategoryCache(id: string, adminUpdatePlaceCategoryCacheRequestDto: AdminUpdatePlaceCategoryCacheRequestDto, options?: any): AxiosPromise<AdminPlaceCategoryCacheDto> {
+            return localVarFp.updatePlaceCategoryCache(id, adminUpdatePlaceCategoryCacheRequestDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * PlaceCategoryCacheApi - object-oriented interface
+ * @export
+ * @class PlaceCategoryCacheApi
+ * @extends {BaseAPI}
+ */
+export class PlaceCategoryCacheApi extends BaseAPI {
+    /**
+     * 
+     * @summary 장소 카테고리 캐시를 수동으로 생성한다.
+     * @param {AdminCreatePlaceCategoryCacheRequestDto} adminCreatePlaceCategoryCacheRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceCategoryCacheApi
+     */
+    public createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto: AdminCreatePlaceCategoryCacheRequestDto, options?: AxiosRequestConfig) {
+        return PlaceCategoryCacheApiFp(this.configuration).createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 카테고리 캐시를 삭제한다. 삭제 후 다음 조회시 AI가 다시 카테고리를 판정한다.
+     * @param {string} id PlaceCategoryCache ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceCategoryCacheApi
+     */
+    public deletePlaceCategoryCache(id: string, options?: AxiosRequestConfig) {
+        return PlaceCategoryCacheApiFp(this.configuration).deletePlaceCategoryCache(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 카테고리 캐시를 단건 조회한다.
+     * @param {string} id PlaceCategoryCache ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceCategoryCacheApi
+     */
+    public getPlaceCategoryCache(id: string, options?: AxiosRequestConfig) {
+        return PlaceCategoryCacheApiFp(this.configuration).getPlaceCategoryCache(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 카테고리 캐시 목록을 조회한다.
+     * @param {string} [cursor] 페이지네이션 커서
+     * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+     * @param {PlaceCategoryDto} [placeCategory] 카테고리별 필터링
+     * @param {string} [categoryStringContains] categoryString 검색 (포함 검색)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceCategoryCacheApi
+     */
+    public listPlaceCategoryCaches(cursor?: string, limit?: number, placeCategory?: PlaceCategoryDto, categoryStringContains?: string, options?: AxiosRequestConfig) {
+        return PlaceCategoryCacheApiFp(this.configuration).listPlaceCategoryCaches(cursor, limit, placeCategory, categoryStringContains, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 카테고리 캐시를 수정한다.
+     * @param {string} id PlaceCategoryCache ID
+     * @param {AdminUpdatePlaceCategoryCacheRequestDto} adminUpdatePlaceCategoryCacheRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceCategoryCacheApi
+     */
+    public updatePlaceCategoryCache(id: string, adminUpdatePlaceCategoryCacheRequestDto: AdminUpdatePlaceCategoryCacheRequestDto, options?: AxiosRequestConfig) {
+        return PlaceCategoryCacheApiFp(this.configuration).updatePlaceCategoryCache(id, adminUpdatePlaceCategoryCacheRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
