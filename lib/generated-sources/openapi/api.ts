@@ -2908,6 +2908,37 @@ export interface CreateMapMarkerDTO {
     'customImageUrl'?: string;
 }
 /**
+ * 사용자 피드백 생성 요청
+ * @export
+ * @interface CreateUserFeedbackRequestDto
+ */
+export interface CreateUserFeedbackRequestDto {
+    /**
+     * 사용자 ID
+     * @type {string}
+     * @memberof CreateUserFeedbackRequestDto
+     */
+    'userId': string;
+    /**
+     * 
+     * @type {UserFeedbackTypeDto}
+     * @memberof CreateUserFeedbackRequestDto
+     */
+    'feedbackType': UserFeedbackTypeDto;
+    /**
+     * 피드백 내용
+     * @type {string}
+     * @memberof CreateUserFeedbackRequestDto
+     */
+    'content': string;
+    /**
+     * 디바이스 정보
+     * @type {string}
+     * @memberof CreateUserFeedbackRequestDto
+     */
+    'deviceInfo'?: string;
+}
+/**
  * 특정 시각을 표현하기 위한 모델.
  * @export
  * @interface EpochMillisTimestamp
@@ -2980,6 +3011,19 @@ export const InspectorTypeDTO = {
 export type InspectorTypeDTO = typeof InspectorTypeDTO[keyof typeof InspectorTypeDTO];
 
 
+/**
+ * 
+ * @export
+ * @interface ListUserFeedbacks200Response
+ */
+export interface ListUserFeedbacks200Response {
+    /**
+     * 
+     * @type {Array<UserFeedbackDto>}
+     * @memberof ListUserFeedbacks200Response
+     */
+    'feedbacks': Array<UserFeedbackDto>;
+}
 /**
  * 위치를 위경도로 표현하기 위한 모델.
  * @export
@@ -3368,6 +3412,72 @@ export interface UpdateMapMarkerDTO {
      */
     'customImageUrl'?: string;
 }
+/**
+ * 사용자 피드백 정보
+ * @export
+ * @interface UserFeedbackDto
+ */
+export interface UserFeedbackDto {
+    /**
+     * 피드백 ID
+     * @type {string}
+     * @memberof UserFeedbackDto
+     */
+    'id': string;
+    /**
+     * 사용자 ID
+     * @type {string}
+     * @memberof UserFeedbackDto
+     */
+    'userId': string;
+    /**
+     * 
+     * @type {UserFeedbackTypeDto}
+     * @memberof UserFeedbackDto
+     */
+    'feedbackType': UserFeedbackTypeDto;
+    /**
+     * 피드백 내용
+     * @type {string}
+     * @memberof UserFeedbackDto
+     */
+    'content': string;
+    /**
+     * 디바이스 정보
+     * @type {string}
+     * @memberof UserFeedbackDto
+     */
+    'deviceInfo'?: string;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof UserFeedbackDto
+     */
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof UserFeedbackDto
+     */
+    'updatedAt': EpochMillisTimestamp;
+}
+/**
+ * 피드백 유형
+ * @export
+ * @enum {string}
+ */
+
+export const UserFeedbackTypeDto = {
+    Bug: 'BUG',
+    FeatureRequest: 'FEATURE_REQUEST',
+    General: 'GENERAL',
+    Other: 'OTHER',
+    Unknown: 'UNKNOWN'
+} as const;
+
+export type UserFeedbackTypeDto = typeof UserFeedbackTypeDto[keyof typeof UserFeedbackTypeDto];
+
+
 
 /**
  * AccessibilityApi - axios parameter creator
@@ -8319,6 +8429,193 @@ export class DefaultApi extends BaseAPI {
      */
     public startPlaceCrawling(startPlaceCrawlingRequestDTO: StartPlaceCrawlingRequestDTO, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).startPlaceCrawling(startPlaceCrawlingRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * UserFeedbackApi - axios parameter creator
+ * @export
+ */
+export const UserFeedbackApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 사용자 피드백을 생성한다.
+         * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createUserFeedback: async (createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createUserFeedbackRequestDto' is not null or undefined
+            assertParamExists('createUserFeedback', 'createUserFeedbackRequestDto', createUserFeedbackRequestDto)
+            const localVarPath = `/user-feedbacks`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createUserFeedbackRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 사용자 피드백 목록을 조회한다.
+         * @param {string} [userId] 
+         * @param {UserFeedbackTypeDto} [feedbackType] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listUserFeedbacks: async (userId?: string, feedbackType?: UserFeedbackTypeDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/user-feedbacks`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (userId !== undefined) {
+                localVarQueryParameter['userId'] = userId;
+            }
+
+            if (feedbackType !== undefined) {
+                localVarQueryParameter['feedbackType'] = feedbackType;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * UserFeedbackApi - functional programming interface
+ * @export
+ */
+export const UserFeedbackApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = UserFeedbackApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 사용자 피드백을 생성한다.
+         * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createUserFeedback(createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserFeedbackDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createUserFeedback(createUserFeedbackRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 사용자 피드백 목록을 조회한다.
+         * @param {string} [userId] 
+         * @param {UserFeedbackTypeDto} [feedbackType] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listUserFeedbacks(userId?: string, feedbackType?: UserFeedbackTypeDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListUserFeedbacks200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listUserFeedbacks(userId, feedbackType, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * UserFeedbackApi - factory interface
+ * @export
+ */
+export const UserFeedbackApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = UserFeedbackApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 사용자 피드백을 생성한다.
+         * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createUserFeedback(createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options?: any): AxiosPromise<UserFeedbackDto> {
+            return localVarFp.createUserFeedback(createUserFeedbackRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 사용자 피드백 목록을 조회한다.
+         * @param {string} [userId] 
+         * @param {UserFeedbackTypeDto} [feedbackType] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listUserFeedbacks(userId?: string, feedbackType?: UserFeedbackTypeDto, options?: any): AxiosPromise<ListUserFeedbacks200Response> {
+            return localVarFp.listUserFeedbacks(userId, feedbackType, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * UserFeedbackApi - object-oriented interface
+ * @export
+ * @class UserFeedbackApi
+ * @extends {BaseAPI}
+ */
+export class UserFeedbackApi extends BaseAPI {
+    /**
+     * 
+     * @summary 사용자 피드백을 생성한다.
+     * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserFeedbackApi
+     */
+    public createUserFeedback(createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options?: AxiosRequestConfig) {
+        return UserFeedbackApiFp(this.configuration).createUserFeedback(createUserFeedbackRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 사용자 피드백 목록을 조회한다.
+     * @param {string} [userId] 
+     * @param {UserFeedbackTypeDto} [feedbackType] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserFeedbackApi
+     */
+    public listUserFeedbacks(userId?: string, feedbackType?: UserFeedbackTypeDto, options?: AxiosRequestConfig) {
+        return UserFeedbackApiFp(this.configuration).listUserFeedbacks(userId, feedbackType, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

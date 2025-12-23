@@ -23,7 +23,7 @@
       "@/lib/*": ["./lib/*"],
       "@/*": ["./app/*"]
     },
-    "types": ["kakao.maps.d.ts"]
+    "types": ["kakao.maps.d.ts", "navermaps"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

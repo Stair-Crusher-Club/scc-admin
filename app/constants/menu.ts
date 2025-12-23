@@ -1,9 +1,10 @@
 import {
   Building2,
   ClipboardList,
-  Copy,
   Flag,
   Home,
+  Layers,
+  type LucideIcon,
   Map,
   MapPin,
   Megaphone,
@@ -11,7 +12,6 @@ import {
   ShieldCheck,
   Tag,
   Trophy,
-  type LucideIcon,
 } from "lucide-react"
 
 export interface MenuItem {
@@ -27,7 +27,7 @@ export const menuItems: MenuItem[] = [
   { title: "오픈 지역 관리", url: "/region", icon: Flag },
   { title: "등록된 정보 관리", url: "/accessibility", icon: Home },
   { title: "폐업 추정 장소 관리", url: "/closedPlace", icon: Building2 },
-  { title: "건물 중복 제거 후보", url: "/buildingDeduplication", icon: Copy },
+  { title: "건물 분할 관리", url: "/buildingDivision", icon: Layers },
   { title: "배너 관리", url: "/banner", icon: Tag },
   { title: "뿌클로드 관리", url: "/bbucleRoad", icon: Map },
   { title: "푸시 알림 관리", url: "/notification", icon: Megaphone },
@@ -36,8 +36,5 @@ export const menuItems: MenuItem[] = [
 ]
 
 export function getMenuItemByPath(pathname: string): MenuItem | undefined {
-  return menuItems.find(
-    (item) => pathname === item.url || pathname.startsWith(`${item.url}/`)
-  )
+  return menuItems.find((item) => pathname === item.url || pathname.startsWith(`${item.url}/`))
 }
-
