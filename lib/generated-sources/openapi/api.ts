@@ -353,6 +353,85 @@ export interface AdminBuildingAccessibilityDTO {
     'createdAtMillis': number;
 }
 /**
+ * 
+ * @export
+ * @interface AdminBuildingDeduplicationCandidateDTO
+ */
+export interface AdminBuildingDeduplicationCandidateDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'building1Id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'building2Id': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'distanceInMeters': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'building1Name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'building2Name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'normalizedAddress': string;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'building1Location': LocationDTO;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'building2Location': LocationDTO;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'acceptedAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'ignoredAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminBuildingDeduplicationCandidateDTO
+     */
+    'canonicalBuildingId'?: string;
+}
+/**
  * Building Division 정보
  * @export
  * @interface AdminBuildingDivisionDTO
@@ -1194,6 +1273,25 @@ export interface AdminListAllBannersResponseDTO {
     'banners': Array<AdminBannerDTO>;
 }
 /**
+ * 
+ * @export
+ * @interface AdminListBuildingDeduplicationCandidatesResponseDTO
+ */
+export interface AdminListBuildingDeduplicationCandidatesResponseDTO {
+    /**
+     * 
+     * @type {Array<AdminBuildingDeduplicationCandidateDTO>}
+     * @memberof AdminListBuildingDeduplicationCandidatesResponseDTO
+     */
+    'items': Array<AdminBuildingDeduplicationCandidateDTO>;
+    /**
+     * 없으면 다음 페이지가 없다는 의미.
+     * @type {string}
+     * @memberof AdminListBuildingDeduplicationCandidatesResponseDTO
+     */
+    'cursor'?: string;
+}
+/**
  * Building Division 목록 조회 응답
  * @export
  * @interface AdminListBuildingDivisionsResponseDTO
@@ -1889,56 +1987,6 @@ export type AppliedActionDto = typeof AppliedActionDto[keyof typeof AppliedActio
 
 
 /**
- * 접근성 검수 결과 일괄 반영 응답
- * @export
- * @interface ApplyAccessibilityInspectionResultBatchResponseDto
- */
-export interface ApplyAccessibilityInspectionResultBatchResponseDto {
-    /**
-     * 각 검수 결과 처리 결과 목록
-     * @type {Array<ApplyAccessibilityInspectionResultItemDto>}
-     * @memberof ApplyAccessibilityInspectionResultBatchResponseDto
-     */
-    'results': Array<ApplyAccessibilityInspectionResultItemDto>;
-}
-/**
- * 개별 검수 결과 처리 결과
- * @export
- * @interface ApplyAccessibilityInspectionResultItemDto
- */
-export interface ApplyAccessibilityInspectionResultItemDto {
-    /**
-     * 반영된 검수 결과 ID
-     * @type {string}
-     * @memberof ApplyAccessibilityInspectionResultItemDto
-     */
-    'appliedInspectionResultId': string;
-    /**
-     * 
-     * @type {ResultTypeDTO}
-     * @memberof ApplyAccessibilityInspectionResultItemDto
-     */
-    'resultType'?: ResultTypeDTO;
-    /**
-     * 
-     * @type {AppliedActionDto}
-     * @memberof ApplyAccessibilityInspectionResultItemDto
-     */
-    'appliedAction'?: AppliedActionDto;
-    /**
-     * 처리 성공 여부
-     * @type {boolean}
-     * @memberof ApplyAccessibilityInspectionResultItemDto
-     */
-    'success': boolean;
-    /**
-     * 실패한 경우 에러 메시지
-     * @type {string}
-     * @memberof ApplyAccessibilityInspectionResultItemDto
-     */
-    'errorMessage'?: string | null;
-}
-/**
  * 접근성 검수 결과 반영 응답
  * @export
  * @interface ApplyAccessibilityInspectionResultResponseDto
@@ -1964,18 +2012,79 @@ export interface ApplyAccessibilityInspectionResultResponseDto {
     'appliedAction': AppliedActionDto;
 }
 /**
- * 
+ * 접근성 검수 결과 반영 응답 (ID 기반 및 필터 기반 모드 공통)
  * @export
- * @interface ApplyAccessibilityInspectionResultsRequest
+ * @interface ApplyAccessibilityInspectionResultSummaryResponseDto
  */
-export interface ApplyAccessibilityInspectionResultsRequest {
+export interface ApplyAccessibilityInspectionResultSummaryResponseDto {
     /**
-     * 반영할 검수 결과 ID 목록
-     * @type {Array<string>}
-     * @memberof ApplyAccessibilityInspectionResultsRequest
+     * 
+     * @type {ApplySummaryDto}
+     * @memberof ApplyAccessibilityInspectionResultSummaryResponseDto
      */
-    'inspectionResultIds': Array<string>;
+    'summary': ApplySummaryDto;
 }
+/**
+ * 접근성 검수 결과 반영 요청 (ID 기반 또는 필터 기반 모드)
+ * @export
+ * @interface ApplyAccessibilityInspectionResultsRequestDto
+ */
+export interface ApplyAccessibilityInspectionResultsRequestDto {
+    /**
+     * (ID 기반 모드) 반영할 검수 결과 ID 목록
+     * @type {Array<string>}
+     * @memberof ApplyAccessibilityInspectionResultsRequestDto
+     */
+    'inspectionResultIds'?: Array<string>;
+    /**
+     * 
+     * @type {ApplyFilterDto}
+     * @memberof ApplyAccessibilityInspectionResultsRequestDto
+     */
+    'filter'?: ApplyFilterDto;
+}
+/**
+ * 필터 기반 검수 결과 반영 조건
+ * @export
+ * @interface ApplyFilterDto
+ */
+export interface ApplyFilterDto {
+    /**
+     * 검수자 유형 (선택)
+     * @type {string}
+     * @memberof ApplyFilterDto
+     */
+    'inspectorType'?: ApplyFilterDtoInspectorTypeEnum;
+    /**
+     * 검수자 ID (선택)
+     * @type {string}
+     * @memberof ApplyFilterDto
+     */
+    'inspectorId'?: string;
+    /**
+     * 검수 결과 유형 (선택)
+     * @type {string}
+     * @memberof ApplyFilterDto
+     */
+    'resultType'?: ApplyFilterDtoResultTypeEnum;
+}
+
+export const ApplyFilterDtoInspectorTypeEnum = {
+    Ai: 'AI',
+    User: 'USER',
+    Bulk: 'BULK'
+} as const;
+
+export type ApplyFilterDtoInspectorTypeEnum = typeof ApplyFilterDtoInspectorTypeEnum[keyof typeof ApplyFilterDtoInspectorTypeEnum];
+export const ApplyFilterDtoResultTypeEnum = {
+    Ok: 'OK',
+    Modify: 'MODIFY',
+    Delete: 'DELETE',
+    Unknown: 'UNKNOWN'
+} as const;
+
+export type ApplyFilterDtoResultTypeEnum = typeof ApplyFilterDtoResultTypeEnum[keyof typeof ApplyFilterDtoResultTypeEnum];
+
 /**
  * 검수 결과 반영 상태
  * @export
@@ -1990,6 +2099,31 @@ export const ApplyStateDto = {
 export type ApplyStateDto = typeof ApplyStateDto[keyof typeof ApplyStateDto];
 
 
+/**
+ * 검수 결과 반영 요약 정보
+ * @export
+ * @interface ApplySummaryDto
+ */
+export interface ApplySummaryDto {
+    /**
+     * 총 처리된 검수 결과 수
+     * @type {number}
+     * @memberof ApplySummaryDto
+     */
+    'totalProcessed': number;
+    /**
+     * 성공한 검수 결과 수
+     * @type {number}
+     * @memberof ApplySummaryDto
+     */
+    'successCount': number;
+    /**
+     * 실패한 검수 결과 수
+     * @type {number}
+     * @memberof ApplySummaryDto
+     */
+    'failureCount': number;
+}
 /**
  * 
  * @export
@@ -2774,6 +2908,37 @@ export interface CreateMapMarkerDTO {
     'customImageUrl'?: string;
 }
 /**
+ * 사용자 피드백 생성 요청
+ * @export
+ * @interface CreateUserFeedbackRequestDto
+ */
+export interface CreateUserFeedbackRequestDto {
+    /**
+     * 사용자 ID
+     * @type {string}
+     * @memberof CreateUserFeedbackRequestDto
+     */
+    'userId': string;
+    /**
+     * 
+     * @type {UserFeedbackTypeDto}
+     * @memberof CreateUserFeedbackRequestDto
+     */
+    'feedbackType': UserFeedbackTypeDto;
+    /**
+     * 피드백 내용
+     * @type {string}
+     * @memberof CreateUserFeedbackRequestDto
+     */
+    'content': string;
+    /**
+     * 디바이스 정보
+     * @type {string}
+     * @memberof CreateUserFeedbackRequestDto
+     */
+    'deviceInfo'?: string;
+}
+/**
  * 특정 시각을 표현하기 위한 모델.
  * @export
  * @interface EpochMillisTimestamp
@@ -2846,6 +3011,19 @@ export const InspectorTypeDTO = {
 export type InspectorTypeDTO = typeof InspectorTypeDTO[keyof typeof InspectorTypeDTO];
 
 
+/**
+ * 
+ * @export
+ * @interface ListUserFeedbacks200Response
+ */
+export interface ListUserFeedbacks200Response {
+    /**
+     * 
+     * @type {Array<UserFeedbackDto>}
+     * @memberof ListUserFeedbacks200Response
+     */
+    'feedbacks': Array<UserFeedbackDto>;
+}
 /**
  * 위치를 위경도로 표현하기 위한 모델.
  * @export
@@ -3234,6 +3412,72 @@ export interface UpdateMapMarkerDTO {
      */
     'customImageUrl'?: string;
 }
+/**
+ * 사용자 피드백 정보
+ * @export
+ * @interface UserFeedbackDto
+ */
+export interface UserFeedbackDto {
+    /**
+     * 피드백 ID
+     * @type {string}
+     * @memberof UserFeedbackDto
+     */
+    'id': string;
+    /**
+     * 사용자 ID
+     * @type {string}
+     * @memberof UserFeedbackDto
+     */
+    'userId': string;
+    /**
+     * 
+     * @type {UserFeedbackTypeDto}
+     * @memberof UserFeedbackDto
+     */
+    'feedbackType': UserFeedbackTypeDto;
+    /**
+     * 피드백 내용
+     * @type {string}
+     * @memberof UserFeedbackDto
+     */
+    'content': string;
+    /**
+     * 디바이스 정보
+     * @type {string}
+     * @memberof UserFeedbackDto
+     */
+    'deviceInfo'?: string;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof UserFeedbackDto
+     */
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof UserFeedbackDto
+     */
+    'updatedAt': EpochMillisTimestamp;
+}
+/**
+ * 피드백 유형
+ * @export
+ * @enum {string}
+ */
+
+export const UserFeedbackTypeDto = {
+    Bug: 'BUG',
+    FeatureRequest: 'FEATURE_REQUEST',
+    General: 'GENERAL',
+    Other: 'OTHER',
+    Unknown: 'UNKNOWN'
+} as const;
+
+export type UserFeedbackTypeDto = typeof UserFeedbackTypeDto[keyof typeof UserFeedbackTypeDto];
+
+
 
 /**
  * AccessibilityApi - axios parameter creator
@@ -3242,15 +3486,15 @@ export interface UpdateMapMarkerDTO {
 export const AccessibilityApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다.  ## 두 가지 모드 지원: 1. **ID 기반 모드**: `inspectionResultIds` 배열을 제공하여 특정 검수 결과들을 반영 2. **필터 기반 모드**: `filter` 객체를 제공하여 조건에 맞는 모든 미처리 검수 결과를 반영  두 모드는 상호 배타적이며, 둘 중 하나만 제공해야 합니다. 
          * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
-         * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+         * @param {ApplyAccessibilityInspectionResultsRequestDto} applyAccessibilityInspectionResultsRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        applyAccessibilityInspectionResults: async (applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'applyAccessibilityInspectionResultsRequest' is not null or undefined
-            assertParamExists('applyAccessibilityInspectionResults', 'applyAccessibilityInspectionResultsRequest', applyAccessibilityInspectionResultsRequest)
+        applyAccessibilityInspectionResults: async (applyAccessibilityInspectionResultsRequestDto: ApplyAccessibilityInspectionResultsRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'applyAccessibilityInspectionResultsRequestDto' is not null or undefined
+            assertParamExists('applyAccessibilityInspectionResults', 'applyAccessibilityInspectionResultsRequestDto', applyAccessibilityInspectionResultsRequestDto)
             const localVarPath = `/accessibility-inspection-results/apply`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3274,7 +3518,7 @@ export const AccessibilityApiAxiosParamCreator = function (configuration?: Confi
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(applyAccessibilityInspectionResultsRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(applyAccessibilityInspectionResultsRequestDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3679,14 +3923,14 @@ export const AccessibilityApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AccessibilityApiAxiosParamCreator(configuration)
     return {
         /**
-         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다.  ## 두 가지 모드 지원: 1. **ID 기반 모드**: `inspectionResultIds` 배열을 제공하여 특정 검수 결과들을 반영 2. **필터 기반 모드**: `filter` 객체를 제공하여 조건에 맞는 모든 미처리 검수 결과를 반영  두 모드는 상호 배타적이며, 둘 중 하나만 제공해야 합니다. 
          * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
-         * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+         * @param {ApplyAccessibilityInspectionResultsRequestDto} applyAccessibilityInspectionResultsRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ApplyAccessibilityInspectionResultBatchResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest, options);
+        async applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequestDto: ApplyAccessibilityInspectionResultsRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ApplyAccessibilityInspectionResultSummaryResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequestDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3802,14 +4046,14 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
     const localVarFp = AccessibilityApiFp(configuration)
     return {
         /**
-         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+         * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다.  ## 두 가지 모드 지원: 1. **ID 기반 모드**: `inspectionResultIds` 배열을 제공하여 특정 검수 결과들을 반영 2. **필터 기반 모드**: `filter` 객체를 제공하여 조건에 맞는 모든 미처리 검수 결과를 반영  두 모드는 상호 배타적이며, 둘 중 하나만 제공해야 합니다. 
          * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
-         * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+         * @param {ApplyAccessibilityInspectionResultsRequestDto} applyAccessibilityInspectionResultsRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options?: any): AxiosPromise<ApplyAccessibilityInspectionResultBatchResponseDto> {
-            return localVarFp.applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest, options).then((request) => request(axios, basePath));
+        applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequestDto: ApplyAccessibilityInspectionResultsRequestDto, options?: any): AxiosPromise<ApplyAccessibilityInspectionResultSummaryResponseDto> {
+            return localVarFp.applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
          * Korean inspection sheet format (30 columns) CSV 파일을 업로드하여 인간 검수 결과를 일괄로 등록합니다. 100개 이하의 레코드는 동기 처리되며, 100개 초과시 비동기로 처리됩니다.  CSV 포맷: - 30개 컬럼의 한국어 검수 시트 형식 - Column 0: 장소 id (accessibilityId) - Column 15: 판정 (status: \"정상\"=PASS, \"삭제 대상\"=FAIL, \"수정 대상\"=MODIFY) - Column 16: (선택) 추가 의견 (comment) - Column 9: 코멘트 (reason - original comment) - Columns 20-25: Modification request (1층 여부, 층 수, 계단 개수, 계단 높이, 경사로 유무, 문 유형) - Column 29: 검수자 (inspector name) 
@@ -3916,15 +4160,15 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
  */
 export class AccessibilityApi extends BaseAPI {
     /**
-     * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다. 
+     * 검수 결과 목록을 실제 접근성 정보에 일괄 반영합니다. - DELETE: 접근성 정보를 hard delete (관련 데이터 및 도메인 이벤트 포함) - MODIFY: PlaceAccessibility를 수정 요청에 따라 업데이트 - OK: 아무 작업도 하지 않음  이미 반영된 검수 결과(handledAt != null)는 중복 처리하지 않습니다. 각 검수 결과는 개별 트랜잭션으로 처리되어, 일부 실패해도 다른 결과는 계속 처리됩니다.  ## 두 가지 모드 지원: 1. **ID 기반 모드**: `inspectionResultIds` 배열을 제공하여 특정 검수 결과들을 반영 2. **필터 기반 모드**: `filter` 객체를 제공하여 조건에 맞는 모든 미처리 검수 결과를 반영  두 모드는 상호 배타적이며, 둘 중 하나만 제공해야 합니다. 
      * @summary 접근성 이미지 검증 결과를 일괄로 반영한다.
-     * @param {ApplyAccessibilityInspectionResultsRequest} applyAccessibilityInspectionResultsRequest 
+     * @param {ApplyAccessibilityInspectionResultsRequestDto} applyAccessibilityInspectionResultsRequestDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccessibilityApi
      */
-    public applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest: ApplyAccessibilityInspectionResultsRequest, options?: AxiosRequestConfig) {
-        return AccessibilityApiFp(this.configuration).applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequest, options).then((request) => request(this.axios, this.basePath));
+    public applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequestDto: ApplyAccessibilityInspectionResultsRequestDto, options?: AxiosRequestConfig) {
+        return AccessibilityApiFp(this.configuration).applyAccessibilityInspectionResults(applyAccessibilityInspectionResultsRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -8185,6 +8429,193 @@ export class DefaultApi extends BaseAPI {
      */
     public startPlaceCrawling(startPlaceCrawlingRequestDTO: StartPlaceCrawlingRequestDTO, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).startPlaceCrawling(startPlaceCrawlingRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * UserFeedbackApi - axios parameter creator
+ * @export
+ */
+export const UserFeedbackApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 사용자 피드백을 생성한다.
+         * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createUserFeedback: async (createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createUserFeedbackRequestDto' is not null or undefined
+            assertParamExists('createUserFeedback', 'createUserFeedbackRequestDto', createUserFeedbackRequestDto)
+            const localVarPath = `/user-feedbacks`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createUserFeedbackRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 사용자 피드백 목록을 조회한다.
+         * @param {string} [userId] 
+         * @param {UserFeedbackTypeDto} [feedbackType] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listUserFeedbacks: async (userId?: string, feedbackType?: UserFeedbackTypeDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/user-feedbacks`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (userId !== undefined) {
+                localVarQueryParameter['userId'] = userId;
+            }
+
+            if (feedbackType !== undefined) {
+                localVarQueryParameter['feedbackType'] = feedbackType;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * UserFeedbackApi - functional programming interface
+ * @export
+ */
+export const UserFeedbackApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = UserFeedbackApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 사용자 피드백을 생성한다.
+         * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createUserFeedback(createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserFeedbackDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createUserFeedback(createUserFeedbackRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 사용자 피드백 목록을 조회한다.
+         * @param {string} [userId] 
+         * @param {UserFeedbackTypeDto} [feedbackType] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listUserFeedbacks(userId?: string, feedbackType?: UserFeedbackTypeDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListUserFeedbacks200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listUserFeedbacks(userId, feedbackType, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * UserFeedbackApi - factory interface
+ * @export
+ */
+export const UserFeedbackApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = UserFeedbackApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 사용자 피드백을 생성한다.
+         * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createUserFeedback(createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options?: any): AxiosPromise<UserFeedbackDto> {
+            return localVarFp.createUserFeedback(createUserFeedbackRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 사용자 피드백 목록을 조회한다.
+         * @param {string} [userId] 
+         * @param {UserFeedbackTypeDto} [feedbackType] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listUserFeedbacks(userId?: string, feedbackType?: UserFeedbackTypeDto, options?: any): AxiosPromise<ListUserFeedbacks200Response> {
+            return localVarFp.listUserFeedbacks(userId, feedbackType, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * UserFeedbackApi - object-oriented interface
+ * @export
+ * @class UserFeedbackApi
+ * @extends {BaseAPI}
+ */
+export class UserFeedbackApi extends BaseAPI {
+    /**
+     * 
+     * @summary 사용자 피드백을 생성한다.
+     * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserFeedbackApi
+     */
+    public createUserFeedback(createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options?: AxiosRequestConfig) {
+        return UserFeedbackApiFp(this.configuration).createUserFeedback(createUserFeedbackRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 사용자 피드백 목록을 조회한다.
+     * @param {string} [userId] 
+     * @param {UserFeedbackTypeDto} [feedbackType] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserFeedbackApi
+     */
+    public listUserFeedbacks(userId?: string, feedbackType?: UserFeedbackTypeDto, options?: AxiosRequestConfig) {
+        return UserFeedbackApiFp(this.configuration).listUserFeedbacks(userId, feedbackType, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
