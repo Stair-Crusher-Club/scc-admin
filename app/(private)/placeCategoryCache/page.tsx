@@ -4,7 +4,8 @@ import { useQueryClient } from "@tanstack/react-query"
 import { ColumnDef } from "@tanstack/react-table"
 import dayjs from "dayjs"
 import { Edit, Plus, RotateCcw, Search, Trash2 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { Controller, useForm } from "react-hook-form"
 
 import {
   createPlaceCategoryCache,
@@ -30,6 +31,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
+
+interface CreateFormValues {
+  categoryString: string
+  placeCategory: PlaceCategoryDto | ""
+}
+
+interface EditFormValues {
+  placeCategory: PlaceCategoryDto | ""
+}
+
+function isValidPlaceCategory(value: PlaceCategoryDto | ""): value is PlaceCategoryDto {
+  return value !== "" && Object.values(PlaceCategoryDto).includes(value)
+}
 
 const PLACE_CATEGORIES: { value: PlaceCategoryDto; label: string }[] = [
   { value: PlaceCategoryDto.Market, label: "마트" },
@@ -70,11 +84,29 @@ export default function PlaceCategoryCachePage() {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [selectedItem, setSelectedItem] = useState<AdminPlaceCategoryCacheDto | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
-  // Form states
-  const [formCategoryString, setFormCategoryString] = useState("")
-  const [formPlaceCategory, setFormPlaceCategory] = useState<PlaceCategoryDto | "">("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  // React Hook Form for Create dialog
+  const createForm = useForm<CreateFormValues>({
+    defaultValues: {
+      categoryString: "",
+      placeCategory: "",
+    },
+  })
+
+  // React Hook Form for Edit dialog
+  const editForm = useForm<EditFormValues>({
+    defaultValues: {
+      placeCategory: "",
+    },
+  })
+
+  // Reset edit form when selectedItem changes
+  useEffect(() => {
+    if (selectedItem) {
+      editForm.reset({ placeCategory: selectedItem.placeCategory })
+    }
+  }, [selectedItem, editForm])
 
   const { data, fetchNextPage, hasNextPage, refetch, isLoading } = usePlaceCategoryCaches({
     placeCategory: filterCategory,
@@ -95,14 +127,13 @@ export default function PlaceCategoryCachePage() {
   }
 
   const handleCreateOpen = () => {
-    setFormCategoryString("")
-    setFormPlaceCategory("")
+    createForm.reset({ categoryString: "", placeCategory: "" })
     setShowCreateDialog(true)
   }
 
   const handleEditOpen = (item: AdminPlaceCategoryCacheDto) => {
     setSelectedItem(item)
-    setFormPlaceCategory(item.placeCategory)
+    editForm.reset({ placeCategory: item.placeCategory })
     setShowEditDialog(true)
   }
 
@@ -111,35 +142,22 @@ export default function PlaceCategoryCachePage() {
     setShowDeleteDialog(true)
   }
 
-  const handleCreate = async () => {
-    if (!formCategoryString.trim()) {
-      toast({
-        variant: "destructive",
-        title: "입력 오류",
-        description: "카테고리 문자열을 입력해주세요.",
-      })
-      return
-    }
-    if (!formPlaceCategory) {
-      toast({
-        variant: "destructive",
-        title: "입력 오류",
-        description: "장소 카테고리를 선택해주세요.",
-      })
+  const handleCreate = createForm.handleSubmit(async (values) => {
+    if (!isValidPlaceCategory(values.placeCategory)) {
       return
     }
 
-    setIsSubmitting(true)
     try {
       await createPlaceCategoryCache({
-        categoryString: formCategoryString.trim(),
-        placeCategory: formPlaceCategory,
+        categoryString: values.categoryString.trim(),
+        placeCategory: values.placeCategory,
       })
       toast({
         title: "생성 완료",
         description: "장소 카테고리 캐시가 생성되었습니다.",
       })
       setShowCreateDialog(false)
+      createForm.reset()
       queryClient.invalidateQueries({ queryKey: ["@placeCategoryCaches"] })
     } catch (error: any) {
       const errorMessage =
@@ -151,26 +169,18 @@ export default function PlaceCategoryCachePage() {
         title: "생성 실패",
         description: errorMessage,
       })
-    } finally {
-      setIsSubmitting(false)
     }
-  }
+  })
 
-  const handleEdit = async () => {
-    if (!selectedItem || !formPlaceCategory) {
-      toast({
-        variant: "destructive",
-        title: "입력 오류",
-        description: "장소 카테고리를 선택해주세요.",
-      })
+  const handleEdit = editForm.handleSubmit(async (values) => {
+    if (!selectedItem || !isValidPlaceCategory(values.placeCategory)) {
       return
     }
 
-    setIsSubmitting(true)
     try {
       await updatePlaceCategoryCache({
         id: selectedItem.id,
-        payload: { placeCategory: formPlaceCategory },
+        payload: { placeCategory: values.placeCategory },
       })
       toast({
         title: "수정 완료",
@@ -178,6 +188,7 @@ export default function PlaceCategoryCachePage() {
       })
       setShowEditDialog(false)
       setSelectedItem(null)
+      editForm.reset()
       queryClient.invalidateQueries({ queryKey: ["@placeCategoryCaches"] })
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || error.message || "수정 중 오류가 발생했습니다."
@@ -186,15 +197,13 @@ export default function PlaceCategoryCachePage() {
         title: "수정 실패",
         description: errorMessage,
       })
-    } finally {
-      setIsSubmitting(false)
     }
-  }
+  })
 
   const handleDelete = async () => {
     if (!selectedItem) return
 
-    setIsSubmitting(true)
+    setIsDeleting(true)
     try {
       await deletePlaceCategoryCache({ id: selectedItem.id })
       toast({
@@ -212,7 +221,7 @@ export default function PlaceCategoryCachePage() {
         description: errorMessage,
       })
     } finally {
-      setIsSubmitting(false)
+      setIsDeleting(false)
     }
   }
 
@@ -357,44 +366,58 @@ export default function PlaceCategoryCachePage() {
             <DialogTitle>장소 카테고리 캐시 추가</DialogTitle>
             <DialogDescription>지도 API의 카테고리 문자열을 장소 카테고리로 매핑합니다.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="categoryString">카테고리 문자열</Label>
-              <Input
-                id="categoryString"
-                placeholder="예: 음식점 > 한식 > 불고기, 두루치기"
-                value={formCategoryString}
-                onChange={(e) => setFormCategoryString(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">지도 API에서 반환되는 원본 카테고리 문자열을 입력하세요.</p>
+          <form onSubmit={handleCreate}>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="categoryString">카테고리 문자열</Label>
+                <Input
+                  id="categoryString"
+                  placeholder="예: 음식점 > 한식 > 불고기, 두루치기"
+                  {...createForm.register("categoryString", {
+                    required: "카테고리 문자열을 입력해주세요.",
+                    validate: (value) => value.trim() !== "" || "카테고리 문자열을 입력해주세요.",
+                  })}
+                />
+                {createForm.formState.errors.categoryString && (
+                  <p className="text-xs text-destructive">{createForm.formState.errors.categoryString.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground">지도 API에서 반환되는 원본 카테고리 문자열을 입력하세요.</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="placeCategory">장소 카테고리</Label>
+                <Controller
+                  name="placeCategory"
+                  control={createForm.control}
+                  rules={{ required: "장소 카테고리를 선택해주세요." }}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="placeCategory">
+                        <SelectValue placeholder="카테고리 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PLACE_CATEGORIES.map((cat) => (
+                          <SelectItem key={cat.value} value={cat.value}>
+                            {cat.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {createForm.formState.errors.placeCategory && (
+                  <p className="text-xs text-destructive">{createForm.formState.errors.placeCategory.message}</p>
+                )}
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="placeCategory">장소 카테고리</Label>
-              <Select
-                value={formPlaceCategory}
-                onValueChange={(value) => setFormPlaceCategory(value as PlaceCategoryDto)}
-              >
-                <SelectTrigger id="placeCategory">
-                  <SelectValue placeholder="카테고리 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PLACE_CATEGORIES.map((cat) => (
-                    <SelectItem key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)} disabled={isSubmitting}>
-              취소
-            </Button>
-            <Button onClick={handleCreate} disabled={isSubmitting}>
-              {isSubmitting ? "추가 중..." : "추가"}
-            </Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)} disabled={createForm.formState.isSubmitting}>
+                취소
+              </Button>
+              <Button type="submit" disabled={createForm.formState.isSubmitting}>
+                {createForm.formState.isSubmitting ? "추가 중..." : "추가"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -405,38 +428,47 @@ export default function PlaceCategoryCachePage() {
             <DialogTitle>장소 카테고리 수정</DialogTitle>
             <DialogDescription>해당 카테고리 문자열의 장소 카테고리를 수정합니다.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>카테고리 문자열</Label>
-              <div className="rounded-md bg-muted p-3 font-mono text-sm">{selectedItem?.categoryString}</div>
+          <form onSubmit={handleEdit}>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>카테고리 문자열</Label>
+                <div className="rounded-md bg-muted p-3 font-mono text-sm">{selectedItem?.categoryString}</div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="editPlaceCategory">장소 카테고리</Label>
+                <Controller
+                  name="placeCategory"
+                  control={editForm.control}
+                  rules={{ required: "장소 카테고리를 선택해주세요." }}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="editPlaceCategory">
+                        <SelectValue placeholder="카테고리 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PLACE_CATEGORIES.map((cat) => (
+                          <SelectItem key={cat.value} value={cat.value}>
+                            {cat.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {editForm.formState.errors.placeCategory && (
+                  <p className="text-xs text-destructive">{editForm.formState.errors.placeCategory.message}</p>
+                )}
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="editPlaceCategory">장소 카테고리</Label>
-              <Select
-                value={formPlaceCategory}
-                onValueChange={(value) => setFormPlaceCategory(value as PlaceCategoryDto)}
-              >
-                <SelectTrigger id="editPlaceCategory">
-                  <SelectValue placeholder="카테고리 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PLACE_CATEGORIES.map((cat) => (
-                    <SelectItem key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditDialog(false)} disabled={isSubmitting}>
-              취소
-            </Button>
-            <Button onClick={handleEdit} disabled={isSubmitting}>
-              {isSubmitting ? "수정 중..." : "수정"}
-            </Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowEditDialog(false)} disabled={editForm.formState.isSubmitting}>
+                취소
+              </Button>
+              <Button type="submit" disabled={editForm.formState.isSubmitting}>
+                {editForm.formState.isSubmitting ? "수정 중..." : "수정"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -461,11 +493,11 @@ export default function PlaceCategoryCachePage() {
             <p className="mt-4 text-sm text-yellow-600">삭제 후 다음 조회 시 AI가 다시 카테고리를 판정합니다.</p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeleteDialog(false)} disabled={isSubmitting}>
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)} disabled={isDeleting}>
               취소
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={isSubmitting}>
-              {isSubmitting ? "삭제 중..." : "삭제"}
+            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? "삭제 중..." : "삭제"}
             </Button>
           </DialogFooter>
         </DialogContent>
