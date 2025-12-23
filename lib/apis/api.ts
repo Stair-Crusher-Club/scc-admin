@@ -398,6 +398,24 @@ export function deleteSearchPreset(id: string) {
   return defaultApi.deleteSearchPreset(id)
 }
 
+// Store cursors for pagination
+const cursorCache = new Map<string, string[]>()
+
+// Convert date string (yyyy-MM-dd) to epoch milliseconds in user's local timezone.
+// The date string represents the start of the day (00:00:00) in the user's timezone,
+// which is the intended behavior since users select dates based on their local time.
+// For end date: adds one day to make it exclusive (e.g., "2025-12-05" becomes start of 2025-12-06)
+function dateStringToEpochMillis(dateString: string | undefined, isEndDate: boolean): number | undefined {
+  if (!dateString) return undefined
+  const date = new Date(dateString)
+  if (isNaN(date.getTime())) return undefined
+  if (isEndDate) {
+    // For end date, add one day to make it exclusive
+    date.setDate(date.getDate() + 1)
+  }
+  return date.getTime()
+}
+
 export function useAccessibilityInspectionResults({
   accessibilityType,
   inspectorType,
@@ -413,6 +431,10 @@ export function useAccessibilityInspectionResults({
   createdAtFromLocalDate?: string
   createdAtToLocalDate?: string
 }) {
+  // Convert date strings to epoch milliseconds
+  const createdAtFrom = dateStringToEpochMillis(createdAtFromLocalDate, false)
+  const createdAtTo = dateStringToEpochMillis(createdAtToLocalDate, true)
+
   return useInfiniteQuery<AdminSearchAccessibilityInspectionResultsDTO>({
     queryKey: [
       "@accessibilityInspectionResults",
@@ -431,8 +453,8 @@ export function useAccessibilityInspectionResults({
           inspectorType,
           resultType,
           isHandled,
-          createdAtFromLocalDate,
-          createdAtToLocalDate,
+          createdAtFrom,
+          createdAtTo,
           (pageParam as string | undefined) ?? undefined,
           "50",
         )
@@ -441,9 +463,6 @@ export function useAccessibilityInspectionResults({
     getNextPageParam: (lastPage) => lastPage.cursor,
   })
 }
-
-// Store cursors for pagination
-const cursorCache = new Map<string, string[]>()
 
 export function useAccessibilityInspectionResultsPaginated({
   accessibilityType,
@@ -487,6 +506,10 @@ export function useAccessibilityInspectionResultsPaginated({
       pageSize,
     ],
     queryFn: async () => {
+      // Convert date strings to epoch milliseconds
+      const createdAtFrom = dateStringToEpochMillis(createdAtFromLocalDate, false)
+      const createdAtTo = dateStringToEpochMillis(createdAtToLocalDate, true)
+
       // Real API call
       // Get or initialize cursor array for this query
       if (!cursorCache.has(cacheKey)) {
@@ -503,8 +526,8 @@ export function useAccessibilityInspectionResultsPaginated({
           inspectorType,
           resultType,
           isHandled,
-          createdAtFromLocalDate,
-          createdAtToLocalDate,
+          createdAtFrom,
+          createdAtTo,
           lastCursor,
           pageSize.toString()
         )
@@ -522,8 +545,8 @@ export function useAccessibilityInspectionResultsPaginated({
         inspectorType,
         resultType,
         isHandled,
-        createdAtFromLocalDate,
-        createdAtToLocalDate,
+        createdAtFrom,
+        createdAtTo,
         cursor,
         pageSize.toString()
       )

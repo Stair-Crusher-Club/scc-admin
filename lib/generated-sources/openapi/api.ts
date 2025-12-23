@@ -3643,14 +3643,14 @@ export const AccessibilityApiAxiosParamCreator = function (configuration?: Confi
          * @param {InspectorTypeDTO} [inspectorType] 
          * @param {ResultTypeDTO} [resultType] 
          * @param {boolean} [isHandled] 
-         * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
-         * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
+         * @param {number} [createdAtFrom] 검색 시작 시각 (epoch milliseconds, inclusive)
+         * @param {number} [createdAtTo] 검색 종료 시각 (epoch milliseconds, exclusive)
          * @param {string} [cursor] 
          * @param {string} [limit] default 값은 20으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchAccessibilityInspectionResults: async (id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        searchAccessibilityInspectionResults: async (id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFrom?: number, createdAtTo?: number, cursor?: string, limit?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/accessibility-inspection-results/search`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3687,12 +3687,12 @@ export const AccessibilityApiAxiosParamCreator = function (configuration?: Confi
                 localVarQueryParameter['isHandled'] = isHandled;
             }
 
-            if (createdAtFromLocalDate !== undefined) {
-                localVarQueryParameter['createdAtFromLocalDate'] = createdAtFromLocalDate;
+            if (createdAtFrom !== undefined) {
+                localVarQueryParameter['createdAtFrom'] = createdAtFrom;
             }
 
-            if (createdAtToLocalDate !== undefined) {
-                localVarQueryParameter['createdAtToLocalDate'] = createdAtToLocalDate;
+            if (createdAtTo !== undefined) {
+                localVarQueryParameter['createdAtTo'] = createdAtTo;
             }
 
             if (cursor !== undefined) {
@@ -3890,15 +3890,15 @@ export const AccessibilityApiFp = function(configuration?: Configuration) {
          * @param {InspectorTypeDTO} [inspectorType] 
          * @param {ResultTypeDTO} [resultType] 
          * @param {boolean} [isHandled] 
-         * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
-         * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
+         * @param {number} [createdAtFrom] 검색 시작 시각 (epoch milliseconds, inclusive)
+         * @param {number} [createdAtTo] 검색 종료 시각 (epoch milliseconds, exclusive)
          * @param {string} [cursor] 
          * @param {string} [limit] default 값은 20으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options);
+        async searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFrom?: number, createdAtTo?: number, cursor?: string, limit?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFrom, createdAtTo, cursor, limit, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4007,15 +4007,15 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
          * @param {InspectorTypeDTO} [inspectorType] 
          * @param {ResultTypeDTO} [resultType] 
          * @param {boolean} [isHandled] 
-         * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
-         * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
+         * @param {number} [createdAtFrom] 검색 시작 시각 (epoch milliseconds, inclusive)
+         * @param {number} [createdAtTo] 검색 종료 시각 (epoch milliseconds, exclusive)
          * @param {string} [cursor] 
          * @param {string} [limit] default 값은 20으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: any): AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO> {
-            return localVarFp.searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options).then((request) => request(axios, basePath));
+        searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFrom?: number, createdAtTo?: number, cursor?: string, limit?: string, options?: any): AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO> {
+            return localVarFp.searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFrom, createdAtTo, cursor, limit, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4133,16 +4133,16 @@ export class AccessibilityApi extends BaseAPI {
      * @param {InspectorTypeDTO} [inspectorType] 
      * @param {ResultTypeDTO} [resultType] 
      * @param {boolean} [isHandled] 
-     * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
-     * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
+     * @param {number} [createdAtFrom] 검색 시작 시각 (epoch milliseconds, inclusive)
+     * @param {number} [createdAtTo] 검색 종료 시각 (epoch milliseconds, exclusive)
      * @param {string} [cursor] 
      * @param {string} [limit] default 값은 20으로 설정된다.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccessibilityApi
      */
-    public searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: AxiosRequestConfig) {
-        return AccessibilityApiFp(this.configuration).searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    public searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFrom?: number, createdAtTo?: number, cursor?: string, limit?: string, options?: AxiosRequestConfig) {
+        return AccessibilityApiFp(this.configuration).searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFrom, createdAtTo, cursor, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
