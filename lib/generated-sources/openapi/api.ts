@@ -1088,6 +1088,25 @@ export interface AdminCreateImageUploadUrlsResponseDTO {
     'urls': Array<AdminImageUploadUrlDTO>;
 }
 /**
+ * 장소 카테고리 캐시 생성 요청
+ * @export
+ * @interface AdminCreatePlaceCategoryCacheRequestDto
+ */
+export interface AdminCreatePlaceCategoryCacheRequestDto {
+    /**
+     * 지도 API에서 반환된 원본 카테고리 문자열
+     * @type {string}
+     * @memberof AdminCreatePlaceCategoryCacheRequestDto
+     */
+    'categoryString': string;
+    /**
+     * 
+     * @type {PlaceCategoryDto}
+     * @memberof AdminCreatePlaceCategoryCacheRequestDto
+     */
+    'placeCategory': PlaceCategoryDto;
+}
+/**
  * 
  * @export
  * @interface AdminCreateSearchPlacePresetRequestDTO
@@ -1343,6 +1362,25 @@ export interface AdminListHomeBannersResponseDTO {
     'banners': Array<AdminBannerDTO>;
 }
 /**
+ * 장소 카테고리 캐시 목록 응답
+ * @export
+ * @interface AdminListPlaceCategoryCachesResponseDto
+ */
+export interface AdminListPlaceCategoryCachesResponseDto {
+    /**
+     * 
+     * @type {Array<AdminPlaceCategoryCacheDto>}
+     * @memberof AdminListPlaceCategoryCachesResponseDto
+     */
+    'items': Array<AdminPlaceCategoryCacheDto>;
+    /**
+     * 다음 페이지 커서 (없으면 마지막 페이지)
+     * @type {string}
+     * @memberof AdminListPlaceCategoryCachesResponseDto
+     */
+    'cursor'?: string | null;
+}
+/**
  * 
  * @export
  * @interface AdminListPushNotificationSchedulesResponseDTO
@@ -1446,6 +1484,43 @@ export interface AdminPlaceAccessibilityDTO {
      * @memberof AdminPlaceAccessibilityDTO
      */
     'createdAtMillis': number;
+}
+/**
+ * 장소 카테고리 캐시 정보
+ * @export
+ * @interface AdminPlaceCategoryCacheDto
+ */
+export interface AdminPlaceCategoryCacheDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceCategoryCacheDto
+     */
+    'id': string;
+    /**
+     * 지도 API에서 반환된 원본 카테고리 문자열
+     * @type {string}
+     * @memberof AdminPlaceCategoryCacheDto
+     */
+    'categoryString': string;
+    /**
+     * 
+     * @type {PlaceCategoryDto}
+     * @memberof AdminPlaceCategoryCacheDto
+     */
+    'placeCategory': PlaceCategoryDto;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceCategoryCacheDto
+     */
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceCategoryCacheDto
+     */
+    'updatedAt': EpochMillisTimestamp;
 }
 /**
  * 
@@ -1901,6 +1976,19 @@ export interface AdminUpdatePlaceAccessibilityRequestDTO {
      * @memberof AdminUpdatePlaceAccessibilityRequestDTO
      */
     'entranceDoorTypes'?: Array<AdminEntranceDoorType>;
+}
+/**
+ * 장소 카테고리 캐시 수정 요청
+ * @export
+ * @interface AdminUpdatePlaceCategoryCacheRequestDto
+ */
+export interface AdminUpdatePlaceCategoryCacheRequestDto {
+    /**
+     * 
+     * @type {PlaceCategoryDto}
+     * @memberof AdminUpdatePlaceCategoryCacheRequestDto
+     */
+    'placeCategory': PlaceCategoryDto;
 }
 /**
  * 
@@ -2908,37 +2996,6 @@ export interface CreateMapMarkerDTO {
     'customImageUrl'?: string;
 }
 /**
- * 사용자 피드백 생성 요청
- * @export
- * @interface CreateUserFeedbackRequestDto
- */
-export interface CreateUserFeedbackRequestDto {
-    /**
-     * 사용자 ID
-     * @type {string}
-     * @memberof CreateUserFeedbackRequestDto
-     */
-    'userId': string;
-    /**
-     * 
-     * @type {UserFeedbackTypeDto}
-     * @memberof CreateUserFeedbackRequestDto
-     */
-    'feedbackType': UserFeedbackTypeDto;
-    /**
-     * 피드백 내용
-     * @type {string}
-     * @memberof CreateUserFeedbackRequestDto
-     */
-    'content': string;
-    /**
-     * 디바이스 정보
-     * @type {string}
-     * @memberof CreateUserFeedbackRequestDto
-     */
-    'deviceInfo'?: string;
-}
-/**
  * 특정 시각을 표현하기 위한 모델.
  * @export
  * @interface EpochMillisTimestamp
@@ -3011,19 +3068,6 @@ export const InspectorTypeDTO = {
 export type InspectorTypeDTO = typeof InspectorTypeDTO[keyof typeof InspectorTypeDTO];
 
 
-/**
- * 
- * @export
- * @interface ListUserFeedbacks200Response
- */
-export interface ListUserFeedbacks200Response {
-    /**
-     * 
-     * @type {Array<UserFeedbackDto>}
-     * @memberof ListUserFeedbacks200Response
-     */
-    'feedbacks': Array<UserFeedbackDto>;
-}
 /**
  * 위치를 위경도로 표현하기 위한 모델.
  * @export
@@ -3204,6 +3248,36 @@ export interface MoveClubQuestTargetPlaceResponse {
      */
     'targetQuest': ClubQuestDTO;
 }
+/**
+ * 장소 카테고리 enum
+ * @export
+ * @enum {string}
+ */
+
+export const PlaceCategoryDto = {
+    Market: 'MARKET',
+    ConvenienceStore: 'CONVENIENCE_STORE',
+    Kindergarten: 'KINDERGARTEN',
+    School: 'SCHOOL',
+    Academy: 'ACADEMY',
+    ParkingLot: 'PARKING_LOT',
+    GasStation: 'GAS_STATION',
+    SubwayStation: 'SUBWAY_STATION',
+    Bank: 'BANK',
+    CulturalFacilities: 'CULTURAL_FACILITIES',
+    Agency: 'AGENCY',
+    PublicOffice: 'PUBLIC_OFFICE',
+    Attraction: 'ATTRACTION',
+    Accomodation: 'ACCOMODATION',
+    Restaurant: 'RESTAURANT',
+    Cafe: 'CAFE',
+    Hospital: 'HOSPITAL',
+    Pharmacy: 'PHARMACY'
+} as const;
+
+export type PlaceCategoryDto = typeof PlaceCategoryDto[keyof typeof PlaceCategoryDto];
+
+
 /**
  * 
  * @export
@@ -3412,72 +3486,6 @@ export interface UpdateMapMarkerDTO {
      */
     'customImageUrl'?: string;
 }
-/**
- * 사용자 피드백 정보
- * @export
- * @interface UserFeedbackDto
- */
-export interface UserFeedbackDto {
-    /**
-     * 피드백 ID
-     * @type {string}
-     * @memberof UserFeedbackDto
-     */
-    'id': string;
-    /**
-     * 사용자 ID
-     * @type {string}
-     * @memberof UserFeedbackDto
-     */
-    'userId': string;
-    /**
-     * 
-     * @type {UserFeedbackTypeDto}
-     * @memberof UserFeedbackDto
-     */
-    'feedbackType': UserFeedbackTypeDto;
-    /**
-     * 피드백 내용
-     * @type {string}
-     * @memberof UserFeedbackDto
-     */
-    'content': string;
-    /**
-     * 디바이스 정보
-     * @type {string}
-     * @memberof UserFeedbackDto
-     */
-    'deviceInfo'?: string;
-    /**
-     * 
-     * @type {EpochMillisTimestamp}
-     * @memberof UserFeedbackDto
-     */
-    'createdAt': EpochMillisTimestamp;
-    /**
-     * 
-     * @type {EpochMillisTimestamp}
-     * @memberof UserFeedbackDto
-     */
-    'updatedAt': EpochMillisTimestamp;
-}
-/**
- * 피드백 유형
- * @export
- * @enum {string}
- */
-
-export const UserFeedbackTypeDto = {
-    Bug: 'BUG',
-    FeatureRequest: 'FEATURE_REQUEST',
-    General: 'GENERAL',
-    Other: 'OTHER',
-    Unknown: 'UNKNOWN'
-} as const;
-
-export type UserFeedbackTypeDto = typeof UserFeedbackTypeDto[keyof typeof UserFeedbackTypeDto];
-
-
 
 /**
  * AccessibilityApi - axios parameter creator
@@ -3753,14 +3761,14 @@ export const AccessibilityApiAxiosParamCreator = function (configuration?: Confi
          * @param {InspectorTypeDTO} [inspectorType] 
          * @param {ResultTypeDTO} [resultType] 
          * @param {boolean} [isHandled] 
-         * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
-         * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
+         * @param {number} [createdAtFrom] 검색 시작 시각 (epoch milliseconds, inclusive)
+         * @param {number} [createdAtTo] 검색 종료 시각 (epoch milliseconds, exclusive)
          * @param {string} [cursor] 
          * @param {string} [limit] default 값은 20으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchAccessibilityInspectionResults: async (id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        searchAccessibilityInspectionResults: async (id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFrom?: number, createdAtTo?: number, cursor?: string, limit?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/accessibility-inspection-results/search`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3797,12 +3805,12 @@ export const AccessibilityApiAxiosParamCreator = function (configuration?: Confi
                 localVarQueryParameter['isHandled'] = isHandled;
             }
 
-            if (createdAtFromLocalDate !== undefined) {
-                localVarQueryParameter['createdAtFromLocalDate'] = createdAtFromLocalDate;
+            if (createdAtFrom !== undefined) {
+                localVarQueryParameter['createdAtFrom'] = createdAtFrom;
             }
 
-            if (createdAtToLocalDate !== undefined) {
-                localVarQueryParameter['createdAtToLocalDate'] = createdAtToLocalDate;
+            if (createdAtTo !== undefined) {
+                localVarQueryParameter['createdAtTo'] = createdAtTo;
             }
 
             if (cursor !== undefined) {
@@ -4000,15 +4008,15 @@ export const AccessibilityApiFp = function(configuration?: Configuration) {
          * @param {InspectorTypeDTO} [inspectorType] 
          * @param {ResultTypeDTO} [resultType] 
          * @param {boolean} [isHandled] 
-         * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
-         * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
+         * @param {number} [createdAtFrom] 검색 시작 시각 (epoch milliseconds, inclusive)
+         * @param {number} [createdAtTo] 검색 종료 시각 (epoch milliseconds, exclusive)
          * @param {string} [cursor] 
          * @param {string} [limit] default 값은 20으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options);
+        async searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFrom?: number, createdAtTo?: number, cursor?: string, limit?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFrom, createdAtTo, cursor, limit, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4117,15 +4125,15 @@ export const AccessibilityApiFactory = function (configuration?: Configuration, 
          * @param {InspectorTypeDTO} [inspectorType] 
          * @param {ResultTypeDTO} [resultType] 
          * @param {boolean} [isHandled] 
-         * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
-         * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
+         * @param {number} [createdAtFrom] 검색 시작 시각 (epoch milliseconds, inclusive)
+         * @param {number} [createdAtTo] 검색 종료 시각 (epoch milliseconds, exclusive)
          * @param {string} [cursor] 
          * @param {string} [limit] default 값은 20으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: any): AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO> {
-            return localVarFp.searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options).then((request) => request(axios, basePath));
+        searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFrom?: number, createdAtTo?: number, cursor?: string, limit?: string, options?: any): AxiosPromise<AdminSearchAccessibilityInspectionResultsDTO> {
+            return localVarFp.searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFrom, createdAtTo, cursor, limit, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4243,16 +4251,16 @@ export class AccessibilityApi extends BaseAPI {
      * @param {InspectorTypeDTO} [inspectorType] 
      * @param {ResultTypeDTO} [resultType] 
      * @param {boolean} [isHandled] 
-     * @param {string} [createdAtFromLocalDate] yyyy-MM-dd 형식
-     * @param {string} [createdAtToLocalDate] yyyy-MM-dd 형식
+     * @param {number} [createdAtFrom] 검색 시작 시각 (epoch milliseconds, inclusive)
+     * @param {number} [createdAtTo] 검색 종료 시각 (epoch milliseconds, exclusive)
      * @param {string} [cursor] 
      * @param {string} [limit] default 값은 20으로 설정된다.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccessibilityApi
      */
-    public searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFromLocalDate?: string, createdAtToLocalDate?: string, cursor?: string, limit?: string, options?: AxiosRequestConfig) {
-        return AccessibilityApiFp(this.configuration).searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFromLocalDate, createdAtToLocalDate, cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    public searchAccessibilityInspectionResults(id?: string, accessibilityType?: AccessibilityTypeDTO, inspectorType?: InspectorTypeDTO, resultType?: ResultTypeDTO, isHandled?: boolean, createdAtFrom?: number, createdAtTo?: number, cursor?: string, limit?: string, options?: AxiosRequestConfig) {
+        return AccessibilityApiFp(this.configuration).searchAccessibilityInspectionResults(id, accessibilityType, inspectorType, resultType, isHandled, createdAtFrom, createdAtTo, cursor, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -8434,22 +8442,22 @@ export class DefaultApi extends BaseAPI {
 
 
 /**
- * UserFeedbackApi - axios parameter creator
+ * PlaceCategoryCacheApi - axios parameter creator
  * @export
  */
-export const UserFeedbackApiAxiosParamCreator = function (configuration?: Configuration) {
+export const PlaceCategoryCacheApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary 사용자 피드백을 생성한다.
-         * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+         * @summary 장소 카테고리 캐시를 수동으로 생성한다.
+         * @param {AdminCreatePlaceCategoryCacheRequestDto} adminCreatePlaceCategoryCacheRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUserFeedback: async (createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createUserFeedbackRequestDto' is not null or undefined
-            assertParamExists('createUserFeedback', 'createUserFeedbackRequestDto', createUserFeedbackRequestDto)
-            const localVarPath = `/user-feedbacks`;
+        createPlaceCategoryCache: async (adminCreatePlaceCategoryCacheRequestDto: AdminCreatePlaceCategoryCacheRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminCreatePlaceCategoryCacheRequestDto' is not null or undefined
+            assertParamExists('createPlaceCategoryCache', 'adminCreatePlaceCategoryCacheRequestDto', adminCreatePlaceCategoryCacheRequestDto)
+            const localVarPath = `/place-category-caches`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8461,6 +8469,10 @@ export const UserFeedbackApiAxiosParamCreator = function (configuration?: Config
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -8468,7 +8480,7 @@ export const UserFeedbackApiAxiosParamCreator = function (configuration?: Config
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createUserFeedbackRequestDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreatePlaceCategoryCacheRequestDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -8477,14 +8489,54 @@ export const UserFeedbackApiAxiosParamCreator = function (configuration?: Config
         },
         /**
          * 
-         * @summary 사용자 피드백 목록을 조회한다.
-         * @param {string} [userId] 
-         * @param {UserFeedbackTypeDto} [feedbackType] 
+         * @summary 장소 카테고리 캐시를 삭제한다. 삭제 후 다음 조회시 AI가 다시 카테고리를 판정한다.
+         * @param {string} id PlaceCategoryCache ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listUserFeedbacks: async (userId?: string, feedbackType?: UserFeedbackTypeDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/user-feedbacks`;
+        deletePlaceCategoryCache: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deletePlaceCategoryCache', 'id', id)
+            const localVarPath = `/place-category-caches/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 단건 조회한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPlaceCategoryCache: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getPlaceCategoryCache', 'id', id)
+            const localVarPath = `/place-category-caches/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8500,12 +8552,58 @@ export const UserFeedbackApiAxiosParamCreator = function (configuration?: Config
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
-            if (userId !== undefined) {
-                localVarQueryParameter['userId'] = userId;
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시 목록을 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {PlaceCategoryDto} [placeCategory] 카테고리별 필터링
+         * @param {string} [categoryStringContains] categoryString 검색 (포함 검색)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPlaceCategoryCaches: async (cursor?: string, limit?: number, placeCategory?: PlaceCategoryDto, categoryStringContains?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/place-category-caches`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
             }
 
-            if (feedbackType !== undefined) {
-                localVarQueryParameter['feedbackType'] = feedbackType;
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (placeCategory !== undefined) {
+                localVarQueryParameter['placeCategory'] = placeCategory;
+            }
+
+            if (categoryStringContains !== undefined) {
+                localVarQueryParameter['categoryStringContains'] = categoryStringContains;
             }
 
 
@@ -8519,103 +8617,255 @@ export const UserFeedbackApiAxiosParamCreator = function (configuration?: Config
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 수정한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {AdminUpdatePlaceCategoryCacheRequestDto} adminUpdatePlaceCategoryCacheRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceCategoryCache: async (id: string, adminUpdatePlaceCategoryCacheRequestDto: AdminUpdatePlaceCategoryCacheRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updatePlaceCategoryCache', 'id', id)
+            // verify required parameter 'adminUpdatePlaceCategoryCacheRequestDto' is not null or undefined
+            assertParamExists('updatePlaceCategoryCache', 'adminUpdatePlaceCategoryCacheRequestDto', adminUpdatePlaceCategoryCacheRequestDto)
+            const localVarPath = `/place-category-caches/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminUpdatePlaceCategoryCacheRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
 /**
- * UserFeedbackApi - functional programming interface
+ * PlaceCategoryCacheApi - functional programming interface
  * @export
  */
-export const UserFeedbackApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = UserFeedbackApiAxiosParamCreator(configuration)
+export const PlaceCategoryCacheApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = PlaceCategoryCacheApiAxiosParamCreator(configuration)
     return {
         /**
          * 
-         * @summary 사용자 피드백을 생성한다.
-         * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+         * @summary 장소 카테고리 캐시를 수동으로 생성한다.
+         * @param {AdminCreatePlaceCategoryCacheRequestDto} adminCreatePlaceCategoryCacheRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createUserFeedback(createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserFeedbackDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createUserFeedback(createUserFeedbackRequestDto, options);
+        async createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto: AdminCreatePlaceCategoryCacheRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceCategoryCacheDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
-         * @summary 사용자 피드백 목록을 조회한다.
-         * @param {string} [userId] 
-         * @param {UserFeedbackTypeDto} [feedbackType] 
+         * @summary 장소 카테고리 캐시를 삭제한다. 삭제 후 다음 조회시 AI가 다시 카테고리를 판정한다.
+         * @param {string} id PlaceCategoryCache ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listUserFeedbacks(userId?: string, feedbackType?: UserFeedbackTypeDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListUserFeedbacks200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listUserFeedbacks(userId, feedbackType, options);
+        async deletePlaceCategoryCache(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePlaceCategoryCache(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 단건 조회한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPlaceCategoryCache(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceCategoryCacheDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlaceCategoryCache(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시 목록을 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {PlaceCategoryDto} [placeCategory] 카테고리별 필터링
+         * @param {string} [categoryStringContains] categoryString 검색 (포함 검색)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPlaceCategoryCaches(cursor?: string, limit?: number, placeCategory?: PlaceCategoryDto, categoryStringContains?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListPlaceCategoryCachesResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPlaceCategoryCaches(cursor, limit, placeCategory, categoryStringContains, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 수정한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {AdminUpdatePlaceCategoryCacheRequestDto} adminUpdatePlaceCategoryCacheRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePlaceCategoryCache(id: string, adminUpdatePlaceCategoryCacheRequestDto: AdminUpdatePlaceCategoryCacheRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceCategoryCacheDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlaceCategoryCache(id, adminUpdatePlaceCategoryCacheRequestDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
 };
 
 /**
- * UserFeedbackApi - factory interface
+ * PlaceCategoryCacheApi - factory interface
  * @export
  */
-export const UserFeedbackApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = UserFeedbackApiFp(configuration)
+export const PlaceCategoryCacheApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = PlaceCategoryCacheApiFp(configuration)
     return {
         /**
          * 
-         * @summary 사용자 피드백을 생성한다.
-         * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+         * @summary 장소 카테고리 캐시를 수동으로 생성한다.
+         * @param {AdminCreatePlaceCategoryCacheRequestDto} adminCreatePlaceCategoryCacheRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUserFeedback(createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options?: any): AxiosPromise<UserFeedbackDto> {
-            return localVarFp.createUserFeedback(createUserFeedbackRequestDto, options).then((request) => request(axios, basePath));
+        createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto: AdminCreatePlaceCategoryCacheRequestDto, options?: any): AxiosPromise<AdminPlaceCategoryCacheDto> {
+            return localVarFp.createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary 사용자 피드백 목록을 조회한다.
-         * @param {string} [userId] 
-         * @param {UserFeedbackTypeDto} [feedbackType] 
+         * @summary 장소 카테고리 캐시를 삭제한다. 삭제 후 다음 조회시 AI가 다시 카테고리를 판정한다.
+         * @param {string} id PlaceCategoryCache ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listUserFeedbacks(userId?: string, feedbackType?: UserFeedbackTypeDto, options?: any): AxiosPromise<ListUserFeedbacks200Response> {
-            return localVarFp.listUserFeedbacks(userId, feedbackType, options).then((request) => request(axios, basePath));
+        deletePlaceCategoryCache(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePlaceCategoryCache(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 단건 조회한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPlaceCategoryCache(id: string, options?: any): AxiosPromise<AdminPlaceCategoryCacheDto> {
+            return localVarFp.getPlaceCategoryCache(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시 목록을 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {PlaceCategoryDto} [placeCategory] 카테고리별 필터링
+         * @param {string} [categoryStringContains] categoryString 검색 (포함 검색)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPlaceCategoryCaches(cursor?: string, limit?: number, placeCategory?: PlaceCategoryDto, categoryStringContains?: string, options?: any): AxiosPromise<AdminListPlaceCategoryCachesResponseDto> {
+            return localVarFp.listPlaceCategoryCaches(cursor, limit, placeCategory, categoryStringContains, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 카테고리 캐시를 수정한다.
+         * @param {string} id PlaceCategoryCache ID
+         * @param {AdminUpdatePlaceCategoryCacheRequestDto} adminUpdatePlaceCategoryCacheRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceCategoryCache(id: string, adminUpdatePlaceCategoryCacheRequestDto: AdminUpdatePlaceCategoryCacheRequestDto, options?: any): AxiosPromise<AdminPlaceCategoryCacheDto> {
+            return localVarFp.updatePlaceCategoryCache(id, adminUpdatePlaceCategoryCacheRequestDto, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * UserFeedbackApi - object-oriented interface
+ * PlaceCategoryCacheApi - object-oriented interface
  * @export
- * @class UserFeedbackApi
+ * @class PlaceCategoryCacheApi
  * @extends {BaseAPI}
  */
-export class UserFeedbackApi extends BaseAPI {
+export class PlaceCategoryCacheApi extends BaseAPI {
     /**
      * 
-     * @summary 사용자 피드백을 생성한다.
-     * @param {CreateUserFeedbackRequestDto} createUserFeedbackRequestDto 
+     * @summary 장소 카테고리 캐시를 수동으로 생성한다.
+     * @param {AdminCreatePlaceCategoryCacheRequestDto} adminCreatePlaceCategoryCacheRequestDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof UserFeedbackApi
+     * @memberof PlaceCategoryCacheApi
      */
-    public createUserFeedback(createUserFeedbackRequestDto: CreateUserFeedbackRequestDto, options?: AxiosRequestConfig) {
-        return UserFeedbackApiFp(this.configuration).createUserFeedback(createUserFeedbackRequestDto, options).then((request) => request(this.axios, this.basePath));
+    public createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto: AdminCreatePlaceCategoryCacheRequestDto, options?: AxiosRequestConfig) {
+        return PlaceCategoryCacheApiFp(this.configuration).createPlaceCategoryCache(adminCreatePlaceCategoryCacheRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary 사용자 피드백 목록을 조회한다.
-     * @param {string} [userId] 
-     * @param {UserFeedbackTypeDto} [feedbackType] 
+     * @summary 장소 카테고리 캐시를 삭제한다. 삭제 후 다음 조회시 AI가 다시 카테고리를 판정한다.
+     * @param {string} id PlaceCategoryCache ID
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof UserFeedbackApi
+     * @memberof PlaceCategoryCacheApi
      */
-    public listUserFeedbacks(userId?: string, feedbackType?: UserFeedbackTypeDto, options?: AxiosRequestConfig) {
-        return UserFeedbackApiFp(this.configuration).listUserFeedbacks(userId, feedbackType, options).then((request) => request(this.axios, this.basePath));
+    public deletePlaceCategoryCache(id: string, options?: AxiosRequestConfig) {
+        return PlaceCategoryCacheApiFp(this.configuration).deletePlaceCategoryCache(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 카테고리 캐시를 단건 조회한다.
+     * @param {string} id PlaceCategoryCache ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceCategoryCacheApi
+     */
+    public getPlaceCategoryCache(id: string, options?: AxiosRequestConfig) {
+        return PlaceCategoryCacheApiFp(this.configuration).getPlaceCategoryCache(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 카테고리 캐시 목록을 조회한다.
+     * @param {string} [cursor] 페이지네이션 커서
+     * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+     * @param {PlaceCategoryDto} [placeCategory] 카테고리별 필터링
+     * @param {string} [categoryStringContains] categoryString 검색 (포함 검색)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceCategoryCacheApi
+     */
+    public listPlaceCategoryCaches(cursor?: string, limit?: number, placeCategory?: PlaceCategoryDto, categoryStringContains?: string, options?: AxiosRequestConfig) {
+        return PlaceCategoryCacheApiFp(this.configuration).listPlaceCategoryCaches(cursor, limit, placeCategory, categoryStringContains, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 카테고리 캐시를 수정한다.
+     * @param {string} id PlaceCategoryCache ID
+     * @param {AdminUpdatePlaceCategoryCacheRequestDto} adminUpdatePlaceCategoryCacheRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceCategoryCacheApi
+     */
+    public updatePlaceCategoryCache(id: string, adminUpdatePlaceCategoryCacheRequestDto: AdminUpdatePlaceCategoryCacheRequestDto, options?: AxiosRequestConfig) {
+        return PlaceCategoryCacheApiFp(this.configuration).updatePlaceCategoryCache(id, adminUpdatePlaceCategoryCacheRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -28,6 +28,7 @@ import {
   ChallengeApi,
   Configuration,
   DefaultApi,
+  PlaceCategoryCacheApi,
 } from "../../lib/generated-sources/openapi"
 import {
   ClubQuestPurposeTypeEnumDTO,
@@ -50,6 +51,7 @@ const bannerApi = new BannerApi(config)
 const accessibilityApi = new AccessibilityApi(config)
 const bbucleRoadApi = new BbucleRoadApi(config)
 const buildingDivisionApi = new BuildingDivisionApi(config)
+const placeCategoryCacheApi = new PlaceCategoryCacheApi(config)
 
 export const api: {
   default: DefaultApi
@@ -58,6 +60,7 @@ export const api: {
   accessibility: AccessibilityApi
   bbucleRoad: BbucleRoadApi
   buildingDivision: BuildingDivisionApi
+  placeCategoryCache: PlaceCategoryCacheApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
@@ -65,6 +68,7 @@ export const api: {
   accessibility: accessibilityApi,
   bbucleRoad: bbucleRoadApi,
   buildingDivision: buildingDivisionApi,
+  placeCategoryCache: placeCategoryCacheApi,
 }
 
 export function useQuest({ id }: { id: string }) {
@@ -403,6 +407,24 @@ export function deleteSearchPreset(id: string) {
   return defaultApi.deleteSearchPreset(id)
 }
 
+// Store cursors for pagination
+const cursorCache = new Map<string, string[]>()
+
+// Convert date string (yyyy-MM-dd) to epoch milliseconds in user's local timezone.
+// The date string represents the start of the day (00:00:00) in the user's timezone,
+// which is the intended behavior since users select dates based on their local time.
+// For end date: adds one day to make it exclusive (e.g., "2025-12-05" becomes start of 2025-12-06)
+function dateStringToEpochMillis(dateString: string | undefined, isEndDate: boolean): number | undefined {
+  if (!dateString) return undefined
+  const date = new Date(dateString)
+  if (isNaN(date.getTime())) return undefined
+  if (isEndDate) {
+    // For end date, add one day to make it exclusive
+    date.setDate(date.getDate() + 1)
+  }
+  return date.getTime()
+}
+
 export function useAccessibilityInspectionResults({
   accessibilityType,
   inspectorType,
@@ -418,6 +440,10 @@ export function useAccessibilityInspectionResults({
   createdAtFromLocalDate?: string
   createdAtToLocalDate?: string
 }) {
+  // Convert date strings to epoch milliseconds
+  const createdAtFrom = dateStringToEpochMillis(createdAtFromLocalDate, false)
+  const createdAtTo = dateStringToEpochMillis(createdAtToLocalDate, true)
+
   return useInfiniteQuery<AdminSearchAccessibilityInspectionResultsDTO>({
     queryKey: [
       "@accessibilityInspectionResults",
@@ -436,8 +462,8 @@ export function useAccessibilityInspectionResults({
           inspectorType,
           resultType,
           isHandled,
-          createdAtFromLocalDate,
-          createdAtToLocalDate,
+          createdAtFrom,
+          createdAtTo,
           (pageParam as string | undefined) ?? undefined,
           "50",
         )
@@ -446,9 +472,6 @@ export function useAccessibilityInspectionResults({
     getNextPageParam: (lastPage) => lastPage.cursor,
   })
 }
-
-// Store cursors for pagination
-const cursorCache = new Map<string, string[]>()
 
 export function useAccessibilityInspectionResultsPaginated({
   accessibilityType,
@@ -492,6 +515,10 @@ export function useAccessibilityInspectionResultsPaginated({
       pageSize,
     ],
     queryFn: async () => {
+      // Convert date strings to epoch milliseconds
+      const createdAtFrom = dateStringToEpochMillis(createdAtFromLocalDate, false)
+      const createdAtTo = dateStringToEpochMillis(createdAtToLocalDate, true)
+
       // Real API call
       // Get or initialize cursor array for this query
       if (!cursorCache.has(cacheKey)) {
@@ -508,8 +535,8 @@ export function useAccessibilityInspectionResultsPaginated({
           inspectorType,
           resultType,
           isHandled,
-          createdAtFromLocalDate,
-          createdAtToLocalDate,
+          createdAtFrom,
+          createdAtTo,
           lastCursor,
           pageSize.toString()
         )
@@ -527,8 +554,8 @@ export function useAccessibilityInspectionResultsPaginated({
         inspectorType,
         resultType,
         isHandled,
-        createdAtFromLocalDate,
-        createdAtToLocalDate,
+        createdAtFrom,
+        createdAtTo,
         cursor,
         pageSize.toString()
       )
@@ -567,4 +594,56 @@ export type ApplyAccessibilityInspectionResultsPayload = ApplyAccessibilityInspe
 
 export function applyAccessibilityInspectionResults(payload: ApplyAccessibilityInspectionResultsPayload) {
   return accessibilityApi.applyAccessibilityInspectionResults(payload)
+}
+
+import type {
+  AdminCreatePlaceCategoryCacheRequestDto,
+  AdminUpdatePlaceCategoryCacheRequestDto,
+  PlaceCategoryDto,
+} from "@/lib/generated-sources/openapi"
+
+export function usePlaceCategoryCaches({
+  placeCategory,
+  categoryStringContains,
+  limit = 20,
+}: {
+  placeCategory?: PlaceCategoryDto
+  categoryStringContains?: string
+  limit?: number
+} = {}) {
+  return useInfiniteQuery({
+    queryKey: ["@placeCategoryCaches", placeCategory ?? null, categoryStringContains ?? null, limit],
+    queryFn: ({ pageParam }) =>
+      placeCategoryCacheApi
+        .listPlaceCategoryCaches(pageParam ?? undefined, limit, placeCategory, categoryStringContains)
+        .then((res) => res.data),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.cursor,
+  })
+}
+
+export function usePlaceCategoryCache({ id }: { id: string }) {
+  return useQuery({
+    queryKey: ["@placeCategoryCaches", id],
+    queryFn: () => placeCategoryCacheApi.getPlaceCategoryCache(id).then((res) => res.data),
+    enabled: !!id,
+  })
+}
+
+export function createPlaceCategoryCache(payload: AdminCreatePlaceCategoryCacheRequestDto) {
+  return placeCategoryCacheApi.createPlaceCategoryCache(payload)
+}
+
+export function updatePlaceCategoryCache({
+  id,
+  payload,
+}: {
+  id: string
+  payload: AdminUpdatePlaceCategoryCacheRequestDto
+}) {
+  return placeCategoryCacheApi.updatePlaceCategoryCache(id, payload)
+}
+
+export function deletePlaceCategoryCache({ id }: { id: string }) {
+  return placeCategoryCacheApi.deletePlaceCategoryCache(id)
 }

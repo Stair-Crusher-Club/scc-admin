@@ -2,6 +2,7 @@ import {
   Building2,
   ClipboardList,
   Flag,
+  FolderTree,
   Home,
   Layers,
   type LucideIcon,
@@ -33,6 +34,7 @@ export const menuItems: MenuItem[] = [
   { title: "푸시 알림 관리", url: "/notification", icon: Megaphone },
   { title: "추천 검색어 관리", url: "/searchPreset", icon: Search },
   { title: "접근성 검증 결과", url: "/accessibilityInspectionResult", icon: ShieldCheck },
+  { title: "장소 카테고리 관리", url: "/placeCategoryCache", icon: FolderTree },
 ]
 
 export function getMenuItemByPath(pathname: string): MenuItem | undefined {
