@@ -12,10 +12,9 @@ import { ClubQuestCreateDryRunResultItemDTO, ClubQuestPurposeTypeEnumDTO } from 
 
 import Map from "@/components/Map"
 import { Circle, ClusterMarker, Polygon } from "@/components/Map/components"
-import { Contents } from "@/components/layout"
-import { Flex } from "@/styles/jsx"
-
-import * as S from "./page.style"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 
 const purposeTypeOptions: { label: string; value: ClubQuestPurposeTypeEnumDTO }[] = [
   { label: "크러셔 클럽", value: "CRUSHER_CLUB" },
@@ -169,32 +168,39 @@ export default function QuestCreate() {
 
   return (
     <>
-      <Contents.Columns>
-        <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
-          {form.watch("method").value === "CIRCLE" && (
-            <Circle center={form.watch("center")} radius={form.watch("radius")} />
-          )}
-          {form.watch("method").value === "POLYGON" && <Polygon forDrawing points={form.watch("points")} />}
-          {showPreview &&
-            clusters.map((cluster, i) =>
-              cluster.targetBuildings.map((building) => (
-                <ClusterMarker
-                  key={building.buildingId}
-                  position={building.location}
-                  clusterIndex={i}
-                  overlayInfo={{ title: `${cluster.questNamePostfix} ${building.name}`, places: building.places }}
-                />
-              )),
+      <div className="flex w-full h-[calc(100vh-120px)]">
+        <div className="relative flex-1 h-full">
+          <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
+            {form.watch("method").value === "CIRCLE" && (
+              <Circle center={form.watch("center")} radius={form.watch("radius")} />
             )}
-        </Map>
-        {isPreviewLoading && <S.Loading>건물 정보를 불러오는 중입니다...</S.Loading>}
-        <S.Form onSubmit={form.handleSubmit(onSubmit)}>
+            {form.watch("method").value === "POLYGON" && <Polygon forDrawing points={form.watch("points")} />}
+            {showPreview &&
+              clusters.map((cluster, i) =>
+                cluster.targetBuildings.map((building) => (
+                  <ClusterMarker
+                    key={building.buildingId}
+                    position={building.location}
+                    clusterIndex={i}
+                    overlayInfo={{ title: `${cluster.questNamePostfix} ${building.name}`, places: building.places }}
+                  />
+                )),
+              )}
+          </Map>
+          {isPreviewLoading && (
+            <div className="absolute z-[100] inset-0 flex items-center justify-center bg-black/30 text-white">
+              건물 정보를 불러오는 중입니다...
+            </div>
+          )}
+        </div>
+        <form
+          className="relative z-[1] w-[400px] p-6 shadow-lg max-h-[calc(100vh-48px)] overflow-y-auto"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
           <FormProvider {...form}>
-            <fieldset>
-              <Flex>
-                <Combobox name="purposeType" label="퀘스트 용도" options={purposeTypeOptions} isClearable={false} />
-              </Flex>
-              <Flex>
+            <fieldset className="space-y-2">
+              <Combobox name="purposeType" label="퀘스트 용도" options={purposeTypeOptions} isClearable={false} />
+              <div className="flex gap-2">
                 <DateInput
                   name="startDate"
                   label="퀘스트 시작"
@@ -207,28 +213,24 @@ export default function QuestCreate() {
                   dateFormat="yyyy-MM-dd"
                   rules={{ required: "퀘스트 종료일을 입력해주세요." }}
                 />
-              </Flex>
-              <Flex>
-                <Combobox
-                  isMulti
-                  name="questTargetPlaceCategories"
-                  label="장소 카테고리"
-                  placeholder=""
-                  closeMenuOnSelect={false}
-                  rules={{ required: { value: true, message: "1개 이상의 카테고리를 선택해주세요." } }}
-                  options={questTargetPlaceCategoryOptions}
-                />
-              </Flex>
-              <Flex>
-                <Combobox
-                  name="placeSearchMethod"
-                  label="장소 검색 방식"
-                  options={placeSearchMethodOptions}
-                  isClearable={false}
-                />
-              </Flex>
+              </div>
+              <Combobox
+                isMulti
+                name="questTargetPlaceCategories"
+                label="장소 카테고리"
+                placeholder=""
+                closeMenuOnSelect={false}
+                rules={{ required: { value: true, message: "1개 이상의 카테고리를 선택해주세요." } }}
+                options={questTargetPlaceCategoryOptions}
+              />
+              <Combobox
+                name="placeSearchMethod"
+                label="장소 검색 방식"
+                options={placeSearchMethodOptions}
+                isClearable={false}
+              />
             </fieldset>
-            <fieldset disabled={showPreview}>
+            <fieldset className="space-y-2 mt-4" disabled={showPreview}>
               <Combobox name="method" label="영역 설정 방식" options={methodOptions} isClearable={false} />
               {form.watch("method").value === "CIRCLE" && (
                 <>
@@ -248,8 +250,8 @@ export default function QuestCreate() {
                 </>
               )}
               {form.watch("method").value === "POLYGON" && (
-                <p style={{ opacity: 0.8, fontSize: "0.8em", marginBottom: 12 }}>
-                  지도를 클릭해 다각형을 그리세요. <kbd>Cmd/Ctrl</kbd> + <kbd>Z</kbd>로 마지막 클릭 지점을 취소할 수 있어요.
+                <p className="text-sm text-muted-foreground mb-3">
+                  지도를 클릭해 다각형을 그리세요. <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Cmd/Ctrl</kbd> + <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Z</kbd>로 마지막 클릭 지점을 취소할 수 있어요.
                 </p>
               )}
               <NumberInput
@@ -261,45 +263,55 @@ export default function QuestCreate() {
               <NumberInput name="maxPlacesPerQuest" label="퀘스트 당 최대 장소 수" clearable={false} />
             </fieldset>
 
-            <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", padding: "0 24px", marginTop: "12px" }}>
-              <input type="checkbox" {...form.register("isAttendanceCheckEnabled")} />
-              출석체크 활성화
-            </label>
+            <div className="flex items-center gap-2 px-6 mt-3">
+              <Checkbox
+                id="attendance-check"
+                checked={form.watch("isAttendanceCheckEnabled")}
+                onCheckedChange={(checked) => form.setValue("isAttendanceCheckEnabled", !!checked)}
+              />
+              <Label htmlFor="attendance-check" className="cursor-pointer">출석체크 활성화</Label>
+            </div>
 
-            <Flex direction="column" gap="8px">
+            <div className="flex flex-col gap-2 mt-4">
               {!showPreview && (
-                <S.PreviewButton type="button" onClick={previewOn}>
+                <Button type="button" onClick={previewOn} className="w-full">
                   미리보기
-                </S.PreviewButton>
+                </Button>
               )}
               {showPreview && (
-                <S.PreviewButton type="button" onClick={previewOff}>
+                <Button type="button" variant="outline" onClick={previewOff} className="w-full">
                   수정하기
-                </S.PreviewButton>
+                </Button>
               )}
 
               {showPreview && (
-                <S.PreviewSummary>
-                  <tr>
-                    <td colSpan={3} style={{ padding: "4px 0" }}>
-                      미리보기 요약
-                    </td>
-                  </tr>
-                  {clusters.map((cluster, i) => (
-                    <tr key={i}>
-                      <td>{cluster.questNamePostfix}</td>
-                      <td>{cluster.targetBuildings.length}개 건물</td>
-                      <td>{cluster.targetBuildings.reduce((acc, b) => acc + b.places.length, 0)}개 장소</td>
+                <table className="my-3 text-sm">
+                  <tbody>
+                    <tr>
+                      <td colSpan={3} className="py-1 font-medium">
+                        미리보기 요약
+                      </td>
                     </tr>
-                  ))}
-                </S.PreviewSummary>
+                    {clusters.map((cluster, i) => (
+                      <tr key={i}>
+                        <td className="pr-2">{cluster.questNamePostfix}</td>
+                        <td className="pr-2">{cluster.targetBuildings.length}개 건물</td>
+                        <td>{cluster.targetBuildings.reduce((acc, b) => acc + b.places.length, 0)}개 장소</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
               {showPreview && <TextInput name="name" label="퀘스트 이름" />}
-              {showPreview && <S.SubmitButton type="submit">이대로 생성하기</S.SubmitButton>}
-            </Flex>
+              {showPreview && (
+                <Button type="submit" className="w-full">
+                  이대로 생성하기
+                </Button>
+              )}
+            </div>
           </FormProvider>
-        </S.Form>
-      </Contents.Columns>
+        </form>
+      </div>
     </>
   )
 }

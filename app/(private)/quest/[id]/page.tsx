@@ -10,9 +10,8 @@ import { ClubQuestTargetBuildingDTO} from "@/lib/generated-sources/openapi"
 import Map from "@/components/Map"
 import { Me, QuestMarker } from "@/components/Map/components"
 import { Contents } from "@/components/layout"
+import { Button } from "@/components/ui/button"
 import { useModal } from "@/hooks/useModal"
-
-import * as S from "./page.style"
 
 export default function QuestDetail() {
   const { id } = useParams<{ id: string }>()
@@ -56,15 +55,17 @@ export default function QuestDetail() {
   return (
     <>
       <Contents>
-        <S.Container>
+        <div className="relative w-full h-[calc(100vh-120px)]">
           <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
             {quest?.buildings.map((building, index) => (
               <QuestMarker key={building.buildingId} building={building} questId={quest.id} buildingIndex={index} />
             ))}
             <Me />
           </Map>
-          <S.SummaryButton onClick={openSummary}>개요</S.SummaryButton>
-        </S.Container>
+          <Button onClick={openSummary} className="absolute z-10 bottom-4 right-4">
+            개요
+          </Button>
+        </div>
       </Contents>
     </>
   )
