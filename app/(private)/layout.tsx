@@ -5,10 +5,6 @@ import { useEffect, useState } from "react"
 
 import { storage } from "@/lib/storage"
 
-import { Sidebar } from "@/components/layout"
-import { Toaster } from "@/components/ui/toaster"
-import { Flex } from "@/styles/jsx"
-
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
@@ -45,16 +41,5 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
-  return (
-    <>
-      <Flex css={{ width: "full", height: "full" }}>
-        <Sidebar />
-        <Flex direction="column" css={{ width: "full", overflow: "auto" }}>
-          {children}
-        </Flex>
-      </Flex>
-      <Toaster />
-    </>
   )
 }

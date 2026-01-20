@@ -10,6 +10,7 @@ import { ClubQuestSummaryDTO } from "@/lib/generated-sources/openapi"
 
 import { useClubQuestSummaries } from "@/(private)/quest/query"
 import { Contents } from "@/components/layout"
+import { Button } from "@/components/ui/button"
 
 import * as S from "./page.style"
 import { getQuestGroupName } from "./util"
@@ -55,12 +56,7 @@ export default function QuestList() {
   return (
     <>
       <Contents.Normal>
-        <S.Header>
-          <S.Title>퀘스트</S.Title>
-          <S.CreateButton onClick={() => router.push("/quest/create")}>
-            퀘스트 생성
-          </S.CreateButton>
-        </S.Header>
+        <Button onClick={() => router.push("/quest/create")} size="sm" className="mb-4">퀘스트 생성</Button>
         {Object.entries(regrouped).map(([questGroupName, quests]) => (
           <S.QuestRow key={questGroupName}>
             <S.QuestHeader>

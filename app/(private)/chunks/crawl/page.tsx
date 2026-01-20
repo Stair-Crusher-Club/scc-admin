@@ -177,27 +177,29 @@ export default function CrawlPage() {
 
   return (
     <>
-      <Contents.Columns>
-        <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
-          {mode.current.startsWith("CIRCLE") && (
-            <Circle center={form.watch("circle.center")} radius={form.watch("circle.radius")} showRadius />
-          )}
-          {mode.current === "POLYGON" && <Polygon points={form.watch("points")} forDrawing />}
-          {chunks.map((c, i) => (
-            <Polygon
-              key={i}
-              points={c.polygon[0].map((p) => ({ lat: p[1], lng: p[0] }))}
-              style={{
-                fillColor: c.status === "CRAWLING" ? "yellow" : "green",
-                fillOpacity: c.status === "WAITING" ? 0 : 0.3,
-                strokeColor: "#000",
-                strokeStyle: "dashed",
-                strokeOpacity: status === "WAITING" ? 0.1 : 0.4,
-              }}
-            />
-          ))}
-        </Map>
-      </Contents.Columns>
+      <Contents>
+        <div className="relative w-full h-[calc(100vh-120px)]">
+          <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
+            {mode.current.startsWith("CIRCLE") && (
+              <Circle center={form.watch("circle.center")} radius={form.watch("circle.radius")} showRadius />
+            )}
+            {mode.current === "POLYGON" && <Polygon points={form.watch("points")} forDrawing />}
+            {chunks.map((c, i) => (
+              <Polygon
+                key={i}
+                points={c.polygon[0].map((p) => ({ lat: p[1], lng: p[0] }))}
+                style={{
+                  fillColor: c.status === "CRAWLING" ? "yellow" : "green",
+                  fillOpacity: c.status === "WAITING" ? 0 : 0.3,
+                  strokeColor: "#000",
+                  strokeStyle: "dashed",
+                  strokeOpacity: status === "WAITING" ? 0.1 : 0.4,
+                }}
+              />
+            ))}
+          </Map>
+        </div>
+      </Contents>
     </>
   )
 }

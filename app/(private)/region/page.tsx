@@ -7,10 +7,10 @@ import { createRegion, useRegions } from "@/lib/apis/api"
 import Map from "@/components/Map"
 import { Polygon } from "@/components/Map/components"
 import { Contents } from "@/components/layout"
+import { Button } from "@/components/ui/button"
 import { useModal } from "@/hooks/useModal"
 
 import { FIXED_REGIONS } from "./data"
-import * as S from "./page.style"
 
 export default function Page() {
   const mapRef = useRef<kakao.maps.Map>()
@@ -70,21 +70,26 @@ export default function Page() {
   return (
     <>
       <Contents>
-        <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
-          {[...FIXED_REGIONS, ...regions].map((region) => (
+        <div className="relative w-full h-[calc(100vh-120px)]">
+          <div className="absolute z-10 top-4 right-4 flex gap-2">
+            <Button onClick={selectHowToCreateRegion} size="sm">오픈 지역 추가</Button>
+            <Button onClick={showList} size="sm" variant="outline">목록 보기</Button>
+          </div>
+          <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
+            {[...FIXED_REGIONS, ...regions].map((region) => (
+              <Polygon
+                key={region.id}
+                points={region.boundaryVertices}
+                style={{ strokeWeight: 3, strokeColor: "#39f", strokeOpacity: 1, fillColor: "#39f", fillOpacity: 0.2 }}
+                label={region.name}
+              />
+            ))}
             <Polygon
-              key={region.id}
-              points={region.boundaryVertices}
-              style={{ strokeWeight: 3, strokeColor: "#39f", strokeOpacity: 1, fillColor: "#39f", fillOpacity: 0.2 }}
-              label={region.name}
+              points={drawingPoints}
+              style={{ strokeWeight: 3, strokeColor: "#f43", strokeOpacity: 1, fillColor: "#f43", fillOpacity: 0.2 }}
             />
-          ))}
-          <Polygon
-            points={drawingPoints}
-            style={{ strokeWeight: 3, strokeColor: "#f43", strokeOpacity: 1, fillColor: "#f43", fillOpacity: 0.2 }}
-          />
-        </Map>
-        <S.ListButton onClick={showList}>목록 보기</S.ListButton>
+          </Map>
+        </div>
       </Contents>
     </>
   )
