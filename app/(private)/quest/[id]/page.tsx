@@ -56,13 +56,15 @@ export default function QuestDetail() {
   return (
     <>
       <Contents>
-        <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
-          {quest?.buildings.map((building, index) => (
-            <QuestMarker key={building.buildingId} building={building} questId={quest.id} buildingIndex={index} />
-          ))}
-          <Me />
-        </Map>
-        <S.SummaryButton onClick={openSummary}>개요</S.SummaryButton>
+        <S.Container>
+          <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
+            {quest?.buildings.map((building, index) => (
+              <QuestMarker key={building.buildingId} building={building} questId={quest.id} buildingIndex={index} />
+            ))}
+            <Me />
+          </Map>
+          <S.SummaryButton onClick={openSummary}>개요</S.SummaryButton>
+        </S.Container>
       </Contents>
     </>
   )

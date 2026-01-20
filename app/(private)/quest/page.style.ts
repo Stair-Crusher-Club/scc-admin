@@ -6,6 +6,33 @@ export const Contents = styled("main", {
   },
 })
 
+export const Header = styled("div", {
+  base: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+})
+
+export const Title = styled("h1", {
+  base: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+})
+
+export const CreateButton = styled("button", {
+  base: {
+    padding: "8px 16px",
+    backgroundColor: "var(--leaf-primary-60)",
+    color: "white",
+    borderRadius: 4,
+    cursor: "pointer",
+    fontWeight: 500,
+  },
+})
+
 export const QuestRow = styled("div", {
   base: {
     marginBottom: 16,

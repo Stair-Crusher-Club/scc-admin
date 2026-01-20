@@ -1,9 +1,10 @@
 import { styled } from "@/styles/jsx"
 
-export const Map = styled("div", {
+export const Container = styled("div", {
   base: {
-    width: "full",
-    height: "full",
+    position: "relative",
+    width: "100%",
+    height: "calc(100vh - 60px)",
   },
 })
 

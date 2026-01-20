@@ -55,6 +55,12 @@ export default function QuestList() {
   return (
     <>
       <Contents.Normal>
+        <S.Header>
+          <S.Title>퀘스트</S.Title>
+          <S.CreateButton onClick={() => router.push("/quest/create")}>
+            퀘스트 생성
+          </S.CreateButton>
+        </S.Header>
         {Object.entries(regrouped).map(([questGroupName, quests]) => (
           <S.QuestRow key={questGroupName}>
             <S.QuestHeader>
