@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import clip from "polygon-clipping"
 import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -10,6 +9,8 @@ import { LocationDTO } from "@/lib/generated-sources/openapi"
 import Map from "@/components/Map"
 import { Circle, Polygon } from "@/components/Map/components"
 import { Contents } from "@/components/layout"
+import { PageActions } from "@/components/page-actions"
+import { Button } from "@/components/ui/button"
 
 import { useCrawling } from "../query"
 
@@ -176,10 +177,23 @@ export default function CrawlPage() {
   }
 
   return (
-    <>
-      <Contents>
-        <div className="relative w-full h-[calc(100vh-120px)]">
-          <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
+    <Contents>
+      <PageActions>
+        <Button
+          onClick={startCrawl}
+          size="sm"
+          disabled={status === "CRAWLING" || chunks.length === 0}
+        >
+          {status === "CRAWLING" ? "크롤링 중..." : "이 지역 장소 정보 가져오기"}
+        </Button>
+        {chunks.length > 0 && (
+          <span className="text-sm text-muted-foreground">
+            {chunks.length}개 청크
+          </span>
+        )}
+      </PageActions>
+      <div className="relative w-full h-[calc(100vh-120px)]">
+        <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={initializeMap}>
             {mode.current.startsWith("CIRCLE") && (
               <Circle center={form.watch("circle.center")} radius={form.watch("circle.radius")} showRadius />
             )}
@@ -197,10 +211,9 @@ export default function CrawlPage() {
                 }}
               />
             ))}
-          </Map>
-        </div>
-      </Contents>
-    </>
+        </Map>
+      </div>
+    </Contents>
   )
 }
 

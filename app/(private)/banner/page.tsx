@@ -2,16 +2,23 @@
 
 import { useQueryClient } from "@tanstack/react-query"
 import { format as formatDate } from "date-fns"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 
-import H3 from "@/components/Heading/H3"
-import Table, { makeTypedColumn } from "@/components/Table"
 import { Contents } from "@/components/layout"
+import { PageActions } from "@/components/page-actions"
 import { Button } from "@/components/ui/button"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
-import * as S from "./page.style"
 import { Banner, deleteBanner, useAllBanners, useHomeBanners } from "./query"
+
+const dateFormat = "yyyy.MM.dd HH:mm"
 
 export default function BannerList() {
   const router = useRouter()
@@ -30,73 +37,81 @@ export default function BannerList() {
   }
 
   return (
-    <>
-      <Contents.Normal>
-        <Button onClick={() => router.push("/banner/create")} size="sm" className="mb-4">배너 추가</Button>
-        <H3>전체 배너</H3>
-        <Table rows={allBanners} rowKey={(row) => row.id} columns={columns} context={{ handleDeleteBanner }} />
-        <H3>홈 배너 (앱에 노출되는 것과 동일)</H3>
-        <Table rows={homeBanners} rowKey={(row) => row.id} columns={columns} context={{ handleDeleteBanner }} />
-      </Contents.Normal>
-    </>
+    <Contents.Normal>
+      <PageActions>
+        <Button onClick={() => router.push("/banner/create")} size="sm">
+          배너 추가
+        </Button>
+      </PageActions>
+
+      <h3 className="text-lg font-semibold mb-2">전체 배너</h3>
+      <BannerTable banners={allBanners} onDelete={handleDeleteBanner} />
+
+      <h3 className="text-lg font-semibold mt-3 mb-2">홈 배너 (앱에 노출되는 것과 동일)</h3>
+      <BannerTable banners={homeBanners} onDelete={handleDeleteBanner} />
+    </Contents.Normal>
   )
 }
 
-interface TableContext {
-  handleDeleteBanner: (banner: Banner) => Promise<void>
+function BannerTable({
+  banners,
+  onDelete,
+}: {
+  banners: Banner[]
+  onDelete: (banner: Banner) => Promise<void>
+}) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>로깅 키</TableHead>
+          <TableHead>랜딩 페이지 제목</TableHead>
+          <TableHead>랜딩 페이지 링크</TableHead>
+          <TableHead>배너 노출 순서</TableHead>
+          <TableHead>배너 사진</TableHead>
+          <TableHead>배너 노출 기간</TableHead>
+          <TableHead>삭제</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {banners.map((banner) => (
+          <TableRow key={banner.id}>
+            <TableCell>{banner.loggingKey}</TableCell>
+            <TableCell>{banner.clickPageTitle}</TableCell>
+            <TableCell>
+              <Button variant="outline" size="sm" asChild>
+                <a href={banner.clickPageUrl} target="_blank" rel="noopener noreferrer">
+                  오픈
+                </a>
+              </Button>
+            </TableCell>
+            <TableCell>{banner.displayOrder}</TableCell>
+            <TableCell>
+              <img
+                src={banner.imageUrl}
+                alt=""
+                className="max-w-[300px] max-h-[100px] object-contain block"
+              />
+            </TableCell>
+            <TableCell className="whitespace-nowrap">
+              <p>시작 : {banner.startAt ? formatDate(new Date(banner.startAt.value), dateFormat) : "-"}</p>
+              <p>종료 : {banner.endAt ? formatDate(new Date(banner.endAt.value), dateFormat) : "-"}</p>
+            </TableCell>
+            <TableCell>
+              <Button variant="destructive" size="sm" onClick={() => onDelete(banner)}>
+                삭제
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
+        {banners.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={7} className="text-center text-muted-foreground">
+              데이터가 없습니다.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  )
 }
-const col = makeTypedColumn<Banner, TableContext>()
-const columns = [
-  col({
-    title: "로깅 키",
-    field: "loggingKey",
-    render: (loggingKey) => <p>{loggingKey}</p>,
-  }),
-  col({
-    title: "랜딩 페이지 제목",
-    field: "clickPageTitle",
-    render: (clickPageTitle) => <p>{clickPageTitle}</p>,
-  }),
-  col({
-    title: "랜딩 페이지 링크",
-    field: "clickPageUrl",
-    render: (clickPageUrl) => (
-      <Button variant="outline" size="sm" asChild>
-        <a href={clickPageUrl} target="_blank">
-          오픈
-        </a>
-      </Button>
-    ),
-  }),
-  col({
-    title: "배너 노출 순서",
-    field: "displayOrder",
-    render: (displayOrder) => (displayOrder),
-  }),
-  col({
-    title: "배너 사진",
-    field: "imageUrl",
-    render: (imageUrl) => (
-      <S.ImageWrapper>
-        <Image width={300} height={100} src={imageUrl} alt="" />
-      </S.ImageWrapper>
-    ),
-  }),
-  col({
-    title: "배너 노출 기간",
-    field: "_",
-    render: (_, row) => (
-      <>
-        <p>시작 : {row.startAt ? formatDate(new Date(row.startAt!.value), dateFormat) : "-"}</p>
-        <p>종료 : {row.endAt ? formatDate(new Date(row.endAt!.value), dateFormat) : "-"}</p>
-      </>
-    ),
-  }),
-  col({
-    title: "삭제",
-    field: "_",
-    render: (_, row, ctx) => <S.DeleteButton onClick={() => ctx!.handleDeleteBanner(row)}>삭제</S.DeleteButton>,
-  }),
-]
-
-const dateFormat = "yyyy.MM.dd HH:mm"
