@@ -80,7 +80,7 @@ function BannerTable({
             <TableCell>{banner.clickPageTitle}</TableCell>
             <TableCell>
               <Button variant="outline" size="sm" asChild>
-                <a href={banner.clickPageUrl} target="_blank">
+                <a href={banner.clickPageUrl} target="_blank" rel="noopener noreferrer">
                   오픈
                 </a>
               </Button>
