@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { storage } from "@/lib/storage"
 
 import { AppSidebar } from "@/components/app-sidebar"
+import { PageActionsProvider } from "@/components/page-actions"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
@@ -31,14 +32,16 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
     <SidebarProvider>
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-1 flex-col overflow-x-hidden">
-          <div className="@container/main flex flex-1 flex-col gap-2 overflow-x-hidden">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 overflow-x-hidden">
-              {children}
+        <PageActionsProvider>
+          <SiteHeader />
+          <div className="flex flex-1 flex-col overflow-x-hidden">
+            <div className="@container/main flex flex-1 flex-col gap-2 overflow-x-hidden">
+              <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 overflow-x-hidden">
+                {children}
+              </div>
             </div>
           </div>
-        </div>
+        </PageActionsProvider>
       </SidebarInset>
     </SidebarProvider>
   )

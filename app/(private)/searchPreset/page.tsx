@@ -5,6 +5,7 @@ import { useState } from "react"
 import { deleteSearchPreset, useSearchPresets } from "@/lib/apis/api"
 
 import { Contents } from "@/components/layout"
+import { PageActions } from "@/components/page-actions"
 import { Button } from "@/components/ui/button"
 
 import CreatePresetModal from "./components/CreatePresetModal"
@@ -22,10 +23,11 @@ export default function SearchPresetPage() {
   }
 
   return (
-    <>
-      <Contents.Normal>
-        <Button onClick={() => setModalOpen(true)} size="sm" className="mb-4">추천 검색어 추가</Button>
-        <S.TableWrapper>
+    <Contents.Normal>
+      <PageActions>
+        <Button onClick={() => setModalOpen(true)} size="sm">추천 검색어 추가</Button>
+      </PageActions>
+      <S.TableWrapper>
           <S.TableHeader>
             <S.HeaderCell>검색어</S.HeaderCell>
             <S.HeaderCell>설명 (앱에서 보이는 이름)</S.HeaderCell>
@@ -54,7 +56,6 @@ export default function SearchPresetPage() {
             refetch()
           }}
         />
-      </Contents.Normal>
-    </>
+    </Contents.Normal>
   )
 }

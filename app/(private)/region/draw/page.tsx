@@ -8,6 +8,7 @@ import { createRegion, useRegions } from "@/lib/apis/api"
 import Map from "@/components/Map"
 import { Polygon } from "@/components/Map/components"
 import { Contents } from "@/components/layout"
+import { PageActions } from "@/components/page-actions"
 import { Button } from "@/components/ui/button"
 import { useModal } from "@/hooks/useModal"
 
@@ -84,14 +85,13 @@ export default function RegionDraw() {
   }
 
   return (
-    <>
-      <Contents>
-        <div className="relative w-full h-[calc(100vh-120px)]">
-          <div className="absolute z-10 top-4 right-4 flex gap-2">
-            <Button onClick={() => router.back()} size="sm" variant="outline">취소</Button>
-            <Button onClick={confirmCreate} size="sm" disabled={drawingPoints.length < 3}>영역 생성</Button>
-          </div>
-          <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
+    <Contents>
+      <PageActions>
+        <Button onClick={() => router.back()} size="sm" variant="outline">취소</Button>
+        <Button onClick={confirmCreate} size="sm" disabled={drawingPoints.length < 3}>영역 생성</Button>
+      </PageActions>
+      <div className="relative w-full h-[calc(100vh-120px)]">
+        <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
             {[...FIXED_REGIONS, ...regions].map((region) => (
               <Polygon
                 key={region.id}
@@ -104,10 +104,9 @@ export default function RegionDraw() {
               points={drawingPoints}
               style={{ strokeWeight: 3, strokeColor: "#f43", strokeOpacity: 1, fillColor: "#f43", fillOpacity: 0.2 }}
             />
-          </Map>
-        </div>
-      </Contents>
-    </>
+        </Map>
+      </div>
+    </Contents>
   )
 }
 

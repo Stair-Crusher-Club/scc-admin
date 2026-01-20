@@ -10,6 +10,7 @@ import { ClubQuestSummaryDTO } from "@/lib/generated-sources/openapi"
 
 import { useClubQuestSummaries } from "@/(private)/quest/query"
 import { Contents } from "@/components/layout"
+import { PageActions } from "@/components/page-actions"
 import { Button } from "@/components/ui/button"
 
 import * as S from "./page.style"
@@ -54,10 +55,11 @@ export default function QuestList() {
   }
 
   return (
-    <>
-      <Contents.Normal>
-        <Button onClick={() => router.push("/quest/create")} size="sm" className="mb-4">퀘스트 생성</Button>
-        {Object.entries(regrouped).map(([questGroupName, quests]) => (
+    <Contents.Normal>
+      <PageActions>
+        <Button onClick={() => router.push("/quest/create")} size="sm">퀘스트 생성</Button>
+      </PageActions>
+      {Object.entries(regrouped).map(([questGroupName, quests]) => (
           <S.QuestRow key={questGroupName}>
             <S.QuestHeader>
               {questGroupName}
@@ -84,8 +86,7 @@ export default function QuestList() {
             </S.Quests>
           </S.QuestRow>
         ))}
-        {hasNextPage && <S.LoadNextPageButton onClick={() => fetchNextPage()}>더 불러오기</S.LoadNextPageButton>}
-      </Contents.Normal>
-    </>
+      {hasNextPage && <S.LoadNextPageButton onClick={() => fetchNextPage()}>더 불러오기</S.LoadNextPageButton>}
+    </Contents.Normal>
   )
 }

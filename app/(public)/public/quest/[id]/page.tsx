@@ -13,7 +13,8 @@ import { storage } from "@/lib/storage"
 
 import Map from "@/components/Map"
 import { Me, QuestMarker } from "@/components/Map/components"
-import { Contents, Header } from "@/components/layout"
+import { Contents } from "@/components/layout"
+import { PublicHeader } from "@/components/public-header"
 import { useModal } from "@/hooks/useModal"
 import QuestCompletionModal from "@/modals/QuestCompletion"
 
@@ -104,8 +105,7 @@ export default function QuestDetail() {
 
   return (
     <>
-      {/* public page 이므로 메뉴를 제공하지 않는 커스텀 헤더 사용 */}
-      <Header
+      <PublicHeader
         title={
           quest ? (
             <>
@@ -120,15 +120,14 @@ export default function QuestDetail() {
           )
         }
         hidden={isHeaderHidden}
-        hideMenu
       >
-        <Header.ActionButtonWrapper>
-          <Header.ActionButton onClick={openGuide}>가이드</Header.ActionButton>
+        <PublicHeader.ActionButtonWrapper>
+          <PublicHeader.ActionButton onClick={openGuide}>가이드</PublicHeader.ActionButton>
           {quest?.isAttendanceCheckEnabled && (
-            <Header.ActionButton onClick={checkInToClubQuest}>출석체크</Header.ActionButton>
+            <PublicHeader.ActionButton onClick={checkInToClubQuest}>출석체크</PublicHeader.ActionButton>
           )}
-        </Header.ActionButtonWrapper>
-      </Header>
+        </PublicHeader.ActionButtonWrapper>
+      </PublicHeader>
       <Contents>
         <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
           {quest?.buildings.map((building, index) => (
