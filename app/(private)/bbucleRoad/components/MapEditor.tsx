@@ -7,24 +7,6 @@ import { UpdateMapMarkerDTO, MarkerCategoryDTO } from "@/lib/generated-sources/o
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
-// Naver Maps type declarations
-declare global {
-  interface Window {
-    naver: {
-      maps: {
-        Map: new (element: HTMLElement, options: any) => any
-        LatLng: new (lat: number, lng: number) => any
-        Marker: new (options: any) => any
-        InfoWindow: new (options: any) => any
-        Point: new (x: number, y: number) => any
-        Event: {
-          addListener: (target: any, type: string, listener: Function) => void
-        }
-      }
-    }
-  }
-}
-
 interface MapConfig {
   centerLat: number
   centerLng: number
@@ -71,24 +53,24 @@ export default function MapEditor({
 
   // Initialize map
   useEffect(() => {
-    if (!mapContainer.current || !window.naver || !window.naver.maps) return
+    if (!mapContainer.current || typeof naver === 'undefined' || !naver.maps) return
 
     // Prevent duplicate map creation
     if (mapRef.current) return
 
     const container = mapContainer.current
-    const center = new window.naver.maps.LatLng(mapConfig.centerLat, mapConfig.centerLng)
+    const center = new naver.maps.LatLng(mapConfig.centerLat, mapConfig.centerLng)
     const options = {
       center,
       zoom: mapConfig.zoomLevel,
     }
 
-    const map = new window.naver.maps.Map(container, options)
+    const map = new naver.maps.Map(container, options)
     mapRef.current = map
 
     // Listen to map changes to update config
-    window.naver.maps.Event.addListener(map, "center_changed", () => {
-      const center = map.getCenter()
+    naver.maps.Event.addListener(map, "center_changed", () => {
+      const center = map.getCenter() as naver.maps.LatLng
       const zoom = map.getZoom()
       onMapConfigChange({
         centerLat: center.lat(),
@@ -97,8 +79,8 @@ export default function MapEditor({
       })
     })
 
-    window.naver.maps.Event.addListener(map, "zoom_changed", () => {
-      const center = map.getCenter()
+    naver.maps.Event.addListener(map, "zoom_changed", () => {
+      const center = map.getCenter() as naver.maps.LatLng
       const zoom = map.getZoom()
       onMapConfigChange({
         centerLat: center.lat(),
@@ -108,7 +90,7 @@ export default function MapEditor({
     })
 
     // Add click listener for adding/moving markers
-    window.naver.maps.Event.addListener(map, "click", (e: any) => {
+    naver.maps.Event.addListener(map, "click", (e: any) => {
       const latlng = e.coord
       const position = {
         lat: latlng.lat(),
@@ -151,7 +133,7 @@ export default function MapEditor({
 
   // Update markers on map when markers prop changes
   useEffect(() => {
-    if (!mapRef.current || !window.naver || !window.naver.maps) return
+    if (!mapRef.current || typeof naver === 'undefined' || !naver.maps) return
 
     // Clear existing markers and info windows
     markersRef.current.forEach((marker) => marker.setMap(null))
@@ -161,13 +143,13 @@ export default function MapEditor({
 
     // Add new markers
     markers.forEach((markerData, index) => {
-      const position = new window.naver.maps.LatLng(markerData.position.lat, markerData.position.lng)
+      const position = new naver.maps.LatLng(markerData.position.lat, markerData.position.lng)
 
       // 선택된 마커는 빨간색, 일반 마커는 파란색
       const isSelected = index === selectedMarkerIndex
       const markerColor = isSelected ? '#ef4444' : '#3b82f6'
 
-      const marker = new window.naver.maps.Marker({
+      const marker = new naver.maps.Marker({
         position,
         map: mapRef.current,
         icon: {
@@ -179,22 +161,22 @@ export default function MapEditor({
             border-radius: 50%;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
           "></div>`,
-          anchor: new window.naver.maps.Point(12, 12),
+          anchor: new naver.maps.Point(12, 12),
         },
       })
 
       // Create info window for tooltip
       if (markerData.tooltipText) {
-        const infoWindow = new window.naver.maps.InfoWindow({
+        const infoWindow = new naver.maps.InfoWindow({
           content: `<div style="padding: 8px; min-width: 100px;">${markerData.tooltipText}</div>`,
         })
 
         // Show tooltip on hover
-        window.naver.maps.Event.addListener(marker, "mouseover", () => {
+        naver.maps.Event.addListener(marker, "mouseover", () => {
           infoWindow.open(mapRef.current, marker)
         })
 
-        window.naver.maps.Event.addListener(marker, "mouseout", () => {
+        naver.maps.Event.addListener(marker, "mouseout", () => {
           infoWindow.close()
         })
 
@@ -202,7 +184,7 @@ export default function MapEditor({
       }
 
       // Add click listener to select marker
-      window.naver.maps.Event.addListener(marker, "click", () => {
+      naver.maps.Event.addListener(marker, "click", () => {
         setSelectedMarkerIndex(index)
         setIsAddingMarker(false)
       })

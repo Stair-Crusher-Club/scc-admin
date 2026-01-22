@@ -24,6 +24,7 @@ import {
   AccessibilityApi,
   BannerApi,
   BbucleRoadApi,
+  BuildingDivisionApi,
   ChallengeApi,
   Configuration,
   DefaultApi,
@@ -42,12 +43,14 @@ const baseURL =
     : process.env.NEXT_PUBLIC_DEPLOY_TYPE === "local"
       ? "http://localhost:8080/admin"
       : "https://api.dev.staircrusher.club/admin"
+
 const config = new Configuration({ basePath: baseURL })
 const defaultApi = new DefaultApi(config)
 const challengeApi = new ChallengeApi(config)
 const bannerApi = new BannerApi(config)
 const accessibilityApi = new AccessibilityApi(config)
 const bbucleRoadApi = new BbucleRoadApi(config)
+const buildingDivisionApi = new BuildingDivisionApi(config)
 const placeCategoryCacheApi = new PlaceCategoryCacheApi(config)
 
 export const api: {
@@ -56,6 +59,7 @@ export const api: {
   banner: BannerApi
   accessibility: AccessibilityApi
   bbucleRoad: BbucleRoadApi
+  buildingDivision: BuildingDivisionApi
   placeCategoryCache: PlaceCategoryCacheApi
 } = {
   default: defaultApi,
@@ -63,6 +67,7 @@ export const api: {
   banner: bannerApi,
   accessibility: accessibilityApi,
   bbucleRoad: bbucleRoadApi,
+  buildingDivision: buildingDivisionApi,
   placeCategoryCache: placeCategoryCacheApi,
 }
 
