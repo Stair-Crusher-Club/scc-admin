@@ -29,7 +29,7 @@ export default function CreateBanner() {
       bannerType,
     })
 
-    if (res.status !== 200) {
+    if (res.status !== 204) {
       toast.error("배너 생성에 실패했습니다.")
       return
     }
