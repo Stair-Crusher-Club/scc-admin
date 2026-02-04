@@ -1449,7 +1449,8 @@ export const AdminImageUploadPurposeTypeDTO = {
     Banner: 'BANNER',
     CrusherLabel: 'CRUSHER_LABEL',
     BbucleRoadMarker: 'BBUCLE_ROAD_MARKER',
-    BbucleRoadDescription: 'BBUCLE_ROAD_DESCRIPTION'
+    BbucleRoadDescription: 'BBUCLE_ROAD_DESCRIPTION',
+    RecommendedContent: 'RECOMMENDED_CONTENT'
 } as const;
 
 export type AdminImageUploadPurposeTypeDTO = typeof AdminImageUploadPurposeTypeDTO[keyof typeof AdminImageUploadPurposeTypeDTO];
