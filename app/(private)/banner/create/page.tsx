@@ -16,7 +16,7 @@ export default function CreateBanner() {
   const form = useForm<BannerFormValues>({ defaultValues })
 
   async function onSubmit(values: BannerFormValues) {
-    const { loggingKey, imageUrl, clickPageUrl, clickPageTitle, startDate, endDate, displayOrder } = values
+    const { loggingKey, imageUrl, clickPageUrl, clickPageTitle, startDate, endDate, displayOrder, bannerType } = values
 
     const res = await createBanner({
       loggingKey,
@@ -26,6 +26,7 @@ export default function CreateBanner() {
       startAt: startDate ? { value: new Date(startDate).getTime() } : undefined,
       endAt: endDate ? { value: new Date(endDate).getTime() } : undefined,
       displayOrder,
+      bannerType,
     })
 
     if (res.status !== 200) {

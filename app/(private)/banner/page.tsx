@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { Banner, deleteBanner, useAllBanners, useHomeBanners } from "./query"
+import { Banner, bannerTypeLabels, deleteBanner, useAllBanners, useHomeBanners } from "./query"
 
 const dateFormat = "yyyy.MM.dd HH:mm"
 
@@ -65,6 +65,7 @@ function BannerTable({
       <TableHeader>
         <TableRow>
           <TableHead>로깅 키</TableHead>
+          <TableHead>배너 타입</TableHead>
           <TableHead>랜딩 페이지 제목</TableHead>
           <TableHead>랜딩 페이지 링크</TableHead>
           <TableHead>배너 노출 순서</TableHead>
@@ -77,6 +78,7 @@ function BannerTable({
         {banners.map((banner) => (
           <TableRow key={banner.id}>
             <TableCell>{banner.loggingKey}</TableCell>
+            <TableCell>{bannerTypeLabels[banner.bannerType]}</TableCell>
             <TableCell>{banner.clickPageTitle}</TableCell>
             <TableCell>
               <Button variant="outline" size="sm" asChild>
@@ -106,7 +108,7 @@ function BannerTable({
         ))}
         {banners.length === 0 && (
           <TableRow>
-            <TableCell colSpan={7} className="text-center text-muted-foreground">
+            <TableCell colSpan={8} className="text-center text-muted-foreground">
               데이터가 없습니다.
             </TableCell>
           </TableRow>

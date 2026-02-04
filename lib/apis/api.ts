@@ -27,6 +27,8 @@ import {
   ChallengeApi,
   Configuration,
   DefaultApi,
+  HomeAnnouncementApi,
+  HomeRecommendedContentApi,
   PlaceCategoryCacheApi,
 } from "../../lib/generated-sources/openapi"
 import {
@@ -49,6 +51,8 @@ const bannerApi = new BannerApi(config)
 const accessibilityApi = new AccessibilityApi(config)
 const bbucleRoadApi = new BbucleRoadApi(config)
 const placeCategoryCacheApi = new PlaceCategoryCacheApi(config)
+const homeAnnouncementApi = new HomeAnnouncementApi(config)
+const homeRecommendedContentApi = new HomeRecommendedContentApi(config)
 
 export const api: {
   default: DefaultApi
@@ -57,6 +61,8 @@ export const api: {
   accessibility: AccessibilityApi
   bbucleRoad: BbucleRoadApi
   placeCategoryCache: PlaceCategoryCacheApi
+  homeAnnouncement: HomeAnnouncementApi
+  homeRecommendedContent: HomeRecommendedContentApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
@@ -64,6 +70,8 @@ export const api: {
   accessibility: accessibilityApi,
   bbucleRoad: bbucleRoadApi,
   placeCategoryCache: placeCategoryCacheApi,
+  homeAnnouncement: homeAnnouncementApi,
+  homeRecommendedContent: homeRecommendedContentApi,
 }
 
 export function useQuest({ id }: { id: string }) {

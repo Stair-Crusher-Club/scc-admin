@@ -5,13 +5,18 @@ import { DateInput, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import axios from "axios"
 import { format } from "date-fns"
 import { ChangeEventHandler, useState } from "react"
-import { FormProvider, UseFormReturn } from "react-hook-form"
+import { Controller, FormProvider, UseFormReturn } from "react-hook-form"
 
 import { getImageUploadUrls } from "@/lib/apis/api"
+import { HomeBannerTypeDTO } from "@/lib/generated-sources/openapi"
 
 import RemoteImage from "@/components/RemoteImage"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { css } from "@/styles/css"
 import { Flex } from "@/styles/jsx"
+
+import { bannerTypeLabels } from "../query"
 
 export interface BannerFormValues {
   loggingKey: string
@@ -21,6 +26,7 @@ export interface BannerFormValues {
   startDate?: string
   endDate?: string
   displayOrder: number
+  bannerType: HomeBannerTypeDTO
 }
 
 export const defaultValues: Partial<BannerFormValues> = {
@@ -31,6 +37,7 @@ export const defaultValues: Partial<BannerFormValues> = {
   startDate: format(new Date(), "yyyy-MM-dd HH:mm"),
   endDate: format(new Date(), "yyyy-MM-dd HH:mm"),
   displayOrder: 0,
+  bannerType: HomeBannerTypeDTO.Strip,
 }
 
 interface Props {
@@ -116,6 +123,27 @@ export default function BannerForm({ form, id, disabled, onSubmit }: Props) {
         </Flex>
         <Flex gap={16}>
           <NumberInput name="displayOrder" label="노출 순서 (작을수록 위에 노출)" disabled={disabled} />
+          <Flex flexDirection="column" flex={1}>
+            <Label>배너 타입</Label>
+            <Controller
+              name="bannerType"
+              control={form.control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange} disabled={disabled}>
+                  <SelectTrigger className={css({ width: "200px", marginTop: "8px" })}>
+                    <SelectValue placeholder="배너 타입 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(bannerTypeLabels).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </Flex>
         </Flex>
       </form>
     </FormProvider>

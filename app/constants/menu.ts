@@ -1,4 +1,5 @@
 import {
+  Bell,
   Building2,
   ClipboardList,
   Copy,
@@ -11,6 +12,7 @@ import {
   Megaphone,
   Search,
   ShieldCheck,
+  Sparkles,
   Tag,
   Trophy,
 } from "lucide-react"
@@ -30,6 +32,8 @@ export const menuItems: MenuItem[] = [
   { title: "폐업 추정 장소 관리", url: "/closedPlace", icon: Building2 },
   { title: "건물 중복 제거 후보", url: "/buildingDeduplication", icon: Copy },
   { title: "배너 관리", url: "/banner", icon: Tag },
+  { title: "공지사항 관리", url: "/announcement", icon: Bell },
+  { title: "추천 컨텐츠 관리", url: "/recommendedContent", icon: Sparkles },
   { title: "뿌클로드 관리", url: "/bbucleRoad", icon: Map },
   { title: "푸시 알림 관리", url: "/notification", icon: Megaphone },
   { title: "추천 검색어 관리", url: "/searchPreset", icon: Search },

@@ -252,6 +252,12 @@ export interface AdminBannerDTO {
      * @memberof AdminBannerDTO
      */
     'displayOrder': number;
+    /**
+     * 
+     * @type {HomeBannerTypeDTO}
+     * @memberof AdminBannerDTO
+     */
+    'bannerType': HomeBannerTypeDTO;
 }
 /**
  * 
@@ -902,6 +908,12 @@ export interface AdminCreateBannerRequestDTO {
      * @memberof AdminCreateBannerRequestDTO
      */
     'displayOrder': number;
+    /**
+     * 
+     * @type {HomeBannerTypeDTO}
+     * @memberof AdminCreateBannerRequestDTO
+     */
+    'bannerType': HomeBannerTypeDTO;
 }
 /**
  * Building Division 생성 요청
@@ -1048,6 +1060,92 @@ export interface AdminCreateChallengeRequestDTO {
      * @memberof AdminCreateChallengeRequestDTO
      */
     'isRetroactiveContributionEnabled'?: boolean;
+}
+/**
+ * 
+ * @export
+ * @interface AdminCreateHomeAnnouncementRequestDTO
+ */
+export interface AdminCreateHomeAnnouncementRequestDTO {
+    /**
+     * 공지사항 텍스트
+     * @type {string}
+     * @memberof AdminCreateHomeAnnouncementRequestDTO
+     */
+    'text': string;
+    /**
+     * 클릭 시 이동할 URL
+     * @type {string}
+     * @memberof AdminCreateHomeAnnouncementRequestDTO
+     */
+    'linkUrl': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminCreateHomeAnnouncementRequestDTO
+     */
+    'displayOrder': number;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminCreateHomeAnnouncementRequestDTO
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminCreateHomeAnnouncementRequestDTO
+     */
+    'endAt'?: EpochMillisTimestamp;
+}
+/**
+ * 
+ * @export
+ * @interface AdminCreateHomeRecommendedContentRequestDTO
+ */
+export interface AdminCreateHomeRecommendedContentRequestDTO {
+    /**
+     * 컨텐츠 제목
+     * @type {string}
+     * @memberof AdminCreateHomeRecommendedContentRequestDTO
+     */
+    'title': string;
+    /**
+     * 컨텐츠 설명
+     * @type {string}
+     * @memberof AdminCreateHomeRecommendedContentRequestDTO
+     */
+    'description': string;
+    /**
+     * 컨텐츠 이미지 URL
+     * @type {string}
+     * @memberof AdminCreateHomeRecommendedContentRequestDTO
+     */
+    'imageUrl': string;
+    /**
+     * 클릭 시 이동할 URL (딥링크 가능)
+     * @type {string}
+     * @memberof AdminCreateHomeRecommendedContentRequestDTO
+     */
+    'linkUrl': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminCreateHomeRecommendedContentRequestDTO
+     */
+    'displayOrder': number;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminCreateHomeRecommendedContentRequestDTO
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminCreateHomeRecommendedContentRequestDTO
+     */
+    'endAt'?: EpochMillisTimestamp;
 }
 /**
  * 
@@ -1227,6 +1325,104 @@ export type AdminEntranceDoorType = typeof AdminEntranceDoorType[keyof typeof Ad
 /**
  * 
  * @export
+ * @interface AdminHomeAnnouncementDTO
+ */
+export interface AdminHomeAnnouncementDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminHomeAnnouncementDTO
+     */
+    'id': string;
+    /**
+     * 공지사항 텍스트
+     * @type {string}
+     * @memberof AdminHomeAnnouncementDTO
+     */
+    'text': string;
+    /**
+     * 클릭 시 이동할 URL
+     * @type {string}
+     * @memberof AdminHomeAnnouncementDTO
+     */
+    'linkUrl': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminHomeAnnouncementDTO
+     */
+    'displayOrder': number;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminHomeAnnouncementDTO
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminHomeAnnouncementDTO
+     */
+    'endAt'?: EpochMillisTimestamp;
+}
+/**
+ * 
+ * @export
+ * @interface AdminHomeRecommendedContentDTO
+ */
+export interface AdminHomeRecommendedContentDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminHomeRecommendedContentDTO
+     */
+    'id': string;
+    /**
+     * 컨텐츠 제목
+     * @type {string}
+     * @memberof AdminHomeRecommendedContentDTO
+     */
+    'title': string;
+    /**
+     * 컨텐츠 설명
+     * @type {string}
+     * @memberof AdminHomeRecommendedContentDTO
+     */
+    'description': string;
+    /**
+     * 컨텐츠 이미지 URL
+     * @type {string}
+     * @memberof AdminHomeRecommendedContentDTO
+     */
+    'imageUrl': string;
+    /**
+     * 클릭 시 이동할 URL (딥링크 가능)
+     * @type {string}
+     * @memberof AdminHomeRecommendedContentDTO
+     */
+    'linkUrl': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminHomeRecommendedContentDTO
+     */
+    'displayOrder': number;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminHomeRecommendedContentDTO
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminHomeRecommendedContentDTO
+     */
+    'endAt'?: EpochMillisTimestamp;
+}
+/**
+ * 
+ * @export
  * @interface AdminImageDTO
  */
 export interface AdminImageDTO {
@@ -1351,6 +1547,19 @@ export interface AdminListClosedPlaceCandidatesResponseDTO {
 /**
  * 
  * @export
+ * @interface AdminListHomeAnnouncementsResponseDTO
+ */
+export interface AdminListHomeAnnouncementsResponseDTO {
+    /**
+     * 
+     * @type {Array<AdminHomeAnnouncementDTO>}
+     * @memberof AdminListHomeAnnouncementsResponseDTO
+     */
+    'announcements': Array<AdminHomeAnnouncementDTO>;
+}
+/**
+ * 
+ * @export
  * @interface AdminListHomeBannersResponseDTO
  */
 export interface AdminListHomeBannersResponseDTO {
@@ -1360,6 +1569,19 @@ export interface AdminListHomeBannersResponseDTO {
      * @memberof AdminListHomeBannersResponseDTO
      */
     'banners': Array<AdminBannerDTO>;
+}
+/**
+ * 
+ * @export
+ * @interface AdminListHomeRecommendedContentsResponseDTO
+ */
+export interface AdminListHomeRecommendedContentsResponseDTO {
+    /**
+     * 
+     * @type {Array<AdminHomeRecommendedContentDTO>}
+     * @memberof AdminListHomeRecommendedContentsResponseDTO
+     */
+    'contents': Array<AdminHomeRecommendedContentDTO>;
 }
 /**
  * 장소 카테고리 캐시 목록 응답
@@ -3053,6 +3275,20 @@ export interface GetSearchPreset200Response {
      */
     'presets': Array<AdminSearchPlacePresetDTO>;
 }
+/**
+ * 홈 배너 타입
+ * @export
+ * @enum {string}
+ */
+
+export const HomeBannerTypeDTO = {
+    Main: 'MAIN',
+    Strip: 'STRIP'
+} as const;
+
+export type HomeBannerTypeDTO = typeof HomeBannerTypeDTO[keyof typeof HomeBannerTypeDTO];
+
+
 /**
  * 
  * @export
@@ -8437,6 +8673,498 @@ export class DefaultApi extends BaseAPI {
      */
     public startPlaceCrawling(startPlaceCrawlingRequestDTO: StartPlaceCrawlingRequestDTO, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).startPlaceCrawling(startPlaceCrawlingRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * HomeAnnouncementApi - axios parameter creator
+ * @export
+ */
+export const HomeAnnouncementApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 홈 공지사항을 생성한다.
+         * @param {AdminCreateHomeAnnouncementRequestDTO} adminCreateHomeAnnouncementRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminCreateHomeAnnouncement: async (adminCreateHomeAnnouncementRequestDTO: AdminCreateHomeAnnouncementRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminCreateHomeAnnouncementRequestDTO' is not null or undefined
+            assertParamExists('adminCreateHomeAnnouncement', 'adminCreateHomeAnnouncementRequestDTO', adminCreateHomeAnnouncementRequestDTO)
+            const localVarPath = `/home-announcements`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreateHomeAnnouncementRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 홈 공지사항을 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminDeleteHomeAnnouncement: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminDeleteHomeAnnouncement', 'id', id)
+            const localVarPath = `/home-announcements/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 홈 공지사항 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminListHomeAnnouncements: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/home-announcements`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * HomeAnnouncementApi - functional programming interface
+ * @export
+ */
+export const HomeAnnouncementApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = HomeAnnouncementApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 홈 공지사항을 생성한다.
+         * @param {AdminCreateHomeAnnouncementRequestDTO} adminCreateHomeAnnouncementRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminCreateHomeAnnouncement(adminCreateHomeAnnouncementRequestDTO: AdminCreateHomeAnnouncementRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminCreateHomeAnnouncement(adminCreateHomeAnnouncementRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 홈 공지사항을 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminDeleteHomeAnnouncement(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminDeleteHomeAnnouncement(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 홈 공지사항 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminListHomeAnnouncements(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListHomeAnnouncementsResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminListHomeAnnouncements(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * HomeAnnouncementApi - factory interface
+ * @export
+ */
+export const HomeAnnouncementApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = HomeAnnouncementApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 홈 공지사항을 생성한다.
+         * @param {AdminCreateHomeAnnouncementRequestDTO} adminCreateHomeAnnouncementRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminCreateHomeAnnouncement(adminCreateHomeAnnouncementRequestDTO: AdminCreateHomeAnnouncementRequestDTO, options?: any): AxiosPromise<void> {
+            return localVarFp.adminCreateHomeAnnouncement(adminCreateHomeAnnouncementRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 홈 공지사항을 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminDeleteHomeAnnouncement(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.adminDeleteHomeAnnouncement(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 홈 공지사항 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminListHomeAnnouncements(options?: any): AxiosPromise<AdminListHomeAnnouncementsResponseDTO> {
+            return localVarFp.adminListHomeAnnouncements(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * HomeAnnouncementApi - object-oriented interface
+ * @export
+ * @class HomeAnnouncementApi
+ * @extends {BaseAPI}
+ */
+export class HomeAnnouncementApi extends BaseAPI {
+    /**
+     * 
+     * @summary 홈 공지사항을 생성한다.
+     * @param {AdminCreateHomeAnnouncementRequestDTO} adminCreateHomeAnnouncementRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HomeAnnouncementApi
+     */
+    public adminCreateHomeAnnouncement(adminCreateHomeAnnouncementRequestDTO: AdminCreateHomeAnnouncementRequestDTO, options?: AxiosRequestConfig) {
+        return HomeAnnouncementApiFp(this.configuration).adminCreateHomeAnnouncement(adminCreateHomeAnnouncementRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 홈 공지사항을 삭제한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HomeAnnouncementApi
+     */
+    public adminDeleteHomeAnnouncement(id: string, options?: AxiosRequestConfig) {
+        return HomeAnnouncementApiFp(this.configuration).adminDeleteHomeAnnouncement(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 홈 공지사항 목록을 조회한다.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HomeAnnouncementApi
+     */
+    public adminListHomeAnnouncements(options?: AxiosRequestConfig) {
+        return HomeAnnouncementApiFp(this.configuration).adminListHomeAnnouncements(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * HomeRecommendedContentApi - axios parameter creator
+ * @export
+ */
+export const HomeRecommendedContentApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 홈 추천 컨텐츠를 생성한다.
+         * @param {AdminCreateHomeRecommendedContentRequestDTO} adminCreateHomeRecommendedContentRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminCreateHomeRecommendedContent: async (adminCreateHomeRecommendedContentRequestDTO: AdminCreateHomeRecommendedContentRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminCreateHomeRecommendedContentRequestDTO' is not null or undefined
+            assertParamExists('adminCreateHomeRecommendedContent', 'adminCreateHomeRecommendedContentRequestDTO', adminCreateHomeRecommendedContentRequestDTO)
+            const localVarPath = `/home-recommended-contents`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreateHomeRecommendedContentRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 홈 추천 컨텐츠를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminDeleteHomeRecommendedContent: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminDeleteHomeRecommendedContent', 'id', id)
+            const localVarPath = `/home-recommended-contents/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 홈 추천 컨텐츠 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminListHomeRecommendedContents: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/home-recommended-contents`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * HomeRecommendedContentApi - functional programming interface
+ * @export
+ */
+export const HomeRecommendedContentApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = HomeRecommendedContentApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 홈 추천 컨텐츠를 생성한다.
+         * @param {AdminCreateHomeRecommendedContentRequestDTO} adminCreateHomeRecommendedContentRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminCreateHomeRecommendedContent(adminCreateHomeRecommendedContentRequestDTO: AdminCreateHomeRecommendedContentRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminCreateHomeRecommendedContent(adminCreateHomeRecommendedContentRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 홈 추천 컨텐츠를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminDeleteHomeRecommendedContent(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminDeleteHomeRecommendedContent(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 홈 추천 컨텐츠 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminListHomeRecommendedContents(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListHomeRecommendedContentsResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminListHomeRecommendedContents(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * HomeRecommendedContentApi - factory interface
+ * @export
+ */
+export const HomeRecommendedContentApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = HomeRecommendedContentApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 홈 추천 컨텐츠를 생성한다.
+         * @param {AdminCreateHomeRecommendedContentRequestDTO} adminCreateHomeRecommendedContentRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminCreateHomeRecommendedContent(adminCreateHomeRecommendedContentRequestDTO: AdminCreateHomeRecommendedContentRequestDTO, options?: any): AxiosPromise<void> {
+            return localVarFp.adminCreateHomeRecommendedContent(adminCreateHomeRecommendedContentRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 홈 추천 컨텐츠를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminDeleteHomeRecommendedContent(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.adminDeleteHomeRecommendedContent(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 홈 추천 컨텐츠 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminListHomeRecommendedContents(options?: any): AxiosPromise<AdminListHomeRecommendedContentsResponseDTO> {
+            return localVarFp.adminListHomeRecommendedContents(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * HomeRecommendedContentApi - object-oriented interface
+ * @export
+ * @class HomeRecommendedContentApi
+ * @extends {BaseAPI}
+ */
+export class HomeRecommendedContentApi extends BaseAPI {
+    /**
+     * 
+     * @summary 홈 추천 컨텐츠를 생성한다.
+     * @param {AdminCreateHomeRecommendedContentRequestDTO} adminCreateHomeRecommendedContentRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HomeRecommendedContentApi
+     */
+    public adminCreateHomeRecommendedContent(adminCreateHomeRecommendedContentRequestDTO: AdminCreateHomeRecommendedContentRequestDTO, options?: AxiosRequestConfig) {
+        return HomeRecommendedContentApiFp(this.configuration).adminCreateHomeRecommendedContent(adminCreateHomeRecommendedContentRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 홈 추천 컨텐츠를 삭제한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HomeRecommendedContentApi
+     */
+    public adminDeleteHomeRecommendedContent(id: string, options?: AxiosRequestConfig) {
+        return HomeRecommendedContentApiFp(this.configuration).adminDeleteHomeRecommendedContent(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 홈 추천 컨텐츠 목록을 조회한다.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HomeRecommendedContentApi
+     */
+    public adminListHomeRecommendedContents(options?: AxiosRequestConfig) {
+        return HomeRecommendedContentApiFp(this.configuration).adminListHomeRecommendedContents(options).then((request) => request(this.axios, this.basePath));
     }
 }
 
