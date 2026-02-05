@@ -16,6 +16,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
+import { HomeBannerTypeDTO } from "@/lib/generated-sources/openapi"
+
 import { Banner, bannerTypeLabels, deleteBanner, useAllBanners, useHomeBanners } from "./query"
 
 const dateFormat = "yyyy.MM.dd HH:mm"
@@ -26,6 +28,8 @@ export default function BannerList() {
 
   const allBanners = useAllBanners()?.data?.banners ?? []
   const homeBanners = useHomeBanners()?.data?.banners ?? []
+  const homeMainBanners = homeBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Main)
+  const homeStripBanners = homeBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Strip)
 
   const handleDeleteBanner = async (banner: Banner) => {
     if (!confirm(`정말 ${banner.loggingKey} 배너를 삭제하시겠습니까?`)) {
@@ -47,8 +51,11 @@ export default function BannerList() {
       <h3 className="text-lg font-semibold mb-2">전체 배너</h3>
       <BannerTable banners={allBanners} onDelete={handleDeleteBanner} />
 
-      <h3 className="text-lg font-semibold mt-3 mb-2">홈 배너 (앱에 노출되는 것과 동일)</h3>
-      <BannerTable banners={homeBanners} onDelete={handleDeleteBanner} />
+      <h3 className="text-lg font-semibold mt-6 mb-2">홈 메인 배너</h3>
+      <BannerTable banners={homeMainBanners} onDelete={handleDeleteBanner} />
+
+      <h3 className="text-lg font-semibold mt-6 mb-2">홈 띠 배너</h3>
+      <BannerTable banners={homeStripBanners} onDelete={handleDeleteBanner} />
     </Contents.Normal>
   )
 }
