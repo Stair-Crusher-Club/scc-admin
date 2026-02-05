@@ -90,7 +90,7 @@ export default function CreateRecommendedContent() {
       endAt: endDate ? { value: new Date(endDate).getTime() } : undefined,
     })
 
-    if (res.status !== 204) {
+    if (res.status !== 200) {
       toast.error("추천 컨텐츠 생성에 실패했습니다.")
       return
     }
