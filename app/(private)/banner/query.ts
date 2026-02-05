@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 
 import { api } from "@/lib/apis/api"
-import { EpochMillisTimestamp } from "@/lib/generated-sources/openapi"
+import { EpochMillisTimestamp, HomeBannerTypeDTO } from "@/lib/generated-sources/openapi"
 
 export function useAllBanners() {
   return useQuery({
@@ -25,6 +25,7 @@ export interface CreateBannerParam {
   startAt?: EpochMillisTimestamp
   endAt?: EpochMillisTimestamp
   displayOrder: number
+  bannerType: HomeBannerTypeDTO
 }
 export function createBanner(payload: CreateBannerParam) {
   return api.banner.adminCreateBanner(payload)
@@ -51,4 +52,10 @@ export interface Banner {
   startAt?: EpochMillisTimestamp
   endAt?: EpochMillisTimestamp
   displayOrder: number
+  bannerType: HomeBannerTypeDTO
+}
+
+export const bannerTypeLabels: Record<HomeBannerTypeDTO, string> = {
+  [HomeBannerTypeDTO.Main]: "메인 홈 배너",
+  [HomeBannerTypeDTO.Strip]: "띠 홈 배너",
 }
