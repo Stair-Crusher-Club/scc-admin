@@ -1205,6 +1205,37 @@ export interface AdminCreatePlaceCategoryCacheRequestDto {
     'placeCategory': PlaceCategoryDto;
 }
 /**
+ * 저장 리스트 생성 요청
+ * @export
+ * @interface AdminCreatePlaceListRequestDto
+ */
+export interface AdminCreatePlaceListRequestDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreatePlaceListRequestDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreatePlaceListRequestDto
+     */
+    'description'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreatePlaceListRequestDto
+     */
+    'thumbnailUrl'?: string | null;
+    /**
+     * 리스트에 포함할 장소 ID 목록
+     * @type {Array<string>}
+     * @memberof AdminCreatePlaceListRequestDto
+     */
+    'placeIds': Array<string>;
+}
+/**
  * 
  * @export
  * @interface AdminCreateSearchPlacePresetRequestDTO
@@ -1604,6 +1635,25 @@ export interface AdminListPlaceCategoryCachesResponseDto {
     'cursor'?: string | null;
 }
 /**
+ * 저장 리스트 목록 응답
+ * @export
+ * @interface AdminListPlaceListsResponseDto
+ */
+export interface AdminListPlaceListsResponseDto {
+    /**
+     * 
+     * @type {Array<AdminPlaceListDto>}
+     * @memberof AdminListPlaceListsResponseDto
+     */
+    'items': Array<AdminPlaceListDto>;
+    /**
+     * 다음 페이지 커서 (없으면 마지막 페이지)
+     * @type {string}
+     * @memberof AdminListPlaceListsResponseDto
+     */
+    'cursor'?: string | null;
+}
+/**
  * 
  * @export
  * @interface AdminListPushNotificationSchedulesResponseDTO
@@ -1744,6 +1794,129 @@ export interface AdminPlaceCategoryCacheDto {
      * @memberof AdminPlaceCategoryCacheDto
      */
     'updatedAt': EpochMillisTimestamp;
+}
+/**
+ * 저장 리스트 상세 정보 (장소 목록 포함)
+ * @export
+ * @interface AdminPlaceListDetailDto
+ */
+export interface AdminPlaceListDetailDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'description'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'thumbnailUrl'?: string | null;
+    /**
+     * 
+     * @type {Array<AdminPlaceListPlaceDto>}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'places': Array<AdminPlaceListPlaceDto>;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'updatedAt': EpochMillisTimestamp;
+}
+/**
+ * 저장 리스트 목록 항목
+ * @export
+ * @interface AdminPlaceListDto
+ */
+export interface AdminPlaceListDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListDto
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListDto
+     */
+    'description'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListDto
+     */
+    'thumbnailUrl'?: string | null;
+    /**
+     * 리스트에 포함된 장소 수
+     * @type {number}
+     * @memberof AdminPlaceListDto
+     */
+    'placeCount': number;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceListDto
+     */
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceListDto
+     */
+    'updatedAt': EpochMillisTimestamp;
+}
+/**
+ * 저장 리스트에 포함된 장소 정보
+ * @export
+ * @interface AdminPlaceListPlaceDto
+ */
+export interface AdminPlaceListPlaceDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListPlaceDto
+     */
+    'placeId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListPlaceDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceListPlaceDto
+     */
+    'address'?: string | null;
 }
 /**
  * 
@@ -2212,6 +2385,37 @@ export interface AdminUpdatePlaceCategoryCacheRequestDto {
      * @memberof AdminUpdatePlaceCategoryCacheRequestDto
      */
     'placeCategory': PlaceCategoryDto;
+}
+/**
+ * 저장 리스트 수정 요청
+ * @export
+ * @interface AdminUpdatePlaceListRequestDto
+ */
+export interface AdminUpdatePlaceListRequestDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdatePlaceListRequestDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdatePlaceListRequestDto
+     */
+    'description'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdatePlaceListRequestDto
+     */
+    'thumbnailUrl'?: string | null;
+    /**
+     * 리스트에 포함할 장소 ID 목록 (기존 매핑을 대체)
+     * @type {Array<string>}
+     * @memberof AdminUpdatePlaceListRequestDto
+     */
+    'placeIds': Array<string>;
 }
 /**
  * 
@@ -9595,6 +9799,419 @@ export class PlaceCategoryCacheApi extends BaseAPI {
      */
     public updatePlaceCategoryCache(id: string, adminUpdatePlaceCategoryCacheRequestDto: AdminUpdatePlaceCategoryCacheRequestDto, options?: AxiosRequestConfig) {
         return PlaceCategoryCacheApiFp(this.configuration).updatePlaceCategoryCache(id, adminUpdatePlaceCategoryCacheRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * PlaceListApi - axios parameter creator
+ * @export
+ */
+export const PlaceListApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 저장 리스트를 생성한다.
+         * @param {AdminCreatePlaceListRequestDto} adminCreatePlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPlaceList: async (adminCreatePlaceListRequestDto: AdminCreatePlaceListRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminCreatePlaceListRequestDto' is not null or undefined
+            assertParamExists('createPlaceList', 'adminCreatePlaceListRequestDto', adminCreatePlaceListRequestDto)
+            const localVarPath = `/place-lists`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreatePlaceListRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 저장 리스트를 삭제한다.
+         * @param {string} id PlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlaceList: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deletePlaceList', 'id', id)
+            const localVarPath = `/place-lists/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 저장 리스트 상세를 조회한다.
+         * @param {string} id PlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPlaceList: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getPlaceList', 'id', id)
+            const localVarPath = `/place-lists/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 저장 리스트 목록을 조회한다. NORMAL 타입만 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPlaceLists: async (cursor?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/place-lists`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 저장 리스트를 수정한다.
+         * @param {string} id PlaceList ID
+         * @param {AdminUpdatePlaceListRequestDto} adminUpdatePlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceList: async (id: string, adminUpdatePlaceListRequestDto: AdminUpdatePlaceListRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updatePlaceList', 'id', id)
+            // verify required parameter 'adminUpdatePlaceListRequestDto' is not null or undefined
+            assertParamExists('updatePlaceList', 'adminUpdatePlaceListRequestDto', adminUpdatePlaceListRequestDto)
+            const localVarPath = `/place-lists/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminUpdatePlaceListRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * PlaceListApi - functional programming interface
+ * @export
+ */
+export const PlaceListApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = PlaceListApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 저장 리스트를 생성한다.
+         * @param {AdminCreatePlaceListRequestDto} adminCreatePlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPlaceList(adminCreatePlaceListRequestDto: AdminCreatePlaceListRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceListDetailDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlaceList(adminCreatePlaceListRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 저장 리스트를 삭제한다.
+         * @param {string} id PlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePlaceList(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePlaceList(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 저장 리스트 상세를 조회한다.
+         * @param {string} id PlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPlaceList(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceListDetailDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlaceList(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 저장 리스트 목록을 조회한다. NORMAL 타입만 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPlaceLists(cursor?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListPlaceListsResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPlaceLists(cursor, limit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 저장 리스트를 수정한다.
+         * @param {string} id PlaceList ID
+         * @param {AdminUpdatePlaceListRequestDto} adminUpdatePlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePlaceList(id: string, adminUpdatePlaceListRequestDto: AdminUpdatePlaceListRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceListDetailDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlaceList(id, adminUpdatePlaceListRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * PlaceListApi - factory interface
+ * @export
+ */
+export const PlaceListApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = PlaceListApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 저장 리스트를 생성한다.
+         * @param {AdminCreatePlaceListRequestDto} adminCreatePlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPlaceList(adminCreatePlaceListRequestDto: AdminCreatePlaceListRequestDto, options?: any): AxiosPromise<AdminPlaceListDetailDto> {
+            return localVarFp.createPlaceList(adminCreatePlaceListRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 저장 리스트를 삭제한다.
+         * @param {string} id PlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlaceList(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePlaceList(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 저장 리스트 상세를 조회한다.
+         * @param {string} id PlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPlaceList(id: string, options?: any): AxiosPromise<AdminPlaceListDetailDto> {
+            return localVarFp.getPlaceList(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 저장 리스트 목록을 조회한다. NORMAL 타입만 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPlaceLists(cursor?: string, limit?: number, options?: any): AxiosPromise<AdminListPlaceListsResponseDto> {
+            return localVarFp.listPlaceLists(cursor, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 저장 리스트를 수정한다.
+         * @param {string} id PlaceList ID
+         * @param {AdminUpdatePlaceListRequestDto} adminUpdatePlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceList(id: string, adminUpdatePlaceListRequestDto: AdminUpdatePlaceListRequestDto, options?: any): AxiosPromise<AdminPlaceListDetailDto> {
+            return localVarFp.updatePlaceList(id, adminUpdatePlaceListRequestDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * PlaceListApi - object-oriented interface
+ * @export
+ * @class PlaceListApi
+ * @extends {BaseAPI}
+ */
+export class PlaceListApi extends BaseAPI {
+    /**
+     * 
+     * @summary 저장 리스트를 생성한다.
+     * @param {AdminCreatePlaceListRequestDto} adminCreatePlaceListRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceListApi
+     */
+    public createPlaceList(adminCreatePlaceListRequestDto: AdminCreatePlaceListRequestDto, options?: AxiosRequestConfig) {
+        return PlaceListApiFp(this.configuration).createPlaceList(adminCreatePlaceListRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 저장 리스트를 삭제한다.
+     * @param {string} id PlaceList ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceListApi
+     */
+    public deletePlaceList(id: string, options?: AxiosRequestConfig) {
+        return PlaceListApiFp(this.configuration).deletePlaceList(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 저장 리스트 상세를 조회한다.
+     * @param {string} id PlaceList ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceListApi
+     */
+    public getPlaceList(id: string, options?: AxiosRequestConfig) {
+        return PlaceListApiFp(this.configuration).getPlaceList(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 저장 리스트 목록을 조회한다. NORMAL 타입만 조회한다.
+     * @param {string} [cursor] 페이지네이션 커서
+     * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceListApi
+     */
+    public listPlaceLists(cursor?: string, limit?: number, options?: AxiosRequestConfig) {
+        return PlaceListApiFp(this.configuration).listPlaceLists(cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 저장 리스트를 수정한다.
+     * @param {string} id PlaceList ID
+     * @param {AdminUpdatePlaceListRequestDto} adminUpdatePlaceListRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceListApi
+     */
+    public updatePlaceList(id: string, adminUpdatePlaceListRequestDto: AdminUpdatePlaceListRequestDto, options?: AxiosRequestConfig) {
+        return PlaceListApiFp(this.configuration).updatePlaceList(id, adminUpdatePlaceListRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -30,6 +30,7 @@ import {
   HomeAnnouncementApi,
   HomeRecommendedContentApi,
   PlaceCategoryCacheApi,
+  PlaceListApi,
 } from "../../lib/generated-sources/openapi"
 import {
   ClubQuestPurposeTypeEnumDTO,
@@ -53,6 +54,7 @@ const bbucleRoadApi = new BbucleRoadApi(config)
 const placeCategoryCacheApi = new PlaceCategoryCacheApi(config)
 const homeAnnouncementApi = new HomeAnnouncementApi(config)
 const homeRecommendedContentApi = new HomeRecommendedContentApi(config)
+const placeListApi = new PlaceListApi(config)
 
 export const api: {
   default: DefaultApi
@@ -63,6 +65,7 @@ export const api: {
   placeCategoryCache: PlaceCategoryCacheApi
   homeAnnouncement: HomeAnnouncementApi
   homeRecommendedContent: HomeRecommendedContentApi
+  placeList: PlaceListApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
@@ -72,6 +75,7 @@ export const api: {
   placeCategoryCache: placeCategoryCacheApi,
   homeAnnouncement: homeAnnouncementApi,
   homeRecommendedContent: homeRecommendedContentApi,
+  placeList: placeListApi,
 }
 
 export function useQuest({ id }: { id: string }) {
