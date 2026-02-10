@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 
 import { AdminPlaceListPlaceDto } from "@/lib/generated-sources/openapi"
 import {
@@ -40,26 +41,34 @@ export default function PlaceListDetailPage() {
   }, [placeList])
 
   const handleSave = async () => {
-    await updatePlaceList({
-      id: placeListId,
-      data: {
-        name,
-        description: description || null,
-        thumbnailUrl: thumbnailUrl || null,
-        placeIds: places.map((p) => p.placeId),
-      },
-    })
-    alert("리스트가 수정되었습니다.")
-    router.push("/placeList")
+    try {
+      await updatePlaceList({
+        id: placeListId,
+        data: {
+          name,
+          description: description || null,
+          thumbnailUrl: thumbnailUrl || null,
+          placeIds: places.map((p) => p.placeId),
+        },
+      })
+      toast.success("리스트가 수정되었습니다.")
+      router.push("/placeList")
+    } catch {
+      toast.error("리스트 수정에 실패했습니다.")
+    }
   }
 
   const handleDelete = async () => {
     if (!confirm(`정말 "${name}" 리스트를 삭제하시겠습니까?`)) {
       return
     }
-    await deletePlaceList(placeListId)
-    alert("리스트가 삭제되었습니다.")
-    router.push("/placeList")
+    try {
+      await deletePlaceList(placeListId)
+      toast.success("리스트가 삭제되었습니다.")
+      router.push("/placeList")
+    } catch {
+      toast.error("리스트 삭제에 실패했습니다.")
+    }
   }
 
   const handleAddPlace = () => {

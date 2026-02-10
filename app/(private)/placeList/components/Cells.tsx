@@ -1,5 +1,8 @@
+"use client"
+
 import { Pencil, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "react-toastify"
 
 import { AdminPlaceListDto } from "@/lib/generated-sources/openapi"
 import { useDeletePlaceList } from "@/lib/apis/placeList"
@@ -8,13 +11,18 @@ import { Button } from "@/components/ui/button"
 
 export function ActionsCell({ placeList }: { placeList: AdminPlaceListDto }) {
   const router = useRouter()
-  const { mutateAsync: deleteList } = useDeletePlaceList()
+  const { mutateAsync: deleteList, isPending: isDeleting } = useDeletePlaceList()
 
   const handleDelete = async () => {
     if (!confirm(`정말 "${placeList.name}" 리스트를 삭제하시겠습니까?`)) {
       return
     }
-    await deleteList(placeList.id)
+    try {
+      await deleteList(placeList.id)
+      toast.success("리스트가 삭제되었습니다.")
+    } catch {
+      toast.error("리스트 삭제에 실패했습니다.")
+    }
   }
 
   return (
@@ -23,9 +31,9 @@ export function ActionsCell({ placeList }: { placeList: AdminPlaceListDto }) {
         <Pencil className="h-3 w-3" />
         편집
       </Button>
-      <Button size="sm" variant="destructive" className="gap-2" onClick={handleDelete}>
+      <Button size="sm" variant="destructive" className="gap-2" onClick={handleDelete} disabled={isDeleting}>
         <Trash2 className="h-3 w-3" />
-        삭제
+        {isDeleting ? "삭제 중..." : "삭제"}
       </Button>
     </div>
   )

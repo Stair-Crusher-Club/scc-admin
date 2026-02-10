@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { useCreatePlaceList } from "@/lib/apis/placeList"
 
@@ -21,14 +22,18 @@ export default function PlaceListCreatePage() {
   const [newPlaceId, setNewPlaceId] = useState("")
 
   const handleCreate = async () => {
-    await createPlaceList({
-      name,
-      description: description || null,
-      thumbnailUrl: thumbnailUrl || null,
-      placeIds,
-    })
-    alert("리스트가 생성되었습니다.")
-    router.push("/placeList")
+    try {
+      await createPlaceList({
+        name,
+        description: description || null,
+        thumbnailUrl: thumbnailUrl || null,
+        placeIds,
+      })
+      toast.success("리스트가 생성되었습니다.")
+      router.push("/placeList")
+    } catch {
+      toast.error("리스트 생성에 실패했습니다.")
+    }
   }
 
   const handleAddPlace = () => {
