@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   AdminCreatePlaceListRequestDto,
   AdminPlaceListDetailDto,
+  AdminSearchPlacesByKeywordRequestDto,
   AdminUpdatePlaceListRequestDto,
 } from "@/lib/generated-sources/openapi"
 
@@ -87,5 +88,31 @@ export function useDeletePlaceList() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["@place-lists"] })
     },
+  })
+}
+
+// 장소 키워드 검색
+export function usePlaceSearch({
+  keyword,
+  region,
+}: {
+  keyword: string
+  region?: AdminSearchPlacesByKeywordRequestDto["circleRegion"] | AdminSearchPlacesByKeywordRequestDto["rectangleRegion"]
+  regionType?: "circle" | "rectangle"
+}) {
+  return useQuery({
+    queryKey: ["@place-search", keyword, region],
+    queryFn: async () => {
+      const request: AdminSearchPlacesByKeywordRequestDto = { keyword }
+      if (region && "radiusMeters" in region) {
+        request.circleRegion = region
+      } else if (region && "leftTopLocation" in region) {
+        request.rectangleRegion = region
+      }
+      const result = await api.placeList.searchPlacesByKeyword(request)
+      return result.data.items
+    },
+    enabled: keyword.trim().length >= 2,
+    staleTime: 30 * 1000,
   })
 }

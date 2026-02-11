@@ -812,6 +812,25 @@ export interface AdminChallengeDTO {
     'isRetroactiveContributionEnabled'?: boolean;
 }
 /**
+ * 원형 검색 영역
+ * @export
+ * @interface AdminCircleSearchRegionDto
+ */
+export interface AdminCircleSearchRegionDto {
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminCircleSearchRegionDto
+     */
+    'centerLocation': LocationDTO;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminCircleSearchRegionDto
+     */
+    'radiusMeters': number;
+}
+/**
  * 
  * @export
  * @interface AdminClosedPlaceCandidateDTO
@@ -1917,6 +1936,18 @@ export interface AdminPlaceListPlaceDto {
      * @memberof AdminPlaceListPlaceDto
      */
     'address'?: string | null;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminPlaceListPlaceDto
+     */
+    'location': LocationDTO;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminPlaceListPlaceDto
+     */
+    'accessibilityScore'?: number | null;
 }
 /**
  * 
@@ -1966,6 +1997,25 @@ export interface AdminPushNotificationScheduleDTO {
      * @memberof AdminPushNotificationScheduleDTO
      */
     'targetUserIds': Array<string>;
+}
+/**
+ * 직사각형 검색 영역 (지도 화면 bounds)
+ * @export
+ * @interface AdminRectangleSearchRegionDto
+ */
+export interface AdminRectangleSearchRegionDto {
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminRectangleSearchRegionDto
+     */
+    'leftTopLocation': LocationDTO;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminRectangleSearchRegionDto
+     */
+    'rightBottomLocation': LocationDTO;
 }
 /**
  * 
@@ -2029,6 +2079,99 @@ export interface AdminSearchPlacePresetDTO {
      * @memberof AdminSearchPlacePresetDTO
      */
     'searchText': string;
+}
+/**
+ * 키워드 장소 검색 요청
+ * @export
+ * @interface AdminSearchPlacesByKeywordRequestDto
+ */
+export interface AdminSearchPlacesByKeywordRequestDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminSearchPlacesByKeywordRequestDto
+     */
+    'keyword': string;
+    /**
+     * 
+     * @type {AdminCircleSearchRegionDto}
+     * @memberof AdminSearchPlacesByKeywordRequestDto
+     */
+    'circleRegion'?: AdminCircleSearchRegionDto;
+    /**
+     * 
+     * @type {AdminRectangleSearchRegionDto}
+     * @memberof AdminSearchPlacesByKeywordRequestDto
+     */
+    'rectangleRegion'?: AdminRectangleSearchRegionDto;
+}
+/**
+ * 키워드 장소 검색 응답
+ * @export
+ * @interface AdminSearchPlacesByKeywordResponseDto
+ */
+export interface AdminSearchPlacesByKeywordResponseDto {
+    /**
+     * 
+     * @type {Array<AdminSearchedPlaceDto>}
+     * @memberof AdminSearchPlacesByKeywordResponseDto
+     */
+    'items': Array<AdminSearchedPlaceDto>;
+}
+/**
+ * 검색된 장소 정보
+ * @export
+ * @interface AdminSearchedPlaceDto
+ */
+export interface AdminSearchedPlaceDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminSearchedPlaceDto
+     */
+    'placeId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminSearchedPlaceDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminSearchedPlaceDto
+     */
+    'address'?: string | null;
+    /**
+     * 
+     * @type {LocationDTO}
+     * @memberof AdminSearchedPlaceDto
+     */
+    'location': LocationDTO;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminSearchedPlaceDto
+     */
+    'hasBuildingAccessibility': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminSearchedPlaceDto
+     */
+    'hasPlaceAccessibility': boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminSearchedPlaceDto
+     */
+    'accessibilityScore'?: number | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminSearchedPlaceDto
+     */
+    'isAccessibilityRegistrable': boolean;
 }
 /**
  * 
@@ -9971,6 +10114,46 @@ export const PlaceListApiAxiosParamCreator = function (configuration?: Configura
         },
         /**
          * 
+         * @summary 외부 지도 API를 사용하여 키워드로 장소를 검색한다.
+         * @param {AdminSearchPlacesByKeywordRequestDto} adminSearchPlacesByKeywordRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchPlacesByKeyword: async (adminSearchPlacesByKeywordRequestDto: AdminSearchPlacesByKeywordRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminSearchPlacesByKeywordRequestDto' is not null or undefined
+            assertParamExists('searchPlacesByKeyword', 'adminSearchPlacesByKeywordRequestDto', adminSearchPlacesByKeywordRequestDto)
+            const localVarPath = `/places/search`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminSearchPlacesByKeywordRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 저장 리스트를 수정한다.
          * @param {string} id PlaceList ID
          * @param {AdminUpdatePlaceListRequestDto} adminUpdatePlaceListRequestDto 
@@ -10070,6 +10253,17 @@ export const PlaceListApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 외부 지도 API를 사용하여 키워드로 장소를 검색한다.
+         * @param {AdminSearchPlacesByKeywordRequestDto} adminSearchPlacesByKeywordRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async searchPlacesByKeyword(adminSearchPlacesByKeywordRequestDto: AdminSearchPlacesByKeywordRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSearchPlacesByKeywordResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchPlacesByKeyword(adminSearchPlacesByKeywordRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 저장 리스트를 수정한다.
          * @param {string} id PlaceList ID
          * @param {AdminUpdatePlaceListRequestDto} adminUpdatePlaceListRequestDto 
@@ -10130,6 +10324,16 @@ export const PlaceListApiFactory = function (configuration?: Configuration, base
          */
         listPlaceLists(cursor?: string, limit?: number, options?: any): AxiosPromise<AdminListPlaceListsResponseDto> {
             return localVarFp.listPlaceLists(cursor, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 외부 지도 API를 사용하여 키워드로 장소를 검색한다.
+         * @param {AdminSearchPlacesByKeywordRequestDto} adminSearchPlacesByKeywordRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchPlacesByKeyword(adminSearchPlacesByKeywordRequestDto: AdminSearchPlacesByKeywordRequestDto, options?: any): AxiosPromise<AdminSearchPlacesByKeywordResponseDto> {
+            return localVarFp.searchPlacesByKeyword(adminSearchPlacesByKeywordRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -10199,6 +10403,18 @@ export class PlaceListApi extends BaseAPI {
      */
     public listPlaceLists(cursor?: string, limit?: number, options?: AxiosRequestConfig) {
         return PlaceListApiFp(this.configuration).listPlaceLists(cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 외부 지도 API를 사용하여 키워드로 장소를 검색한다.
+     * @param {AdminSearchPlacesByKeywordRequestDto} adminSearchPlacesByKeywordRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceListApi
+     */
+    public searchPlacesByKeyword(adminSearchPlacesByKeywordRequestDto: AdminSearchPlacesByKeywordRequestDto, options?: AxiosRequestConfig) {
+        return PlaceListApiFp(this.configuration).searchPlacesByKeyword(adminSearchPlacesByKeywordRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

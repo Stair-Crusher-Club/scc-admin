@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
-import { AdminPlaceListPlaceDto } from "@/lib/generated-sources/openapi"
+import { AdminPlaceListPlaceDto, AdminSearchedPlaceDto } from "@/lib/generated-sources/openapi"
 import {
   usePlaceListDetail,
   useUpdatePlaceList,
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Contents } from "@/components/layout"
 import { Trash2 } from "lucide-react"
+import { PlaceSearchPanel } from "../components/PlaceSearchPanel"
 
 export default function PlaceListDetailPage() {
   const params = useParams()
@@ -27,15 +28,12 @@ export default function PlaceListDetailPage() {
 
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
-  const [thumbnailUrl, setThumbnailUrl] = useState("")
   const [places, setPlaces] = useState<AdminPlaceListPlaceDto[]>([])
-  const [newPlaceId, setNewPlaceId] = useState("")
 
   useEffect(() => {
     if (placeList) {
       setName(placeList.name)
       setDescription(placeList.description ?? "")
-      setThumbnailUrl(placeList.thumbnailUrl ?? "")
       setPlaces(placeList.places)
     }
   }, [placeList])
@@ -47,7 +45,6 @@ export default function PlaceListDetailPage() {
         data: {
           name,
           description: description || null,
-          thumbnailUrl: thumbnailUrl || null,
           placeIds: places.map((p) => p.placeId),
         },
       })
@@ -71,15 +68,17 @@ export default function PlaceListDetailPage() {
     }
   }
 
-  const handleAddPlace = () => {
-    const trimmed = newPlaceId.trim()
-    if (!trimmed) return
-    if (places.some((p) => p.placeId === trimmed)) {
-      alert("이미 추가된 장소입니다.")
+  const handleAddPlace = (searchedPlace: AdminSearchedPlaceDto) => {
+    if (places.some((p) => p.placeId === searchedPlace.placeId)) {
       return
     }
-    setPlaces([...places, { placeId: trimmed, name: trimmed, address: null }])
-    setNewPlaceId("")
+    setPlaces([...places, {
+      placeId: searchedPlace.placeId,
+      name: searchedPlace.name,
+      address: searchedPlace.address ?? null,
+      location: searchedPlace.location,
+      accessibilityScore: searchedPlace.accessibilityScore,
+    }])
   }
 
   const handleRemovePlace = (placeId: string) => {
@@ -125,40 +124,31 @@ export default function PlaceListDetailPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">썸네일 URL</label>
-              <input
-                value={thumbnailUrl}
-                onChange={(e) => setThumbnailUrl(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="https://..."
-              />
-            </div>
           </CardContent>
         </Card>
 
         {/* Places */}
         <Card>
           <CardContent className="p-6 space-y-4">
-            <h3 className="text-lg font-semibold">장소 목록 ({places.length}개)</h3>
+            <h3 className="text-lg font-semibold">장소 검색 & 추가</h3>
 
-            <div className="flex gap-2">
-              <input
-                value={newPlaceId}
-                onChange={(e) => setNewPlaceId(e.target.value)}
-                className="flex-1 px-3 py-2 border rounded-md"
-                placeholder="장소 ID 입력"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault()
-                    handleAddPlace()
-                  }
-                }}
-              />
-              <Button type="button" onClick={handleAddPlace} size="sm">
-                추가
-              </Button>
-            </div>
+            <PlaceSearchPanel
+              existingPlaceIds={places.map((p) => p.placeId)}
+              onAddPlace={handleAddPlace}
+              initialPlaceLocations={places
+                .filter((p) => p.location)
+                .map((p) => ({
+                  placeId: p.placeId,
+                  name: p.name,
+                  lat: p.location.lat,
+                  lng: p.location.lng,
+                  score: p.accessibilityScore ?? null,
+                }))}
+            />
+
+            <h4 className="text-sm font-medium text-muted-foreground">
+              추가된 장소 ({places.length}개)
+            </h4>
 
             {places.length === 0 ? (
               <p className="text-sm text-muted-foreground">장소가 없습니다.</p>
@@ -174,7 +164,6 @@ export default function PlaceListDetailPage() {
                       {place.address && (
                         <span className="text-sm text-muted-foreground ml-2">{place.address}</span>
                       )}
-                      <span className="text-xs text-muted-foreground ml-2">({place.placeId})</span>
                     </div>
                     <Button
                       type="button"

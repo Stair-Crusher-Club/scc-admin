@@ -1,6 +1,6 @@
 "use client"
 
-import { Pencil, Trash2 } from "lucide-react"
+import { Copy, Pencil, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 
@@ -25,11 +25,21 @@ export function ActionsCell({ placeList }: { placeList: AdminPlaceListDto }) {
     }
   }
 
+  const handleCopyDeepLink = async () => {
+    const deepLink = `stair-crusher://place-list/${placeList.id}`
+    await navigator.clipboard.writeText(deepLink)
+    toast.success("딥링크가 복사되었습니다.")
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <Button size="sm" variant="outline" className="gap-2" onClick={() => router.push(`/placeList/${placeList.id}`)}>
         <Pencil className="h-3 w-3" />
         편집
+      </Button>
+      <Button size="sm" variant="outline" className="gap-2" onClick={handleCopyDeepLink}>
+        <Copy className="h-3 w-3" />
+        딥링크 복사
       </Button>
       <Button size="sm" variant="destructive" className="gap-2" onClick={handleDelete} disabled={isDeleting}>
         <Trash2 className="h-3 w-3" />

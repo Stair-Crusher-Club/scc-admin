@@ -4,12 +4,14 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "react-toastify"
 
+import { AdminSearchedPlaceDto } from "@/lib/generated-sources/openapi"
 import { useCreatePlaceList } from "@/lib/apis/placeList"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Contents } from "@/components/layout"
 import { Trash2 } from "lucide-react"
+import { PlaceSearchPanel } from "../components/PlaceSearchPanel"
 
 export default function PlaceListCreatePage() {
   const router = useRouter()
@@ -17,17 +19,14 @@ export default function PlaceListCreatePage() {
 
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
-  const [thumbnailUrl, setThumbnailUrl] = useState("")
-  const [placeIds, setPlaceIds] = useState<string[]>([])
-  const [newPlaceId, setNewPlaceId] = useState("")
+  const [places, setPlaces] = useState<AdminSearchedPlaceDto[]>([])
 
   const handleCreate = async () => {
     try {
       await createPlaceList({
         name,
         description: description || null,
-        thumbnailUrl: thumbnailUrl || null,
-        placeIds,
+        placeIds: places.map((p) => p.placeId),
       })
       toast.success("리스트가 생성되었습니다.")
       router.push("/placeList")
@@ -36,19 +35,15 @@ export default function PlaceListCreatePage() {
     }
   }
 
-  const handleAddPlace = () => {
-    const trimmed = newPlaceId.trim()
-    if (!trimmed) return
-    if (placeIds.includes(trimmed)) {
-      alert("이미 추가된 장소입니다.")
+  const handleAddPlace = (place: AdminSearchedPlaceDto) => {
+    if (places.some((p) => p.placeId === place.placeId)) {
       return
     }
-    setPlaceIds([...placeIds, trimmed])
-    setNewPlaceId("")
+    setPlaces([...places, place])
   }
 
-  const handleRemovePlace = (id: string) => {
-    setPlaceIds(placeIds.filter((p) => p !== id))
+  const handleRemovePlace = (placeId: string) => {
+    setPlaces(places.filter((p) => p.placeId !== placeId))
   }
 
   return (
@@ -82,56 +77,43 @@ export default function PlaceListCreatePage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">썸네일 URL</label>
-              <input
-                value={thumbnailUrl}
-                onChange={(e) => setThumbnailUrl(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="https://..."
-              />
-            </div>
           </CardContent>
         </Card>
 
         {/* Places */}
         <Card>
           <CardContent className="p-6 space-y-4">
-            <h3 className="text-lg font-semibold">장소 목록 ({placeIds.length}개)</h3>
+            <h3 className="text-lg font-semibold">장소 검색 & 추가</h3>
 
-            <div className="flex gap-2">
-              <input
-                value={newPlaceId}
-                onChange={(e) => setNewPlaceId(e.target.value)}
-                className="flex-1 px-3 py-2 border rounded-md"
-                placeholder="장소 ID 입력"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault()
-                    handleAddPlace()
-                  }
-                }}
-              />
-              <Button type="button" onClick={handleAddPlace} size="sm">
-                추가
-              </Button>
-            </div>
+            <PlaceSearchPanel
+              existingPlaceIds={places.map((p) => p.placeId)}
+              onAddPlace={handleAddPlace}
+            />
 
-            {placeIds.length === 0 ? (
-              <p className="text-sm text-muted-foreground">장소를 추가하세요.</p>
+            <h4 className="text-sm font-medium text-muted-foreground">
+              추가된 장소 ({places.length}개)
+            </h4>
+
+            {places.length === 0 ? (
+              <p className="text-sm text-muted-foreground">장소를 검색하여 추가하세요.</p>
             ) : (
               <div className="space-y-2">
-                {placeIds.map((id) => (
+                {places.map((place) => (
                   <div
-                    key={id}
+                    key={place.placeId}
                     className="flex items-center justify-between px-3 py-2 border rounded-md"
                   >
-                    <span className="text-sm">{id}</span>
+                    <div>
+                      <span className="font-medium">{place.name}</span>
+                      {place.address && (
+                        <span className="text-sm text-muted-foreground ml-2">{place.address}</span>
+                      )}
+                    </div>
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleRemovePlace(id)}
+                      onClick={() => handleRemovePlace(place.placeId)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
