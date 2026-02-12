@@ -19,6 +19,7 @@ export default function PlaceListCreatePage() {
 
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
+  const [iconColor, setIconColor] = useState("#FFC01E")
   const [places, setPlaces] = useState<AdminSearchedPlaceDto[]>([])
 
   const handleCreate = async () => {
@@ -26,6 +27,7 @@ export default function PlaceListCreatePage() {
       await createPlaceList({
         name,
         description: description || null,
+        iconColor: iconColor || null,
         placeIds: places.map((p) => p.placeId),
       })
       toast.success("리스트가 생성되었습니다.")
@@ -75,6 +77,24 @@ export default function PlaceListCreatePage() {
                 rows={3}
                 placeholder="리스트 설명"
               />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">아이콘 색상</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={iconColor}
+                  onChange={(e) => setIconColor(e.target.value)}
+                  className="w-10 h-10 rounded cursor-pointer border"
+                />
+                <input
+                  value={iconColor}
+                  onChange={(e) => setIconColor(e.target.value)}
+                  className="w-32 px-3 py-2 border rounded-md font-mono text-sm"
+                  placeholder="#FFC01E"
+                />
+              </div>
             </div>
 
           </CardContent>

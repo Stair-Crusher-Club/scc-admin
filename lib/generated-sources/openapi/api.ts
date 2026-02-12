@@ -1248,6 +1248,12 @@ export interface AdminCreatePlaceListRequestDto {
      */
     'thumbnailUrl'?: string | null;
     /**
+     * 아이콘 배경색 (hex, e.g. \"#FFC01E\"). null이면 기본색 사용.
+     * @type {string}
+     * @memberof AdminCreatePlaceListRequestDto
+     */
+    'iconColor'?: string | null;
+    /**
      * 리스트에 포함할 장소 ID 목록
      * @type {Array<string>}
      * @memberof AdminCreatePlaceListRequestDto
@@ -1845,6 +1851,12 @@ export interface AdminPlaceListDetailDto {
      */
     'thumbnailUrl'?: string | null;
     /**
+     * 아이콘 배경색 (hex, e.g. \"#FFC01E\"). null이면 기본색 사용.
+     * @type {string}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'iconColor'?: string | null;
+    /**
      * 
      * @type {Array<AdminPlaceListPlaceDto>}
      * @memberof AdminPlaceListDetailDto
@@ -1893,6 +1905,12 @@ export interface AdminPlaceListDto {
      * @memberof AdminPlaceListDto
      */
     'thumbnailUrl'?: string | null;
+    /**
+     * 아이콘 배경색 (hex, e.g. \"#FFC01E\"). null이면 기본색 사용.
+     * @type {string}
+     * @memberof AdminPlaceListDto
+     */
+    'iconColor'?: string | null;
     /**
      * 리스트에 포함된 장소 수
      * @type {number}
@@ -1999,7 +2017,7 @@ export interface AdminPushNotificationScheduleDTO {
     'targetUserIds': Array<string>;
 }
 /**
- * 직사각형 검색 영역 (지도 화면 bounds)
+ * 직사각형 검색 영역
  * @export
  * @interface AdminRectangleSearchRegionDto
  */
@@ -2553,6 +2571,12 @@ export interface AdminUpdatePlaceListRequestDto {
      * @memberof AdminUpdatePlaceListRequestDto
      */
     'thumbnailUrl'?: string | null;
+    /**
+     * 아이콘 배경색 (hex, e.g. \"#FFC01E\"). null이면 기본색 사용.
+     * @type {string}
+     * @memberof AdminUpdatePlaceListRequestDto
+     */
+    'iconColor'?: string | null;
     /**
      * 리스트에 포함할 장소 ID 목록 (기존 매핑을 대체)
      * @type {Array<string>}
@@ -10114,7 +10138,7 @@ export const PlaceListApiAxiosParamCreator = function (configuration?: Configura
         },
         /**
          * 
-         * @summary 외부 지도 API를 사용하여 키워드로 장소를 검색한다.
+         * @summary 키워드로 장소를 검색한다.
          * @param {AdminSearchPlacesByKeywordRequestDto} adminSearchPlacesByKeywordRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -10253,7 +10277,7 @@ export const PlaceListApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary 외부 지도 API를 사용하여 키워드로 장소를 검색한다.
+         * @summary 키워드로 장소를 검색한다.
          * @param {AdminSearchPlacesByKeywordRequestDto} adminSearchPlacesByKeywordRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -10327,7 +10351,7 @@ export const PlaceListApiFactory = function (configuration?: Configuration, base
         },
         /**
          * 
-         * @summary 외부 지도 API를 사용하여 키워드로 장소를 검색한다.
+         * @summary 키워드로 장소를 검색한다.
          * @param {AdminSearchPlacesByKeywordRequestDto} adminSearchPlacesByKeywordRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -10407,7 +10431,7 @@ export class PlaceListApi extends BaseAPI {
 
     /**
      * 
-     * @summary 외부 지도 API를 사용하여 키워드로 장소를 검색한다.
+     * @summary 키워드로 장소를 검색한다.
      * @param {AdminSearchPlacesByKeywordRequestDto} adminSearchPlacesByKeywordRequestDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
