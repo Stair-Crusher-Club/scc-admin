@@ -33,7 +33,6 @@ body {
 .modal-overlay.dim {
   background: rgba(0, 0, 0, 0);
   transition: background-color 0.3s;
-  pointer-events: all;
 }
 .modal-overlay.dim.visible {
   background: rgba(0, 0, 0, 0.2);

@@ -37,3 +37,14 @@ export function useResolveAccessibilityReport() {
     },
   })
 }
+
+export function useDeleteAccessibilityImage() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (imageId: string) =>
+      api.accessibilityReport.adminDeleteAccessibilityImage(imageId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["@accessibility-reports"] })
+    },
+  })
+}

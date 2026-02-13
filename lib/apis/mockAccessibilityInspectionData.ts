@@ -86,6 +86,7 @@ function generateMockItem(index: number): AdminAccessibilityInspectionResultDTO 
 
   const imageCount = (index % 4) + 1
   const images = Array.from({ length: imageCount }, (_, imgIdx) => ({
+    id: `img-${index}-${imgIdx}`,
     imageUrl: sampleImages[imgIdx % sampleImages.length],
     thumbnailUrl: sampleImages[imgIdx % sampleImages.length],
   }))

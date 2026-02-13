@@ -1,5 +1,17 @@
 import { styled } from "@/styles/jsx"
 
+export const Backdrop = styled("div", {
+  base: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    pointerEvents: "all",
+    zIndex: 0,
+  },
+})
+
 export const RightSheet = styled("div", {
   base: {
     position: "absolute",
@@ -14,6 +26,7 @@ export const RightSheet = styled("div", {
     transition: "transform 0.2s ease-in-out",
     pointerEvents: "all",
     boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)",
+    zIndex: 1,
   },
   variants: {
     visible: {

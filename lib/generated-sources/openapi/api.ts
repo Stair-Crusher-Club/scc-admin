@@ -1675,6 +1675,12 @@ export interface AdminImageDTO {
      * @type {string}
      * @memberof AdminImageDTO
      */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminImageDTO
+     */
     'imageUrl': string;
     /**
      * 
@@ -5163,6 +5169,44 @@ export const AccessibilityReportApiAxiosParamCreator = function (configuration?:
     return {
         /**
          * 
+         * @summary 접근성 이미지를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminDeleteAccessibilityImage: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminDeleteAccessibilityImage', 'id', id)
+            const localVarPath = `/accessibility-images/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 접근성 신고 상세를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -5304,6 +5348,17 @@ export const AccessibilityReportApiFp = function(configuration?: Configuration) 
     return {
         /**
          * 
+         * @summary 접근성 이미지를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminDeleteAccessibilityImage(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminDeleteAccessibilityImage(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 접근성 신고 상세를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -5350,6 +5405,16 @@ export const AccessibilityReportApiFactory = function (configuration?: Configura
     return {
         /**
          * 
+         * @summary 접근성 이미지를 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminDeleteAccessibilityImage(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.adminDeleteAccessibilityImage(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 접근성 신고 상세를 조회한다.
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -5391,6 +5456,18 @@ export const AccessibilityReportApiFactory = function (configuration?: Configura
  * @extends {BaseAPI}
  */
 export class AccessibilityReportApi extends BaseAPI {
+    /**
+     * 
+     * @summary 접근성 이미지를 삭제한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccessibilityReportApi
+     */
+    public adminDeleteAccessibilityImage(id: string, options?: AxiosRequestConfig) {
+        return AccessibilityReportApiFp(this.configuration).adminDeleteAccessibilityImage(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary 접근성 신고 상세를 조회한다.
