@@ -1,12 +1,14 @@
 import { Combobox, NumberInput } from "@reactleaf/input/hookform"
 import { BasicModalProps } from "@reactleaf/modal"
 import { format } from "date-fns"
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
+import { X } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
-import { useAccessibilityReportDetail, useResolveAccessibilityReport } from "@/lib/apis/accessibilityReport"
+import { useAccessibilityReportDetail, useDeleteAccessibilityImage, useResolveAccessibilityReport } from "@/lib/apis/accessibilityReport"
 import {
   AdminResolveAccessibilityReportRequestDTOActionEnum,
   type AdminResolveAccessibilityReportRequestDTO,
@@ -45,10 +47,20 @@ const reasonLabels: Record<string, string> = {
 export default function AccessibilityReportDetail({ reportId, visible, close }: Props) {
   const { data: detail, isLoading } = useAccessibilityReportDetail(reportId)
   const { mutateAsync: resolveReport, isPending } = useResolveAccessibilityReport()
-  const [isEditing, setIsEditing] = useState(false)
+  const { mutateAsync: deleteImage } = useDeleteAccessibilityImage()
 
   const placeForm = useForm<EditPlaceAccessibilityFormValues>()
   const buildingForm = useForm<EditBuildingAccessibilityFormValues>()
+
+  const handleDeleteImage = async (imageId: string) => {
+    if (!confirm("이 사진을 삭제하시겠습니까?")) return
+    try {
+      await deleteImage(imageId)
+      toast.success("사진이 삭제되었습니다.")
+    } catch {
+      toast.error("사진 삭제에 실패했습니다.")
+    }
+  }
 
   const convertToFloorOptions = (floors?: number[]) => {
     if (!floors || floors.length === 0) return undefined
@@ -63,7 +75,6 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
     const pa = detail.placeAccessibility
     if (pa) {
       placeForm.reset({
-        isFirstFloor: booleanOptions.find((v) => v.value === pa.isFirstFloor),
         floors: convertToFloorOptions(pa.floors),
         floorNumber:
           convertToFloorOptions(pa.floors)?.value === "not_first" ? pa.floors?.[0] : undefined,
@@ -89,12 +100,7 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
   }, [detail])
 
   const buildPlacePayload = (formValues: EditPlaceAccessibilityFormValues): AdminUpdatePlaceAccessibilityRequestDTO => {
-    let isFirstFloor: boolean
-    if (formValues.floors !== undefined) {
-      isFirstFloor = formValues.floors.value === "first"
-    } else {
-      isFirstFloor = formValues.isFirstFloor?.value ?? false
-    }
+    const isFirstFloor = formValues.floors?.value === "first"
 
     let floors: number[] | undefined
     if (formValues.floors === undefined) {
@@ -115,7 +121,7 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
       floors,
       isStairOnlyOption: formValues.isStairOnlyOption?.value,
       stairInfo: formValues.stairInfo?.value || "UNDEFINED",
-      stairHeightLevel: formValues.stairHeightLevel?.value,
+      stairHeightLevel: formValues.stairInfo?.value === "ONE" ? formValues.stairHeightLevel?.value : undefined,
       hasSlope: formValues.hasSlope?.value || false,
       entranceDoorTypes: entranceDoorTypes?.length ? entranceDoorTypes : undefined,
     }
@@ -129,10 +135,10 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
       hasElevator: formValues.hasElevator?.value || false,
       hasSlope: formValues.hasSlope?.value || false,
       entranceStairInfo: formValues.entranceStairInfo?.value || "UNDEFINED",
-      entranceStairHeightLevel: formValues.entranceStairHeightLevel?.value,
+      entranceStairHeightLevel: formValues.entranceStairInfo?.value === "ONE" ? formValues.entranceStairHeightLevel?.value : undefined,
       entranceDoorTypes: entranceDoorTypes?.length ? entranceDoorTypes : undefined,
       elevatorStairInfo: formValues.elevatorStairInfo?.value || "UNDEFINED",
-      elevatorStairHeightLevel: formValues.elevatorStairHeightLevel?.value,
+      elevatorStairHeightLevel: formValues.elevatorStairInfo?.value === "ONE" ? formValues.elevatorStairHeightLevel?.value : undefined,
     }
   }
 
@@ -238,120 +244,182 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
           {/* Accessibility Edit Forms */}
           {showPlaceForm && (
             <section className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-base">장소 접근성 정보</h3>
-                {!isResolved && (
-                  <Button size="sm" variant="outline" onClick={() => setIsEditing(!isEditing)}>
-                    {isEditing ? "수정 취소" : "수정"}
-                  </Button>
-                )}
-              </div>
-              {isEditing && !isResolved ? (
-                <FormProvider {...placeForm}>
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <Combobox name="floors" label="층 정보" options={floorOptions} />
-                      <Combobox
-                        name="isFirstFloor"
-                        label="1층에 있는 장소"
-                        options={booleanOptions}
-                        isDisabled={placeForm.watch("floors") != undefined}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <NumberInput
-                        name="floorNumber"
-                        label="몇 층?"
-                        disabled={!placeForm.watch("floors") || placeForm.watch("floors")?.value !== "not_first"}
-                      />
-                      <Combobox
-                        name="isStairOnlyOption"
-                        label="계단만 있나요?"
-                        options={booleanOptions}
-                        isDisabled={!placeForm.watch("floors") || placeForm.watch("floors")?.value !== "multiple_including_first"}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Combobox name="stairInfo" label="입구 계단 정보" options={stairInfoOptions} />
-                      <Combobox
-                        name="stairHeightLevel"
-                        label="계단 높이"
-                        options={stairHeightLevelOptions}
-                        isDisabled={!placeForm.watch("stairInfo") || placeForm.watch("stairInfo")?.value !== "ONE"}
-                      />
-                    </div>
-                    <Combobox name="hasSlope" label="경사로 유무" options={booleanOptions} />
-                    <Combobox isMulti name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} />
+              <h3 className="font-semibold text-base">장소 접근성 정보</h3>
+
+              {/* 장소 사진 */}
+              {detail.placeAccessibility!.images.length > 0 && (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    장소 사진 ({detail.placeAccessibility!.images.length}장)
+                  </p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {detail.placeAccessibility!.images.map((image, idx) => (
+                      <div key={image.id} className="relative group">
+                        <a
+                          href={image.imageUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative aspect-square overflow-hidden rounded-md border hover:opacity-80 transition-opacity block"
+                        >
+                          <img
+                            src={image.thumbnailUrl || image.imageUrl}
+                            alt={`장소 사진 ${idx + 1}`}
+                            className="object-cover w-full h-full"
+                          />
+                        </a>
+                        {!isResolved && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteImage(image.id)}
+                            className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                </FormProvider>
-              ) : (
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="text-muted-foreground">1층 여부</div>
-                  <div>{detail.placeAccessibility?.isFirstFloor ? "예" : "아니오"}</div>
-                  <div className="text-muted-foreground">계단 정보</div>
-                  <div>{detail.placeAccessibility?.stairInfo ?? "-"}</div>
-                  <div className="text-muted-foreground">경사로</div>
-                  <div>{detail.placeAccessibility?.hasSlope ? "있음" : "없음"}</div>
-                  <div className="text-muted-foreground">출입문</div>
-                  <div>{detail.placeAccessibility?.entranceDoorTypes?.join(", ") ?? "-"}</div>
                 </div>
               )}
+
+              <FormProvider {...placeForm}>
+                <div className="space-y-3">
+                  <Combobox name="floors" label="층 정보" options={floorOptions} isDisabled={isResolved} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <NumberInput
+                      name="floorNumber"
+                      label="몇 층?"
+                      disabled={isResolved || !placeForm.watch("floors") || placeForm.watch("floors")?.value !== "not_first"}
+                    />
+                    <Combobox
+                      name="isStairOnlyOption"
+                      label="계단만 있나요?"
+                      options={booleanOptions}
+                      isDisabled={isResolved || !placeForm.watch("floors") || placeForm.watch("floors")?.value !== "multiple_including_first"}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Combobox name="stairInfo" label="입구 계단 정보" options={stairInfoOptions} isDisabled={isResolved} />
+                    <Combobox
+                      name="stairHeightLevel"
+                      label="계단 높이"
+                      options={stairHeightLevelOptions}
+                      isDisabled={isResolved || !placeForm.watch("stairInfo") || placeForm.watch("stairInfo")?.value !== "ONE"}
+                    />
+                  </div>
+                  <Combobox name="hasSlope" label="경사로 유무" options={booleanOptions} isDisabled={isResolved} />
+                  <Combobox isMulti name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} isDisabled={isResolved} />
+                </div>
+              </FormProvider>
             </section>
           )}
 
           {showBuildingForm && (
             <section className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-base">건물 접근성 정보</h3>
-                {!isResolved && (
-                  <Button size="sm" variant="outline" onClick={() => setIsEditing(!isEditing)}>
-                    {isEditing ? "수정 취소" : "수정"}
-                  </Button>
-                )}
-              </div>
-              {isEditing && !isResolved ? (
-                <FormProvider {...buildingForm}>
-                  <div className="space-y-3">
-                    <Combobox name="hasSlope" label="경사로 유무" options={booleanOptions} />
-                    <div className="grid grid-cols-2 gap-3">
-                      <Combobox name="entranceStairInfo" label="입구 계단" options={stairInfoOptions} />
-                      <Combobox
-                        name="entranceStairHeightLevel"
-                        label="입구 계단 높이"
-                        options={stairHeightLevelOptions}
-                        isDisabled={!buildingForm.watch("entranceStairInfo") || buildingForm.watch("entranceStairInfo")?.value !== "ONE"}
-                      />
-                    </div>
-                    <Combobox isMulti name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} />
-                    <Combobox name="hasElevator" label="엘리베이터 유무" options={booleanOptions} />
-                    <div className="grid grid-cols-2 gap-3">
-                      <Combobox
-                        name="elevatorStairInfo"
-                        label="엘리베이터까지 계단"
-                        options={stairInfoOptions}
-                        isDisabled={!buildingForm.watch("hasElevator") || buildingForm.watch("hasElevator")?.value === false}
-                      />
-                      <Combobox
-                        name="elevatorStairHeightLevel"
-                        label="엘리베이터 계단 높이"
-                        options={stairHeightLevelOptions}
-                        isDisabled={!buildingForm.watch("elevatorStairInfo") || buildingForm.watch("elevatorStairInfo")?.value !== "ONE"}
-                      />
-                    </div>
+              <h3 className="font-semibold text-base">건물 접근성 정보</h3>
+
+              {/* 건물 입구 사진 */}
+              {detail.buildingAccessibility!.entranceImages.length > 0 && (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    건물 입구 사진 ({detail.buildingAccessibility!.entranceImages.length}장)
+                  </p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {detail.buildingAccessibility!.entranceImages.map((image, idx) => (
+                      <div key={image.id} className="relative group">
+                        <a
+                          href={image.imageUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative aspect-square overflow-hidden rounded-md border hover:opacity-80 transition-opacity block"
+                        >
+                          <img
+                            src={image.thumbnailUrl || image.imageUrl}
+                            alt={`건물 입구 사진 ${idx + 1}`}
+                            className="object-cover w-full h-full"
+                          />
+                        </a>
+                        {!isResolved && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteImage(image.id)}
+                            className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                </FormProvider>
-              ) : (
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="text-muted-foreground">엘리베이터</div>
-                  <div>{detail.buildingAccessibility?.hasElevator ? "있음" : "없음"}</div>
-                  <div className="text-muted-foreground">경사로</div>
-                  <div>{detail.buildingAccessibility?.hasSlope ? "있음" : "없음"}</div>
-                  <div className="text-muted-foreground">입구 계단</div>
-                  <div>{detail.buildingAccessibility?.entranceStairInfo ?? "-"}</div>
-                  <div className="text-muted-foreground">출입문</div>
-                  <div>{detail.buildingAccessibility?.entranceDoorTypes?.join(", ") ?? "-"}</div>
                 </div>
               )}
+
+              {/* 엘리베이터 사진 */}
+              {detail.buildingAccessibility!.elevatorImages.length > 0 && (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    엘리베이터 사진 ({detail.buildingAccessibility!.elevatorImages.length}장)
+                  </p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {detail.buildingAccessibility!.elevatorImages.map((image, idx) => (
+                      <div key={image.id} className="relative group">
+                        <a
+                          href={image.imageUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative aspect-square overflow-hidden rounded-md border hover:opacity-80 transition-opacity block"
+                        >
+                          <img
+                            src={image.thumbnailUrl || image.imageUrl}
+                            alt={`엘리베이터 사진 ${idx + 1}`}
+                            className="object-cover w-full h-full"
+                          />
+                        </a>
+                        {!isResolved && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteImage(image.id)}
+                            className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <FormProvider {...buildingForm}>
+                <div className="space-y-3">
+                  <Combobox name="hasSlope" label="경사로 유무" options={booleanOptions} isDisabled={isResolved} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Combobox name="entranceStairInfo" label="입구 계단" options={stairInfoOptions} isDisabled={isResolved} />
+                    <Combobox
+                      name="entranceStairHeightLevel"
+                      label="입구 계단 높이"
+                      options={stairHeightLevelOptions}
+                      isDisabled={isResolved || !buildingForm.watch("entranceStairInfo") || buildingForm.watch("entranceStairInfo")?.value !== "ONE"}
+                    />
+                  </div>
+                  <Combobox isMulti name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} isDisabled={isResolved} />
+                  <Combobox name="hasElevator" label="엘리베이터 유무" options={booleanOptions} isDisabled={isResolved} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Combobox
+                      name="elevatorStairInfo"
+                      label="엘리베이터까지 계단"
+                      options={stairInfoOptions}
+                      isDisabled={isResolved || !buildingForm.watch("hasElevator") || buildingForm.watch("hasElevator")?.value === false}
+                    />
+                    <Combobox
+                      name="elevatorStairHeightLevel"
+                      label="엘리베이터 계단 높이"
+                      options={stairHeightLevelOptions}
+                      isDisabled={isResolved || !buildingForm.watch("elevatorStairInfo") || buildingForm.watch("elevatorStairInfo")?.value !== "ONE"}
+                    />
+                  </div>
+                </div>
+              </FormProvider>
             </section>
           )}
 
@@ -368,7 +436,7 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
           {/* Action Buttons */}
           {!isResolved && (
             <section className="space-y-2 pt-4 border-t">
-              {isEditing && (showPlaceForm || showBuildingForm) && (
+              {(showPlaceForm || showBuildingForm) && (
                 <Button className="w-full" onClick={handleResolveWithUpdate} disabled={isPending}>
                   수정 & 처리 완료
                 </Button>

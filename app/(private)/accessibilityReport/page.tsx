@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useMemo, useCallback } from "react"
 import { toast } from "react-toastify"
 
 import { Card, CardContent } from "@/components/ui/card"
@@ -23,8 +24,24 @@ const statusFilterLabels: Record<StatusFilter, string> = {
   DISMISSED: "무시",
 }
 
+const validStatuses = new Set<string>(["ALL", "PENDING", "RESOLVED", "DISMISSED"])
+
 export default function AccessibilityReportPage() {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("PENDING")
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const rawStatus = searchParams.get("status")
+  const statusFilter: StatusFilter =
+    rawStatus && validStatuses.has(rawStatus) ? (rawStatus as StatusFilter) : "PENDING"
+
+  const setStatusFilter = useCallback(
+    (value: StatusFilter) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set("status", value)
+      router.replace(`?${params.toString()}`)
+    },
+    [router, searchParams],
+  )
+
   const modal = useModal()
 
   const queryFilter = statusFilter === "ALL" ? undefined : (statusFilter as "PENDING" | "RESOLVED" | "DISMISSED")
@@ -36,42 +53,51 @@ export default function AccessibilityReportPage() {
     [data],
   )
 
-  const handleResolve = async (report: AdminAccessibilityReportListItemDTO) => {
-    if (!confirm("수정 없이 처리 완료합니다. 신고자에게 푸시 알림이 발송됩니다.")) return
-    try {
-      await resolveReport({
-        id: report.id,
-        request: { action: AdminResolveAccessibilityReportRequestDTOActionEnum.Resolve },
-      })
-      toast.success("신고가 처리 완료되었습니다.")
-    } catch {
-      toast.error("처리에 실패했습니다.")
-    }
-  }
+  const handleResolve = useCallback(
+    async (report: AdminAccessibilityReportListItemDTO) => {
+      if (!confirm("수정 없이 처리 완료합니다. 신고자에게 푸시 알림이 발송됩니다.")) return
+      try {
+        await resolveReport({
+          id: report.id,
+          request: { action: AdminResolveAccessibilityReportRequestDTOActionEnum.Resolve },
+        })
+        toast.success("신고가 처리 완료되었습니다.")
+      } catch {
+        toast.error("처리에 실패했습니다.")
+      }
+    },
+    [resolveReport],
+  )
 
-  const handleDismiss = async (report: AdminAccessibilityReportListItemDTO) => {
-    if (!confirm("이 신고를 무시합니다. 푸시 알림이 발송되지 않습니다.")) return
-    try {
-      await resolveReport({
-        id: report.id,
-        request: { action: AdminResolveAccessibilityReportRequestDTOActionEnum.Dismiss },
-      })
-      toast.success("신고가 무시 처리되었습니다.")
-    } catch {
-      toast.error("처리에 실패했습니다.")
-    }
-  }
+  const handleDismiss = useCallback(
+    async (report: AdminAccessibilityReportListItemDTO) => {
+      if (!confirm("이 신고를 무시합니다. 푸시 알림이 발송되지 않습니다.")) return
+      try {
+        await resolveReport({
+          id: report.id,
+          request: { action: AdminResolveAccessibilityReportRequestDTOActionEnum.Dismiss },
+        })
+        toast.success("신고가 무시 처리되었습니다.")
+      } catch {
+        toast.error("처리에 실패했습니다.")
+      }
+    },
+    [resolveReport],
+  )
 
-  const handleViewDetail = (report: AdminAccessibilityReportListItemDTO) => {
-    modal.openModal({
-      type: "AccessibilityReportDetail",
-      props: { reportId: report.id },
-    })
-  }
+  const handleViewDetail = useCallback(
+    (report: AdminAccessibilityReportListItemDTO) => {
+      modal.openModal({
+        type: "AccessibilityReportDetail",
+        props: { reportId: report.id },
+      })
+    },
+    [modal],
+  )
 
   const columns = useMemo(
     () => getColumns({ onResolve: handleResolve, onDismiss: handleDismiss, onViewDetail: handleViewDetail }),
-    [],
+    [handleResolve, handleDismiss, handleViewDetail],
   )
 
   return (

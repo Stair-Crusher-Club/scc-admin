@@ -2,7 +2,7 @@ import { createModalHook } from "@reactleaf/modal"
 import { ModalContextType } from "@reactleaf/modal/dist/context"
 import { OpenModalPayload } from "@reactleaf/modal/dist/types"
 import { atom, useAtom } from "jotai"
-import { useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 
 import register from "@/modals/register"
 
@@ -29,6 +29,8 @@ export const useModal: () => ModalContextType<typeof register> = () => {
   const isModalClosingRef = useRef<boolean>(false)
   const [pendingModalOpenRef, setPendingModal] = useAtom(pendingModalOpenAtom)
   const originalOnCloseRef = useRef<() => void>()
+  // handlePopstate를 ref로 관리하여 리스너 등록/해제 시 항상 동일한 참조를 사용
+  const handlePopstateRef = useRef<(event: PopStateEvent) => void>(() => {})
   function doOriginalOnCloseAndClear() {
     if (originalOnCloseRef.current) {
       originalOnCloseRef.current()
@@ -36,12 +38,16 @@ export const useModal: () => ModalContextType<typeof register> = () => {
     }
   }
 
+  const stablePopstateHandler = useCallback((event: PopStateEvent) => {
+    handlePopstateRef.current(event)
+  }, [])
+
   useEffect(() => {
-    window.addEventListener("popstate", handlePopstate)
+    window.addEventListener("popstate", stablePopstateHandler)
     return () => {
-      window.removeEventListener("popstate", handlePopstate)
+      window.removeEventListener("popstate", stablePopstateHandler)
     }
-  }, [pendingModalOpenRef])
+  }, [stablePopstateHandler])
 
   const { openedModals, defaultOverlayOptions, openModal, closeModal, closeAll, closeSelf } = originalUseModal()
 
@@ -97,7 +103,7 @@ export const useModal: () => ModalContextType<typeof register> = () => {
   }
 
   function onModalOpen() {
-    history.pushState({ isModalOpen: true }, "", window.location.pathname)
+    history.pushState({ isModalOpen: true }, "", window.location.pathname + window.location.search)
   }
 
   function onModalClose() {
@@ -109,9 +115,9 @@ export const useModal: () => ModalContextType<typeof register> = () => {
     }
   }
 
-  function handlePopstate(event: PopStateEvent) {
+  handlePopstateRef.current = (event: PopStateEvent) => {
     event.preventDefault()
-    if (!history.state.isModalOpen) {
+    if (!history.state?.isModalOpen) {
       closeAll()
       doOriginalOnCloseAndClear()
       onModalCloseFinished()
@@ -124,7 +130,6 @@ export const useModal: () => ModalContextType<typeof register> = () => {
 
   function onModalCloseFinished() {
     isModalClosingRef.current = false
-    window.removeEventListener("popstate", handlePopstate)
 
     if (pendingModalOpenRef) {
       pendingModalOpenRef()
