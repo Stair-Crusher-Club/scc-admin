@@ -276,7 +276,13 @@ export interface AdminAccessibilityReportDetailDTO {
      */
     'resolvedStatus'?: AccessibilityReportResolvedStatusDTO;
     /**
-     * 
+     *
+     * @type {boolean}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'isAutoResolved'?: boolean;
+    /**
+     *
      * @type {AdminPlaceAccessibilityDTO}
      * @memberof AdminAccessibilityReportDetailDTO
      */
@@ -354,6 +360,12 @@ export interface AdminAccessibilityReportListItemDTO {
      * @memberof AdminAccessibilityReportListItemDTO
      */
     'resolvedStatus'?: AccessibilityReportResolvedStatusDTO;
+    /**
+     *
+     * @type {boolean}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'isAutoResolved'?: boolean;
 }
 /**
  * Place를 SubBuilding에 할당한 결과

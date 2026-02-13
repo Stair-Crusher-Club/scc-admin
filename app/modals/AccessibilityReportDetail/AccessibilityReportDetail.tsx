@@ -195,6 +195,8 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
   }
 
   const isResolved = !!detail?.resolvedStatus
+  const isAutoResolved = !!detail?.isAutoResolved
+  const isEditable = !isResolved || isAutoResolved
   const showPlaceForm = detail?.targetType === "PLACE_ACCESSIBILITY" && detail.placeAccessibility
   const showBuildingForm = detail?.targetType === "BUILDING_ACCESSIBILITY" && detail.buildingAccessibility
 
@@ -238,6 +240,14 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
                   <div>{detail.resolvedAt ? format(new Date(detail.resolvedAt), "yyyy.MM.dd HH:mm") : "-"}</div>
                 </>
               )}
+              {isAutoResolved && (
+                <>
+                  <div className="text-muted-foreground">자동 처리</div>
+                  <div>
+                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">AI 자동 처리</span>
+                  </div>
+                </>
+              )}
             </div>
           </section>
 
@@ -267,7 +277,7 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
                             className="object-cover w-full h-full"
                           />
                         </a>
-                        {!isResolved && (
+                        {isEditable && (
                           <button
                             type="button"
                             onClick={() => handleDeleteImage(image.id)}
@@ -284,31 +294,31 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
 
               <FormProvider {...placeForm}>
                 <div className="space-y-3">
-                  <Combobox name="floors" label="층 정보" options={floorOptions} isDisabled={isResolved} />
+                  <Combobox name="floors" label="층 정보" options={floorOptions} isDisabled={!isEditable} />
                   <div className="grid grid-cols-2 gap-3">
                     <NumberInput
                       name="floorNumber"
                       label="몇 층?"
-                      disabled={isResolved || !placeForm.watch("floors") || placeForm.watch("floors")?.value !== "not_first"}
+                      disabled={!isEditable || !placeForm.watch("floors") || placeForm.watch("floors")?.value !== "not_first"}
                     />
                     <Combobox
                       name="isStairOnlyOption"
                       label="계단만 있나요?"
                       options={booleanOptions}
-                      isDisabled={isResolved || !placeForm.watch("floors") || placeForm.watch("floors")?.value !== "multiple_including_first"}
+                      isDisabled={!isEditable || !placeForm.watch("floors") || placeForm.watch("floors")?.value !== "multiple_including_first"}
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <Combobox name="stairInfo" label="입구 계단 정보" options={stairInfoOptions} isDisabled={isResolved} />
+                    <Combobox name="stairInfo" label="입구 계단 정보" options={stairInfoOptions} isDisabled={!isEditable} />
                     <Combobox
                       name="stairHeightLevel"
                       label="계단 높이"
                       options={stairHeightLevelOptions}
-                      isDisabled={isResolved || !placeForm.watch("stairInfo") || placeForm.watch("stairInfo")?.value !== "ONE"}
+                      isDisabled={!isEditable || !placeForm.watch("stairInfo") || placeForm.watch("stairInfo")?.value !== "ONE"}
                     />
                   </div>
-                  <Combobox name="hasSlope" label="경사로 유무" options={booleanOptions} isDisabled={isResolved} />
-                  <Combobox isMulti name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} isDisabled={isResolved} />
+                  <Combobox name="hasSlope" label="경사로 유무" options={booleanOptions} isDisabled={!isEditable} />
+                  <Combobox isMulti name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} isDisabled={!isEditable} />
                 </div>
               </FormProvider>
             </section>
@@ -339,7 +349,7 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
                             className="object-cover w-full h-full"
                           />
                         </a>
-                        {!isResolved && (
+                        {isEditable && (
                           <button
                             type="button"
                             onClick={() => handleDeleteImage(image.id)}
@@ -375,7 +385,7 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
                             className="object-cover w-full h-full"
                           />
                         </a>
-                        {!isResolved && (
+                        {isEditable && (
                           <button
                             type="button"
                             onClick={() => handleDeleteImage(image.id)}
@@ -392,30 +402,30 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
 
               <FormProvider {...buildingForm}>
                 <div className="space-y-3">
-                  <Combobox name="hasSlope" label="경사로 유무" options={booleanOptions} isDisabled={isResolved} />
+                  <Combobox name="hasSlope" label="경사로 유무" options={booleanOptions} isDisabled={!isEditable} />
                   <div className="grid grid-cols-2 gap-3">
-                    <Combobox name="entranceStairInfo" label="입구 계단" options={stairInfoOptions} isDisabled={isResolved} />
+                    <Combobox name="entranceStairInfo" label="입구 계단" options={stairInfoOptions} isDisabled={!isEditable} />
                     <Combobox
                       name="entranceStairHeightLevel"
                       label="입구 계단 높이"
                       options={stairHeightLevelOptions}
-                      isDisabled={isResolved || !buildingForm.watch("entranceStairInfo") || buildingForm.watch("entranceStairInfo")?.value !== "ONE"}
+                      isDisabled={!isEditable || !buildingForm.watch("entranceStairInfo") || buildingForm.watch("entranceStairInfo")?.value !== "ONE"}
                     />
                   </div>
-                  <Combobox isMulti name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} isDisabled={isResolved} />
-                  <Combobox name="hasElevator" label="엘리베이터 유무" options={booleanOptions} isDisabled={isResolved} />
+                  <Combobox isMulti name="entranceDoorTypes" label="출입문 유형" options={entranceDoorTypeOptions} isDisabled={!isEditable} />
+                  <Combobox name="hasElevator" label="엘리베이터 유무" options={booleanOptions} isDisabled={!isEditable} />
                   <div className="grid grid-cols-2 gap-3">
                     <Combobox
                       name="elevatorStairInfo"
                       label="엘리베이터까지 계단"
                       options={stairInfoOptions}
-                      isDisabled={isResolved || !buildingForm.watch("hasElevator") || buildingForm.watch("hasElevator")?.value === false}
+                      isDisabled={!isEditable || !buildingForm.watch("hasElevator") || buildingForm.watch("hasElevator")?.value === false}
                     />
                     <Combobox
                       name="elevatorStairHeightLevel"
                       label="엘리베이터 계단 높이"
                       options={stairHeightLevelOptions}
-                      isDisabled={isResolved || !buildingForm.watch("elevatorStairInfo") || buildingForm.watch("elevatorStairInfo")?.value !== "ONE"}
+                      isDisabled={!isEditable || !buildingForm.watch("elevatorStairInfo") || buildingForm.watch("elevatorStairInfo")?.value !== "ONE"}
                     />
                   </div>
                 </div>
@@ -434,19 +444,27 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
           )}
 
           {/* Action Buttons */}
-          {!isResolved && (
+          {(!isResolved || isAutoResolved) && (
             <section className="space-y-2 pt-4 border-t">
               {(showPlaceForm || showBuildingForm) && (
                 <Button className="w-full" onClick={handleResolveWithUpdate} disabled={isPending}>
-                  수정 & 처리 완료
+                  {isAutoResolved ? "수정 & 재처리" : "수정 & 처리 완료"}
                 </Button>
               )}
-              <Button className="w-full" variant="outline" onClick={handleResolve} disabled={isPending}>
-                처리 완료 (수정 없이)
-              </Button>
-              <Button className="w-full" variant="ghost" onClick={handleDismiss} disabled={isPending}>
-                무시
-              </Button>
+              {isAutoResolved ? (
+                <Button className="w-full" variant="outline" onClick={close} disabled={isPending}>
+                  확인 완료
+                </Button>
+              ) : (
+                <>
+                  <Button className="w-full" variant="outline" onClick={handleResolve} disabled={isPending}>
+                    처리 완료 (수정 없이)
+                  </Button>
+                  <Button className="w-full" variant="ghost" onClick={handleDismiss} disabled={isPending}>
+                    무시
+                  </Button>
+                </>
+              )}
             </section>
           )}
         </div>

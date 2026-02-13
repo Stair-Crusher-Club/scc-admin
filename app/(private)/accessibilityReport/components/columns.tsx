@@ -78,11 +78,19 @@ export function getColumns({
       header: "처리 상태",
       cell: ({ row }) => {
         const status = row.original.resolvedStatus
+        const isAutoResolved = row.original.isAutoResolved
         if (!status) {
           return <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">미처리</span>
         }
         if (status === "RESOLVED") {
-          return <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">처리완료</span>
+          return (
+            <span className="inline-flex items-center gap-1">
+              <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">처리완료</span>
+              {isAutoResolved && (
+                <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">AI</span>
+              )}
+            </span>
+          )
         }
         return <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">무시</span>
       },
