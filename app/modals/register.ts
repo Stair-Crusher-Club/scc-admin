@@ -11,6 +11,7 @@ const register = {
   QuestCompletion: () => import("./QuestCompletion"),
   ReinspectionDialog: () => import("./ReinspectionDialog"),
   CheckInConfirm: () => import("./CheckInConfirm"),
+  AccessibilityReportDetail: () => import("./AccessibilityReportDetail"),
 }
 
 export default register

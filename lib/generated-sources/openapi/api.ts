@@ -52,6 +52,36 @@ export interface AccessibilityAllowedRegionDTO {
  * @enum {string}
  */
 
+export const AccessibilityReportReasonDTO = {
+    InaccurateInfo: 'INACCURATE_INFO',
+    Closed: 'CLOSED',
+    BadUser: 'BAD_USER',
+    None: 'NONE'
+} as const;
+
+export type AccessibilityReportReasonDTO = typeof AccessibilityReportReasonDTO[keyof typeof AccessibilityReportReasonDTO];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const AccessibilityReportResolvedStatusDTO = {
+    Resolved: 'RESOLVED',
+    Dismissed: 'DISMISSED'
+} as const;
+
+export type AccessibilityReportResolvedStatusDTO = typeof AccessibilityReportResolvedStatusDTO[keyof typeof AccessibilityReportResolvedStatusDTO];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
 export const AccessibilityTypeDTO = {
     Place: 'Place',
     Building: 'Building',
@@ -166,6 +196,164 @@ export interface AdminAccessibilityInspectionResultDTO {
      * @memberof AdminAccessibilityInspectionResultDTO
      */
     'updatedAtMillis': number;
+}
+/**
+ * 
+ * @export
+ * @interface AdminAccessibilityReportDetailDTO
+ */
+export interface AdminAccessibilityReportDetailDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'targetId': string;
+    /**
+     * 
+     * @type {ReportTargetTypeDTO}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'targetType': ReportTargetTypeDTO;
+    /**
+     * 
+     * @type {AccessibilityReportReasonDTO}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'reason': AccessibilityReportReasonDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'detail'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'reporterNickname'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'placeName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'placeAddress'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'placeId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'resolvedAt'?: string;
+    /**
+     * 
+     * @type {AccessibilityReportResolvedStatusDTO}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'resolvedStatus'?: AccessibilityReportResolvedStatusDTO;
+    /**
+     * 
+     * @type {AdminPlaceAccessibilityDTO}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'placeAccessibility'?: AdminPlaceAccessibilityDTO;
+    /**
+     * 
+     * @type {AdminBuildingAccessibilityDTO}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'buildingAccessibility'?: AdminBuildingAccessibilityDTO;
+}
+/**
+ * 
+ * @export
+ * @interface AdminAccessibilityReportListItemDTO
+ */
+export interface AdminAccessibilityReportListItemDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {ReportTargetTypeDTO}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'targetType': ReportTargetTypeDTO;
+    /**
+     * 
+     * @type {AccessibilityReportReasonDTO}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'reason': AccessibilityReportReasonDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'detail'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'placeName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'placeAddress'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'reporterNickname'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'resolvedAt'?: string;
+    /**
+     * 
+     * @type {AccessibilityReportResolvedStatusDTO}
+     * @memberof AdminAccessibilityReportListItemDTO
+     */
+    'resolvedStatus'?: AccessibilityReportResolvedStatusDTO;
 }
 /**
  * Place를 SubBuilding에 할당한 결과
@@ -1534,6 +1722,25 @@ export interface AdminImageUploadUrlDTO {
 /**
  * 
  * @export
+ * @interface AdminListAccessibilityReportsResponseDTO
+ */
+export interface AdminListAccessibilityReportsResponseDTO {
+    /**
+     * 
+     * @type {Array<AdminAccessibilityReportListItemDTO>}
+     * @memberof AdminListAccessibilityReportsResponseDTO
+     */
+    'items': Array<AdminAccessibilityReportListItemDTO>;
+    /**
+     * 없으면 다음 페이지가 없다는 의미.
+     * @type {string}
+     * @memberof AdminListAccessibilityReportsResponseDTO
+     */
+    'cursor'?: string;
+}
+/**
+ * 
+ * @export
  * @interface AdminListAllBannersResponseDTO
  */
 export interface AdminListAllBannersResponseDTO {
@@ -2035,6 +2242,39 @@ export interface AdminRectangleSearchRegionDto {
      */
     'rightBottomLocation': LocationDTO;
 }
+/**
+ * 
+ * @export
+ * @interface AdminResolveAccessibilityReportRequestDTO
+ */
+export interface AdminResolveAccessibilityReportRequestDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminResolveAccessibilityReportRequestDTO
+     */
+    'action': AdminResolveAccessibilityReportRequestDTOActionEnum;
+    /**
+     * 
+     * @type {AdminUpdatePlaceAccessibilityRequestDTO}
+     * @memberof AdminResolveAccessibilityReportRequestDTO
+     */
+    'placeAccessibilityUpdate'?: AdminUpdatePlaceAccessibilityRequestDTO;
+    /**
+     * 
+     * @type {AdminUpdateBuildingAccessibilityRequestDTO}
+     * @memberof AdminResolveAccessibilityReportRequestDTO
+     */
+    'buildingAccessibilityUpdate'?: AdminUpdateBuildingAccessibilityRequestDTO;
+}
+
+export const AdminResolveAccessibilityReportRequestDTOActionEnum = {
+    Resolve: 'RESOLVE',
+    Dismiss: 'DISMISS'
+} as const;
+
+export type AdminResolveAccessibilityReportRequestDTOActionEnum = typeof AdminResolveAccessibilityReportRequestDTOActionEnum[keyof typeof AdminResolveAccessibilityReportRequestDTOActionEnum];
+
 /**
  * 
  * @export
@@ -3910,6 +4150,22 @@ export type QuestTargetPlaceCategoryEnumDTO = typeof QuestTargetPlaceCategoryEnu
  * @enum {string}
  */
 
+export const ReportTargetTypeDTO = {
+    PlaceAccessibility: 'PLACE_ACCESSIBILITY',
+    BuildingAccessibility: 'BUILDING_ACCESSIBILITY',
+    PlaceReview: 'PLACE_REVIEW',
+    ToiletReview: 'TOILET_REVIEW'
+} as const;
+
+export type ReportTargetTypeDTO = typeof ReportTargetTypeDTO[keyof typeof ReportTargetTypeDTO];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
 export const ResultTypeDTO = {
     Ok: 'OK',
     Modify: 'MODIFY',
@@ -4895,6 +5151,283 @@ export class AccessibilityApi extends BaseAPI {
      */
     public updatePlaceAccessibility(id: string, adminUpdatePlaceAccessibilityRequestDTO: AdminUpdatePlaceAccessibilityRequestDTO, options?: AxiosRequestConfig) {
         return AccessibilityApiFp(this.configuration).updatePlaceAccessibility(id, adminUpdatePlaceAccessibilityRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * AccessibilityReportApi - axios parameter creator
+ * @export
+ */
+export const AccessibilityReportApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 접근성 신고 상세를 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminGetAccessibilityReportDetail: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminGetAccessibilityReportDetail', 'id', id)
+            const localVarPath = `/accessibility-reports/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 접근성 신고 목록을 조회한다.
+         * @param {'PENDING' | 'RESOLVED' | 'DISMISSED'} [statusFilter] 미입력 시 전체 조회
+         * @param {string} [cursor] 
+         * @param {number} [limit] default 값은 20으로 설정된다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminListAccessibilityReports: async (statusFilter?: 'PENDING' | 'RESOLVED' | 'DISMISSED', cursor?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/accessibility-reports`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (statusFilter !== undefined) {
+                localVarQueryParameter['statusFilter'] = statusFilter;
+            }
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 접근성 신고를 처리한다. (처리 완료 또는 무시)
+         * @param {string} id 
+         * @param {AdminResolveAccessibilityReportRequestDTO} adminResolveAccessibilityReportRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminResolveAccessibilityReport: async (id: string, adminResolveAccessibilityReportRequestDTO: AdminResolveAccessibilityReportRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminResolveAccessibilityReport', 'id', id)
+            // verify required parameter 'adminResolveAccessibilityReportRequestDTO' is not null or undefined
+            assertParamExists('adminResolveAccessibilityReport', 'adminResolveAccessibilityReportRequestDTO', adminResolveAccessibilityReportRequestDTO)
+            const localVarPath = `/accessibility-reports/{id}/resolve`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminResolveAccessibilityReportRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AccessibilityReportApi - functional programming interface
+ * @export
+ */
+export const AccessibilityReportApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AccessibilityReportApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 접근성 신고 상세를 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminGetAccessibilityReportDetail(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminAccessibilityReportDetailDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminGetAccessibilityReportDetail(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 접근성 신고 목록을 조회한다.
+         * @param {'PENDING' | 'RESOLVED' | 'DISMISSED'} [statusFilter] 미입력 시 전체 조회
+         * @param {string} [cursor] 
+         * @param {number} [limit] default 값은 20으로 설정된다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminListAccessibilityReports(statusFilter?: 'PENDING' | 'RESOLVED' | 'DISMISSED', cursor?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListAccessibilityReportsResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminListAccessibilityReports(statusFilter, cursor, limit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 접근성 신고를 처리한다. (처리 완료 또는 무시)
+         * @param {string} id 
+         * @param {AdminResolveAccessibilityReportRequestDTO} adminResolveAccessibilityReportRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminResolveAccessibilityReport(id: string, adminResolveAccessibilityReportRequestDTO: AdminResolveAccessibilityReportRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminResolveAccessibilityReport(id, adminResolveAccessibilityReportRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * AccessibilityReportApi - factory interface
+ * @export
+ */
+export const AccessibilityReportApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AccessibilityReportApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 접근성 신고 상세를 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminGetAccessibilityReportDetail(id: string, options?: any): AxiosPromise<AdminAccessibilityReportDetailDTO> {
+            return localVarFp.adminGetAccessibilityReportDetail(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 접근성 신고 목록을 조회한다.
+         * @param {'PENDING' | 'RESOLVED' | 'DISMISSED'} [statusFilter] 미입력 시 전체 조회
+         * @param {string} [cursor] 
+         * @param {number} [limit] default 값은 20으로 설정된다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminListAccessibilityReports(statusFilter?: 'PENDING' | 'RESOLVED' | 'DISMISSED', cursor?: string, limit?: number, options?: any): AxiosPromise<AdminListAccessibilityReportsResponseDTO> {
+            return localVarFp.adminListAccessibilityReports(statusFilter, cursor, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 접근성 신고를 처리한다. (처리 완료 또는 무시)
+         * @param {string} id 
+         * @param {AdminResolveAccessibilityReportRequestDTO} adminResolveAccessibilityReportRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminResolveAccessibilityReport(id: string, adminResolveAccessibilityReportRequestDTO: AdminResolveAccessibilityReportRequestDTO, options?: any): AxiosPromise<void> {
+            return localVarFp.adminResolveAccessibilityReport(id, adminResolveAccessibilityReportRequestDTO, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AccessibilityReportApi - object-oriented interface
+ * @export
+ * @class AccessibilityReportApi
+ * @extends {BaseAPI}
+ */
+export class AccessibilityReportApi extends BaseAPI {
+    /**
+     * 
+     * @summary 접근성 신고 상세를 조회한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccessibilityReportApi
+     */
+    public adminGetAccessibilityReportDetail(id: string, options?: AxiosRequestConfig) {
+        return AccessibilityReportApiFp(this.configuration).adminGetAccessibilityReportDetail(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 접근성 신고 목록을 조회한다.
+     * @param {'PENDING' | 'RESOLVED' | 'DISMISSED'} [statusFilter] 미입력 시 전체 조회
+     * @param {string} [cursor] 
+     * @param {number} [limit] default 값은 20으로 설정된다.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccessibilityReportApi
+     */
+    public adminListAccessibilityReports(statusFilter?: 'PENDING' | 'RESOLVED' | 'DISMISSED', cursor?: string, limit?: number, options?: AxiosRequestConfig) {
+        return AccessibilityReportApiFp(this.configuration).adminListAccessibilityReports(statusFilter, cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 접근성 신고를 처리한다. (처리 완료 또는 무시)
+     * @param {string} id 
+     * @param {AdminResolveAccessibilityReportRequestDTO} adminResolveAccessibilityReportRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccessibilityReportApi
+     */
+    public adminResolveAccessibilityReport(id: string, adminResolveAccessibilityReportRequestDTO: AdminResolveAccessibilityReportRequestDTO, options?: AxiosRequestConfig) {
+        return AccessibilityReportApiFp(this.configuration).adminResolveAccessibilityReport(id, adminResolveAccessibilityReportRequestDTO, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

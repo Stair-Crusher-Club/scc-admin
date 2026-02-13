@@ -22,6 +22,7 @@ import {
 
 import {
   AccessibilityApi,
+  AccessibilityReportApi,
   BannerApi,
   BbucleRoadApi,
   ChallengeApi,
@@ -55,12 +56,14 @@ const placeCategoryCacheApi = new PlaceCategoryCacheApi(config)
 const homeAnnouncementApi = new HomeAnnouncementApi(config)
 const homeRecommendedContentApi = new HomeRecommendedContentApi(config)
 const placeListApi = new PlaceListApi(config)
+const accessibilityReportApi = new AccessibilityReportApi(config)
 
 export const api: {
   default: DefaultApi
   challenge: ChallengeApi
   banner: BannerApi
   accessibility: AccessibilityApi
+  accessibilityReport: AccessibilityReportApi
   bbucleRoad: BbucleRoadApi
   placeCategoryCache: PlaceCategoryCacheApi
   homeAnnouncement: HomeAnnouncementApi
@@ -71,6 +74,7 @@ export const api: {
   challenge: challengeApi,
   banner: bannerApi,
   accessibility: accessibilityApi,
+  accessibilityReport: accessibilityReportApi,
   bbucleRoad: bbucleRoadApi,
   placeCategoryCache: placeCategoryCacheApi,
   homeAnnouncement: homeAnnouncementApi,
