@@ -12,17 +12,20 @@ export interface RightSheetProps extends BasicModalProps {
 }
 export default function RightSheet({ title, actionButton, style, children, visible, close }: RightSheetProps) {
   return (
-    <S.RightSheet visible={visible} onClick={(e) => e.stopPropagation()} style={style}>
-      {title && (
-        <S.RightSheetHeader>
-          <S.CloseButton onClick={close}>
-            <Close size={28} color="black" />
-          </S.CloseButton>
-          {typeof title == "string" ? <S.SheetTitle>{title}</S.SheetTitle> : title}
-          <S.ActionButtonWrapper>{actionButton}</S.ActionButtonWrapper>
-        </S.RightSheetHeader>
-      )}
-      <S.RightSheetBody>{children}</S.RightSheetBody>
-    </S.RightSheet>
+    <>
+      <S.Backdrop onClick={close} />
+      <S.RightSheet visible={visible} onClick={(e) => e.stopPropagation()} style={style}>
+        {title && (
+          <S.RightSheetHeader>
+            <S.CloseButton onClick={close}>
+              <Close size={28} color="black" />
+            </S.CloseButton>
+            {typeof title == "string" ? <S.SheetTitle>{title}</S.SheetTitle> : title}
+            <S.ActionButtonWrapper>{actionButton}</S.ActionButtonWrapper>
+          </S.RightSheetHeader>
+        )}
+        <S.RightSheetBody>{children}</S.RightSheetBody>
+      </S.RightSheet>
+    </>
   )
 }
