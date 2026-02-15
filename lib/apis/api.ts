@@ -30,6 +30,7 @@ import {
   DefaultApi,
   HomeAnnouncementApi,
   HomeRecommendedContentApi,
+  PlaceAccessibilitySuggestionApi,
   PlaceCategoryCacheApi,
   PlaceListApi,
 } from "../../lib/generated-sources/openapi"
@@ -57,6 +58,7 @@ const homeAnnouncementApi = new HomeAnnouncementApi(config)
 const homeRecommendedContentApi = new HomeRecommendedContentApi(config)
 const placeListApi = new PlaceListApi(config)
 const accessibilityReportApi = new AccessibilityReportApi(config)
+const placeAccessibilitySuggestionApi = new PlaceAccessibilitySuggestionApi(config)
 
 export const api: {
   default: DefaultApi
@@ -69,6 +71,7 @@ export const api: {
   homeAnnouncement: HomeAnnouncementApi
   homeRecommendedContent: HomeRecommendedContentApi
   placeList: PlaceListApi
+  placeAccessibilitySuggestion: PlaceAccessibilitySuggestionApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
@@ -80,6 +83,7 @@ export const api: {
   homeAnnouncement: homeAnnouncementApi,
   homeRecommendedContent: homeRecommendedContentApi,
   placeList: placeListApi,
+  placeAccessibilitySuggestion: placeAccessibilitySuggestionApi,
 }
 
 export function useQuest({ id }: { id: string }) {
