@@ -8,6 +8,7 @@ import { toast } from "react-toastify"
 import { X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { useAccessibilityReportDetail, useDeleteAccessibilityImage, useResolveAccessibilityReport } from "@/lib/apis/accessibilityReport"
 import {
   AdminResolveAccessibilityReportRequestDTOActionEnum,
@@ -51,6 +52,7 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
 
   const placeForm = useForm<EditPlaceAccessibilityFormValues>()
   const buildingForm = useForm<EditBuildingAccessibilityFormValues>()
+  const [selectedImageUrl, setSelectedImageUrl] = React.useState<string | null>(null)
 
   const handleDeleteImage = async (imageId: string) => {
     if (!confirm("이 사진을 삭제하시겠습니까?")) return
@@ -154,8 +156,11 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
       if (detail.targetType === "PLACE_ACCESSIBILITY" && detail.placeAccessibility) {
         request.placeAccessibilityUpdate = buildPlacePayload(placeForm.getValues())
       }
-      if (detail.targetType === "BUILDING_ACCESSIBILITY" && detail.buildingAccessibility) {
+      if (detail.buildingAccessibility) {
         request.buildingAccessibilityUpdate = buildBuildingPayload(buildingForm.getValues())
+        if (detail.targetType !== "BUILDING_ACCESSIBILITY") {
+          request.buildingAccessibilityId = detail.buildingAccessibility.id
+        }
       }
 
       await resolveReport({ id: reportId, request })
@@ -198,7 +203,7 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
   const isAutoResolved = !!detail?.isAutoResolved
   const isEditable = !isResolved || isAutoResolved
   const showPlaceForm = detail?.targetType === "PLACE_ACCESSIBILITY" && detail.placeAccessibility
-  const showBuildingForm = detail?.targetType === "BUILDING_ACCESSIBILITY" && detail.buildingAccessibility
+  const showBuildingForm = !!detail?.buildingAccessibility
 
   return (
     <RightSheet title="접근성 신고 상세" visible={visible} close={close} style={{ width: 560 }}>
@@ -265,18 +270,17 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
                   <div className="grid grid-cols-4 gap-2">
                     {detail.placeAccessibility!.images.map((image, idx) => (
                       <div key={image.id} className="relative group">
-                        <a
-                          href={image.imageUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="relative aspect-square overflow-hidden rounded-md border hover:opacity-80 transition-opacity block"
+                        <button
+                          type="button"
+                          onClick={() => setSelectedImageUrl(image.imageUrl)}
+                          className="relative aspect-square overflow-hidden rounded-md border hover:opacity-80 transition-opacity block cursor-pointer w-full"
                         >
                           <img
                             src={image.thumbnailUrl || image.imageUrl}
                             alt={`장소 사진 ${idx + 1}`}
                             className="object-cover w-full h-full"
                           />
-                        </a>
+                        </button>
                         {isEditable && (
                           <button
                             type="button"
@@ -337,18 +341,17 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
                   <div className="grid grid-cols-4 gap-2">
                     {detail.buildingAccessibility!.entranceImages.map((image, idx) => (
                       <div key={image.id} className="relative group">
-                        <a
-                          href={image.imageUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="relative aspect-square overflow-hidden rounded-md border hover:opacity-80 transition-opacity block"
+                        <button
+                          type="button"
+                          onClick={() => setSelectedImageUrl(image.imageUrl)}
+                          className="relative aspect-square overflow-hidden rounded-md border hover:opacity-80 transition-opacity block cursor-pointer w-full"
                         >
                           <img
                             src={image.thumbnailUrl || image.imageUrl}
                             alt={`건물 입구 사진 ${idx + 1}`}
                             className="object-cover w-full h-full"
                           />
-                        </a>
+                        </button>
                         {isEditable && (
                           <button
                             type="button"
@@ -373,18 +376,17 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
                   <div className="grid grid-cols-4 gap-2">
                     {detail.buildingAccessibility!.elevatorImages.map((image, idx) => (
                       <div key={image.id} className="relative group">
-                        <a
-                          href={image.imageUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="relative aspect-square overflow-hidden rounded-md border hover:opacity-80 transition-opacity block"
+                        <button
+                          type="button"
+                          onClick={() => setSelectedImageUrl(image.imageUrl)}
+                          className="relative aspect-square overflow-hidden rounded-md border hover:opacity-80 transition-opacity block cursor-pointer w-full"
                         >
                           <img
                             src={image.thumbnailUrl || image.imageUrl}
                             alt={`엘리베이터 사진 ${idx + 1}`}
                             className="object-cover w-full h-full"
                           />
-                        </a>
+                        </button>
                         {isEditable && (
                           <button
                             type="button"
@@ -469,6 +471,18 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
           )}
         </div>
       )}
+      {/* Image Preview Modal */}
+      <Dialog open={!!selectedImageUrl} onOpenChange={(open) => !open && setSelectedImageUrl(null)}>
+        <DialogContent className="max-w-4xl p-2">
+          {selectedImageUrl && (
+            <img
+              src={selectedImageUrl}
+              alt="접근성 사진"
+              className="w-full h-auto max-h-[80vh] object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </RightSheet>
   )
 }
