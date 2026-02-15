@@ -276,13 +276,13 @@ export interface AdminAccessibilityReportDetailDTO {
      */
     'resolvedStatus'?: AccessibilityReportResolvedStatusDTO;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof AdminAccessibilityReportDetailDTO
      */
     'isAutoResolved'?: boolean;
     /**
-     *
+     * 
      * @type {AdminPlaceAccessibilityDTO}
      * @memberof AdminAccessibilityReportDetailDTO
      */
@@ -361,7 +361,7 @@ export interface AdminAccessibilityReportListItemDTO {
      */
     'resolvedStatus'?: AccessibilityReportResolvedStatusDTO;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof AdminAccessibilityReportListItemDTO
      */
@@ -2284,6 +2284,12 @@ export interface AdminResolveAccessibilityReportRequestDTO {
      * @memberof AdminResolveAccessibilityReportRequestDTO
      */
     'buildingAccessibilityUpdate'?: AdminUpdateBuildingAccessibilityRequestDTO;
+    /**
+     * 장소 신고에서 건물 접근성을 함께 수정할 때 건물 접근성 ID
+     * @type {string}
+     * @memberof AdminResolveAccessibilityReportRequestDTO
+     */
+    'buildingAccessibilityId'?: string;
 }
 
 export const AdminResolveAccessibilityReportRequestDTOActionEnum = {
