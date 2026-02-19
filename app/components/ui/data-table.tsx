@@ -33,6 +33,7 @@ interface DataTableProps<TData, TValue> {
   columnFilters?: ColumnFiltersState
   onColumnFiltersChange?: (updaterOrValue: ColumnFiltersState | ((old: ColumnFiltersState) => ColumnFiltersState)) => void
   renderExpandedRow?: (row: TData) => React.ReactNode
+  onRowClick?: (row: TData) => void
 }
 
 export function DataTable<TData, TValue>({
@@ -43,6 +44,7 @@ export function DataTable<TData, TValue>({
   columnFilters: externalColumnFilters,
   onColumnFiltersChange: externalOnColumnFiltersChange,
   renderExpandedRow,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [internalColumnFilters, setInternalColumnFilters] = useState<ColumnFiltersState>([])
@@ -122,8 +124,14 @@ export function DataTable<TData, TValue>({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && "selected"}
-                      onClick={() => renderExpandedRow && toggleRowExpansion(row.id)}
-                      className={renderExpandedRow ? "cursor-pointer hover:bg-muted/50" : ""}
+                      onClick={() => {
+                        if (onRowClick) {
+                          onRowClick(row.original)
+                        } else if (renderExpandedRow) {
+                          toggleRowExpansion(row.id)
+                        }
+                      }}
+                      className={(onRowClick || renderExpandedRow) ? "cursor-pointer hover:bg-muted/50" : ""}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

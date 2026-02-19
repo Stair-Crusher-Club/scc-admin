@@ -30,6 +30,7 @@ import {
   DefaultApi,
   HomeAnnouncementApi,
   HomeRecommendedContentApi,
+  PlaceAccessibilitySuggestionApi,
   PlaceCategoryCacheApi,
   PlaceListApi,
 } from "../../lib/generated-sources/openapi"
@@ -44,7 +45,7 @@ const baseURL =
   process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live"
     ? "https://api.staircrusher.club/admin"
     : process.env.NEXT_PUBLIC_DEPLOY_TYPE === "local"
-      ? "http://localhost:8080/admin"
+      ? "http://localhost:8082/admin"
       : "https://api.dev.staircrusher.club/admin"
 const config = new Configuration({ basePath: baseURL })
 const defaultApi = new DefaultApi(config)
@@ -57,6 +58,7 @@ const homeAnnouncementApi = new HomeAnnouncementApi(config)
 const homeRecommendedContentApi = new HomeRecommendedContentApi(config)
 const placeListApi = new PlaceListApi(config)
 const accessibilityReportApi = new AccessibilityReportApi(config)
+const placeAccessibilitySuggestionApi = new PlaceAccessibilitySuggestionApi(config)
 
 export const api: {
   default: DefaultApi
@@ -69,6 +71,7 @@ export const api: {
   homeAnnouncement: HomeAnnouncementApi
   homeRecommendedContent: HomeRecommendedContentApi
   placeList: PlaceListApi
+  placeAccessibilitySuggestion: PlaceAccessibilitySuggestionApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
@@ -80,6 +83,7 @@ export const api: {
   homeAnnouncement: homeAnnouncementApi,
   homeRecommendedContent: homeRecommendedContentApi,
   placeList: placeListApi,
+  placeAccessibilitySuggestion: placeAccessibilitySuggestionApi,
 }
 
 export function useQuest({ id }: { id: string }) {

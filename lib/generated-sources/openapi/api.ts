@@ -747,6 +747,19 @@ export type AdminBuildingDivisionStatusDTO = typeof AdminBuildingDivisionStatusD
 /**
  * 
  * @export
+ * @interface AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto
+ */
+export interface AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto {
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto
+     */
+    'suggestionIds': Array<string>;
+}
+/**
+ * 
+ * @export
  * @interface AdminChallengeActionConditionDTO
  */
 export interface AdminChallengeActionConditionDTO {
@@ -1078,6 +1091,19 @@ export interface AdminClosedPlaceCandidateDTO {
      * @memberof AdminClosedPlaceCandidateDTO
      */
     'ignoredAt'?: EpochMillisTimestamp;
+}
+/**
+ * 
+ * @export
+ * @interface AdminConfirmPlaceAccessibilitySuggestionRequestDto
+ */
+export interface AdminConfirmPlaceAccessibilitySuggestionRequestDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminConfirmPlaceAccessibilitySuggestionRequestDto
+     */
+    'adminNote'?: string | null;
 }
 /**
  * 
@@ -1712,7 +1738,8 @@ export const AdminImageUploadPurposeTypeDTO = {
     CrusherLabel: 'CRUSHER_LABEL',
     BbucleRoadMarker: 'BBUCLE_ROAD_MARKER',
     BbucleRoadDescription: 'BBUCLE_ROAD_DESCRIPTION',
-    RecommendedContent: 'RECOMMENDED_CONTENT'
+    RecommendedContent: 'RECOMMENDED_CONTENT',
+    PlaceAccessibilitySuggestion: 'PLACE_ACCESSIBILITY_SUGGESTION'
 } as const;
 
 export type AdminImageUploadPurposeTypeDTO = typeof AdminImageUploadPurposeTypeDTO[keyof typeof AdminImageUploadPurposeTypeDTO];
@@ -2009,6 +2036,145 @@ export interface AdminPlaceAccessibilityDTO {
     'createdAtMillis': number;
 }
 /**
+ * 
+ * @export
+ * @interface AdminPlaceAccessibilitySuggestionDto
+ */
+export interface AdminPlaceAccessibilitySuggestionDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'placeId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'placeName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'naverPlaceId': string;
+    /**
+     * 
+     * @type {SuggestionStatusDto}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'status': SuggestionStatusDto;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'photoUrls': Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'entrancePhotoUrls': Array<string>;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'hasStairs'?: boolean | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'stairCount'?: number | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'stairHeightLevel'?: string | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'hasRamp'?: boolean | null;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'doorTypes'?: Array<string> | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'hasThreshold'?: boolean | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'aiConfidence'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'aiReasoning'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'addressFromCrawl'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'categoryFromCrawl'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'adminNote'?: string | null;
+    /**
+     * 승인 시 생성된 PlaceAccessibility ID. 되돌리기 시 이 ID로 삭제.
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'placeAccessibilityId'?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'reviewedAtMillis'?: number | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'createdAtMillis': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'updatedAtMillis': number;
+}
+/**
  * 장소 카테고리 캐시 정보
  * @export
  * @interface AdminPlaceCategoryCacheDto
@@ -2263,6 +2429,19 @@ export interface AdminRectangleSearchRegionDto {
 /**
  * 
  * @export
+ * @interface AdminRejectPlaceAccessibilitySuggestionRequestDto
+ */
+export interface AdminRejectPlaceAccessibilitySuggestionRequestDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminRejectPlaceAccessibilitySuggestionRequestDto
+     */
+    'adminNote'?: string | null;
+}
+/**
+ * 
+ * @export
  * @interface AdminResolveAccessibilityReportRequestDTO
  */
 export interface AdminResolveAccessibilityReportRequestDTO {
@@ -2334,6 +2513,25 @@ export interface AdminSearchAccessibilityInspectionResultsDTO {
      * 없으면 다음 페이지가 없다는 의미.
      * @type {string}
      * @memberof AdminSearchAccessibilityInspectionResultsDTO
+     */
+    'cursor'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface AdminSearchPlaceAccessibilitySuggestionsResultDto
+ */
+export interface AdminSearchPlaceAccessibilitySuggestionsResultDto {
+    /**
+     * 
+     * @type {Array<AdminPlaceAccessibilitySuggestionDto>}
+     * @memberof AdminSearchPlaceAccessibilitySuggestionsResultDto
+     */
+    'items': Array<AdminPlaceAccessibilitySuggestionDto>;
+    /**
+     * 없으면 다음 페이지가 없다는 의미.
+     * @type {string}
+     * @memberof AdminSearchPlaceAccessibilitySuggestionsResultDto
      */
     'cursor'?: string;
 }
@@ -2797,6 +2995,67 @@ export interface AdminUpdatePlaceAccessibilityRequestDTO {
      * @memberof AdminUpdatePlaceAccessibilityRequestDTO
      */
     'entranceDoorTypes'?: Array<AdminEntranceDoorType>;
+}
+/**
+ * 
+ * @export
+ * @interface AdminUpdatePlaceAccessibilitySuggestionRequestDto
+ */
+export interface AdminUpdatePlaceAccessibilitySuggestionRequestDto {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'hasStairs'?: boolean | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'stairCount'?: number | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'stairHeightLevel'?: string | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'hasRamp'?: boolean | null;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'doorTypes'?: Array<string> | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'hasThreshold'?: boolean | null;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'photoUrls'?: Array<string> | null;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'entrancePhotoUrls'?: Array<string> | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'adminNote'?: string | null;
 }
 /**
  * 장소 카테고리 캐시 수정 요청
@@ -4245,6 +4504,21 @@ export interface StartPlaceCrawlingRequestDTO {
      */
     'boundaryVertices': Array<LocationDTO>;
 }
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const SuggestionStatusDto = {
+    Pending: 'PENDING',
+    Confirmed: 'CONFIRMED',
+    Rejected: 'REJECTED'
+} as const;
+
+export type SuggestionStatusDto = typeof SuggestionStatusDto[keyof typeof SuggestionStatusDto];
+
+
 /**
  * 
  * @export
@@ -10165,6 +10439,654 @@ export class HomeRecommendedContentApi extends BaseAPI {
      */
     public adminListHomeRecommendedContents(options?: AxiosRequestConfig) {
         return HomeRecommendedContentApiFp(this.configuration).adminListHomeRecommendedContents(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * PlaceAccessibilitySuggestionApi - axios parameter creator
+ * @export
+ */
+export const PlaceAccessibilitySuggestionApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 접근성 정보 제안을 일괄 확인한다.
+         * @param {AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto} adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        bulkConfirmPlaceAccessibilitySuggestions: async (adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto: AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto' is not null or undefined
+            assertParamExists('bulkConfirmPlaceAccessibilitySuggestions', 'adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto', adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto)
+            const localVarPath = `/place-accessibility-suggestions/bulk-confirm`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 확인한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {AdminConfirmPlaceAccessibilitySuggestionRequestDto} [adminConfirmPlaceAccessibilitySuggestionRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        confirmPlaceAccessibilitySuggestion: async (id: string, adminConfirmPlaceAccessibilitySuggestionRequestDto?: AdminConfirmPlaceAccessibilitySuggestionRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('confirmPlaceAccessibilitySuggestion', 'id', id)
+            const localVarPath = `/place-accessibility-suggestions/{id}/confirm`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminConfirmPlaceAccessibilitySuggestionRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 삭제한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlaceAccessibilitySuggestion: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deletePlaceAccessibilitySuggestion', 'id', id)
+            const localVarPath = `/place-accessibility-suggestions/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 상세 조회한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPlaceAccessibilitySuggestion: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getPlaceAccessibilitySuggestion', 'id', id)
+            const localVarPath = `/place-accessibility-suggestions/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 반려한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {AdminRejectPlaceAccessibilitySuggestionRequestDto} [adminRejectPlaceAccessibilitySuggestionRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        rejectPlaceAccessibilitySuggestion: async (id: string, adminRejectPlaceAccessibilitySuggestionRequestDto?: AdminRejectPlaceAccessibilitySuggestionRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('rejectPlaceAccessibilitySuggestion', 'id', id)
+            const localVarPath = `/place-accessibility-suggestions/{id}/reject`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminRejectPlaceAccessibilitySuggestionRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 승인/반려된 접근성 정보 제안을 대기 상태로 되돌린다. 승인된 경우 생성된 PlaceAccessibility도 삭제된다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        revertPlaceAccessibilitySuggestion: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('revertPlaceAccessibilitySuggestion', 'id', id)
+            const localVarPath = `/place-accessibility-suggestions/{id}/revert`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안 목록을 검색한다.
+         * @param {SuggestionStatusDto} [status] 상태별 필터링 (미지정시 전체)
+         * @param {string} [cursor] 커서 페이지네이션용 커서 값
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchPlaceAccessibilitySuggestions: async (status?: SuggestionStatusDto, cursor?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/place-accessibility-suggestions/search`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (status !== undefined) {
+                localVarQueryParameter['status'] = status;
+            }
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 수정한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {AdminUpdatePlaceAccessibilitySuggestionRequestDto} adminUpdatePlaceAccessibilitySuggestionRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceAccessibilitySuggestion: async (id: string, adminUpdatePlaceAccessibilitySuggestionRequestDto: AdminUpdatePlaceAccessibilitySuggestionRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updatePlaceAccessibilitySuggestion', 'id', id)
+            // verify required parameter 'adminUpdatePlaceAccessibilitySuggestionRequestDto' is not null or undefined
+            assertParamExists('updatePlaceAccessibilitySuggestion', 'adminUpdatePlaceAccessibilitySuggestionRequestDto', adminUpdatePlaceAccessibilitySuggestionRequestDto)
+            const localVarPath = `/place-accessibility-suggestions/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminUpdatePlaceAccessibilitySuggestionRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * PlaceAccessibilitySuggestionApi - functional programming interface
+ * @export
+ */
+export const PlaceAccessibilitySuggestionApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = PlaceAccessibilitySuggestionApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 접근성 정보 제안을 일괄 확인한다.
+         * @param {AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto} adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async bulkConfirmPlaceAccessibilitySuggestions(adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto: AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.bulkConfirmPlaceAccessibilitySuggestions(adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 확인한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {AdminConfirmPlaceAccessibilitySuggestionRequestDto} [adminConfirmPlaceAccessibilitySuggestionRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async confirmPlaceAccessibilitySuggestion(id: string, adminConfirmPlaceAccessibilitySuggestionRequestDto?: AdminConfirmPlaceAccessibilitySuggestionRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceAccessibilitySuggestionDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.confirmPlaceAccessibilitySuggestion(id, adminConfirmPlaceAccessibilitySuggestionRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 삭제한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePlaceAccessibilitySuggestion(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePlaceAccessibilitySuggestion(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 상세 조회한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPlaceAccessibilitySuggestion(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceAccessibilitySuggestionDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlaceAccessibilitySuggestion(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 반려한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {AdminRejectPlaceAccessibilitySuggestionRequestDto} [adminRejectPlaceAccessibilitySuggestionRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async rejectPlaceAccessibilitySuggestion(id: string, adminRejectPlaceAccessibilitySuggestionRequestDto?: AdminRejectPlaceAccessibilitySuggestionRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceAccessibilitySuggestionDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.rejectPlaceAccessibilitySuggestion(id, adminRejectPlaceAccessibilitySuggestionRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 승인/반려된 접근성 정보 제안을 대기 상태로 되돌린다. 승인된 경우 생성된 PlaceAccessibility도 삭제된다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async revertPlaceAccessibilitySuggestion(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceAccessibilitySuggestionDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.revertPlaceAccessibilitySuggestion(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안 목록을 검색한다.
+         * @param {SuggestionStatusDto} [status] 상태별 필터링 (미지정시 전체)
+         * @param {string} [cursor] 커서 페이지네이션용 커서 값
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async searchPlaceAccessibilitySuggestions(status?: SuggestionStatusDto, cursor?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSearchPlaceAccessibilitySuggestionsResultDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchPlaceAccessibilitySuggestions(status, cursor, limit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 수정한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {AdminUpdatePlaceAccessibilitySuggestionRequestDto} adminUpdatePlaceAccessibilitySuggestionRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePlaceAccessibilitySuggestion(id: string, adminUpdatePlaceAccessibilitySuggestionRequestDto: AdminUpdatePlaceAccessibilitySuggestionRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceAccessibilitySuggestionDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlaceAccessibilitySuggestion(id, adminUpdatePlaceAccessibilitySuggestionRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * PlaceAccessibilitySuggestionApi - factory interface
+ * @export
+ */
+export const PlaceAccessibilitySuggestionApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = PlaceAccessibilitySuggestionApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 접근성 정보 제안을 일괄 확인한다.
+         * @param {AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto} adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        bulkConfirmPlaceAccessibilitySuggestions(adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto: AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto, options?: any): AxiosPromise<void> {
+            return localVarFp.bulkConfirmPlaceAccessibilitySuggestions(adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 확인한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {AdminConfirmPlaceAccessibilitySuggestionRequestDto} [adminConfirmPlaceAccessibilitySuggestionRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        confirmPlaceAccessibilitySuggestion(id: string, adminConfirmPlaceAccessibilitySuggestionRequestDto?: AdminConfirmPlaceAccessibilitySuggestionRequestDto, options?: any): AxiosPromise<AdminPlaceAccessibilitySuggestionDto> {
+            return localVarFp.confirmPlaceAccessibilitySuggestion(id, adminConfirmPlaceAccessibilitySuggestionRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 삭제한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlaceAccessibilitySuggestion(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePlaceAccessibilitySuggestion(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 상세 조회한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPlaceAccessibilitySuggestion(id: string, options?: any): AxiosPromise<AdminPlaceAccessibilitySuggestionDto> {
+            return localVarFp.getPlaceAccessibilitySuggestion(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 반려한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {AdminRejectPlaceAccessibilitySuggestionRequestDto} [adminRejectPlaceAccessibilitySuggestionRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        rejectPlaceAccessibilitySuggestion(id: string, adminRejectPlaceAccessibilitySuggestionRequestDto?: AdminRejectPlaceAccessibilitySuggestionRequestDto, options?: any): AxiosPromise<AdminPlaceAccessibilitySuggestionDto> {
+            return localVarFp.rejectPlaceAccessibilitySuggestion(id, adminRejectPlaceAccessibilitySuggestionRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 승인/반려된 접근성 정보 제안을 대기 상태로 되돌린다. 승인된 경우 생성된 PlaceAccessibility도 삭제된다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        revertPlaceAccessibilitySuggestion(id: string, options?: any): AxiosPromise<AdminPlaceAccessibilitySuggestionDto> {
+            return localVarFp.revertPlaceAccessibilitySuggestion(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안 목록을 검색한다.
+         * @param {SuggestionStatusDto} [status] 상태별 필터링 (미지정시 전체)
+         * @param {string} [cursor] 커서 페이지네이션용 커서 값
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchPlaceAccessibilitySuggestions(status?: SuggestionStatusDto, cursor?: string, limit?: number, options?: any): AxiosPromise<AdminSearchPlaceAccessibilitySuggestionsResultDto> {
+            return localVarFp.searchPlaceAccessibilitySuggestions(status, cursor, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 접근성 정보 제안을 수정한다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {AdminUpdatePlaceAccessibilitySuggestionRequestDto} adminUpdatePlaceAccessibilitySuggestionRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceAccessibilitySuggestion(id: string, adminUpdatePlaceAccessibilitySuggestionRequestDto: AdminUpdatePlaceAccessibilitySuggestionRequestDto, options?: any): AxiosPromise<AdminPlaceAccessibilitySuggestionDto> {
+            return localVarFp.updatePlaceAccessibilitySuggestion(id, adminUpdatePlaceAccessibilitySuggestionRequestDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * PlaceAccessibilitySuggestionApi - object-oriented interface
+ * @export
+ * @class PlaceAccessibilitySuggestionApi
+ * @extends {BaseAPI}
+ */
+export class PlaceAccessibilitySuggestionApi extends BaseAPI {
+    /**
+     * 
+     * @summary 접근성 정보 제안을 일괄 확인한다.
+     * @param {AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto} adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceAccessibilitySuggestionApi
+     */
+    public bulkConfirmPlaceAccessibilitySuggestions(adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto: AdminBulkConfirmPlaceAccessibilitySuggestionsRequestDto, options?: AxiosRequestConfig) {
+        return PlaceAccessibilitySuggestionApiFp(this.configuration).bulkConfirmPlaceAccessibilitySuggestions(adminBulkConfirmPlaceAccessibilitySuggestionsRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 접근성 정보 제안을 확인한다.
+     * @param {string} id PlaceAccessibilitySuggestion ID
+     * @param {AdminConfirmPlaceAccessibilitySuggestionRequestDto} [adminConfirmPlaceAccessibilitySuggestionRequestDto] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceAccessibilitySuggestionApi
+     */
+    public confirmPlaceAccessibilitySuggestion(id: string, adminConfirmPlaceAccessibilitySuggestionRequestDto?: AdminConfirmPlaceAccessibilitySuggestionRequestDto, options?: AxiosRequestConfig) {
+        return PlaceAccessibilitySuggestionApiFp(this.configuration).confirmPlaceAccessibilitySuggestion(id, adminConfirmPlaceAccessibilitySuggestionRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 접근성 정보 제안을 삭제한다.
+     * @param {string} id PlaceAccessibilitySuggestion ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceAccessibilitySuggestionApi
+     */
+    public deletePlaceAccessibilitySuggestion(id: string, options?: AxiosRequestConfig) {
+        return PlaceAccessibilitySuggestionApiFp(this.configuration).deletePlaceAccessibilitySuggestion(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 접근성 정보 제안을 상세 조회한다.
+     * @param {string} id PlaceAccessibilitySuggestion ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceAccessibilitySuggestionApi
+     */
+    public getPlaceAccessibilitySuggestion(id: string, options?: AxiosRequestConfig) {
+        return PlaceAccessibilitySuggestionApiFp(this.configuration).getPlaceAccessibilitySuggestion(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 접근성 정보 제안을 반려한다.
+     * @param {string} id PlaceAccessibilitySuggestion ID
+     * @param {AdminRejectPlaceAccessibilitySuggestionRequestDto} [adminRejectPlaceAccessibilitySuggestionRequestDto] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceAccessibilitySuggestionApi
+     */
+    public rejectPlaceAccessibilitySuggestion(id: string, adminRejectPlaceAccessibilitySuggestionRequestDto?: AdminRejectPlaceAccessibilitySuggestionRequestDto, options?: AxiosRequestConfig) {
+        return PlaceAccessibilitySuggestionApiFp(this.configuration).rejectPlaceAccessibilitySuggestion(id, adminRejectPlaceAccessibilitySuggestionRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 승인/반려된 접근성 정보 제안을 대기 상태로 되돌린다. 승인된 경우 생성된 PlaceAccessibility도 삭제된다.
+     * @param {string} id PlaceAccessibilitySuggestion ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceAccessibilitySuggestionApi
+     */
+    public revertPlaceAccessibilitySuggestion(id: string, options?: AxiosRequestConfig) {
+        return PlaceAccessibilitySuggestionApiFp(this.configuration).revertPlaceAccessibilitySuggestion(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 접근성 정보 제안 목록을 검색한다.
+     * @param {SuggestionStatusDto} [status] 상태별 필터링 (미지정시 전체)
+     * @param {string} [cursor] 커서 페이지네이션용 커서 값
+     * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceAccessibilitySuggestionApi
+     */
+    public searchPlaceAccessibilitySuggestions(status?: SuggestionStatusDto, cursor?: string, limit?: number, options?: AxiosRequestConfig) {
+        return PlaceAccessibilitySuggestionApiFp(this.configuration).searchPlaceAccessibilitySuggestions(status, cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 접근성 정보 제안을 수정한다.
+     * @param {string} id PlaceAccessibilitySuggestion ID
+     * @param {AdminUpdatePlaceAccessibilitySuggestionRequestDto} adminUpdatePlaceAccessibilitySuggestionRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceAccessibilitySuggestionApi
+     */
+    public updatePlaceAccessibilitySuggestion(id: string, adminUpdatePlaceAccessibilitySuggestionRequestDto: AdminUpdatePlaceAccessibilitySuggestionRequestDto, options?: AxiosRequestConfig) {
+        return PlaceAccessibilitySuggestionApiFp(this.configuration).updatePlaceAccessibilitySuggestion(id, adminUpdatePlaceAccessibilitySuggestionRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
