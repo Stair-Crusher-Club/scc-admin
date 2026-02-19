@@ -74,7 +74,8 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
   const [hasStairs, setHasStairs] = useState<boolean | null>(null)
   const [stairCount, setStairCount] = useState<number | null>(null)
   const [hasRamp, setHasRamp] = useState<boolean | null>(null)
-  const [doorType, setDoorType] = useState<string>("")
+  const [doorTypes, setDoorTypes] = useState<string[]>([])
+  const [stairHeightLevel, setStairHeightLevel] = useState<string>("")
   const [hasThreshold, setHasThreshold] = useState<boolean | null>(null)
   const [entrancePhotoUrls, setEntrancePhotoUrls] = useState<string[]>([])
   const [localPhotoUrls, setLocalPhotoUrls] = useState<string[]>([])
@@ -95,7 +96,8 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
       setHasStairs(data.hasStairs ?? null)
       setStairCount(data.stairCount ?? null)
       setHasRamp(data.hasRamp ?? null)
-      setDoorType(data.doorType ?? "")
+      setDoorTypes(data.doorTypes ?? [])
+      setStairHeightLevel(data.stairHeightLevel ?? "")
       setHasThreshold(data.hasThreshold ?? null)
       setEntrancePhotoUrls(data.entrancePhotoUrls ?? [])
       setLocalPhotoUrls(data.photoUrls ?? [])
@@ -111,7 +113,8 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
           hasStairs,
           stairCount,
           hasRamp,
-          doorType: doorType || null,
+          doorTypes: doorTypes.length > 0 ? doorTypes : null,
+          stairHeightLevel: stairHeightLevel || null,
           hasThreshold,
           photoUrls: localPhotoUrls,
           entrancePhotoUrls,
@@ -127,6 +130,21 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
 
   const handleConfirm = async () => {
     try {
+      // 먼저 수정된 필드를 저장한 후 승인 처리
+      await updateMutation.mutateAsync({
+        id,
+        payload: {
+          hasStairs,
+          stairCount,
+          hasRamp,
+          doorTypes: doorTypes.length > 0 ? doorTypes : null,
+          stairHeightLevel: stairHeightLevel || null,
+          hasThreshold,
+          photoUrls: localPhotoUrls,
+          entrancePhotoUrls,
+          adminNote: adminNote || null,
+        },
+      })
       await confirmMutation.mutateAsync({
         id,
         payload: { adminNote: adminNote || null },
@@ -202,7 +220,8 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
           hasStairs,
           stairCount,
           hasRamp,
-          doorType: doorType || null,
+          doorTypes: doorTypes.length > 0 ? doorTypes : null,
+          stairHeightLevel: stairHeightLevel || null,
           hasThreshold,
           photoUrls: newPhotoUrls,
           entrancePhotoUrls: newEntrancePhotoUrls,
@@ -241,7 +260,8 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
           hasStairs,
           stairCount,
           hasRamp,
-          doorType: doorType || null,
+          doorTypes: doorTypes.length > 0 ? doorTypes : null,
+          stairHeightLevel: stairHeightLevel || null,
           hasThreshold,
           photoUrls: newPhotoUrls,
           entrancePhotoUrls,
@@ -491,23 +511,62 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
                 <Label htmlFor={`hasThreshold-${id}`}>문턱 있음</Label>
               </div>
             </div>
-            <div className="space-y-1">
-              <Label htmlFor={`doorType-${id}`} className="text-xs">출입문 유형</Label>
-              <Select value={doorType || "__unset__"} onValueChange={(v) => setDoorType(v === "__unset__" ? "" : v)}>
-                <SelectTrigger id={`doorType-${id}`}>
-                  <SelectValue placeholder="선택해주세요" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__unset__">없음 (미지정)</SelectItem>
-                  <SelectItem value={AdminEntranceDoorType.None}>없음</SelectItem>
-                  <SelectItem value={AdminEntranceDoorType.Hinged}>여닫이문</SelectItem>
-                  <SelectItem value={AdminEntranceDoorType.Sliding}>미닫이문</SelectItem>
-                  <SelectItem value={AdminEntranceDoorType.Revolving}>회전문</SelectItem>
-                  <SelectItem value={AdminEntranceDoorType.Automatic}>자동문</SelectItem>
-                  <SelectItem value={AdminEntranceDoorType.Etc}>기타</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="space-y-2">
+              <Label className="text-xs">출입문 유형 (복수 선택 가능)</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { value: AdminEntranceDoorType.None, label: "없음 (문 없음)" },
+                  { value: AdminEntranceDoorType.Hinged, label: "여닫이문" },
+                  { value: AdminEntranceDoorType.Sliding, label: "미닫이문" },
+                  { value: AdminEntranceDoorType.Revolving, label: "회전문" },
+                  { value: AdminEntranceDoorType.Automatic, label: "자동문" },
+                  { value: AdminEntranceDoorType.Etc, label: "기타" },
+                ].map(({ value, label }) => {
+                  const isNone = value === AdminEntranceDoorType.None
+                  const isChecked = doorTypes.includes(value)
+                  const isDisabled = !isNone && doorTypes.includes(AdminEntranceDoorType.None)
+                  return (
+                    <div key={value} className="flex items-center gap-2">
+                      <Checkbox
+                        id={`doorType-${id}-${value}`}
+                        checked={isChecked}
+                        disabled={isDisabled}
+                        onCheckedChange={(checked) => {
+                          if (isNone) {
+                            setDoorTypes(checked ? [AdminEntranceDoorType.None] : [])
+                          } else {
+                            setDoorTypes((prev) =>
+                              checked
+                                ? [...prev.filter((v) => v !== AdminEntranceDoorType.None), value]
+                                : prev.filter((v) => v !== value),
+                            )
+                          }
+                        }}
+                      />
+                      <Label htmlFor={`doorType-${id}-${value}`} className={isDisabled ? "text-muted-foreground" : ""}>
+                        {label}
+                      </Label>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
+            {stairCount === 1 && (
+              <div className="space-y-1">
+                <Label htmlFor={`stairHeightLevel-${id}`} className="text-xs">턱 높이</Label>
+                <Select value={stairHeightLevel || "__unset__"} onValueChange={(v) => setStairHeightLevel(v === "__unset__" ? "" : v)}>
+                  <SelectTrigger id={`stairHeightLevel-${id}`}>
+                    <SelectValue placeholder="선택해주세요" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__unset__">미지정</SelectItem>
+                    <SelectItem value="HALF_THUMB">엄지 한마디</SelectItem>
+                    <SelectItem value="THUMB">엄지 손가락</SelectItem>
+                    <SelectItem value="OVER_THUMB">엄지 이상</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </CardContent>
         </Card>
 
