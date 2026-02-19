@@ -1738,7 +1738,8 @@ export const AdminImageUploadPurposeTypeDTO = {
     CrusherLabel: 'CRUSHER_LABEL',
     BbucleRoadMarker: 'BBUCLE_ROAD_MARKER',
     BbucleRoadDescription: 'BBUCLE_ROAD_DESCRIPTION',
-    RecommendedContent: 'RECOMMENDED_CONTENT'
+    RecommendedContent: 'RECOMMENDED_CONTENT',
+    PlaceAccessibilitySuggestion: 'PLACE_ACCESSIBILITY_SUGGESTION'
 } as const;
 
 export type AdminImageUploadPurposeTypeDTO = typeof AdminImageUploadPurposeTypeDTO[keyof typeof AdminImageUploadPurposeTypeDTO];
@@ -2142,6 +2143,12 @@ export interface AdminPlaceAccessibilitySuggestionDto {
      * @memberof AdminPlaceAccessibilitySuggestionDto
      */
     'adminNote'?: string | null;
+    /**
+     * 승인 시 생성된 PlaceAccessibility ID. 되돌리기 시 이 ID로 삭제.
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'placeAccessibilityId'?: string | null;
     /**
      * 
      * @type {number}
@@ -3019,6 +3026,12 @@ export interface AdminUpdatePlaceAccessibilitySuggestionRequestDto {
      * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
      */
     'hasThreshold'?: boolean | null;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'photoUrls'?: Array<string> | null;
     /**
      * 
      * @type {Array<string>}
@@ -10626,6 +10639,44 @@ export const PlaceAccessibilitySuggestionApiAxiosParamCreator = function (config
         },
         /**
          * 
+         * @summary 승인/반려된 접근성 정보 제안을 대기 상태로 되돌린다. 승인된 경우 생성된 PlaceAccessibility도 삭제된다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        revertPlaceAccessibilitySuggestion: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('revertPlaceAccessibilitySuggestion', 'id', id)
+            const localVarPath = `/place-accessibility-suggestions/{id}/revert`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 접근성 정보 제안 목록을 검색한다.
          * @param {SuggestionStatusDto} [status] 상태별 필터링 (미지정시 전체)
          * @param {string} [cursor] 커서 페이지네이션용 커서 값
@@ -10786,6 +10837,17 @@ export const PlaceAccessibilitySuggestionApiFp = function(configuration?: Config
         },
         /**
          * 
+         * @summary 승인/반려된 접근성 정보 제안을 대기 상태로 되돌린다. 승인된 경우 생성된 PlaceAccessibility도 삭제된다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async revertPlaceAccessibilitySuggestion(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceAccessibilitySuggestionDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.revertPlaceAccessibilitySuggestion(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 접근성 정보 제안 목록을 검색한다.
          * @param {SuggestionStatusDto} [status] 상태별 필터링 (미지정시 전체)
          * @param {string} [cursor] 커서 페이지네이션용 커서 값
@@ -10870,6 +10932,16 @@ export const PlaceAccessibilitySuggestionApiFactory = function (configuration?: 
          */
         rejectPlaceAccessibilitySuggestion(id: string, adminRejectPlaceAccessibilitySuggestionRequestDto?: AdminRejectPlaceAccessibilitySuggestionRequestDto, options?: any): AxiosPromise<AdminPlaceAccessibilitySuggestionDto> {
             return localVarFp.rejectPlaceAccessibilitySuggestion(id, adminRejectPlaceAccessibilitySuggestionRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 승인/반려된 접근성 정보 제안을 대기 상태로 되돌린다. 승인된 경우 생성된 PlaceAccessibility도 삭제된다.
+         * @param {string} id PlaceAccessibilitySuggestion ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        revertPlaceAccessibilitySuggestion(id: string, options?: any): AxiosPromise<AdminPlaceAccessibilitySuggestionDto> {
+            return localVarFp.revertPlaceAccessibilitySuggestion(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -10964,6 +11036,18 @@ export class PlaceAccessibilitySuggestionApi extends BaseAPI {
      */
     public rejectPlaceAccessibilitySuggestion(id: string, adminRejectPlaceAccessibilitySuggestionRequestDto?: AdminRejectPlaceAccessibilitySuggestionRequestDto, options?: AxiosRequestConfig) {
         return PlaceAccessibilitySuggestionApiFp(this.configuration).rejectPlaceAccessibilitySuggestion(id, adminRejectPlaceAccessibilitySuggestionRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 승인/반려된 접근성 정보 제안을 대기 상태로 되돌린다. 승인된 경우 생성된 PlaceAccessibility도 삭제된다.
+     * @param {string} id PlaceAccessibilitySuggestion ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceAccessibilitySuggestionApi
+     */
+    public revertPlaceAccessibilitySuggestion(id: string, options?: AxiosRequestConfig) {
+        return PlaceAccessibilitySuggestionApiFp(this.configuration).revertPlaceAccessibilitySuggestion(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

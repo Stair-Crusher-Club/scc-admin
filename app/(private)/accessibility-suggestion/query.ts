@@ -68,6 +68,18 @@ export function useRejectSuggestion() {
   })
 }
 
+export function useRevertSuggestion() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id }: { id: string }) =>
+      api.placeAccessibilitySuggestion.revertPlaceAccessibilitySuggestion(id).then((res) => res.data),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: SUGGESTIONS_KEY })
+      queryClient.invalidateQueries({ queryKey: SUGGESTION_KEY(variables.id) })
+    },
+  })
+}
+
 export function useDeleteSuggestion() {
   const queryClient = useQueryClient()
   return useMutation({

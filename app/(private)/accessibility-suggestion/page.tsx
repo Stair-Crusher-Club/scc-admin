@@ -3,7 +3,6 @@
 import { ColumnDef } from "@tanstack/react-table"
 import dayjs from "dayjs"
 import { RotateCcw, Search } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { AdminPlaceAccessibilitySuggestionDto, SuggestionStatusDto } from "@/lib/generated-sources/openapi"
@@ -17,8 +16,16 @@ import { DataTable, DataTableColumnHeader } from "@/components/ui/data-table"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { useToast } from "@/hooks/use-toast"
 
+import { SuggestionDetailContent } from "./SuggestionDetailContent"
 import { statusLabels, useBulkConfirmSuggestions, useSuggestions } from "./query"
 
 function getStatusBadgeVariant(status: SuggestionStatusDto): "default" | "secondary" | "destructive" | "outline" {
@@ -35,7 +42,6 @@ function getStatusBadgeVariant(status: SuggestionStatusDto): "default" | "second
 }
 
 export default function AccessibilitySuggestionListPage() {
-  const router = useRouter()
   const { toast } = useToast()
 
   const [filterStatus, setFilterStatus] = useState<SuggestionStatusDto | undefined>()
@@ -47,6 +53,7 @@ export default function AccessibilitySuggestionListPage() {
   const bulkConfirm = useBulkConfirmSuggestions()
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [selectedSuggestionId, setSelectedSuggestionId] = useState<string | null>(null)
 
   const allItems: AdminPlaceAccessibilitySuggestionDto[] = data?.pages.flatMap((p) => p.items) ?? []
 
@@ -268,46 +275,7 @@ export default function AccessibilitySuggestionListPage() {
               data={items}
               hasMore={hasNextPage}
               onLoadMore={() => fetchNextPage()}
-              renderExpandedRow={(row) => (
-                <div
-                  className="p-4 cursor-pointer hover:bg-muted/30"
-                  onClick={() => router.push(`/accessibility-suggestion/${row.id}`)}
-                >
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <span className="font-semibold">계단 유무:</span>{" "}
-                      {row.hasStairs == null ? "-" : row.hasStairs ? "있음" : "없음"}
-                    </div>
-                    <div>
-                      <span className="font-semibold">계단 수:</span>{" "}
-                      {row.stairCount ?? "-"}
-                    </div>
-                    <div>
-                      <span className="font-semibold">경사로:</span>{" "}
-                      {row.hasRamp == null ? "-" : row.hasRamp ? "있음" : "없음"}
-                    </div>
-                    <div>
-                      <span className="font-semibold">문턱:</span>{" "}
-                      {row.hasThreshold == null ? "-" : row.hasThreshold ? "있음" : "없음"}
-                    </div>
-                  </div>
-                  {row.entrancePhotoUrls.length > 0 && (
-                    <div className="mt-3 flex gap-2 overflow-x-auto">
-                      {row.entrancePhotoUrls.slice(0, 4).map((url, idx) => (
-                        <img
-                          key={idx}
-                          src={url}
-                          alt={`입구 사진 ${idx + 1}`}
-                          className="h-20 w-20 object-cover rounded border-2 border-green-500"
-                        />
-                      ))}
-                    </div>
-                  )}
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    클릭하여 상세 페이지로 이동
-                  </p>
-                </div>
-              )}
+              onRowClick={(row) => setSelectedSuggestionId(row.id)}
             />
           )}
         </CardContent>
@@ -318,6 +286,27 @@ export default function AccessibilitySuggestionListPage() {
           총 {items.length}개 항목
         </div>
       )}
+
+      {/* Detail Sheet Panel */}
+      <Sheet open={selectedSuggestionId !== null} onOpenChange={(open) => { if (!open) setSelectedSuggestionId(null) }}>
+        <SheetContent
+          side="right"
+          className="w-[65vw] max-w-[65vw] sm:max-w-[65vw] overflow-y-auto overflow-x-hidden"
+        >
+          <SheetHeader className="sr-only">
+            <SheetTitle>접근성 제안 상세</SheetTitle>
+            <SheetDescription>선택한 접근성 제안의 상세 정보입니다.</SheetDescription>
+          </SheetHeader>
+          {selectedSuggestionId && (
+            <SuggestionDetailContent
+              key={selectedSuggestionId}
+              id={selectedSuggestionId}
+              onClose={() => setSelectedSuggestionId(null)}
+              onDeleted={() => setSelectedSuggestionId(null)}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
     </Contents.Normal>
   )
 }
