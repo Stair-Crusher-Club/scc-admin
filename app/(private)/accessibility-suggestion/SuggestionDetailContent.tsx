@@ -76,7 +76,6 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
   const [hasRamp, setHasRamp] = useState<boolean | null>(null)
   const [doorTypes, setDoorTypes] = useState<string[]>([])
   const [stairHeightLevel, setStairHeightLevel] = useState<string>("")
-  const [hasThreshold, setHasThreshold] = useState<boolean | null>(null)
   const [entrancePhotoUrls, setEntrancePhotoUrls] = useState<string[]>([])
   const [localPhotoUrls, setLocalPhotoUrls] = useState<string[]>([])
   const [adminNote, setAdminNote] = useState<string>("")
@@ -98,7 +97,6 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
       setHasRamp(data.hasRamp ?? null)
       setDoorTypes(data.doorTypes ?? [])
       setStairHeightLevel(data.stairHeightLevel ?? "")
-      setHasThreshold(data.hasThreshold ?? null)
       setEntrancePhotoUrls(data.entrancePhotoUrls ?? [])
       setLocalPhotoUrls(data.photoUrls ?? [])
       setAdminNote(data.adminNote ?? "")
@@ -115,7 +113,6 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
           hasRamp,
           doorTypes: doorTypes.length > 0 ? doorTypes : null,
           stairHeightLevel: stairHeightLevel || null,
-          hasThreshold,
           photoUrls: localPhotoUrls,
           entrancePhotoUrls,
           adminNote: adminNote || null,
@@ -139,7 +136,6 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
           hasRamp,
           doorTypes: doorTypes.length > 0 ? doorTypes : null,
           stairHeightLevel: stairHeightLevel || null,
-          hasThreshold,
           photoUrls: localPhotoUrls,
           entrancePhotoUrls,
           adminNote: adminNote || null,
@@ -222,7 +218,6 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
           hasRamp,
           doorTypes: doorTypes.length > 0 ? doorTypes : null,
           stairHeightLevel: stairHeightLevel || null,
-          hasThreshold,
           photoUrls: newPhotoUrls,
           entrancePhotoUrls: newEntrancePhotoUrls,
           adminNote: adminNote || null,
@@ -262,7 +257,6 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
           hasRamp,
           doorTypes: doorTypes.length > 0 ? doorTypes : null,
           stairHeightLevel: stairHeightLevel || null,
-          hasThreshold,
           photoUrls: newPhotoUrls,
           entrancePhotoUrls,
           adminNote: adminNote || null,
@@ -493,23 +487,13 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id={`hasRamp-${id}`}
-                  checked={hasRamp === true}
-                  onCheckedChange={(checked) => setHasRamp(checked === true ? true : checked === false ? false : null)}
-                />
-                <Label htmlFor={`hasRamp-${id}`}>경사로 있음</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id={`hasThreshold-${id}`}
-                  checked={hasThreshold === true}
-                  onCheckedChange={(checked) => setHasThreshold(checked === true ? true : checked === false ? false : null)}
-                />
-                <Label htmlFor={`hasThreshold-${id}`}>문턱 있음</Label>
-              </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={`hasRamp-${id}`}
+                checked={hasRamp === true}
+                onCheckedChange={(checked) => setHasRamp(checked === true ? true : checked === false ? false : null)}
+              />
+              <Label htmlFor={`hasRamp-${id}`}>경사로 있음</Label>
             </div>
             <div className="space-y-2">
               <Label className="text-xs">출입문 유형 (복수 선택 가능)</Label>
@@ -634,7 +618,8 @@ export function SuggestionDetailContent({ id, onClose, onDeleted }: SuggestionDe
               </Button>
               <Button
                 onClick={() => setShowConfirmDialog(true)}
-                disabled={isAnyMutating}
+                disabled={isAnyMutating || doorTypes.length === 0}
+                title={doorTypes.length === 0 ? "출입문 유형을 하나 이상 선택해주세요" : undefined}
               >
                 승인 및 정보 저장
               </Button>
