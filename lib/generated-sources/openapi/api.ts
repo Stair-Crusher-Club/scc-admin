@@ -2097,16 +2097,22 @@ export interface AdminPlaceAccessibilitySuggestionDto {
     'stairCount'?: number | null;
     /**
      * 
+     * @type {string}
+     * @memberof AdminPlaceAccessibilitySuggestionDto
+     */
+    'stairHeightLevel'?: string | null;
+    /**
+     * 
      * @type {boolean}
      * @memberof AdminPlaceAccessibilitySuggestionDto
      */
     'hasRamp'?: boolean | null;
     /**
      * 
-     * @type {string}
+     * @type {Array<string>}
      * @memberof AdminPlaceAccessibilitySuggestionDto
      */
-    'doorType'?: string | null;
+    'doorTypes'?: Array<string> | null;
     /**
      * 
      * @type {boolean}
@@ -3010,16 +3016,22 @@ export interface AdminUpdatePlaceAccessibilitySuggestionRequestDto {
     'stairCount'?: number | null;
     /**
      * 
+     * @type {string}
+     * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
+     */
+    'stairHeightLevel'?: string | null;
+    /**
+     * 
      * @type {boolean}
      * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
      */
     'hasRamp'?: boolean | null;
     /**
      * 
-     * @type {string}
+     * @type {Array<string>}
      * @memberof AdminUpdatePlaceAccessibilitySuggestionRequestDto
      */
-    'doorType'?: string | null;
+    'doorTypes'?: Array<string> | null;
     /**
      * 
      * @type {boolean}
