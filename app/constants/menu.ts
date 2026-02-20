@@ -44,7 +44,7 @@ export const menuItems: MenuItem[] = [
   { title: "장소 카테고리 관리", url: "/placeCategoryCache", icon: FolderTree },
   { title: "저장 리스트 관리", url: "/placeList", icon: Bookmark },
   { title: "접근성 신고 관리", url: "/accessibilityReport", icon: AlertTriangle },
-  { title: "접근성 제안 관리", url: "/accessibility-suggestion", icon: ScanEye },
+  { title: "접근성 정보 채우기", url: "/accessibility-suggestion", icon: ScanEye },
 ]
 
 export function getMenuItemByPath(pathname: string): MenuItem | undefined {

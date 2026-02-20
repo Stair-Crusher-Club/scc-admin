@@ -204,7 +204,7 @@ export default function AccessibilitySuggestionListPage() {
     <Contents.Normal>
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>접근성 제안 관리</CardTitle>
+          <CardTitle>접근성 정보 채우기</CardTitle>
           <CardDescription>
             AI가 크롤링한 사진을 분석하여 생성한 접근성 정보 제안을 검토하고 확인/반려합니다.
           </CardDescription>
