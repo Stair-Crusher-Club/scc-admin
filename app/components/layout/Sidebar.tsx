@@ -4,9 +4,9 @@ import { useAtom, useSetAtom } from "jotai"
 import {
   Building2,
   ClipboardList,
-  Copy,
   Flag,
   Home,
+  Layers,
   LogOut,
   Map,
   MapPin,
@@ -40,7 +40,7 @@ const menuItems = [
   { href: "/region", label: "오픈 지역 관리", icon: Flag },
   { href: "/accessibility", label: "등록된 정보 관리", icon: Home },
   { href: "/closedPlace", label: "폐업 추정 장소 관리", icon: Building2 },
-  { href: "/buildingDeduplication", label: "건물 중복 제거 후보", icon: Copy },
+  { href: "/buildingDivision", label: "건물 분할 관리", icon: Layers },
   { href: "/banner", label: "배너 관리", icon: Tag },
   { href: "/bbucleRoad", label: "뿌클로드 관리", icon: Map },
   { href: "/notification", label: "푸시 알림 관리", icon: Megaphone },
@@ -82,10 +82,7 @@ export default function Sidebar() {
       >
         {/* Header */}
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-          <button
-            onClick={() => router.push("/")}
-            className="flex items-center gap-2 font-semibold group"
-          >
+          <button onClick={() => router.push("/")} className="flex items-center gap-2 font-semibold group">
             <Image
               src={kongal}
               alt="콩알이"
@@ -118,11 +115,7 @@ export default function Sidebar() {
 
         {/* Footer */}
         <div className="mt-auto border-t p-4">
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2"
-            onClick={logout}
-          >
+          <Button variant="ghost" className="w-full justify-start gap-2" onClick={logout}>
             <LogOut className="h-4 w-4" />
             로그아웃
           </Button>
