@@ -5,6 +5,7 @@ import {
   Building2,
   ClipboardList,
   Copy,
+  FlaskConical,
   Flag,
   FolderTree,
   Home,
@@ -45,6 +46,7 @@ export const menuItems: MenuItem[] = [
   { title: "저장 리스트 관리", url: "/placeList", icon: Bookmark },
   { title: "접근성 신고 관리", url: "/accessibilityReport", icon: AlertTriangle },
   { title: "접근성 정보 채우기", url: "/accessibility-suggestion", icon: ScanEye },
+  { title: "실험 배정 관리", url: "/experiment", icon: FlaskConical },
 ]
 
 export function getMenuItemByPath(pathname: string): MenuItem | undefined {
