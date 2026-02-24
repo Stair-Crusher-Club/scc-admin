@@ -4,10 +4,7 @@ import { format } from "date-fns"
 import { Search } from "lucide-react"
 import { useState } from "react"
 
-import {
-  AdminExperimentAssignmentDto,
-  ExperimentVariantDto,
-} from "@/lib/generated-sources/openapi"
+import { AdminExperimentAssignmentDto } from "@/lib/generated-sources/openapi"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -31,13 +28,18 @@ import {
 import { Contents } from "@/components/layout"
 import { useToast } from "@/hooks/use-toast"
 
-import { useExperimentAssignments, useUpdateExperimentAssignment } from "./query"
+import {
+  useExperimentAssignments,
+  useExperimentDefinitions,
+  useUpdateExperimentAssignment,
+} from "./query"
 
 export default function ExperimentPage() {
   const { toast } = useToast()
   const [userId, setUserId] = useState("")
   const [searchUserId, setSearchUserId] = useState("")
   const { data, isLoading } = useExperimentAssignments(searchUserId)
+  const { data: experimentDefinitions } = useExperimentDefinitions()
   const updateMutation = useUpdateExperimentAssignment()
 
   const assignments: AdminExperimentAssignmentDto[] = data?.items ?? []
@@ -49,7 +51,7 @@ export default function ExperimentPage() {
 
   const handleVariantChange = async (
     assignment: AdminExperimentAssignmentDto,
-    newVariant: ExperimentVariantDto,
+    newVariant: string,
   ) => {
     try {
       await updateMutation.mutateAsync({ id: assignment.id, variant: newVariant })
@@ -118,21 +120,30 @@ export default function ExperimentPage() {
                     <TableRow key={assignment.id}>
                       <TableCell className="font-medium">{assignment.experiment}</TableCell>
                       <TableCell>
-                        <Select
-                          value={assignment.variant}
-                          onValueChange={(value) =>
-                            handleVariantChange(assignment, value as ExperimentVariantDto)
-                          }
-                          disabled={updateMutation.isPending}
-                        >
-                          <SelectTrigger className="w-[160px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value={ExperimentVariantDto.Control}>CONTROL</SelectItem>
-                            <SelectItem value={ExperimentVariantDto.Treatment}>TREATMENT</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        {(() => {
+                          const experimentDef = experimentDefinitions?.items?.find(
+                            (def) => def.name === assignment.experiment,
+                          )
+                          const variants = experimentDef?.variants ?? []
+                          return (
+                            <Select
+                              value={assignment.variant}
+                              onValueChange={(value) => handleVariantChange(assignment, value)}
+                              disabled={updateMutation.isPending}
+                            >
+                              <SelectTrigger className="w-[160px]">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {variants.map((v) => (
+                                  <SelectItem key={v.name} value={v.name}>
+                                    {v.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )
+                        })()}
                       </TableCell>
                       <TableCell>
                         <code className="text-xs bg-muted px-2 py-1 rounded">

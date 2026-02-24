@@ -1623,17 +1623,17 @@ export interface AdminExperimentAssignmentDto {
      */
     'userId': string;
     /**
-     * 
-     * @type {ExperimentDto}
+     * 실험 이름
+     * @type {string}
      * @memberof AdminExperimentAssignmentDto
      */
-    'experiment': ExperimentDto;
+    'experiment': string;
     /**
-     * 
-     * @type {ExperimentVariantDto}
+     * 배정된 variant 이름
+     * @type {string}
      * @memberof AdminExperimentAssignmentDto
      */
-    'variant': ExperimentVariantDto;
+    'variant': string;
     /**
      * 
      * @type {string}
@@ -1895,6 +1895,19 @@ export interface AdminListClosedPlaceCandidatesResponseDTO {
      * @memberof AdminListClosedPlaceCandidatesResponseDTO
      */
     'cursor'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface AdminListExperimentsResponseDto
+ */
+export interface AdminListExperimentsResponseDto {
+    /**
+     * 
+     * @type {Array<ExperimentDefinitionDto>}
+     * @memberof AdminListExperimentsResponseDto
+     */
+    'items': Array<ExperimentDefinitionDto>;
 }
 /**
  * 
@@ -3010,11 +3023,11 @@ export interface AdminUpdateChallengeRequestDTO {
  */
 export interface AdminUpdateExperimentAssignmentRequestDto {
     /**
-     * 
-     * @type {ExperimentVariantDto}
+     * 변경할 variant 이름
+     * @type {string}
      * @memberof AdminUpdateExperimentAssignmentRequestDto
      */
-    'variant': ExperimentVariantDto;
+    'variant': string;
 }
 /**
  * 
@@ -4197,30 +4210,34 @@ export interface EpochMillisTimestamp {
 /**
  * 
  * @export
- * @enum {string}
+ * @interface ExperimentDefinitionDto
  */
-
-export const ExperimentDto = {
-    UpvoteButtonStyle: 'UPVOTE_BUTTON_STYLE'
-} as const;
-
-export type ExperimentDto = typeof ExperimentDto[keyof typeof ExperimentDto];
-
-
-/**
- * 
- * @export
- * @enum {string}
- */
-
-export const ExperimentVariantDto = {
-    Control: 'CONTROL',
-    Treatment: 'TREATMENT'
-} as const;
-
-export type ExperimentVariantDto = typeof ExperimentVariantDto[keyof typeof ExperimentVariantDto];
-
-
+export interface ExperimentDefinitionDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentDefinitionDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentDefinitionDto
+     */
+    'description': string;
+    /**
+     * 
+     * @type {Array<VariantConfigDto>}
+     * @memberof ExperimentDefinitionDto
+     */
+    'variants': Array<VariantConfigDto>;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentDefinitionDto
+     */
+    'winningVariant'?: string | null;
+}
 /**
  * groupId로 조회한 퀘스트 목록
  * @export
@@ -4743,6 +4760,25 @@ export interface UpdateMapMarkerDTO {
      * @memberof UpdateMapMarkerDTO
      */
     'customImageUrl'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface VariantConfigDto
+ */
+export interface VariantConfigDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof VariantConfigDto
+     */
+    'name': string;
+    /**
+     * 상대 비중 (e.g. 50:50, 34:33:33)
+     * @type {number}
+     * @memberof VariantConfigDto
+     */
+    'weight': number;
 }
 
 /**
@@ -10055,6 +10091,40 @@ export const ExperimentApiAxiosParamCreator = function (configuration?: Configur
     return {
         /**
          * 
+         * @summary 등록된 실험 정의 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listExperiments: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/experiments`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 특정 유저의 실험 배정 목록을 조회한다.
          * @param {string} userId 
          * @param {*} [options] Override http request option.
@@ -10150,6 +10220,16 @@ export const ExperimentApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary 등록된 실험 정의 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listExperiments(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListExperimentsResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listExperiments(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 특정 유저의 실험 배정 목록을 조회한다.
          * @param {string} userId 
          * @param {*} [options] Override http request option.
@@ -10183,6 +10263,15 @@ export const ExperimentApiFactory = function (configuration?: Configuration, bas
     return {
         /**
          * 
+         * @summary 등록된 실험 정의 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listExperiments(options?: any): AxiosPromise<AdminListExperimentsResponseDto> {
+            return localVarFp.listExperiments(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 특정 유저의 실험 배정 목록을 조회한다.
          * @param {string} userId 
          * @param {*} [options] Override http request option.
@@ -10212,6 +10301,17 @@ export const ExperimentApiFactory = function (configuration?: Configuration, bas
  * @extends {BaseAPI}
  */
 export class ExperimentApi extends BaseAPI {
+    /**
+     * 
+     * @summary 등록된 실험 정의 목록을 조회한다.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ExperimentApi
+     */
+    public listExperiments(options?: AxiosRequestConfig) {
+        return ExperimentApiFp(this.configuration).listExperiments(options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary 특정 유저의 실험 배정 목록을 조회한다.

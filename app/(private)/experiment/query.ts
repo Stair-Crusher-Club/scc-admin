@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { api } from "@/lib/apis/api"
-import { ExperimentVariantDto } from "@/lib/generated-sources/openapi"
 
 export function useExperimentAssignments(userId: string) {
   return useQuery({
@@ -11,11 +10,18 @@ export function useExperimentAssignments(userId: string) {
   })
 }
 
+export function useExperimentDefinitions() {
+  return useQuery({
+    queryKey: ["@experimentDefinitions"],
+    queryFn: () => api.experiment.listExperiments().then((res) => res.data),
+  })
+}
+
 export function useUpdateExperimentAssignment() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, variant }: { id: string; variant: ExperimentVariantDto }) =>
+    mutationFn: ({ id, variant }: { id: string; variant: string }) =>
       api.experiment.updateExperimentAssignment(id, { variant }).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["@experimentAssignments"] })
