@@ -1636,10 +1636,10 @@ export interface AdminExperimentAssignmentDto {
     'variant': string;
     /**
      * 
-     * @type {string}
+     * @type {ExperimentStratumDto}
      * @memberof AdminExperimentAssignmentDto
      */
-    'stratum': string;
+    'stratum': ExperimentStratumDto;
     /**
      * 
      * @type {string}
@@ -4237,6 +4237,31 @@ export interface ExperimentDefinitionDto {
      * @memberof ExperimentDefinitionDto
      */
     'winningVariant'?: string | null;
+}
+/**
+ * 
+ * @export
+ * @interface ExperimentStratumDto
+ */
+export interface ExperimentStratumDto {
+    /**
+     * 이동약자 여부
+     * @type {boolean}
+     * @memberof ExperimentStratumDto
+     */
+    'hasMobility': boolean;
+    /**
+     * 휠체어 사용 여부
+     * @type {boolean}
+     * @memberof ExperimentStratumDto
+     */
+    'hasWheelchair': boolean;
+    /**
+     * 크루 여부
+     * @type {boolean}
+     * @memberof ExperimentStratumDto
+     */
+    'isCrew': boolean;
 }
 /**
  * groupId로 조회한 퀘스트 목록

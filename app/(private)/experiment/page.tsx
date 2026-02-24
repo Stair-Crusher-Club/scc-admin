@@ -149,7 +149,7 @@ export default function ExperimentPage() {
                       </TableCell>
                       <TableCell>
                         <code className="text-xs bg-muted px-2 py-1 rounded">
-                          {assignment.stratum}
+                          {JSON.stringify(assignment.stratum)}
                         </code>
                       </TableCell>
                       <TableCell>
