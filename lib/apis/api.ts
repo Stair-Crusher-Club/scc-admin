@@ -28,6 +28,7 @@ import {
   ChallengeApi,
   Configuration,
   DefaultApi,
+  ExperimentApi,
   HomeAnnouncementApi,
   HomeRecommendedContentApi,
   PlaceAccessibilitySuggestionApi,
@@ -58,6 +59,7 @@ const homeAnnouncementApi = new HomeAnnouncementApi(config)
 const homeRecommendedContentApi = new HomeRecommendedContentApi(config)
 const placeListApi = new PlaceListApi(config)
 const accessibilityReportApi = new AccessibilityReportApi(config)
+const experimentApi = new ExperimentApi(config)
 const placeAccessibilitySuggestionApi = new PlaceAccessibilitySuggestionApi(config)
 
 export const api: {
@@ -67,6 +69,7 @@ export const api: {
   accessibility: AccessibilityApi
   accessibilityReport: AccessibilityReportApi
   bbucleRoad: BbucleRoadApi
+  experiment: ExperimentApi
   placeCategoryCache: PlaceCategoryCacheApi
   homeAnnouncement: HomeAnnouncementApi
   homeRecommendedContent: HomeRecommendedContentApi
@@ -79,6 +82,7 @@ export const api: {
   accessibility: accessibilityApi,
   accessibilityReport: accessibilityReportApi,
   bbucleRoad: bbucleRoadApi,
+  experiment: experimentApi,
   placeCategoryCache: placeCategoryCacheApi,
   homeAnnouncement: homeAnnouncementApi,
   homeRecommendedContent: homeRecommendedContentApi,
