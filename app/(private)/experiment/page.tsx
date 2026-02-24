@@ -38,7 +38,7 @@ export default function ExperimentPage() {
   const { toast } = useToast()
   const [userId, setUserId] = useState("")
   const [searchUserId, setSearchUserId] = useState("")
-  const { data, isLoading } = useExperimentAssignments(searchUserId)
+  const { data, isLoading, isError } = useExperimentAssignments(searchUserId)
   const { data: experimentDefinitions } = useExperimentDefinitions()
   const updateMutation = useUpdateExperimentAssignment()
 
@@ -103,6 +103,8 @@ export default function ExperimentPage() {
           <CardContent className="p-6">
             {isLoading ? (
               <p className="text-muted-foreground">로딩 중...</p>
+            ) : isError ? (
+              <p className="text-destructive">실험 배정 조회 중 오류가 발생했습니다.</p>
             ) : assignments.length === 0 ? (
               <p className="text-muted-foreground">해당 유저의 실험 배정이 없습니다.</p>
             ) : (
