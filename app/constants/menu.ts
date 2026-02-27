@@ -13,6 +13,7 @@ import {
   Map,
   MapPin,
   Megaphone,
+  NotepadText,
   ScanEye,
   Search,
   ShieldCheck,
@@ -47,6 +48,7 @@ export const menuItems: MenuItem[] = [
   { title: "접근성 신고 관리", url: "/accessibilityReport", icon: AlertTriangle },
   { title: "접근성 정보 채우기", url: "/accessibility-suggestion", icon: ScanEye },
   { title: "실험 배정 관리", url: "/experiment", icon: FlaskConical },
+  { title: "출석부 웹사이트", url: "/attendance", icon: NotepadText },
 ]
 
 export function getMenuItemByPath(pathname: string): MenuItem | undefined {

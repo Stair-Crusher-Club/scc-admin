@@ -23,6 +23,9 @@ importers:
       '@lottiefiles/dotlottie-react':
         specifier: ^0.14.1
         version: 0.14.1(react@18.3.1)
+      '@notionhq/client':
+        specifier: ^5.11.0
+        version: 5.11.0
       '@openapitools/openapi-generator-cli':
         specifier: ^2.19.1
         version: 2.19.1
@@ -829,6 +832,10 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@notionhq/client@5.11.0':
+    resolution: {integrity: sha512-bBP3gZvf2yUzwWJ/oEPf/4DWR4wSrZln0ZtVx3mc3RQaQHjl1/cbqECcsUS6RjKc51PY9598s7WRItxd8X1MAw==}
+    engines: {node: '>=18'}
 
   '@nuxt/opencollective@0.4.1':
     resolution: {integrity: sha512-GXD3wy50qYbxCJ652bDrDzgMr3NFEkIS374+IgFQKkCvk9yiYcLvX2XDYr7UyQxf4wK0e+yqDYRubZ0DtOxnmQ==}
@@ -4700,6 +4707,8 @@ snapshots:
       fastq: 1.19.1
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@notionhq/client@5.11.0': {}
 
   '@nuxt/opencollective@0.4.1':
     dependencies:
