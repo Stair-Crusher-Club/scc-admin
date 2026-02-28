@@ -33,12 +33,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: NOTION_ATTENDANCE_API_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: scc-admin-secrets
-                  key: notion-attendance-api-token
+          envFrom:
+            - secretRef:
+                name: scc-admin-secrets
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
