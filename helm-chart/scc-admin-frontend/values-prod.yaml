@@ -5,6 +5,8 @@
 deploySecret:
   awsRoleArn: arn:aws:iam::291889421067:role/scc-deploy-secret
 
+filesDir: files/prod
+
 replicaCount: 1
 image:
   repository: public.ecr.aws/i6n1n6v2/scc-admin-frontend

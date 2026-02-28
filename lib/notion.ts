@@ -1,7 +1,7 @@
 import { Client } from "@notionhq/client"
 
 const notion = new Client({
-  auth: process.env.NOTION_API_TOKEN,
+  auth: process.env.NOTION_ATTENDANCE_API_TOKEN,
   notionVersion: "2022-06-28",
 })
 
