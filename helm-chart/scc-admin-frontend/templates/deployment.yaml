@@ -42,18 +42,24 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /api/health
               port: http
+            timeoutSeconds: 5
+            periodSeconds: 15
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /
               port: http
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
           startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
             failureThreshold: 15
             periodSeconds: 10
-            httpGet:
-              path: /
-              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

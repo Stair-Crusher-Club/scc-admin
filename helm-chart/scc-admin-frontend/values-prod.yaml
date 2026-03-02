@@ -54,7 +54,7 @@ ingress:
   #      - chart-example.local
 resources:
   limits:
-    cpu: 150m
+    cpu: 800m
     memory: 500Mi
   requests:
     cpu: 150m
