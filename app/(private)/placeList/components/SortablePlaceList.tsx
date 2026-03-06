@@ -11,6 +11,7 @@ import {
 } from "@dnd-kit/core"
 import {
   SortableContext,
+  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   useSortable,
   arrayMove,
@@ -98,7 +99,9 @@ export function SortablePlaceList<T extends PlaceItem>({
 }: SortablePlaceListProps<T>) {
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   )
 
   const handleDragEnd = (event: DragEndEvent) => {
