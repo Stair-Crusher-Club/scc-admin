@@ -10,8 +10,8 @@ import { useCreatePlaceList } from "@/lib/apis/placeList"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Contents } from "@/components/layout"
-import { Trash2 } from "lucide-react"
 import { PlaceSearchPanel } from "../components/PlaceSearchPanel"
+import { SortablePlaceList } from "../components/SortablePlaceList"
 
 export default function PlaceListCreatePage() {
   const router = useRouter()
@@ -117,29 +117,11 @@ export default function PlaceListCreatePage() {
             {places.length === 0 ? (
               <p className="text-sm text-muted-foreground">장소를 검색하여 추가하세요.</p>
             ) : (
-              <div className="space-y-2">
-                {places.map((place) => (
-                  <div
-                    key={place.placeId}
-                    className="flex items-center justify-between px-3 py-2 border rounded-md"
-                  >
-                    <div>
-                      <span className="font-medium">{place.name}</span>
-                      {place.address && (
-                        <span className="text-sm text-muted-foreground ml-2">{place.address}</span>
-                      )}
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemovePlace(place.placeId)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
+              <SortablePlaceList
+                items={places}
+                onReorder={setPlaces}
+                onRemove={handleRemovePlace}
+              />
             )}
           </CardContent>
         </Card>
