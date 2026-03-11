@@ -8,6 +8,7 @@ export const Modal = styled("div", {
     padding: "32px 24px 24px",
     borderRadius: "8px",
     background: "white",
+    pointerEvents: "all",
   },
 })
 
