@@ -1,5 +1,6 @@
-import { cachedFetch } from "@/lib/notion-cache"
+import { cachedFetch, setCache, triggerSyncIfNeeded } from "@/lib/notion-cache"
 import notion from "@/lib/notion"
+import redis from "@/lib/redis"
 
 export const dynamic = "force-dynamic"
 
@@ -38,6 +39,19 @@ async function queryDatabase(databaseId: string, startCursor?: string) {
   return res.json()
 }
 
+async function fetchAllRows(databaseId: string) {
+  const firstBatch = await queryDatabase(databaseId)
+  const allRows = [...firstBatch.results]
+  let cursor = firstBatch.next_cursor
+
+  while (cursor) {
+    const next = await queryDatabase(databaseId, cursor)
+    allRows.push(...next.results)
+    cursor = next.next_cursor
+  }
+  return allRows
+}
+
 export async function GET(
   request: Request,
   { params }: { params: { databaseId: string } },
@@ -52,22 +66,24 @@ export async function GET(
       300,
     )
 
-    // DB 로우 (체크박스 값 포함) — 20초 캐싱
-    const rows = await cachedFetch(
-      `notion:db-rows:${databaseId}`,
-      async () => {
-        const firstBatch = await queryDatabase(databaseId)
-        const allRows = [...firstBatch.results]
-        let cursor = firstBatch.next_cursor
+    // DB 로우: Redis에서 즉시 반환, background sync로 갱신
+    const key = `notion:db-rows:${databaseId}`
+    const raw = await redis.get(key).catch(() => null)
+    let rows: unknown[]
 
-        while (cursor) {
-          const next = await queryDatabase(databaseId, cursor)
-          allRows.push(...next.results)
-          cursor = next.next_cursor
-        }
-        return allRows
-      },
-    )
+    if (raw) {
+      const cached = JSON.parse(raw)
+      rows = cached.data
+      // Background sync trigger (non-blocking)
+      triggerSyncIfNeeded(databaseId, () => fetchAllRows(databaseId))
+    } else {
+      // Cache miss (첫 로드) — Notion에서 fetch
+      rows = await fetchAllRows(databaseId)
+      await setCache(key, rows, 60)
+      await redis
+        .set(`notion:last-sync:${databaseId}`, String(Date.now()))
+        .catch(() => {})
+    }
 
     return Response.json({ database, rows })
   } catch (error: any) {
