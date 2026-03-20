@@ -1,3 +1,4 @@
+import { invalidateCache } from "@/lib/notion-cache"
 import notion from "@/lib/notion"
 
 export async function PATCH(
@@ -8,7 +9,7 @@ export async function PATCH(
 
   try {
     const body = await request.json()
-    const { properties } = body
+    const { properties, databaseId } = body
 
     if (!properties) {
       return new Response("Missing 'properties' in request body", {
@@ -20,6 +21,11 @@ export async function PATCH(
       page_id: pageId,
       properties,
     })
+
+    // 해당 DB 로우 캐시 무효화 (스키마는 유지)
+    if (databaseId) {
+      await invalidateCache(`notion:db-rows:${databaseId}`)
+    }
 
     return Response.json(updatedPage)
   } catch (error: any) {

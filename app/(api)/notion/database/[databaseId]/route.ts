@@ -1,3 +1,4 @@
+import { cachedFetch } from "@/lib/notion-cache"
 import notion from "@/lib/notion"
 
 export const dynamic = "force-dynamic"
@@ -8,10 +9,7 @@ const DEFAULT_SORTS = [
   { timestamp: "created_time", direction: "ascending" as const },
 ]
 
-async function queryDatabase(
-  databaseId: string,
-  startCursor?: string,
-) {
+async function queryDatabase(databaseId: string, startCursor?: string) {
   const body: Record<string, unknown> = { sorts: DEFAULT_SORTS }
   if (startCursor) body.start_cursor = startCursor
 
@@ -47,17 +45,29 @@ export async function GET(
   const { databaseId } = params
 
   try {
-    const database = await notion.databases.retrieve({ database_id: databaseId })
+    // DB 스키마 (컬럼 정의) — 이벤트 중 안 변함, 5분 캐싱
+    const database = await cachedFetch(
+      `notion:db-schema:${databaseId}`,
+      () => notion.databases.retrieve({ database_id: databaseId }),
+      300,
+    )
 
-    const firstBatch = await queryDatabase(databaseId)
-    const rows = [...firstBatch.results]
-    let cursor = firstBatch.next_cursor
+    // DB 로우 (체크박스 값 포함) — 20초 캐싱
+    const rows = await cachedFetch(
+      `notion:db-rows:${databaseId}`,
+      async () => {
+        const firstBatch = await queryDatabase(databaseId)
+        const allRows = [...firstBatch.results]
+        let cursor = firstBatch.next_cursor
 
-    while (cursor) {
-      const next = await queryDatabase(databaseId, cursor)
-      rows.push(...next.results)
-      cursor = next.next_cursor
-    }
+        while (cursor) {
+          const next = await queryDatabase(databaseId, cursor)
+          allRows.push(...next.results)
+          cursor = next.next_cursor
+        }
+        return allRows
+      },
+    )
 
     return Response.json({ database, rows })
   } catch (error: any) {
