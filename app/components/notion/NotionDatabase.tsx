@@ -174,6 +174,7 @@ export function NotionDatabase({ databaseId, title }: NotionDatabaseProps) {
             properties: {
               [propertyName]: { checkbox: newValue },
             },
+            databaseId,
           }),
         })
 
