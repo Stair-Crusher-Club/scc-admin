@@ -1,5 +1,10 @@
 import { cachedFetch, setCache, triggerSyncIfNeeded } from "@/lib/notion-cache"
-import { getViewConfig } from "@/lib/notion-view"
+import {
+  getViewConfig,
+  hasAttendanceColumns,
+  ATTENDANCE_SORTS,
+  sortAttendanceRows,
+} from "@/lib/notion-view"
 import notion from "@/lib/notion"
 import redis from "@/lib/redis"
 
@@ -69,6 +74,10 @@ export async function GET(
       300,
     )
 
+    // 출석부 DB(조/유형/이름 컬럼 존재)면 하드코딩 정렬, 아니면 view config sort
+    const isAttendance = hasAttendanceColumns(database)
+    const sorts = isAttendance ? ATTENDANCE_SORTS : viewConfig.sorts
+
     // DB 로우: Redis에서 즉시 반환, background sync로 갱신
     const key = `notion:db-rows:${databaseId}`
     const raw = await redis.get(key).catch(() => null)
@@ -78,16 +87,19 @@ export async function GET(
       const cached = JSON.parse(raw)
       rows = cached.data
       // Background sync trigger (non-blocking)
-      triggerSyncIfNeeded(databaseId, () =>
-        fetchAllRows(databaseId, viewConfig.sorts),
-      )
+      triggerSyncIfNeeded(databaseId, () => fetchAllRows(databaseId, sorts))
     } else {
       // Cache miss (첫 로드) — Notion에서 fetch
-      rows = await fetchAllRows(databaseId, viewConfig.sorts)
+      rows = await fetchAllRows(databaseId, sorts)
       await setCache(key, rows, 60)
       await redis
         .set(`notion:last-sync:${databaseId}`, String(Date.now()))
         .catch(() => {})
+    }
+
+    // 출석부: Notion API sorts는 select 커스텀 순서 미지원 → 서버에서 재정렬
+    if (isAttendance) {
+      rows = sortAttendanceRows(rows as any[])
     }
 
     return Response.json({

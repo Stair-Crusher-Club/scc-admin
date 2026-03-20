@@ -130,18 +130,55 @@ function fallbackConfig(): ViewConfig {
 }
 
 /**
- * 유형 컬럼 기준 커스텀 정렬이 필요한 경우 클라이언트에서 사용.
- * Notion API sorts는 select 값의 커스텀 순서를 지원하지 않으므로,
- * 서버에서 rows를 가져온 후 클라이언트 또는 서버에서 재정렬한다.
+ * 출석부 DB에 조/유형/이름 컬럼이 모두 있는지 확인.
+ * 있으면 하드코딩 정렬(조 ASC → 유형 팀리더→크루 → 이름 ASC)을 사용.
  */
-export function sortRowsByType(rows: any[]): any[] {
+export function hasAttendanceColumns(database: any): boolean {
+  const props = database?.properties ?? {}
+  return "조" in props && "유형" in props && "이름" in props
+}
+
+/** 출석부용 Notion API sorts: 조 ASC, 이름 ASC. 유형은 API로 못 하므로 fetch 후 재정렬. */
+export const ATTENDANCE_SORTS: ViewConfig["sorts"] = [
+  { property: "조", direction: "ascending" },
+  { property: "이름", direction: "ascending" },
+]
+
+/**
+ * 출석부 rows를 조 ASC → 유형(팀리더→크루) → 이름 ASC로 재정렬.
+ * Notion API sorts는 select 커스텀 순서를 지원 안 하므로 fetch 후 서버에서 정렬.
+ */
+export function sortAttendanceRows(rows: any[]): any[] {
   return [...rows].sort((a, b) => {
+    // 1차: 조 ASC
+    const aGroup = getTextValue(a, "조")
+    const bGroup = getTextValue(b, "조")
+    if (aGroup !== bGroup) return aGroup.localeCompare(bGroup, "ko")
+
+    // 2차: 유형 (팀리더 → 유닛리더 → 프론트 → 크루 → 게스트 → 나머지)
     const aType = a.properties?.["유형"]?.select?.name ?? ""
     const bType = b.properties?.["유형"]?.select?.name ?? ""
     const aIdx = TYPE_SORT_ORDER.indexOf(aType)
     const bIdx = TYPE_SORT_ORDER.indexOf(bType)
     const aOrder = aIdx === -1 ? TYPE_SORT_ORDER.length : aIdx
     const bOrder = bIdx === -1 ? TYPE_SORT_ORDER.length : bIdx
-    return aOrder - bOrder
+    if (aOrder !== bOrder) return aOrder - bOrder
+
+    // 3차: 이름 ASC
+    const aName = getTextValue(a, "이름")
+    const bName = getTextValue(b, "이름")
+    return aName.localeCompare(bName, "ko")
   })
+}
+
+function getTextValue(row: any, propName: string): string {
+  const prop = row.properties?.[propName]
+  if (!prop) return ""
+  if (prop.type === "title") {
+    return (prop.title ?? []).map((t: any) => t.plain_text).join("")
+  }
+  if (prop.type === "rich_text") {
+    return (prop.rich_text ?? []).map((t: any) => t.plain_text).join("")
+  }
+  return ""
 }
