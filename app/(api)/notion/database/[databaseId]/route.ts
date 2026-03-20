@@ -4,14 +4,8 @@ import redis from "@/lib/redis"
 
 export const dynamic = "force-dynamic"
 
-/** 하드코딩된 정렬: 조 asc → created_time asc */
-const DEFAULT_SORTS = [
-  { property: "조", direction: "ascending" as const },
-  { timestamp: "created_time", direction: "ascending" as const },
-]
-
 async function queryDatabase(databaseId: string, startCursor?: string) {
-  const body: Record<string, unknown> = { sorts: DEFAULT_SORTS }
+  const body: Record<string, unknown> = {}
   if (startCursor) body.start_cursor = startCursor
 
   const res = await fetch(

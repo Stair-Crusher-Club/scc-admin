@@ -1,10 +1,7 @@
 "use client"
 
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { useCallback, useState } from "react"
-
-/** 하드코딩된 컬럼 순서 */
-const DEFAULT_COLUMNS = ["이름", "체크박스", "조", "팀", "유형", "비고", "굿즈"]
+import { useCallback, useRef, useState } from "react"
 
 interface NotionDatabaseProps {
   databaseId: string
@@ -122,6 +119,7 @@ function getPropertyValue(property: any): React.ReactNode {
 export function NotionDatabase({ databaseId, title }: NotionDatabaseProps) {
   const queryClient = useQueryClient()
   const queryKey = ["notion-database", databaseId]
+  const inflightRef = useRef(0)
   const [isUpdating, setIsUpdating] = useState(false)
 
   const { data, isLoading, error } = useQuery({
@@ -139,7 +137,8 @@ export function NotionDatabase({ databaseId, title }: NotionDatabaseProps) {
     async (pageId: string, propertyName: string, currentValue: boolean) => {
       const newValue = !currentValue
 
-      // 1. Stop polling
+      // 1. Increment in-flight counter, stop polling
+      inflightRef.current += 1
       setIsUpdating(true)
 
       // 2. Optimistic update: directly mutate cached data
@@ -166,7 +165,7 @@ export function NotionDatabase({ databaseId, title }: NotionDatabaseProps) {
       })
 
       try {
-        // 3. Write to Notion
+        // 3. Write to Notion (no refetch — optimistic update is sufficient)
         const res = await fetch(`/notion/pages/${pageId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -179,15 +178,17 @@ export function NotionDatabase({ databaseId, title }: NotionDatabaseProps) {
         })
 
         if (!res.ok) throw new Error("Failed to update")
-
-        // 4. Refetch fresh data (waits for completion)
-        await queryClient.refetchQueries({ queryKey })
       } catch {
         // Rollback on failure
         queryClient.setQueryData(queryKey, previousData)
       } finally {
-        // 5. Resume polling
-        setIsUpdating(false)
+        // 4. Decrement counter, resume polling only when all in-flight done
+        inflightRef.current -= 1
+        if (inflightRef.current === 0) {
+          setIsUpdating(false)
+          // Refetch once to reconcile with server, then polling resumes
+          queryClient.refetchQueries({ queryKey })
+        }
       }
     },
     [databaseId, queryClient],
@@ -225,15 +226,11 @@ export function NotionDatabase({ databaseId, title }: NotionDatabaseProps) {
     allColumns.push({ name, type: prop.type })
   }
 
-  // 하드코딩된 컬럼 순서 적용, 없는 컬럼은 뒤에 추가
-  const orderedColumns: { name: string; type: string }[] = DEFAULT_COLUMNS
-    .map((name) => allColumns.find((c) => c.name === name))
-    .filter((c): c is { name: string; type: string } => c != null)
-  for (const col of allColumns) {
-    if (!orderedColumns.some((c) => c.name === col.name)) {
-      orderedColumns.push(col)
-    }
-  }
+  // title 컬럼을 첫 번째로, 나머지는 schema 순서 그대로
+  const orderedColumns = [
+    ...allColumns.filter((c) => c.type === "title"),
+    ...allColumns.filter((c) => c.type !== "title"),
+  ]
 
   return (
     <div className="my-4">

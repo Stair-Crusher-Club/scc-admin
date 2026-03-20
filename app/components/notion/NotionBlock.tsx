@@ -46,6 +46,28 @@ function ToggleBlock({ block }: { block: any }) {
   )
 }
 
+function ListItemWithChildren({ block }: { block: any }) {
+  const { data } = useQuery({
+    queryKey: ["notion-block-children", block.id],
+    queryFn: async () => {
+      const res = await fetch(`/notion/blocks/${block.id}`)
+      if (!res.ok) throw new Error("Failed to fetch children")
+      return res.json()
+    },
+  })
+
+  return (
+    <li className="ml-1 leading-relaxed">
+      <NotionRichText richText={getRichText(block)} />
+      {data?.blocks && (
+        <div className="pl-5 pt-1">
+          <LazyNotionRenderer blocks={data.blocks} />
+        </div>
+      )}
+    </li>
+  )
+}
+
 export function NotionBlock({ block }: { block: any }) {
   switch (block.type) {
     case "paragraph":
@@ -77,13 +99,10 @@ export function NotionBlock({ block }: { block: any }) {
       )
 
     case "bulleted_list_item":
-      return (
-        <li className="ml-1 leading-relaxed">
-          <NotionRichText richText={getRichText(block)} />
-        </li>
-      )
-
     case "numbered_list_item":
+      if (block.has_children) {
+        return <ListItemWithChildren block={block} />
+      }
       return (
         <li className="ml-1 leading-relaxed">
           <NotionRichText richText={getRichText(block)} />
