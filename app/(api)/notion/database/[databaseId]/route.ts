@@ -1,11 +1,17 @@
 import { cachedFetch, setCache, triggerSyncIfNeeded } from "@/lib/notion-cache"
+import { getViewConfig } from "@/lib/notion-view"
 import notion from "@/lib/notion"
 import redis from "@/lib/redis"
 
 export const dynamic = "force-dynamic"
 
-async function queryDatabase(databaseId: string, startCursor?: string) {
+async function queryDatabase(
+  databaseId: string,
+  sorts: any[],
+  startCursor?: string,
+) {
   const body: Record<string, unknown> = {}
+  if (sorts.length > 0) body.sorts = sorts
   if (startCursor) body.start_cursor = startCursor
 
   const res = await fetch(
@@ -33,13 +39,13 @@ async function queryDatabase(databaseId: string, startCursor?: string) {
   return res.json()
 }
 
-async function fetchAllRows(databaseId: string) {
-  const firstBatch = await queryDatabase(databaseId)
+async function fetchAllRows(databaseId: string, sorts: any[]) {
+  const firstBatch = await queryDatabase(databaseId, sorts)
   const allRows = [...firstBatch.results]
   let cursor = firstBatch.next_cursor
 
   while (cursor) {
-    const next = await queryDatabase(databaseId, cursor)
+    const next = await queryDatabase(databaseId, sorts, cursor)
     allRows.push(...next.results)
     cursor = next.next_cursor
   }
@@ -53,6 +59,9 @@ export async function GET(
   const { databaseId } = params
 
   try {
+    // View config: Notion 비공식 API에서 sort + column order (1시간 캐싱)
+    const viewConfig = await getViewConfig(databaseId)
+
     // DB 스키마 (컬럼 정의) — 이벤트 중 안 변함, 5분 캐싱
     const database = await cachedFetch(
       `notion:db-schema:${databaseId}`,
@@ -69,17 +78,23 @@ export async function GET(
       const cached = JSON.parse(raw)
       rows = cached.data
       // Background sync trigger (non-blocking)
-      triggerSyncIfNeeded(databaseId, () => fetchAllRows(databaseId))
+      triggerSyncIfNeeded(databaseId, () =>
+        fetchAllRows(databaseId, viewConfig.sorts),
+      )
     } else {
       // Cache miss (첫 로드) — Notion에서 fetch
-      rows = await fetchAllRows(databaseId)
+      rows = await fetchAllRows(databaseId, viewConfig.sorts)
       await setCache(key, rows, 60)
       await redis
         .set(`notion:last-sync:${databaseId}`, String(Date.now()))
         .catch(() => {})
     }
 
-    return Response.json({ database, rows })
+    return Response.json({
+      database,
+      rows,
+      columnOrder: viewConfig.columnOrder,
+    })
   } catch (error: any) {
     const status = error?.status ?? 500
     const message = error?.message ?? "Failed to fetch Notion database"

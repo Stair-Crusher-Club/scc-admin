@@ -218,6 +218,7 @@ export function NotionDatabase({ databaseId, title }: NotionDatabaseProps) {
 
   const database = data?.database
   const rows = data?.rows ?? []
+  const serverColumnOrder: string[] | undefined = data?.columnOrder
 
   const properties = database?.properties ?? {}
   const allColumns: { name: string; type: string }[] = []
@@ -226,11 +227,20 @@ export function NotionDatabase({ databaseId, title }: NotionDatabaseProps) {
     allColumns.push({ name, type: prop.type })
   }
 
-  // title 컬럼을 첫 번째로, 나머지는 schema 순서 그대로
-  const orderedColumns = [
-    ...allColumns.filter((c) => c.type === "title"),
-    ...allColumns.filter((c) => c.type !== "title"),
-  ]
+  // 서버에서 view config의 column order가 오면 그 순서 사용
+  // 없으면 fallback: title 첫 번째 + schema 순서
+  let orderedColumns: { name: string; type: string }[]
+  if (serverColumnOrder && serverColumnOrder.length > 0) {
+    orderedColumns = serverColumnOrder
+      .map((name) => allColumns.find((c) => c.name === name))
+      .filter((c): c is { name: string; type: string } => c != null)
+    // view에 없는 컬럼은 추가하지 않음 (hidden)
+  } else {
+    orderedColumns = [
+      ...allColumns.filter((c) => c.type === "title"),
+      ...allColumns.filter((c) => c.type !== "title"),
+    ]
+  }
 
   return (
     <div className="my-4">
