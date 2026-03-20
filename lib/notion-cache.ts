@@ -94,3 +94,56 @@ async function refreshCache<T>(
 export async function invalidateCache(key: string): Promise<void> {
   await redis.del(key).catch(() => {})
 }
+
+// --- Write Rate Limiter ---
+// Notion API rate limit: ~3 req/s (reads + writes 공유)
+// Reads는 캐시로 ~1 req/s → writes에 ~2 req/s 할당
+
+const WRITE_CONCURRENCY = 2
+const WRITE_MIN_INTERVAL_MS = 500 // 최소 500ms 간격 (= 2 req/s)
+let activeWrites = 0
+let lastWriteTime = 0
+const writeQueue: Array<{
+  execute: () => Promise<unknown>
+  resolve: (v: unknown) => void
+  reject: (e: unknown) => void
+}> = []
+
+async function processWriteQueue() {
+  while (writeQueue.length > 0 && activeWrites < WRITE_CONCURRENCY) {
+    const timeSinceLast = Date.now() - lastWriteTime
+    if (timeSinceLast < WRITE_MIN_INTERVAL_MS) {
+      setTimeout(processWriteQueue, WRITE_MIN_INTERVAL_MS - timeSinceLast)
+      return
+    }
+
+    const item = writeQueue.shift()!
+    activeWrites++
+    lastWriteTime = Date.now()
+
+    item
+      .execute()
+      .then(item.resolve)
+      .catch(item.reject)
+      .finally(() => {
+        activeWrites--
+        processWriteQueue()
+      })
+  }
+}
+
+/**
+ * Notion API write 호출을 rate limit하여 실행.
+ * 동시 최대 2개, 500ms 간격으로 제한.
+ * 큐에 대기 → 순서대로 처리.
+ */
+export function rateLimitedWrite<T>(fn: () => Promise<T>): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    writeQueue.push({
+      execute: fn as () => Promise<unknown>,
+      resolve: resolve as (v: unknown) => void,
+      reject,
+    })
+    processWriteQueue()
+  })
+}

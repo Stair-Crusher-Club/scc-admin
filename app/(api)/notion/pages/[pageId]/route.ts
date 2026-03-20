@@ -1,4 +1,4 @@
-import { invalidateCache } from "@/lib/notion-cache"
+import { invalidateCache, rateLimitedWrite } from "@/lib/notion-cache"
 import notion from "@/lib/notion"
 
 export async function PATCH(
@@ -17,10 +17,10 @@ export async function PATCH(
       })
     }
 
-    const updatedPage = await notion.pages.update({
-      page_id: pageId,
-      properties,
-    })
+    // Rate-limited write: 동시 최대 2개, 500ms 간격
+    const updatedPage = await rateLimitedWrite(() =>
+      notion.pages.update({ page_id: pageId, properties }),
+    )
 
     // 해당 DB 로우 캐시 무효화 (스키마는 유지)
     if (databaseId) {
