@@ -1,4 +1,4 @@
-import { invalidateCache, rateLimitedWrite } from "@/lib/notion-cache"
+import { markDirty, updateCachedRows } from "@/lib/notion-cache"
 import notion from "@/lib/notion"
 
 export async function PATCH(
@@ -17,14 +17,20 @@ export async function PATCH(
       })
     }
 
-    // Rate-limited write: 동시 최대 2개, 500ms 간격
-    const updatedPage = await rateLimitedWrite(() =>
-      notion.pages.update({ page_id: pageId, properties }),
-    )
+    // 1. Notion API 즉시 호출 (rate limiter 없음)
+    const updatedPage = await notion.pages.update({
+      page_id: pageId,
+      properties,
+    })
 
-    // 해당 DB 로우 캐시 무효화 (스키마는 유지)
+    // 2. Dirty flag 마킹 (sync가 이 값을 덮어쓰지 못하게 보호)
     if (databaseId) {
-      await invalidateCache(`notion:db-rows:${databaseId}`)
+      await markDirty(databaseId, pageId, properties)
+    }
+
+    // 3. 캐시 직접 수정 (무효화 아님!)
+    if (databaseId) {
+      await updateCachedRows(databaseId, pageId, properties)
     }
 
     return Response.json(updatedPage)
