@@ -1,7 +1,14 @@
 import GuideSlider from "@/components/Guide/GuideSlider/GuideSlider"
 import * as S from "@/components/Guide/GuideSlider/GuideSliderItem.style"
 import GuideTypography from "@/components/Guide/GuideTypography"
-import { filterSearchGuide, locationSearchGuide, placeSearchGuide, sccRoadGuide } from "@/constants/guide"
+import {
+  filterSearchGuide,
+  locationSearchGuide,
+  nearbySearchGuide,
+  placeSearchGuide,
+  sccRoadGuide,
+  sccRoadTopicGuide,
+} from "@/constants/guide"
 
 export default function SearchGuideView() {
   return (
@@ -13,7 +20,7 @@ export default function SearchGuideView() {
       >
         <div style={{ padding: "0 20px", marginBottom: 20 }}>
           <GuideTypography variant="title" css={{ marginBottom: 12 }}>
-            지도에서 접근 정보 확인하기
+            지도에서 접근성 정보 확인하기
           </GuideTypography>
           <GuideTypography variant="description">
             계단뿌셔클럽 앱에서는 <strong>[접근레벨]</strong> 기능을 통해
@@ -40,11 +47,23 @@ export default function SearchGuideView() {
           </div>
 
           <GuideTypography variant="subtitle" css={{ marginBottom: 8 }}>
+            조회하기로 내 근처 장소 한 번에 탐색하기
+          </GuideTypography>
+          <GuideTypography variant="description">
+            <strong>[조회하기]</strong> 모드를 통해서 내 근처의 장소들을
+          </GuideTypography>
+          <GuideTypography variant="description">접근성 기준으로 한 번에 확인할 수 있어요.</GuideTypography>
+        </div>
+        <GuideSlider items={nearbySearchGuide} name="nearbySearchGuide" />
+
+        <div style={{ padding: "0 20px", marginTop: 48, marginBottom: 20 }}>
+          <GuideTypography variant="subtitle" css={{ marginBottom: 8 }}>
             지도로 위치 기반 탐색하기
           </GuideTypography>
           <GuideTypography variant="description">
-            지도 화면으로 바로 진입해 원하는 카테고리를 검색하면 접근성 정보를 빠르게 확인할 수 있어요.
+            지도 화면으로 바로 진입해 원하는 카테고리를 검색하면
           </GuideTypography>
+          <GuideTypography variant="description">접근성 정보를 빠르게 확인할 수 있어요.</GuideTypography>
         </div>
         <GuideSlider items={locationSearchGuide} name="locationSearchGuide" />
 
@@ -93,6 +112,17 @@ export default function SearchGuideView() {
           </GuideTypography>
         </div>
         <GuideSlider items={sccRoadGuide} name="sccRoadGuide" />
+
+        <div style={{ padding: "0 20px", marginTop: 48, marginBottom: 20 }}>
+          <GuideTypography variant="subtitle" css={{ marginBottom: 8 }}>
+            주제별로 뿌클로드 조회하기
+          </GuideTypography>
+          <GuideTypography variant="description">
+            앱 홈메뉴에서 &apos;이런 키워드는 어때요?&apos;를 확인하면,
+          </GuideTypography>
+          <GuideTypography variant="description">주제별로 모아놓은 기획 콘텐츠를 볼 수 있어요.</GuideTypography>
+        </div>
+        <GuideSlider items={sccRoadTopicGuide} name="sccRoadTopicGuide" />
       </section>
     </>
   )

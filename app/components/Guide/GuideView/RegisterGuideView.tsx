@@ -1,6 +1,12 @@
 import GuideSlider from "@/components/Guide/GuideSlider/GuideSlider"
 import GuideTypography from "@/components/Guide/GuideTypography"
-import { buildingConquerGuide, multipleConquerGuide, placeConquerGuide, singleConquerGuide } from "@/constants/guide"
+import {
+  buildingConquerGuide,
+  multipleConquerGuide,
+  nearbyConquerGuide,
+  placeConquerGuide,
+  singleConquerGuide,
+} from "@/constants/guide"
 
 export default function RegisterGuideView() {
   return (
@@ -15,6 +21,18 @@ export default function RegisterGuideView() {
             1. 장소 검색하기
           </GuideTypography>
           <GuideTypography variant="subtitle" css={{ marginBottom: 8 }}>
+            내 근처 정복 안 된 장소만 모아보기
+          </GuideTypography>
+          <GuideTypography variant="description">
+            <strong>[등록하기]</strong> 모드를 통해서 내 근처의
+          </GuideTypography>
+          <GuideTypography variant="description">정복 안 된 장소들만 모아볼 수 있어요.</GuideTypography>
+        </div>
+
+        <GuideSlider items={nearbyConquerGuide} name="nearbyConquerGuide" />
+
+        <div style={{ padding: "0 20px", marginTop: 48, marginBottom: 20 }}>
+          <GuideTypography variant="subtitle" css={{ marginBottom: 8 }}>
             장소 하나 정복하기
           </GuideTypography>
           <GuideTypography variant="description">정복(등록)하고 싶은 장소가 있다면,</GuideTypography>
@@ -28,7 +46,7 @@ export default function RegisterGuideView() {
             여러 곳 정복하기
           </GuideTypography>
           <GuideTypography variant="description">
-            [정복 안된 곳만 보기] 필터로 내 근처 미정복 장소를 찾아,
+            [정복 안 된 곳만 보기] 필터로 내 근처 미정복 장소를 찾아,
           </GuideTypography>
           <GuideTypography variant="description">한 번에 여러 곳을 쉽게 정복할 수 있어요!</GuideTypography>
         </div>
@@ -60,7 +78,7 @@ export default function RegisterGuideView() {
             건물 정보 입력하기
           </GuideTypography>
           <GuideTypography variant="description">
-            매장 정보를 다 입력했다면, 꼭 <strong>건물 정보</strong>도 함께 등록해주세요.
+            매장 정보를 입력했다면, 꼭 <strong>건물 정보</strong>도 함께 등록해주세요.
           </GuideTypography>
           <GuideTypography variant="description">건물 정보가 없으면 전체적인 접근성 정보를</GuideTypography>
           <GuideTypography variant="description">정확히 전달할 수 없어요.</GuideTypography>

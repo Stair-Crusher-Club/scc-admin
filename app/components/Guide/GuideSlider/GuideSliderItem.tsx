@@ -2,7 +2,6 @@ import Image from "next/image"
 
 import { GuideSlideContent } from "@/constants/guide"
 
-import TriggeredDotLottie from "../TriggeredDotLottie"
 import * as S from "./GuideSliderItem.style"
 
 export type GuideSlideItemProps = GuideSlideContent & {
@@ -27,7 +26,6 @@ export default function GuideSliderItem({
   onClickNext,
   stepNumber,
   source,
-  sourceType,
   imageObjectFit,
   title,
   description,
@@ -47,19 +45,15 @@ export default function GuideSliderItem({
             </S.ArrowButton>
           )}
 
-          {sourceType === "image" ? (
-            <div style={{ width, height: 220, position: "relative" }}>
-              <Image
-                src={source}
-                alt="이미지"
-                style={{ width: "100%", height: "100%", objectFit: imageObjectFit ?? "contain" }}
-                fill
-                unoptimized
-              />
-            </div>
-          ) : (
-            <TriggeredDotLottie width={width} height={220} src={source} isActive={isActive} delay={800} />
-          )}
+          <div style={{ width, height: Math.round(width * (217 / 335)), position: "relative" }}>
+            <Image
+              src={source}
+              alt="이미지"
+              style={{ width: "100%", height: "100%", objectFit: imageObjectFit ?? "contain" }}
+              fill
+              unoptimized
+            />
+          </div>
 
           {!hiddenNextButton && (
             <S.ArrowButton onClick={onClickNext} disabled={!isActive} position="next">
