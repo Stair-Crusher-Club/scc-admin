@@ -64,8 +64,10 @@ export default function QuestCreate() {
   // 센터 모드 : 중심점 설정 모드
   // 프리뷰 모드 : 조 분할 미리보기 모드
   const mode = useRef<"draw" | "preview">("draw")
+  const mapRef = useRef<kakao.maps.Map>()
   const queryClient = useQueryClient()
   const [showPreview, setShowPreview] = useState(false)
+  const [searchKeyword, setSearchKeyword] = useState("")
   const [isPreviewLoading, setPreviewLoading] = useState(false)
   const form = useForm<FormValues>({
     defaultValues: {
@@ -86,7 +88,23 @@ export default function QuestCreate() {
   const [clusters, setClusters] = useState<ClubQuestCreateDryRunResultItemDTO[]>([])
 
   function initializeMap(map: kakao.maps.Map) {
+    mapRef.current = map
     kakao.maps.event.addListener(map, "click", (e: kakao.maps.event.MouseEvent) => handleClick(e.latLng))
+  }
+
+  function handleSearch() {
+    if (!searchKeyword.trim() || !mapRef.current) return
+    const ps = new kakao.maps.services.Places()
+    ps.keywordSearch(searchKeyword, (result, status) => {
+      if (status === kakao.maps.services.Status.OK && result.length > 0) {
+        const place = result[0]
+        const latlng = new kakao.maps.LatLng(parseFloat(place.y), parseFloat(place.x))
+        mapRef.current!.panTo(latlng)
+        toast.info(`${place.place_name}(으)로 지도를 움직입니다`)
+      } else {
+        toast.warn("검색 결과가 없습니다")
+      }
+    })
   }
 
   useEffect(() => {
@@ -187,6 +205,15 @@ export default function QuestCreate() {
                 )),
               )}
           </Map>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
+            <input
+              className="px-3 py-2 rounded-md shadow-md border bg-white text-sm w-64"
+              placeholder="장소 검색 (예: 강남역, 종로구)"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && !e.nativeEvent.isComposing && handleSearch()}
+            />
+          </div>
           {isPreviewLoading && (
             <div className="absolute z-[100] inset-0 flex items-center justify-center bg-black/30 text-white">
               건물 정보를 불러오는 중입니다...

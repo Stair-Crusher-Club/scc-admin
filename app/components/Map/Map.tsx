@@ -39,7 +39,7 @@ export default function Map({ id = "map", initializeOptions, children, onInit }:
     <MapContext.Provider value={{ map, mapElement: mapContainer.current }}>
       <Script
         id="kakao-map-script"
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
+        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false&libraries=services`}
         onReady={() => setScriptLoaded(true)}
         onError={(e) => alert(`지도를 불러올 수 없습니다.`)}
       />
