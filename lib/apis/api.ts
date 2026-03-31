@@ -34,6 +34,7 @@ import {
   PlaceAccessibilitySuggestionApi,
   PlaceCategoryCacheApi,
   PlaceListApi,
+  PlaceSpecialAccessibilityApi,
 } from "../../lib/generated-sources/openapi"
 import {
   ClubQuestPurposeTypeEnumDTO,
@@ -61,6 +62,7 @@ const placeListApi = new PlaceListApi(config)
 const accessibilityReportApi = new AccessibilityReportApi(config)
 const experimentApi = new ExperimentApi(config)
 const placeAccessibilitySuggestionApi = new PlaceAccessibilitySuggestionApi(config)
+const placeSpecialAccessibilityApi = new PlaceSpecialAccessibilityApi(config)
 
 export const api: {
   default: DefaultApi
@@ -75,6 +77,7 @@ export const api: {
   homeRecommendedContent: HomeRecommendedContentApi
   placeList: PlaceListApi
   placeAccessibilitySuggestion: PlaceAccessibilitySuggestionApi
+  placeSpecialAccessibility: PlaceSpecialAccessibilityApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
@@ -88,6 +91,7 @@ export const api: {
   homeRecommendedContent: homeRecommendedContentApi,
   placeList: placeListApi,
   placeAccessibilitySuggestion: placeAccessibilitySuggestionApi,
+  placeSpecialAccessibility: placeSpecialAccessibilityApi,
 }
 
 export function useQuest({ id }: { id: string }) {
