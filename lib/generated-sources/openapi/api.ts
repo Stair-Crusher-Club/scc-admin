@@ -460,6 +460,31 @@ export interface AdminBannerDTO {
     'bannerType': HomeBannerTypeDTO;
 }
 /**
+ * 뿌클로드 접근성 데이터 (어드민용)
+ * @export
+ * @interface AdminBbucleRoadDataDto
+ */
+export interface AdminBbucleRoadDataDto {
+    /**
+     * 
+     * @type {BbucleRoadTypeDto}
+     * @memberof AdminBbucleRoadDataDto
+     */
+    'bbucleRoadType': BbucleRoadTypeDto;
+    /**
+     * 뿌클로드 웹뷰 URL
+     * @type {string}
+     * @memberof AdminBbucleRoadDataDto
+     */
+    'bbucleRoadUrl': string;
+    /**
+     * 카드뷰/리스트뷰 썸네일 이미지 URL
+     * @type {string}
+     * @memberof AdminBbucleRoadDataDto
+     */
+    'thumbnailImageUrl': string;
+}
+/**
  * 
  * @export
  * @interface AdminBuildingAccessibilityDTO
@@ -2446,22 +2471,10 @@ export interface AdminPlaceSpecialAccessibilityDto {
     'accessibilityType': AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum;
     /**
      * 
-     * @type {string}
+     * @type {AdminBbucleRoadDataDto}
      * @memberof AdminPlaceSpecialAccessibilityDto
      */
-    'bbucleRoadType'?: AdminPlaceSpecialAccessibilityDtoBbucleRoadTypeEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof AdminPlaceSpecialAccessibilityDto
-     */
-    'bbucleRoadUrl'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AdminPlaceSpecialAccessibilityDto
-     */
-    'thumbnailImageUrl'?: string;
+    'bbucleRoadData'?: AdminBbucleRoadDataDto;
     /**
      * 
      * @type {EpochMillisTimestamp}
@@ -2481,12 +2494,6 @@ export const AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum = {
 } as const;
 
 export type AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum = typeof AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum[keyof typeof AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum];
-export const AdminPlaceSpecialAccessibilityDtoBbucleRoadTypeEnum = {
-    BaseballStadium: 'BASEBALL_STADIUM',
-    ConcertHall: 'CONCERT_HALL'
-} as const;
-
-export type AdminPlaceSpecialAccessibilityDtoBbucleRoadTypeEnum = typeof AdminPlaceSpecialAccessibilityDtoBbucleRoadTypeEnum[keyof typeof AdminPlaceSpecialAccessibilityDtoBbucleRoadTypeEnum];
 
 /**
  * 
@@ -3602,6 +3609,20 @@ export type BbucleRoadSectionTypeDTO = typeof BbucleRoadSectionTypeDTO[keyof typ
 
 
 /**
+ * 뿌클로드 유형
+ * @export
+ * @enum {string}
+ */
+
+export const BbucleRoadTypeDto = {
+    BaseballStadium: 'BASEBALL_STADIUM',
+    ConcertHall: 'CONCERT_HALL'
+} as const;
+
+export type BbucleRoadTypeDto = typeof BbucleRoadTypeDto[keyof typeof BbucleRoadTypeDto];
+
+
+/**
  * 
  * @export
  * @interface BulkImportHumanInspectionResponseDTO
@@ -4288,22 +4309,10 @@ export interface CreatePlaceSpecialAccessibilityRequestDto {
     'accessibilityType': CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum;
     /**
      * 
-     * @type {string}
+     * @type {AdminBbucleRoadDataDto}
      * @memberof CreatePlaceSpecialAccessibilityRequestDto
      */
-    'bbucleRoadType': CreatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreatePlaceSpecialAccessibilityRequestDto
-     */
-    'bbucleRoadUrl': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreatePlaceSpecialAccessibilityRequestDto
-     */
-    'thumbnailImageUrl': string;
+    'bbucleRoadData': AdminBbucleRoadDataDto;
 }
 
 export const CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum = {
@@ -4311,12 +4320,6 @@ export const CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum = {
 } as const;
 
 export type CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum = typeof CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum[keyof typeof CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum];
-export const CreatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum = {
-    BaseballStadium: 'BASEBALL_STADIUM',
-    ConcertHall: 'CONCERT_HALL'
-} as const;
-
-export type CreatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum = typeof CreatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum[keyof typeof CreatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum];
 
 /**
  * 특정 시각을 표현하기 위한 모델.
@@ -4918,31 +4921,11 @@ export interface UpdateMapMarkerDTO {
 export interface UpdatePlaceSpecialAccessibilityRequestDto {
     /**
      * 
-     * @type {string}
+     * @type {AdminBbucleRoadDataDto}
      * @memberof UpdatePlaceSpecialAccessibilityRequestDto
      */
-    'bbucleRoadType'?: UpdatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdatePlaceSpecialAccessibilityRequestDto
-     */
-    'bbucleRoadUrl'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdatePlaceSpecialAccessibilityRequestDto
-     */
-    'thumbnailImageUrl'?: string;
+    'bbucleRoadData'?: AdminBbucleRoadDataDto;
 }
-
-export const UpdatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum = {
-    BaseballStadium: 'BASEBALL_STADIUM',
-    ConcertHall: 'CONCERT_HALL'
-} as const;
-
-export type UpdatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum = typeof UpdatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum[keyof typeof UpdatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum];
-
 /**
  * 
  * @export

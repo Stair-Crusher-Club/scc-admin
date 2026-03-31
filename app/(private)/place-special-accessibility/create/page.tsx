@@ -8,7 +8,7 @@ import { useCreatePlaceSpecialAccessibility } from "@/lib/apis/placeSpecialAcces
 import {
   CreatePlaceSpecialAccessibilityRequestDto,
   CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum,
-  CreatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum,
+  BbucleRoadTypeDto,
 } from "@/lib/generated-sources/openapi"
 
 import { Button } from "@/components/ui/button"
@@ -26,9 +26,11 @@ export default function CreatePlaceSpecialAccessibility() {
     const payload: CreatePlaceSpecialAccessibilityRequestDto = {
       placeId: values.placeId,
       accessibilityType: values.accessibilityType as CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum,
-      bbucleRoadType: values.bbucleRoadType as CreatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum,
-      bbucleRoadUrl: values.bbucleRoadUrl,
-      thumbnailImageUrl: values.thumbnailImageUrl,
+      bbucleRoadData: {
+        bbucleRoadType: values.bbucleRoadType as BbucleRoadTypeDto,
+        bbucleRoadUrl: values.bbucleRoadUrl,
+        thumbnailImageUrl: values.thumbnailImageUrl,
+      },
     }
 
     try {

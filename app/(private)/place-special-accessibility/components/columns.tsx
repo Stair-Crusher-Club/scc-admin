@@ -32,7 +32,7 @@ export const getColumns = (): ColumnDef<AdminPlaceSpecialAccessibilityDto>[] => 
     accessorKey: "bbucleRoadType",
     header: "뿌클로드 타입",
     cell: ({ row }) => {
-      const type = row.original.bbucleRoadType
+      const type = row.original.bbucleRoadData?.bbucleRoadType
       return type ? <Badge>{bbucleRoadTypeLabels[type] ?? type}</Badge> : <span className="text-muted-foreground">-</span>
     },
   },
@@ -40,7 +40,7 @@ export const getColumns = (): ColumnDef<AdminPlaceSpecialAccessibilityDto>[] => 
     accessorKey: "bbucleRoadUrl",
     header: "뿌클로드 URL",
     cell: ({ row }) => {
-      const url = row.original.bbucleRoadUrl
+      const url = row.original.bbucleRoadData?.bbucleRoadUrl
       return url ? (
         <a
           href={url}

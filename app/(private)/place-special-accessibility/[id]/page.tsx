@@ -12,7 +12,7 @@ import {
 } from "@/lib/apis/placeSpecialAccessibility"
 import {
   UpdatePlaceSpecialAccessibilityRequestDto,
-  UpdatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum,
+  BbucleRoadTypeDto,
 } from "@/lib/generated-sources/openapi"
 
 import { Button } from "@/components/ui/button"
@@ -32,9 +32,9 @@ export default function PlaceSpecialAccessibilityDetail() {
     ? {
         placeId: data.placeId,
         accessibilityType: data.accessibilityType,
-        bbucleRoadType: data.bbucleRoadType ?? "",
-        bbucleRoadUrl: data.bbucleRoadUrl ?? "",
-        thumbnailImageUrl: data.thumbnailImageUrl ?? "",
+        bbucleRoadType: data.bbucleRoadData?.bbucleRoadType ?? "",
+        bbucleRoadUrl: data.bbucleRoadData?.bbucleRoadUrl ?? "",
+        thumbnailImageUrl: data.bbucleRoadData?.thumbnailImageUrl ?? "",
       }
     : undefined
 
@@ -47,11 +47,11 @@ export default function PlaceSpecialAccessibilityDetail() {
     if (!editMode) return
 
     const payload: UpdatePlaceSpecialAccessibilityRequestDto = {
-      bbucleRoadType: (values.bbucleRoadType || undefined) as
-        | UpdatePlaceSpecialAccessibilityRequestDtoBbucleRoadTypeEnum
-        | undefined,
-      bbucleRoadUrl: values.bbucleRoadUrl || undefined,
-      thumbnailImageUrl: values.thumbnailImageUrl || undefined,
+      bbucleRoadData: values.bbucleRoadType ? {
+        bbucleRoadType: values.bbucleRoadType as BbucleRoadTypeDto,
+        bbucleRoadUrl: values.bbucleRoadUrl,
+        thumbnailImageUrl: values.thumbnailImageUrl,
+      } : undefined,
     }
 
     try {
