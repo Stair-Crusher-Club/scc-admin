@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
@@ -28,18 +28,20 @@ export default function PlaceSpecialAccessibilityDetail() {
   const { mutateAsync: remove, isPending: isDeleting } = useDeletePlaceSpecialAccessibility()
   const [editMode, setEditMode] = useState(false)
 
-  const form = useForm<PSAFormValues>({ defaultValues })
+  const formValues: PSAFormValues | undefined = data
+    ? {
+        placeId: data.placeId,
+        accessibilityType: data.accessibilityType,
+        bbucleRoadType: data.bbucleRoadType ?? "",
+        bbucleRoadUrl: data.bbucleRoadUrl ?? "",
+        thumbnailImageUrl: data.thumbnailImageUrl ?? "",
+      }
+    : undefined
 
-  useEffect(() => {
-    if (!data) return
-    form.reset({
-      placeId: data.placeId,
-      accessibilityType: data.accessibilityType,
-      bbucleRoadType: data.bbucleRoadType ?? "",
-      bbucleRoadUrl: data.bbucleRoadUrl ?? "",
-      thumbnailImageUrl: data.thumbnailImageUrl ?? "",
-    })
-  }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
+  const form = useForm<PSAFormValues>({
+    defaultValues,
+    values: formValues,
+  })
 
   async function onSubmit(values: PSAFormValues) {
     if (!editMode) return
@@ -73,7 +75,7 @@ export default function PlaceSpecialAccessibilityDetail() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return (
       <Contents.Normal>
         <div className="text-center py-8">로딩 중...</div>
@@ -96,14 +98,8 @@ export default function PlaceSpecialAccessibilityDetail() {
                 variant="outline"
                 onClick={() => {
                   setEditMode(false)
-                  if (data) {
-                    form.reset({
-                      placeId: data.placeId,
-                      accessibilityType: data.accessibilityType,
-                      bbucleRoadType: data.bbucleRoadType ?? "",
-                      bbucleRoadUrl: data.bbucleRoadUrl ?? "",
-                      thumbnailImageUrl: data.thumbnailImageUrl ?? "",
-                    })
+                  if (formValues) {
+                    form.reset(formValues)
                   }
                 }}
               >

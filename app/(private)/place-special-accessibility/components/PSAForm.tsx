@@ -37,6 +37,14 @@ interface PSAFormProps {
   isCreateMode?: boolean
 }
 
+const bbucleRoadTypeLabel = (value: string) => {
+  switch (value) {
+    case "BASEBALL_STADIUM": return "야구장"
+    case "CONCERT_HALL": return "공연장"
+    default: return value
+  }
+}
+
 export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreateMode = true }: PSAFormProps) {
   const { register, handleSubmit, control, formState: { errors } } = form
 
@@ -63,16 +71,20 @@ export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreat
               name="accessibilityType"
               control={control}
               rules={{ required: "접근성 타입을 선택해주세요" }}
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange} disabled={!isCreateMode}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="접근성 타입 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="BBUCLE_ROAD">BBUCLE_ROAD</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
+              render={({ field }) =>
+                !isCreateMode && field.value ? (
+                  <Input value={field.value} disabled />
+                ) : (
+                  <Select value={field.value} onValueChange={field.onChange} disabled={!isCreateMode}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="접근성 타입 선택" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BBUCLE_ROAD">BBUCLE_ROAD</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )
+              }
             />
             {errors.accessibilityType && <p className="text-sm text-red-500">{errors.accessibilityType.message}</p>}
           </div>
@@ -85,17 +97,21 @@ export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreat
               name="bbucleRoadType"
               control={control}
               rules={{ required: "뿌클로드 타입을 선택해주세요" }}
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange} disabled={!isEditMode}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="뿌클로드 타입 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="BASEBALL_STADIUM">야구장</SelectItem>
-                    <SelectItem value="CONCERT_HALL">공연장</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
+              render={({ field }) =>
+                !isEditMode && field.value ? (
+                  <Input value={bbucleRoadTypeLabel(field.value)} disabled />
+                ) : (
+                  <Select value={field.value} onValueChange={field.onChange} disabled={!isEditMode}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="뿌클로드 타입 선택" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BASEBALL_STADIUM">야구장</SelectItem>
+                      <SelectItem value="CONCERT_HALL">공연장</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )
+              }
             />
             {errors.bbucleRoadType && <p className="text-sm text-red-500">{errors.bbucleRoadType.message}</p>}
           </div>
