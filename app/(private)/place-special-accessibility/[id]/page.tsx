@@ -12,7 +12,7 @@ import {
 } from "@/lib/apis/placeSpecialAccessibility"
 import {
   UpdatePlaceSpecialAccessibilityRequestDto,
-  BbucleRoadTypeDto,
+  PlaceSpecialAccessibilityBbucleRoadTypeDto,
 } from "@/lib/generated-sources/openapi"
 
 import { Button } from "@/components/ui/button"
@@ -48,7 +48,7 @@ export default function PlaceSpecialAccessibilityDetail() {
 
     const payload: UpdatePlaceSpecialAccessibilityRequestDto = {
       bbucleRoadData: values.bbucleRoadType ? {
-        bbucleRoadType: values.bbucleRoadType as BbucleRoadTypeDto,
+        bbucleRoadType: values.bbucleRoadType as PlaceSpecialAccessibilityBbucleRoadTypeDto,
         bbucleRoadUrl: values.bbucleRoadUrl,
         thumbnailImageUrl: values.thumbnailImageUrl,
       } : undefined,

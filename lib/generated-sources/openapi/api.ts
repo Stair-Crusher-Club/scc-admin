@@ -460,31 +460,6 @@ export interface AdminBannerDTO {
     'bannerType': HomeBannerTypeDTO;
 }
 /**
- * 뿌클로드 접근성 데이터 (어드민용)
- * @export
- * @interface AdminBbucleRoadDataDto
- */
-export interface AdminBbucleRoadDataDto {
-    /**
-     * 
-     * @type {BbucleRoadTypeDto}
-     * @memberof AdminBbucleRoadDataDto
-     */
-    'bbucleRoadType': BbucleRoadTypeDto;
-    /**
-     * 뿌클로드 웹뷰 URL
-     * @type {string}
-     * @memberof AdminBbucleRoadDataDto
-     */
-    'bbucleRoadUrl': string;
-    /**
-     * 카드뷰/리스트뷰 썸네일 이미지 URL
-     * @type {string}
-     * @memberof AdminBbucleRoadDataDto
-     */
-    'thumbnailImageUrl': string;
-}
-/**
  * 
  * @export
  * @interface AdminBuildingAccessibilityDTO
@@ -2440,6 +2415,31 @@ export interface AdminPlaceListPlaceDto {
     'accessibilityScore'?: number | null;
 }
 /**
+ * 뿌클로드 접근성 데이터 (어드민용)
+ * @export
+ * @interface AdminPlaceSpecialAccessibilityBbucleRoadDataDto
+ */
+export interface AdminPlaceSpecialAccessibilityBbucleRoadDataDto {
+    /**
+     * 
+     * @type {PlaceSpecialAccessibilityBbucleRoadTypeDto}
+     * @memberof AdminPlaceSpecialAccessibilityBbucleRoadDataDto
+     */
+    'bbucleRoadType': PlaceSpecialAccessibilityBbucleRoadTypeDto;
+    /**
+     * 뿌클로드 웹뷰 URL
+     * @type {string}
+     * @memberof AdminPlaceSpecialAccessibilityBbucleRoadDataDto
+     */
+    'bbucleRoadUrl': string;
+    /**
+     * 카드뷰/리스트뷰 썸네일 이미지 URL
+     * @type {string}
+     * @memberof AdminPlaceSpecialAccessibilityBbucleRoadDataDto
+     */
+    'thumbnailImageUrl': string;
+}
+/**
  * 장소 특수 접근성 정보 (어드민용)
  * @export
  * @interface AdminPlaceSpecialAccessibilityDto
@@ -2471,10 +2471,10 @@ export interface AdminPlaceSpecialAccessibilityDto {
     'accessibilityType': AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum;
     /**
      * 
-     * @type {AdminBbucleRoadDataDto}
+     * @type {AdminPlaceSpecialAccessibilityBbucleRoadDataDto}
      * @memberof AdminPlaceSpecialAccessibilityDto
      */
-    'bbucleRoadData'?: AdminBbucleRoadDataDto;
+    'bbucleRoadData'?: AdminPlaceSpecialAccessibilityBbucleRoadDataDto;
     /**
      * 
      * @type {EpochMillisTimestamp}
@@ -3609,20 +3609,6 @@ export type BbucleRoadSectionTypeDTO = typeof BbucleRoadSectionTypeDTO[keyof typ
 
 
 /**
- * 뿌클로드 유형
- * @export
- * @enum {string}
- */
-
-export const BbucleRoadTypeDto = {
-    BaseballStadium: 'BASEBALL_STADIUM',
-    ConcertHall: 'CONCERT_HALL'
-} as const;
-
-export type BbucleRoadTypeDto = typeof BbucleRoadTypeDto[keyof typeof BbucleRoadTypeDto];
-
-
-/**
  * 
  * @export
  * @interface BulkImportHumanInspectionResponseDTO
@@ -4309,10 +4295,10 @@ export interface CreatePlaceSpecialAccessibilityRequestDto {
     'accessibilityType': CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum;
     /**
      * 
-     * @type {AdminBbucleRoadDataDto}
+     * @type {AdminPlaceSpecialAccessibilityBbucleRoadDataDto}
      * @memberof CreatePlaceSpecialAccessibilityRequestDto
      */
-    'bbucleRoadData': AdminBbucleRoadDataDto;
+    'bbucleRoadData': AdminPlaceSpecialAccessibilityBbucleRoadDataDto;
 }
 
 export const CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum = {
@@ -4675,6 +4661,20 @@ export type PlaceCategoryDto = typeof PlaceCategoryDto[keyof typeof PlaceCategor
 
 
 /**
+ * 뿌클로드 유형
+ * @export
+ * @enum {string}
+ */
+
+export const PlaceSpecialAccessibilityBbucleRoadTypeDto = {
+    BaseballStadium: 'BASEBALL_STADIUM',
+    ConcertHall: 'CONCERT_HALL'
+} as const;
+
+export type PlaceSpecialAccessibilityBbucleRoadTypeDto = typeof PlaceSpecialAccessibilityBbucleRoadTypeDto[keyof typeof PlaceSpecialAccessibilityBbucleRoadTypeDto];
+
+
+/**
  * 
  * @export
  * @enum {string}
@@ -4921,10 +4921,10 @@ export interface UpdateMapMarkerDTO {
 export interface UpdatePlaceSpecialAccessibilityRequestDto {
     /**
      * 
-     * @type {AdminBbucleRoadDataDto}
+     * @type {AdminPlaceSpecialAccessibilityBbucleRoadDataDto}
      * @memberof UpdatePlaceSpecialAccessibilityRequestDto
      */
-    'bbucleRoadData'?: AdminBbucleRoadDataDto;
+    'bbucleRoadData'?: AdminPlaceSpecialAccessibilityBbucleRoadDataDto;
 }
 /**
  * 
