@@ -23,7 +23,7 @@ import PSAForm, { PSAFormValues, defaultValues } from "../components/PSAForm"
 export default function PlaceSpecialAccessibilityDetail() {
   const router = useRouter()
   const { id } = useParams<{ id: string }>()
-  const { data, isLoading } = usePlaceSpecialAccessibility({ id })
+  const { data, isLoading, isError } = usePlaceSpecialAccessibility({ id })
   const { mutateAsync: update, isPending: isUpdating } = useUpdatePlaceSpecialAccessibility()
   const { mutateAsync: remove, isPending: isDeleting } = useDeletePlaceSpecialAccessibility()
   const [editMode, setEditMode] = useState(false)
@@ -75,10 +75,18 @@ export default function PlaceSpecialAccessibilityDetail() {
     }
   }
 
-  if (isLoading || !data) {
+  if (isLoading) {
     return (
       <Contents.Normal>
         <div className="text-center py-8">로딩 중...</div>
+      </Contents.Normal>
+    )
+  }
+
+  if (isError || !data) {
+    return (
+      <Contents.Normal>
+        <div className="text-center py-8 text-red-500">데이터를 불러오는데 실패했습니다.</div>
       </Contents.Normal>
     )
   }

@@ -46,7 +46,10 @@ const bbucleRoadTypeLabel = (value: string) => {
 }
 
 export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreateMode = true }: PSAFormProps) {
-  const { register, handleSubmit, control, formState: { errors } } = form
+  const { register, handleSubmit, control, watch, formState: { errors } } = form
+  const accessibilityType = watch("accessibilityType")
+  // bbucleRoad 관련 필드는 accessibilityType이 BBUCLE_ROAD일 때만 required
+  const isBbucleRoad = accessibilityType === "BBUCLE_ROAD"
 
   return (
     <form id={id} onSubmit={handleSubmit(onSubmit)}>
@@ -76,7 +79,7 @@ export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreat
                   <Input value={field.value} disabled />
                 ) : (
                   <Select value={field.value} onValueChange={field.onChange} disabled={!isCreateMode}>
-                    <SelectTrigger>
+                    <SelectTrigger id="accessibilityType">
                       <SelectValue placeholder="접근성 타입 선택" />
                     </SelectTrigger>
                     <SelectContent>
@@ -96,13 +99,13 @@ export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreat
             <Controller
               name="bbucleRoadType"
               control={control}
-              rules={{ required: "뿌클로드 타입을 선택해주세요" }}
+              rules={{ required: isBbucleRoad && "뿌클로드 타입을 선택해주세요" }}
               render={({ field }) =>
                 !isEditMode && field.value ? (
                   <Input value={bbucleRoadTypeLabel(field.value)} disabled />
                 ) : (
                   <Select value={field.value} onValueChange={field.onChange} disabled={!isEditMode}>
-                    <SelectTrigger>
+                    <SelectTrigger id="bbucleRoadType">
                       <SelectValue placeholder="뿌클로드 타입 선택" />
                     </SelectTrigger>
                     <SelectContent>
@@ -122,7 +125,7 @@ export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreat
             </Label>
             <Input
               id="bbucleRoadUrl"
-              {...register("bbucleRoadUrl", { required: "뿌클로드 URL을 입력해주세요" })}
+              {...register("bbucleRoadUrl", { required: isBbucleRoad && "뿌클로드 URL을 입력해주세요" })}
               placeholder="https://..."
               disabled={!isEditMode}
             />
@@ -135,7 +138,7 @@ export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreat
             </Label>
             <Input
               id="thumbnailImageUrl"
-              {...register("thumbnailImageUrl", { required: "썸네일 이미지 URL을 입력해주세요" })}
+              {...register("thumbnailImageUrl", { required: isBbucleRoad && "썸네일 이미지 URL을 입력해주세요" })}
               placeholder="https://..."
               disabled={!isEditMode}
             />
