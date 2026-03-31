@@ -1,6 +1,6 @@
 "use client"
 
-import { UseFormReturn } from "react-hook-form"
+import { Controller, UseFormReturn } from "react-hook-form"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -34,10 +34,11 @@ interface PSAFormProps {
   form: UseFormReturn<PSAFormValues>
   onSubmit: (values: PSAFormValues) => void
   isEditMode?: boolean
+  isCreateMode?: boolean
 }
 
-export default function PSAForm({ id, form, onSubmit, isEditMode = true }: PSAFormProps) {
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = form
+export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreateMode = true }: PSAFormProps) {
+  const { register, handleSubmit, control, formState: { errors } } = form
 
   return (
     <form id={id} onSubmit={handleSubmit(onSubmit)}>
@@ -51,44 +52,51 @@ export default function PSAForm({ id, form, onSubmit, isEditMode = true }: PSAFo
               id="placeId"
               {...register("placeId", { required: "장소 ID를 입력해주세요" })}
               placeholder="장소 ID를 입력하세요"
-              disabled={!isEditMode}
+              disabled={!isCreateMode}
             />
             {errors.placeId && <p className="text-sm text-red-500">{errors.placeId.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="accessibilityType">접근성 타입</Label>
-            <Select
-              value={watch("accessibilityType")}
-              onValueChange={(value) => setValue("accessibilityType", value)}
-              disabled={!isEditMode}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="접근성 타입 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="BBUCLE_ROAD">BBUCLE_ROAD</SelectItem>
-              </SelectContent>
-            </Select>
+            <Controller
+              name="accessibilityType"
+              control={control}
+              rules={{ required: "접근성 타입을 선택해주세요" }}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange} disabled={!isCreateMode}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="접근성 타입 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="BBUCLE_ROAD">BBUCLE_ROAD</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.accessibilityType && <p className="text-sm text-red-500">{errors.accessibilityType.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="bbucleRoadType">
               뿌클로드 타입 <span className="text-red-500">*</span>
             </Label>
-            <Select
-              value={watch("bbucleRoadType")}
-              onValueChange={(value) => setValue("bbucleRoadType", value)}
-              disabled={!isEditMode}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="뿌클로드 타입 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="BASEBALL_STADIUM">야구장</SelectItem>
-                <SelectItem value="CONCERT_HALL">공연장</SelectItem>
-              </SelectContent>
-            </Select>
+            <Controller
+              name="bbucleRoadType"
+              control={control}
+              rules={{ required: "뿌클로드 타입을 선택해주세요" }}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange} disabled={!isEditMode}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="뿌클로드 타입 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="BASEBALL_STADIUM">야구장</SelectItem>
+                    <SelectItem value="CONCERT_HALL">공연장</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.bbucleRoadType && <p className="text-sm text-red-500">{errors.bbucleRoadType.message}</p>}
           </div>
 

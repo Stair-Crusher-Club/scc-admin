@@ -42,7 +42,7 @@ export default function CreatePlaceSpecialAccessibility() {
 
   return (
     <Contents.Normal>
-      <PSAForm id="create-psa" form={form} onSubmit={onSubmit} />
+      <PSAForm id="create-psa" form={form} onSubmit={onSubmit} isCreateMode={true} />
       <div className="flex justify-end gap-2 mt-4">
         <Button type="button" variant="outline" onClick={() => router.push("/place-special-accessibility")} disabled={isPending}>
           취소

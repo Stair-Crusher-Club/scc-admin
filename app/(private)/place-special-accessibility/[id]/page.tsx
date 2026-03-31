@@ -83,7 +83,7 @@ export default function PlaceSpecialAccessibilityDetail() {
 
   return (
     <Contents.Normal>
-      <PSAForm id="edit-psa" form={form} onSubmit={onSubmit} isEditMode={editMode} />
+      <PSAForm id="edit-psa" form={form} onSubmit={onSubmit} isEditMode={editMode} isCreateMode={false} />
       <div className="flex justify-between mt-4">
         <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
           {isDeleting ? "삭제 중..." : "삭제"}
