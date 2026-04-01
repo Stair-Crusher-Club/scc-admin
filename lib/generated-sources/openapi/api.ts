@@ -2415,6 +2415,87 @@ export interface AdminPlaceListPlaceDto {
     'accessibilityScore'?: number | null;
 }
 /**
+ * 뿌클로드 접근성 데이터 (어드민용)
+ * @export
+ * @interface AdminPlaceSpecialAccessibilityBbucleRoadDataDto
+ */
+export interface AdminPlaceSpecialAccessibilityBbucleRoadDataDto {
+    /**
+     * 
+     * @type {PlaceSpecialAccessibilityBbucleRoadTypeDto}
+     * @memberof AdminPlaceSpecialAccessibilityBbucleRoadDataDto
+     */
+    'bbucleRoadType': PlaceSpecialAccessibilityBbucleRoadTypeDto;
+    /**
+     * 뿌클로드 웹뷰 URL
+     * @type {string}
+     * @memberof AdminPlaceSpecialAccessibilityBbucleRoadDataDto
+     */
+    'bbucleRoadUrl': string;
+    /**
+     * 카드뷰/리스트뷰 썸네일 이미지 URL
+     * @type {string}
+     * @memberof AdminPlaceSpecialAccessibilityBbucleRoadDataDto
+     */
+    'thumbnailImageUrl': string;
+}
+/**
+ * 장소 특수 접근성 정보 (어드민용)
+ * @export
+ * @interface AdminPlaceSpecialAccessibilityDto
+ */
+export interface AdminPlaceSpecialAccessibilityDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceSpecialAccessibilityDto
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceSpecialAccessibilityDto
+     */
+    'placeId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceSpecialAccessibilityDto
+     */
+    'placeName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceSpecialAccessibilityDto
+     */
+    'accessibilityType': AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum;
+    /**
+     * 
+     * @type {AdminPlaceSpecialAccessibilityBbucleRoadDataDto}
+     * @memberof AdminPlaceSpecialAccessibilityDto
+     */
+    'bbucleRoadData'?: AdminPlaceSpecialAccessibilityBbucleRoadDataDto;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceSpecialAccessibilityDto
+     */
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceSpecialAccessibilityDto
+     */
+    'updatedAt': EpochMillisTimestamp;
+}
+
+export const AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum = {
+    BbucleRoad: 'BBUCLE_ROAD'
+} as const;
+
+export type AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum = typeof AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum[keyof typeof AdminPlaceSpecialAccessibilityDtoAccessibilityTypeEnum];
+
+/**
  * 
  * @export
  * @interface AdminPushNotificationScheduleDTO
@@ -4195,6 +4276,38 @@ export interface CreateMapMarkerDTO {
     'customImageUrl'?: string;
 }
 /**
+ * 장소 특수 접근성 생성 요청
+ * @export
+ * @interface CreatePlaceSpecialAccessibilityRequestDto
+ */
+export interface CreatePlaceSpecialAccessibilityRequestDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreatePlaceSpecialAccessibilityRequestDto
+     */
+    'placeId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreatePlaceSpecialAccessibilityRequestDto
+     */
+    'accessibilityType': CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum;
+    /**
+     * 
+     * @type {AdminPlaceSpecialAccessibilityBbucleRoadDataDto}
+     * @memberof CreatePlaceSpecialAccessibilityRequestDto
+     */
+    'bbucleRoadData': AdminPlaceSpecialAccessibilityBbucleRoadDataDto;
+}
+
+export const CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum = {
+    BbucleRoad: 'BBUCLE_ROAD'
+} as const;
+
+export type CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum = typeof CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum[keyof typeof CreatePlaceSpecialAccessibilityRequestDtoAccessibilityTypeEnum];
+
+/**
  * 특정 시각을 표현하기 위한 모델.
  * @export
  * @interface EpochMillisTimestamp
@@ -4548,6 +4661,20 @@ export type PlaceCategoryDto = typeof PlaceCategoryDto[keyof typeof PlaceCategor
 
 
 /**
+ * 뿌클로드 유형
+ * @export
+ * @enum {string}
+ */
+
+export const PlaceSpecialAccessibilityBbucleRoadTypeDto = {
+    BaseballStadium: 'BASEBALL_STADIUM',
+    ConcertHall: 'CONCERT_HALL'
+} as const;
+
+export type PlaceSpecialAccessibilityBbucleRoadTypeDto = typeof PlaceSpecialAccessibilityBbucleRoadTypeDto[keyof typeof PlaceSpecialAccessibilityBbucleRoadTypeDto];
+
+
+/**
  * 
  * @export
  * @enum {string}
@@ -4785,6 +4912,19 @@ export interface UpdateMapMarkerDTO {
      * @memberof UpdateMapMarkerDTO
      */
     'customImageUrl'?: string;
+}
+/**
+ * 장소 특수 접근성 수정 요청
+ * @export
+ * @interface UpdatePlaceSpecialAccessibilityRequestDto
+ */
+export interface UpdatePlaceSpecialAccessibilityRequestDto {
+    /**
+     * 
+     * @type {AdminPlaceSpecialAccessibilityBbucleRoadDataDto}
+     * @memberof UpdatePlaceSpecialAccessibilityRequestDto
+     */
+    'bbucleRoadData'?: AdminPlaceSpecialAccessibilityBbucleRoadDataDto;
 }
 /**
  * 
@@ -12415,6 +12555,403 @@ export class PlaceListApi extends BaseAPI {
      */
     public updatePlaceList(id: string, adminUpdatePlaceListRequestDto: AdminUpdatePlaceListRequestDto, options?: AxiosRequestConfig) {
         return PlaceListApiFp(this.configuration).updatePlaceList(id, adminUpdatePlaceListRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * PlaceSpecialAccessibilityApi - axios parameter creator
+ * @export
+ */
+export const PlaceSpecialAccessibilityApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 장소 특수 접근성을 생성한다.
+         * @param {CreatePlaceSpecialAccessibilityRequestDto} createPlaceSpecialAccessibilityRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPlaceSpecialAccessibility: async (createPlaceSpecialAccessibilityRequestDto: CreatePlaceSpecialAccessibilityRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createPlaceSpecialAccessibilityRequestDto' is not null or undefined
+            assertParamExists('createPlaceSpecialAccessibility', 'createPlaceSpecialAccessibilityRequestDto', createPlaceSpecialAccessibilityRequestDto)
+            const localVarPath = `/place-special-accessibilities`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createPlaceSpecialAccessibilityRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성을 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlaceSpecialAccessibility: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deletePlaceSpecialAccessibility', 'id', id)
+            const localVarPath = `/place-special-accessibilities/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성을 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPlaceSpecialAccessibility: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getPlaceSpecialAccessibility', 'id', id)
+            const localVarPath = `/place-special-accessibilities/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPlaceSpecialAccessibilities: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/place-special-accessibilities`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성을 수정한다.
+         * @param {string} id 
+         * @param {UpdatePlaceSpecialAccessibilityRequestDto} updatePlaceSpecialAccessibilityRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceSpecialAccessibility: async (id: string, updatePlaceSpecialAccessibilityRequestDto: UpdatePlaceSpecialAccessibilityRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updatePlaceSpecialAccessibility', 'id', id)
+            // verify required parameter 'updatePlaceSpecialAccessibilityRequestDto' is not null or undefined
+            assertParamExists('updatePlaceSpecialAccessibility', 'updatePlaceSpecialAccessibilityRequestDto', updatePlaceSpecialAccessibilityRequestDto)
+            const localVarPath = `/place-special-accessibilities/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updatePlaceSpecialAccessibilityRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * PlaceSpecialAccessibilityApi - functional programming interface
+ * @export
+ */
+export const PlaceSpecialAccessibilityApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = PlaceSpecialAccessibilityApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 장소 특수 접근성을 생성한다.
+         * @param {CreatePlaceSpecialAccessibilityRequestDto} createPlaceSpecialAccessibilityRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPlaceSpecialAccessibility(createPlaceSpecialAccessibilityRequestDto: CreatePlaceSpecialAccessibilityRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceSpecialAccessibilityDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlaceSpecialAccessibility(createPlaceSpecialAccessibilityRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성을 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePlaceSpecialAccessibility(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePlaceSpecialAccessibility(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성을 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPlaceSpecialAccessibility(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceSpecialAccessibilityDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlaceSpecialAccessibility(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPlaceSpecialAccessibilities(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminPlaceSpecialAccessibilityDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPlaceSpecialAccessibilities(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성을 수정한다.
+         * @param {string} id 
+         * @param {UpdatePlaceSpecialAccessibilityRequestDto} updatePlaceSpecialAccessibilityRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePlaceSpecialAccessibility(id: string, updatePlaceSpecialAccessibilityRequestDto: UpdatePlaceSpecialAccessibilityRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceSpecialAccessibilityDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlaceSpecialAccessibility(id, updatePlaceSpecialAccessibilityRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * PlaceSpecialAccessibilityApi - factory interface
+ * @export
+ */
+export const PlaceSpecialAccessibilityApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = PlaceSpecialAccessibilityApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 장소 특수 접근성을 생성한다.
+         * @param {CreatePlaceSpecialAccessibilityRequestDto} createPlaceSpecialAccessibilityRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPlaceSpecialAccessibility(createPlaceSpecialAccessibilityRequestDto: CreatePlaceSpecialAccessibilityRequestDto, options?: any): AxiosPromise<AdminPlaceSpecialAccessibilityDto> {
+            return localVarFp.createPlaceSpecialAccessibility(createPlaceSpecialAccessibilityRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성을 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlaceSpecialAccessibility(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePlaceSpecialAccessibility(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성을 조회한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPlaceSpecialAccessibility(id: string, options?: any): AxiosPromise<AdminPlaceSpecialAccessibilityDto> {
+            return localVarFp.getPlaceSpecialAccessibility(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPlaceSpecialAccessibilities(options?: any): AxiosPromise<Array<AdminPlaceSpecialAccessibilityDto>> {
+            return localVarFp.listPlaceSpecialAccessibilities(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 특수 접근성을 수정한다.
+         * @param {string} id 
+         * @param {UpdatePlaceSpecialAccessibilityRequestDto} updatePlaceSpecialAccessibilityRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceSpecialAccessibility(id: string, updatePlaceSpecialAccessibilityRequestDto: UpdatePlaceSpecialAccessibilityRequestDto, options?: any): AxiosPromise<AdminPlaceSpecialAccessibilityDto> {
+            return localVarFp.updatePlaceSpecialAccessibility(id, updatePlaceSpecialAccessibilityRequestDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * PlaceSpecialAccessibilityApi - object-oriented interface
+ * @export
+ * @class PlaceSpecialAccessibilityApi
+ * @extends {BaseAPI}
+ */
+export class PlaceSpecialAccessibilityApi extends BaseAPI {
+    /**
+     * 
+     * @summary 장소 특수 접근성을 생성한다.
+     * @param {CreatePlaceSpecialAccessibilityRequestDto} createPlaceSpecialAccessibilityRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceSpecialAccessibilityApi
+     */
+    public createPlaceSpecialAccessibility(createPlaceSpecialAccessibilityRequestDto: CreatePlaceSpecialAccessibilityRequestDto, options?: AxiosRequestConfig) {
+        return PlaceSpecialAccessibilityApiFp(this.configuration).createPlaceSpecialAccessibility(createPlaceSpecialAccessibilityRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 특수 접근성을 삭제한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceSpecialAccessibilityApi
+     */
+    public deletePlaceSpecialAccessibility(id: string, options?: AxiosRequestConfig) {
+        return PlaceSpecialAccessibilityApiFp(this.configuration).deletePlaceSpecialAccessibility(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 특수 접근성을 조회한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceSpecialAccessibilityApi
+     */
+    public getPlaceSpecialAccessibility(id: string, options?: AxiosRequestConfig) {
+        return PlaceSpecialAccessibilityApiFp(this.configuration).getPlaceSpecialAccessibility(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 특수 접근성 목록을 조회한다.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceSpecialAccessibilityApi
+     */
+    public listPlaceSpecialAccessibilities(options?: AxiosRequestConfig) {
+        return PlaceSpecialAccessibilityApiFp(this.configuration).listPlaceSpecialAccessibilities(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 특수 접근성을 수정한다.
+     * @param {string} id 
+     * @param {UpdatePlaceSpecialAccessibilityRequestDto} updatePlaceSpecialAccessibilityRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceSpecialAccessibilityApi
+     */
+    public updatePlaceSpecialAccessibility(id: string, updatePlaceSpecialAccessibilityRequestDto: UpdatePlaceSpecialAccessibilityRequestDto, options?: AxiosRequestConfig) {
+        return PlaceSpecialAccessibilityApiFp(this.configuration).updatePlaceSpecialAccessibility(id, updatePlaceSpecialAccessibilityRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

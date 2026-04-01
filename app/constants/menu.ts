@@ -18,6 +18,7 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
+  Star,
   Tag,
   Trophy,
 } from "lucide-react"
@@ -40,6 +41,7 @@ export const menuItems: MenuItem[] = [
   { title: "공지사항 관리", url: "/announcement", icon: Bell },
   { title: "추천 컨텐츠 관리", url: "/recommendedContent", icon: Sparkles },
   { title: "뿌클로드 관리", url: "/bbucleRoad", icon: Map },
+  { title: "장소 특수 접근성", url: "/place-special-accessibility", icon: Star },
   { title: "푸시 알림 관리", url: "/notification", icon: Megaphone },
   { title: "추천 검색어 관리", url: "/searchPreset", icon: Search },
   { title: "접근성 검증 결과", url: "/accessibilityInspectionResult", icon: ShieldCheck },
