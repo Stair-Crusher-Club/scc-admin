@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Contents } from "@/components/layout"
 
-import PSAForm, { PSAFormValues, defaultValues } from "../components/PSAForm"
+import PSAForm, { PSAFormValues, SelectedPlaceInfo, defaultValues } from "../components/PSAForm"
 
 export default function PlaceSpecialAccessibilityDetail() {
   const router = useRouter()
@@ -27,6 +27,7 @@ export default function PlaceSpecialAccessibilityDetail() {
   const { mutateAsync: update, isPending: isUpdating } = useUpdatePlaceSpecialAccessibility()
   const { mutateAsync: remove, isPending: isDeleting } = useDeletePlaceSpecialAccessibility()
   const [editMode, setEditMode] = useState(false)
+  const [isDeleted, setIsDeleted] = useState(false)
 
   const formValues: PSAFormValues | undefined = data
     ? {
@@ -67,10 +68,12 @@ export default function PlaceSpecialAccessibilityDetail() {
     if (!confirm("정말 삭제하시겠습니까?")) return
 
     try {
+      setIsDeleted(true)
       await remove(id)
       toast.success("삭제되었습니다.")
       router.push("/place-special-accessibility")
     } catch {
+      setIsDeleted(false)
       toast.error("삭제에 실패했습니다.")
     }
   }
@@ -79,6 +82,14 @@ export default function PlaceSpecialAccessibilityDetail() {
     return (
       <Contents.Normal>
         <div className="text-center py-8">로딩 중...</div>
+      </Contents.Normal>
+    )
+  }
+
+  if (isDeleted) {
+    return (
+      <Contents.Normal>
+        <div className="text-center py-8">삭제 처리 중...</div>
       </Contents.Normal>
     )
   }
@@ -93,7 +104,14 @@ export default function PlaceSpecialAccessibilityDetail() {
 
   return (
     <Contents.Normal>
-      <PSAForm id="edit-psa" form={form} onSubmit={onSubmit} isEditMode={editMode} isCreateMode={false} />
+      <PSAForm
+        id="edit-psa"
+        form={form}
+        onSubmit={onSubmit}
+        isEditMode={editMode}
+        isCreateMode={false}
+        selectedPlace={{ name: data.placeName }}
+      />
       <div className="flex justify-between mt-4">
         <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
           {isDeleting ? "삭제 중..." : "삭제"}

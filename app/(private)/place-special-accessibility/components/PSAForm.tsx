@@ -12,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import ImageUploader from "@/components/ImageUploader"
+import { AdminImageUploadPurposeTypeDTO } from "@/lib/generated-sources/openapi"
 
 export interface PSAFormValues {
   placeId: string
@@ -29,12 +31,19 @@ export const defaultValues: PSAFormValues = {
   thumbnailImageUrl: "",
 }
 
+export interface SelectedPlaceInfo {
+  name: string
+  address?: string
+}
+
 interface PSAFormProps {
   id: string
   form: UseFormReturn<PSAFormValues>
   onSubmit: (values: PSAFormValues) => void
   isEditMode?: boolean
   isCreateMode?: boolean
+  /** 선택된 장소 정보 (장소 검색으로 선택 시) */
+  selectedPlace?: SelectedPlaceInfo | null
 }
 
 const bbucleRoadTypeLabel = (value: string) => {
@@ -45,7 +54,7 @@ const bbucleRoadTypeLabel = (value: string) => {
   }
 }
 
-export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreateMode = true }: PSAFormProps) {
+export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreateMode = true, selectedPlace }: PSAFormProps) {
   const { register, handleSubmit, control, watch, formState: { errors } } = form
   const accessibilityType = watch("accessibilityType")
   // bbucleRoad 관련 필드는 accessibilityType이 BBUCLE_ROAD일 때만 required
@@ -57,14 +66,21 @@ export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreat
         <CardContent className="p-6 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="placeId">
-              장소 ID <span className="text-red-500">*</span>
+              장소 <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="placeId"
-              {...register("placeId", { required: "장소 ID를 입력해주세요" })}
-              placeholder="장소 ID를 입력하세요"
-              disabled={!isCreateMode}
-            />
+            <input type="hidden" {...register("placeId", { required: "장소를 선택해주세요" })} />
+            {selectedPlace ? (
+              <div className="px-3 py-2 border rounded-md bg-muted text-sm">
+                <span className="font-medium">{selectedPlace.name}</span>
+                {selectedPlace.address && (
+                  <span className="text-muted-foreground ml-2">{selectedPlace.address}</span>
+                )}
+              </div>
+            ) : (
+              <div className="px-3 py-2 border rounded-md text-sm text-muted-foreground">
+                {isCreateMode ? "위에서 장소를 검색하여 선택하세요" : form.getValues("placeId")}
+              </div>
+            )}
             {errors.placeId && <p className="text-sm text-red-500">{errors.placeId.message}</p>}
           </div>
 
@@ -133,15 +149,38 @@ export default function PSAForm({ id, form, onSubmit, isEditMode = true, isCreat
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="thumbnailImageUrl">
-              썸네일 이미지 URL <span className="text-red-500">*</span>
+            <Label>
+              썸네일 이미지 <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="thumbnailImageUrl"
-              {...register("thumbnailImageUrl", { required: isBbucleRoad && "썸네일 이미지 URL을 입력해주세요" })}
-              placeholder="https://..."
-              disabled={!isEditMode}
-            />
+            {isEditMode ? (
+              <Controller
+                name="thumbnailImageUrl"
+                control={control}
+                rules={{ required: isBbucleRoad && "썸네일 이미지를 업로드해주세요" }}
+                render={({ field }) => (
+                  <ImageUploader
+                    value={field.value ? [field.value] : []}
+                    onChange={(urls) => field.onChange(urls[0] ?? "")}
+                    purposeType={AdminImageUploadPurposeTypeDTO.Accessibility}
+                    maxImages={1}
+                  />
+                )}
+              />
+            ) : (
+              <>
+                {watch("thumbnailImageUrl") ? (
+                  <div className="relative w-32 h-32 rounded overflow-hidden border">
+                    <img
+                      src={watch("thumbnailImageUrl")}
+                      alt="썸네일"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <span className="text-sm text-muted-foreground">-</span>
+                )}
+              </>
+            )}
             {errors.thumbnailImageUrl && <p className="text-sm text-red-500">{errors.thumbnailImageUrl.message}</p>}
           </div>
         </CardContent>

@@ -1782,7 +1782,8 @@ export const AdminImageUploadPurposeTypeDTO = {
     BbucleRoadMarker: 'BBUCLE_ROAD_MARKER',
     BbucleRoadDescription: 'BBUCLE_ROAD_DESCRIPTION',
     RecommendedContent: 'RECOMMENDED_CONTENT',
-    PlaceAccessibilitySuggestion: 'PLACE_ACCESSIBILITY_SUGGESTION'
+    PlaceAccessibilitySuggestion: 'PLACE_ACCESSIBILITY_SUGGESTION',
+    Accessibility: 'ACCESSIBILITY'
 } as const;
 
 export type AdminImageUploadPurposeTypeDTO = typeof AdminImageUploadPurposeTypeDTO[keyof typeof AdminImageUploadPurposeTypeDTO];

@@ -456,7 +456,8 @@ export function PlaceSearchPanel({ existingPlaceIds, onAddPlace, initialPlaceLoc
                 return (
                   <div
                     key={place.placeId}
-                    className="flex items-center justify-between px-3 py-3 hover:bg-accent"
+                    className="flex items-center justify-between px-3 py-3 hover:bg-accent cursor-pointer"
+                    onClick={() => !isAdded && handleAddPlaceWithTracking(place)}
                   >
                     <div className="min-w-0 flex-1">
                       <div className="font-medium text-sm">{place.name}</div>

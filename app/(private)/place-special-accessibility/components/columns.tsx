@@ -15,6 +15,19 @@ const bbucleRoadTypeLabels: Record<string, string> = {
 
 export const getColumns = (): ColumnDef<AdminPlaceSpecialAccessibilityDto>[] => [
   {
+    id: "thumbnail",
+    header: "썸네일",
+    cell: ({ row }) => {
+      const url = row.original.bbucleRoadData?.thumbnailImageUrl
+      return url ? (
+        <div className="relative w-20 h-20 rounded overflow-hidden">
+          <img src={url} alt="썸네일" className="w-full h-full object-cover" />
+        </div>
+      ) : <span className="text-muted-foreground">-</span>
+    },
+    enableSorting: false,
+  },
+  {
     accessorKey: "placeName",
     header: ({ column }) => <DataTableColumnHeader column={column} title="장소명" />,
     cell: ({ row }) => {
