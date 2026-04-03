@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 
 import { Contents } from "@/components/layout"
-import { PageActions } from "@/components/page-actions"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -105,12 +104,12 @@ export default function HomePage() {
       </div>
 
       {/* 메인 배너 섹션 */}
-      <h3 className="text-lg font-semibold mb-2">메인 배너</h3>
-      <PageActions>
+      <div className="flex items-center justify-between mt-4 mb-2">
+        <h3 className="text-lg font-semibold">메인 배너</h3>
         <Button onClick={() => router.push("/home/create-banner")} size="sm">
           배너 추가
         </Button>
-      </PageActions>
+      </div>
       <BannerTable banners={filteredMainBanners} onDelete={handleDeleteBanner} />
 
       {/* 띠 배너 섹션 */}
@@ -118,21 +117,21 @@ export default function HomePage() {
       <BannerTable banners={filteredStripBanners} onDelete={handleDeleteBanner} />
 
       {/* 공지사항 섹션 */}
-      <h3 className="text-lg font-semibold mt-6 mb-2">공지사항</h3>
-      <PageActions>
+      <div className="flex items-center justify-between mt-6 mb-2">
+        <h3 className="text-lg font-semibold">공지사항</h3>
         <Button onClick={() => router.push("/home/create-announcement")} size="sm">
           공지 추가
         </Button>
-      </PageActions>
+      </div>
       <AnnouncementTable announcements={filteredAnnouncements} onDelete={handleDeleteAnnouncement} />
 
       {/* 홈 팝업 섹션 */}
-      <h3 className="text-lg font-semibold mt-6 mb-2">홈 팝업</h3>
-      <PageActions>
+      <div className="flex items-center justify-between mt-6 mb-2">
+        <h3 className="text-lg font-semibold">홈 팝업</h3>
         <Button onClick={() => router.push("/home/create-popup")} size="sm">
           팝업 추가
         </Button>
-      </PageActions>
+      </div>
       <PopupTable popups={filteredPopups} onDelete={handleDeletePopup} />
     </Contents.Normal>
   )
