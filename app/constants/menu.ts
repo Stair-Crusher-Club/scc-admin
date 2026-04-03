@@ -1,6 +1,5 @@
 import {
   AlertTriangle,
-  Bell,
   Bookmark,
   Building2,
   ClipboardList,
@@ -37,8 +36,7 @@ export const menuItems: MenuItem[] = [
   { title: "등록된 정보 관리", url: "/accessibility", icon: Home },
   { title: "폐업 추정 장소 관리", url: "/closedPlace", icon: Building2 },
   { title: "건물 중복 제거 후보", url: "/buildingDeduplication", icon: Copy },
-  { title: "배너 관리", url: "/banner", icon: Tag },
-  { title: "공지사항 관리", url: "/announcement", icon: Bell },
+  { title: "홈 화면 관리", url: "/home", icon: Tag },
   { title: "추천 컨텐츠 관리", url: "/recommendedContent", icon: Sparkles },
   { title: "뿌클로드 관리", url: "/bbucleRoad", icon: Map },
   { title: "장소 특수 접근성", url: "/place-special-accessibility", icon: Star },

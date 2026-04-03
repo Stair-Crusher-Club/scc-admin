@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
-import { createBanner } from "@/(private)/banner/query"
+import { createBanner } from "@/(private)/home/query"
 import { Contents } from "@/components/layout"
 
 import BannerForm, { BannerFormValues, defaultValues } from "../components/BannerForm"
@@ -34,7 +34,7 @@ export default function CreateBanner() {
       return
     }
     toast.success("배너가 생성되었습니다.")
-    router.push("/banner")
+    router.push("/home")
   }
 
   return (

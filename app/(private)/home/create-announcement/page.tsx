@@ -49,7 +49,7 @@ export default function CreateAnnouncement() {
       return
     }
     toast.success("공지사항이 생성되었습니다.")
-    router.push("/announcement")
+    router.push("/home")
   }
 
   return (
@@ -61,7 +61,7 @@ export default function CreateAnnouncement() {
               name="text"
               label="공지사항 텍스트"
               rules={{ required: { value: true, message: "텍스트를 입력해주세요" } }}
-              placeholder="💌 봄시즌 활동 알림신청 오픈!"
+              placeholder="봄시즌 활동 알림신청 오픈!"
             />
           </Flex>
           <Flex gap={16}>

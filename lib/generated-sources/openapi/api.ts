@@ -1023,6 +1023,12 @@ export interface AdminChallengeDTO {
      * @memberof AdminChallengeDTO
      */
     'isRetroactiveContributionEnabled'?: boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminChallengeDTO
+     */
+    'maxParticipants'?: number;
 }
 /**
  * 원형 검색 영역
@@ -1305,6 +1311,12 @@ export interface AdminCreateChallengeRequestDTO {
      * @memberof AdminCreateChallengeRequestDTO
      */
     'isRetroactiveContributionEnabled'?: boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'maxParticipants'?: number;
 }
 /**
  * 
@@ -1340,6 +1352,37 @@ export interface AdminCreateHomeAnnouncementRequestDTO {
      * 
      * @type {EpochMillisTimestamp}
      * @memberof AdminCreateHomeAnnouncementRequestDTO
+     */
+    'endAt'?: EpochMillisTimestamp;
+}
+/**
+ * 
+ * @export
+ * @interface AdminCreateHomePopupRequestDTO
+ */
+export interface AdminCreateHomePopupRequestDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreateHomePopupRequestDTO
+     */
+    'imageUrl': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminCreateHomePopupRequestDTO
+     */
+    'displayOrder': number;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminCreateHomePopupRequestDTO
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminCreateHomePopupRequestDTO
      */
     'endAt'?: EpochMillisTimestamp;
 }
@@ -1693,6 +1736,43 @@ export interface AdminHomeAnnouncementDTO {
 /**
  * 
  * @export
+ * @interface AdminHomePopupDTO
+ */
+export interface AdminHomePopupDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminHomePopupDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminHomePopupDTO
+     */
+    'imageUrl': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminHomePopupDTO
+     */
+    'displayOrder': number;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminHomePopupDTO
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminHomePopupDTO
+     */
+    'endAt'?: EpochMillisTimestamp;
+}
+/**
+ * 
+ * @export
  * @interface AdminHomeRecommendedContentDTO
  */
 export interface AdminHomeRecommendedContentDTO {
@@ -1783,7 +1863,8 @@ export const AdminImageUploadPurposeTypeDTO = {
     BbucleRoadDescription: 'BBUCLE_ROAD_DESCRIPTION',
     RecommendedContent: 'RECOMMENDED_CONTENT',
     PlaceAccessibilitySuggestion: 'PLACE_ACCESSIBILITY_SUGGESTION',
-    Accessibility: 'ACCESSIBILITY'
+    Accessibility: 'ACCESSIBILITY',
+    HomePopup: 'HOME_POPUP'
 } as const;
 
 export type AdminImageUploadPurposeTypeDTO = typeof AdminImageUploadPurposeTypeDTO[keyof typeof AdminImageUploadPurposeTypeDTO];
@@ -1935,6 +2016,19 @@ export interface AdminListHomeBannersResponseDTO {
      * @memberof AdminListHomeBannersResponseDTO
      */
     'banners': Array<AdminBannerDTO>;
+}
+/**
+ * 
+ * @export
+ * @interface AdminListHomePopupsResponseDTO
+ */
+export interface AdminListHomePopupsResponseDTO {
+    /**
+     * 
+     * @type {Array<AdminHomePopupDTO>}
+     * @memberof AdminListHomePopupsResponseDTO
+     */
+    'popups': Array<AdminHomePopupDTO>;
 }
 /**
  * 
@@ -3097,6 +3191,12 @@ export interface AdminUpdateChallengeRequestDTO {
      * @memberof AdminUpdateChallengeRequestDTO
      */
     'isRetroactiveContributionEnabled'?: boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'maxParticipants'?: number;
 }
 /**
  * 
@@ -10747,6 +10847,252 @@ export class HomeAnnouncementApi extends BaseAPI {
      */
     public adminListHomeAnnouncements(options?: AxiosRequestConfig) {
         return HomeAnnouncementApiFp(this.configuration).adminListHomeAnnouncements(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * HomePopupApi - axios parameter creator
+ * @export
+ */
+export const HomePopupApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 홈 팝업을 생성한다.
+         * @param {AdminCreateHomePopupRequestDTO} adminCreateHomePopupRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminCreateHomePopup: async (adminCreateHomePopupRequestDTO: AdminCreateHomePopupRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminCreateHomePopupRequestDTO' is not null or undefined
+            assertParamExists('adminCreateHomePopup', 'adminCreateHomePopupRequestDTO', adminCreateHomePopupRequestDTO)
+            const localVarPath = `/home-popups`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreateHomePopupRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 홈 팝업을 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminDeleteHomePopup: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminDeleteHomePopup', 'id', id)
+            const localVarPath = `/home-popups/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 홈 팝업 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminListHomePopups: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/home-popups`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * HomePopupApi - functional programming interface
+ * @export
+ */
+export const HomePopupApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = HomePopupApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 홈 팝업을 생성한다.
+         * @param {AdminCreateHomePopupRequestDTO} adminCreateHomePopupRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminCreateHomePopup(adminCreateHomePopupRequestDTO: AdminCreateHomePopupRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminCreateHomePopup(adminCreateHomePopupRequestDTO, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 홈 팝업을 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminDeleteHomePopup(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminDeleteHomePopup(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 홈 팝업 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminListHomePopups(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListHomePopupsResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminListHomePopups(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * HomePopupApi - factory interface
+ * @export
+ */
+export const HomePopupApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = HomePopupApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 홈 팝업을 생성한다.
+         * @param {AdminCreateHomePopupRequestDTO} adminCreateHomePopupRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminCreateHomePopup(adminCreateHomePopupRequestDTO: AdminCreateHomePopupRequestDTO, options?: any): AxiosPromise<void> {
+            return localVarFp.adminCreateHomePopup(adminCreateHomePopupRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 홈 팝업을 삭제한다.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminDeleteHomePopup(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.adminDeleteHomePopup(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 홈 팝업 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminListHomePopups(options?: any): AxiosPromise<AdminListHomePopupsResponseDTO> {
+            return localVarFp.adminListHomePopups(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * HomePopupApi - object-oriented interface
+ * @export
+ * @class HomePopupApi
+ * @extends {BaseAPI}
+ */
+export class HomePopupApi extends BaseAPI {
+    /**
+     * 
+     * @summary 홈 팝업을 생성한다.
+     * @param {AdminCreateHomePopupRequestDTO} adminCreateHomePopupRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HomePopupApi
+     */
+    public adminCreateHomePopup(adminCreateHomePopupRequestDTO: AdminCreateHomePopupRequestDTO, options?: AxiosRequestConfig) {
+        return HomePopupApiFp(this.configuration).adminCreateHomePopup(adminCreateHomePopupRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 홈 팝업을 삭제한다.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HomePopupApi
+     */
+    public adminDeleteHomePopup(id: string, options?: AxiosRequestConfig) {
+        return HomePopupApiFp(this.configuration).adminDeleteHomePopup(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 홈 팝업 목록을 조회한다.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HomePopupApi
+     */
+    public adminListHomePopups(options?: AxiosRequestConfig) {
+        return HomePopupApiFp(this.configuration).adminListHomePopups(options).then((request) => request(this.axios, this.basePath));
     }
 }
 
