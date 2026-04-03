@@ -51,19 +51,9 @@ export default function HomePage() {
   const announcements = useHomeAnnouncements()?.data?.announcements ?? []
   const popups = useHomePopups()?.data?.popups ?? []
 
-  const homeMainBanners = useMemo(() => {
-    const banners = showActiveOnly
-      ? homeBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Main)
-      : allBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Main)
-    return showActiveOnly ? banners.filter((b) => isActiveNow(b.startAt, b.endAt)) : banners
-  }, [showActiveOnly, homeBanners, allBanners])
-
-  const homeStripBanners = useMemo(() => {
-    const banners = showActiveOnly
-      ? homeBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Strip)
-      : allBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Strip)
-    return showActiveOnly ? banners.filter((b) => isActiveNow(b.startAt, b.endAt)) : banners
-  }, [showActiveOnly, homeBanners, allBanners])
+  const bannerSource = showActiveOnly ? homeBanners : allBanners
+  const homeMainBanners = bannerSource.filter((b) => b.bannerType === HomeBannerTypeDTO.Main)
+  const homeStripBanners = bannerSource.filter((b) => b.bannerType === HomeBannerTypeDTO.Strip)
 
   const filteredAnnouncements = useMemo(() => {
     return showActiveOnly ? announcements.filter((a) => isActiveNow(a.startAt, a.endAt)) : announcements
