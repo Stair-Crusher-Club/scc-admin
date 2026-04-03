@@ -23,19 +23,18 @@ export default function CreatePopup() {
       return
     }
 
-    const res = await createHomePopup({
-      imageUrl,
-      displayOrder,
-      startAt: startDate ? { value: new Date(startDate).getTime() } : undefined,
-      endAt: endDate ? { value: new Date(endDate).getTime() } : undefined,
-    })
-
-    if (res.status !== 200) {
+    try {
+      await createHomePopup({
+        imageUrl,
+        displayOrder,
+        startAt: startDate ? { value: new Date(startDate).getTime() } : undefined,
+        endAt: endDate ? { value: new Date(endDate).getTime() } : undefined,
+      })
+      toast.success("팝업이 생성되었습니다.")
+      router.push("/home")
+    } catch {
       toast.error("팝업 생성에 실패했습니다.")
-      return
     }
-    toast.success("팝업이 생성되었습니다.")
-    router.push("/home")
   }
 
   return (

@@ -25,7 +25,6 @@ import {
   deleteHomePopup,
   HomeAnnouncement,
   HomePopup,
-  useAllBanners,
   useHomeBanners,
   useHomeAnnouncements,
   useHomePopups,
@@ -37,7 +36,6 @@ export default function HomePage() {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const allBanners = useAllBanners()?.data?.banners ?? []
   const homeBanners = useHomeBanners()?.data?.banners ?? []
   const homeMainBanners = homeBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Main)
   const homeStripBanners = homeBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Strip)
@@ -49,7 +47,6 @@ export default function HomePage() {
       return
     }
     await deleteBanner(banner)
-    await queryClient.invalidateQueries({ queryKey: ["@allBanners"] })
     await queryClient.invalidateQueries({ queryKey: ["@homeBanners"] })
   }
 
