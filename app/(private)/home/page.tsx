@@ -3,6 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { format as formatDate } from "date-fns"
 import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react"
 
 import { Contents } from "@/components/layout"
 import { PageActions } from "@/components/page-actions"
@@ -15,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { HomeBannerTypeDTO } from "@/lib/generated-sources/openapi"
+import { EpochMillisTimestamp, HomeBannerTypeDTO } from "@/lib/generated-sources/openapi"
 
 import {
   Banner,
@@ -25,6 +26,7 @@ import {
   deleteHomePopup,
   HomeAnnouncement,
   HomePopup,
+  useAllBanners,
   useHomeBanners,
   useHomeAnnouncements,
   useHomePopups,
@@ -32,21 +34,51 @@ import {
 
 const dateFormat = "yyyy.MM.dd HH:mm"
 
+function isActiveNow(startAt?: EpochMillisTimestamp, endAt?: EpochMillisTimestamp): boolean {
+  const now = Date.now()
+  if (startAt && startAt.value > now) return false
+  if (endAt && endAt.value < now) return false
+  return true
+}
+
 export default function HomePage() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const [showActiveOnly, setShowActiveOnly] = useState(false)
 
+  const allBanners = useAllBanners()?.data?.banners ?? []
   const homeBanners = useHomeBanners()?.data?.banners ?? []
-  const homeMainBanners = homeBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Main)
-  const homeStripBanners = homeBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Strip)
   const announcements = useHomeAnnouncements()?.data?.announcements ?? []
   const popups = useHomePopups()?.data?.popups ?? []
+
+  const homeMainBanners = useMemo(() => {
+    const banners = showActiveOnly
+      ? homeBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Main)
+      : allBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Main)
+    return showActiveOnly ? banners.filter((b) => isActiveNow(b.startAt, b.endAt)) : banners
+  }, [showActiveOnly, homeBanners, allBanners])
+
+  const homeStripBanners = useMemo(() => {
+    const banners = showActiveOnly
+      ? homeBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Strip)
+      : allBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Strip)
+    return showActiveOnly ? banners.filter((b) => isActiveNow(b.startAt, b.endAt)) : banners
+  }, [showActiveOnly, homeBanners, allBanners])
+
+  const filteredAnnouncements = useMemo(() => {
+    return showActiveOnly ? announcements.filter((a) => isActiveNow(a.startAt, a.endAt)) : announcements
+  }, [showActiveOnly, announcements])
+
+  const filteredPopups = useMemo(() => {
+    return showActiveOnly ? popups.filter((p) => isActiveNow(p.startAt, p.endAt)) : popups
+  }, [showActiveOnly, popups])
 
   const handleDeleteBanner = async (banner: Banner) => {
     if (!confirm(`정말 ${banner.loggingKey} 배너를 삭제하시겠습니까?`)) {
       return
     }
     await deleteBanner(banner)
+    await queryClient.invalidateQueries({ queryKey: ["@allBanners"] })
     await queryClient.invalidateQueries({ queryKey: ["@homeBanners"] })
   }
 
@@ -68,6 +100,16 @@ export default function HomePage() {
 
   return (
     <Contents.Normal>
+      <div className="flex items-center gap-2 mb-4">
+        <Button
+          variant={showActiveOnly ? "default" : "outline"}
+          size="sm"
+          onClick={() => setShowActiveOnly((prev) => !prev)}
+        >
+          {showActiveOnly ? "✓ 현재 노출 중인 것만 보기" : "현재 노출 중인 것만 보기"}
+        </Button>
+      </div>
+
       {/* 메인 배너 섹션 */}
       <h3 className="text-lg font-semibold mb-2">메인 배너</h3>
       <PageActions>
@@ -88,7 +130,7 @@ export default function HomePage() {
           공지 추가
         </Button>
       </PageActions>
-      <AnnouncementTable announcements={announcements} onDelete={handleDeleteAnnouncement} />
+      <AnnouncementTable announcements={filteredAnnouncements} onDelete={handleDeleteAnnouncement} />
 
       {/* 홈 팝업 섹션 */}
       <h3 className="text-lg font-semibold mt-6 mb-2">홈 팝업</h3>
@@ -97,7 +139,7 @@ export default function HomePage() {
           팝업 추가
         </Button>
       </PageActions>
-      <PopupTable popups={popups} onDelete={handleDeletePopup} />
+      <PopupTable popups={filteredPopups} onDelete={handleDeletePopup} />
     </Contents.Normal>
   )
 }
