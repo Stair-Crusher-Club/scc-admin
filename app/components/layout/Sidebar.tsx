@@ -41,7 +41,7 @@ const menuItems = [
   { href: "/accessibility", label: "등록된 정보 관리", icon: Home },
   { href: "/closedPlace", label: "폐업 추정 장소 관리", icon: Building2 },
   { href: "/buildingDeduplication", label: "건물 중복 제거 후보", icon: Copy },
-  { href: "/banner", label: "배너 관리", icon: Tag },
+  { href: "/home", label: "홈 화면 관리", icon: Tag },
   { href: "/bbucleRoad", label: "뿌클로드 관리", icon: Map },
   { href: "/notification", label: "푸시 알림 관리", icon: Megaphone },
   { href: "/searchPreset", label: "추천 검색어 관리", icon: Search },

@@ -36,20 +36,19 @@ export default function CreateAnnouncement() {
   async function onSubmit(values: FormValues) {
     const { text, linkUrl, displayOrder, startDate, endDate } = values
 
-    const res = await createHomeAnnouncement({
-      text,
-      linkUrl,
-      displayOrder,
-      startAt: startDate ? { value: new Date(startDate).getTime() } : undefined,
-      endAt: endDate ? { value: new Date(endDate).getTime() } : undefined,
-    })
-
-    if (res.status !== 200) {
+    try {
+      await createHomeAnnouncement({
+        text,
+        linkUrl,
+        displayOrder,
+        startAt: startDate ? { value: new Date(startDate).getTime() } : undefined,
+        endAt: endDate ? { value: new Date(endDate).getTime() } : undefined,
+      })
+      toast.success("공지사항이 생성되었습니다.")
+      router.push("/home")
+    } catch {
       toast.error("공지사항 생성에 실패했습니다.")
-      return
     }
-    toast.success("공지사항이 생성되었습니다.")
-    router.push("/announcement")
   }
 
   return (
@@ -61,7 +60,7 @@ export default function CreateAnnouncement() {
               name="text"
               label="공지사항 텍스트"
               rules={{ required: { value: true, message: "텍스트를 입력해주세요" } }}
-              placeholder="💌 봄시즌 활동 알림신청 오픈!"
+              placeholder="봄시즌 활동 알림신청 오픈!"
             />
           </Flex>
           <Flex gap={16}>
