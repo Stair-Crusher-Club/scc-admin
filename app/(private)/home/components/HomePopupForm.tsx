@@ -3,7 +3,6 @@
 import { FileInput } from "@reactleaf/input"
 import { DateInput, NumberInput } from "@reactleaf/input/hookform"
 import axios from "axios"
-import { format } from "date-fns"
 import { ChangeEventHandler, useState } from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
 
@@ -23,8 +22,8 @@ export interface HomePopupFormValues {
 export const defaultValues: Partial<HomePopupFormValues> = {
   imageUrl: "",
   displayOrder: 0,
-  startDate: format(new Date(), "yyyy-MM-dd HH:mm"),
-  endDate: format(new Date(), "yyyy-MM-dd HH:mm"),
+  startDate: "",
+  endDate: "",
 }
 
 interface Props {
