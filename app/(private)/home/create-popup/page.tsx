@@ -1,5 +1,6 @@
 "use client"
 
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -13,6 +14,7 @@ import { createHomePopup } from "../query"
 
 export default function CreatePopup() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const form = useForm<HomePopupFormValues>({ defaultValues })
 
   async function onSubmit(values: HomePopupFormValues) {
@@ -31,6 +33,7 @@ export default function CreatePopup() {
         endAt: endDate ? { value: new Date(endDate).getTime() } : undefined,
       })
       toast.success("팝업이 생성되었습니다.")
+      await queryClient.invalidateQueries({ queryKey: ["@homePopups"] })
       router.push("/home")
     } catch {
       toast.error("팝업 생성에 실패했습니다.")

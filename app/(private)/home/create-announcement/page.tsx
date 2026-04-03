@@ -2,6 +2,7 @@
 
 import { DateInput, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import { format } from "date-fns"
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -31,6 +32,7 @@ const defaultValues: Partial<FormValues> = {
 
 export default function CreateAnnouncement() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const form = useForm<FormValues>({ defaultValues })
 
   async function onSubmit(values: FormValues) {
@@ -45,6 +47,7 @@ export default function CreateAnnouncement() {
         endAt: endDate ? { value: new Date(endDate).getTime() } : undefined,
       })
       toast.success("공지사항이 생성되었습니다.")
+      await queryClient.invalidateQueries({ queryKey: ["@homeAnnouncements"] })
       router.push("/home")
     } catch {
       toast.error("공지사항 생성에 실패했습니다.")
