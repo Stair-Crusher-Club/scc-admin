@@ -27,7 +27,6 @@ import {
   HomeAnnouncement,
   HomePopup,
   useAllBanners,
-  useHomeBanners,
   useHomeAnnouncements,
   useHomePopups,
 } from "./query"
@@ -47,13 +46,18 @@ export default function HomePage() {
   const [showActiveOnly, setShowActiveOnly] = useState(false)
 
   const allBanners = useAllBanners()?.data?.banners ?? []
-  const homeBanners = useHomeBanners()?.data?.banners ?? []
   const announcements = useHomeAnnouncements()?.data?.announcements ?? []
   const popups = useHomePopups()?.data?.popups ?? []
 
-  const bannerSource = showActiveOnly ? homeBanners : allBanners
-  const homeMainBanners = bannerSource.filter((b) => b.bannerType === HomeBannerTypeDTO.Main)
-  const homeStripBanners = bannerSource.filter((b) => b.bannerType === HomeBannerTypeDTO.Strip)
+  const filteredMainBanners = useMemo(() => {
+    const banners = allBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Main)
+    return showActiveOnly ? banners.filter((b) => isActiveNow(b.startAt, b.endAt)) : banners
+  }, [showActiveOnly, allBanners])
+
+  const filteredStripBanners = useMemo(() => {
+    const banners = allBanners.filter((b) => b.bannerType === HomeBannerTypeDTO.Strip)
+    return showActiveOnly ? banners.filter((b) => isActiveNow(b.startAt, b.endAt)) : banners
+  }, [showActiveOnly, allBanners])
 
   const filteredAnnouncements = useMemo(() => {
     return showActiveOnly ? announcements.filter((a) => isActiveNow(a.startAt, a.endAt)) : announcements
@@ -107,11 +111,11 @@ export default function HomePage() {
           배너 추가
         </Button>
       </PageActions>
-      <BannerTable banners={homeMainBanners} onDelete={handleDeleteBanner} />
+      <BannerTable banners={filteredMainBanners} onDelete={handleDeleteBanner} />
 
       {/* 띠 배너 섹션 */}
       <h3 className="text-lg font-semibold mt-6 mb-2">띠 배너</h3>
-      <BannerTable banners={homeStripBanners} onDelete={handleDeleteBanner} />
+      <BannerTable banners={filteredStripBanners} onDelete={handleDeleteBanner} />
 
       {/* 공지사항 섹션 */}
       <h3 className="text-lg font-semibold mt-6 mb-2">공지사항</h3>
