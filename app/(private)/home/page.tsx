@@ -267,6 +267,7 @@ function PopupTable({
       <TableHeader>
         <TableRow>
           <TableHead>이미지</TableHead>
+          <TableHead>딥링크</TableHead>
           <TableHead>노출 순서</TableHead>
           <TableHead>노출 기간</TableHead>
           <TableHead>삭제</TableHead>
@@ -282,6 +283,17 @@ function PopupTable({
                 className="max-w-[300px] max-h-[100px] object-contain block"
               />
             </TableCell>
+            <TableCell>
+              {popup.clickUrl ? (
+                <Button variant="outline" size="sm" asChild>
+                  <a href={popup.clickUrl} target="_blank" rel="noopener noreferrer">
+                    오픈
+                  </a>
+                </Button>
+              ) : (
+                "-"
+              )}
+            </TableCell>
             <TableCell>{popup.displayOrder}</TableCell>
             <TableCell className="whitespace-nowrap">
               <p>시작 : {popup.startAt ? formatDate(new Date(popup.startAt.value), dateFormat) : "-"}</p>
@@ -296,7 +308,7 @@ function PopupTable({
         ))}
         {popups.length === 0 && (
           <TableRow>
-            <TableCell colSpan={4} className="text-center text-muted-foreground">
+            <TableCell colSpan={5} className="text-center text-muted-foreground">
               데이터가 없습니다.
             </TableCell>
           </TableRow>

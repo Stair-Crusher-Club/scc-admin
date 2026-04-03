@@ -28,6 +28,7 @@ export default function CreatePopup() {
     try {
       await createHomePopup({
         imageUrl,
+        clickUrl: values.clickUrl || undefined,
         displayOrder,
         startAt: startDate ? { value: new Date(startDate).getTime() } : undefined,
         endAt: endDate ? { value: new Date(endDate).getTime() } : undefined,
