@@ -3,6 +3,7 @@ import notion from "@/lib/notion"
 import { BlockObjectResponse } from "@notionhq/client/build/src/api-endpoints"
 
 export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"
 
 export async function GET(
   request: Request,

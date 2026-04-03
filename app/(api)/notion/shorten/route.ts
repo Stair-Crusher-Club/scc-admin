@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"
 
 function getAdminApiBaseUrl(): string {
   if (process.env.NEXT_PUBLIC_DEPLOY_TYPE === "live") {

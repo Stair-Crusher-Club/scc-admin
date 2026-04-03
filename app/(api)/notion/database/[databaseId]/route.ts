@@ -9,6 +9,7 @@ import notion from "@/lib/notion"
 import redis from "@/lib/redis"
 
 export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"
 
 async function queryDatabase(
   databaseId: string,
