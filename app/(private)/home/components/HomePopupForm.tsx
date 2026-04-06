@@ -1,7 +1,7 @@
 "use client"
 
 import { FileInput } from "@reactleaf/input"
-import { DateInput, NumberInput } from "@reactleaf/input/hookform"
+import { DateInput, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import axios from "axios"
 import { ChangeEventHandler, useState } from "react"
 import { FormProvider, UseFormReturn } from "react-hook-form"
@@ -14,6 +14,7 @@ import { Flex } from "@/styles/jsx"
 
 export interface HomePopupFormValues {
   imageUrl: string
+  clickUrl: string
   displayOrder: number
   startDate?: string
   endDate?: string
@@ -21,6 +22,7 @@ export interface HomePopupFormValues {
 
 export const defaultValues: Partial<HomePopupFormValues> = {
   imageUrl: "",
+  clickUrl: "",
   displayOrder: 0,
   startDate: "",
   endDate: "",
@@ -77,6 +79,14 @@ export default function HomePopupForm({ form, id, disabled, onSubmit }: Props) {
             <FileInput label="팝업 이미지" accept="image/*" onChange={handleFileChange} disabled={disabled} />
             {imageUrl ? <RemoteImage src={imageUrl} width={400} /> : null}
           </Flex>
+        </Flex>
+        <Flex gap={16}>
+          <TextInput
+            name="clickUrl"
+            label="클릭 시 이동 URL (딥링크)"
+            placeholder="https://example.com 또는 앱 딥링크 (선택사항)"
+            disabled={disabled}
+          />
         </Flex>
         <Flex gap={16}>
           <DateInput
