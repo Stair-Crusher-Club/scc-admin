@@ -1368,6 +1368,12 @@ export interface AdminCreateHomePopupRequestDTO {
      */
     'imageUrl': string;
     /**
+     * 클릭 시 이동할 URL (딥링크)
+     * @type {string}
+     * @memberof AdminCreateHomePopupRequestDTO
+     */
+    'clickUrl'?: string;
+    /**
      * 
      * @type {number}
      * @memberof AdminCreateHomePopupRequestDTO
@@ -1751,6 +1757,12 @@ export interface AdminHomePopupDTO {
      * @memberof AdminHomePopupDTO
      */
     'imageUrl': string;
+    /**
+     * 클릭 시 이동할 URL (딥링크)
+     * @type {string}
+     * @memberof AdminHomePopupDTO
+     */
+    'clickUrl'?: string;
     /**
      * 
      * @type {number}

@@ -1,5 +1,6 @@
 "use client"
 
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -13,6 +14,7 @@ import BannerForm, { BannerFormValues, defaultValues } from "../components/Banne
 
 export default function CreateBanner() {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const form = useForm<BannerFormValues>({ defaultValues })
 
@@ -31,6 +33,8 @@ export default function CreateBanner() {
         bannerType,
       })
       toast.success("배너가 생성되었습니다.")
+      await queryClient.invalidateQueries({ queryKey: ["@allBanners"] })
+      await queryClient.invalidateQueries({ queryKey: ["@homeBanners"] })
       router.push("/home")
     } catch {
       toast.error("배너 생성에 실패했습니다.")

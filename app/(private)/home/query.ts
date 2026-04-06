@@ -100,6 +100,7 @@ export function useHomePopups() {
 
 export interface CreateHomePopupParam {
   imageUrl: string
+  clickUrl?: string
   displayOrder: number
   startAt?: EpochMillisTimestamp
   endAt?: EpochMillisTimestamp
@@ -116,6 +117,7 @@ export function deleteHomePopup(id: string) {
 export interface HomePopup {
   id: string
   imageUrl: string
+  clickUrl?: string
   displayOrder: number
   startAt?: EpochMillisTimestamp
   endAt?: EpochMillisTimestamp
