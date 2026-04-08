@@ -15,6 +15,9 @@ import {
   type AdminResolveAccessibilityReportRequestDTO,
   type AdminUpdateBuildingAccessibilityRequestDTO,
   type AdminUpdatePlaceAccessibilityRequestDTO,
+  type InaccurateInfoCategoryDTO,
+  type ClosedSubTypeDTO,
+  type AccessibilityReportCorrectionDTO,
 } from "@/lib/generated-sources/openapi"
 import {
   booleanOptions,
@@ -43,6 +46,45 @@ const reasonLabels: Record<string, string> = {
   CLOSED: "폐점된 곳이에요",
   BAD_USER: "이 정복자를 차단할래요",
   NONE: "알 수 없음",
+}
+
+const inaccurateCategoryLabels: Record<string, string> = {
+  ENTRANCE: "입구 정보",
+  FLOOR: "층 정보",
+  DOOR_TYPE: "문 유형",
+  ELEVATOR: "엘리베이터",
+  ACCESS_LEVEL: "접근레벨",
+  PHOTO: "사진",
+  OTHER: "기타",
+}
+
+const closedSubTypeLabels: Record<string, string> = {
+  PERMANENTLY_CLOSED: "폐업",
+  REPLACED_BY_OTHER: "상호 변경",
+  OTHER: "기타",
+}
+
+const stairInfoLabels: Record<string, string> = {
+  NONE: "없음",
+  ONE: "1개",
+  TWO_TO_FIVE: "2~5개",
+  OVER_SIX: "6개 이상",
+  UNDEFINED: "미정",
+}
+
+const stairHeightLevelLabels: Record<string, string> = {
+  HALF_THUMB: "엄지 한마디",
+  THUMB: "엄지 손가락",
+  OVER_THUMB: "엄지 손가락 이상",
+}
+
+const entranceDoorTypeLabels: Record<string, string> = {
+  None: "문 없음",
+  Hinged: "여닫이문",
+  Sliding: "미닫이문",
+  Automatic: "자동문",
+  Revolving: "회전문",
+  ETC: "기타",
 }
 
 export default function AccessibilityReportDetail({ reportId, visible, close }: Props) {
@@ -255,6 +297,174 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
               )}
             </div>
           </section>
+
+          {/* 구조화 신고 교정 데이터 */}
+          {(detail.inaccurateCategories?.length || detail.closedSubType || detail.correction?.placeAccessibilityCorrection || detail.correction?.buildingAccessibilityCorrection || detail.correction?.noteText || (detail.correction?.photoUrls && detail.correction.photoUrls.length > 0)) && (
+            <section className="space-y-3">
+              <h3 className="font-semibold text-base">구조화 신고 정보</h3>
+
+              {/* 교정 항목 */}
+              {detail.inaccurateCategories && detail.inaccurateCategories.length > 0 && (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1.5">교정 항목</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {detail.inaccurateCategories.map((cat) => (
+                      <span
+                        key={cat}
+                        className="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-medium text-orange-800"
+                      >
+                        {inaccurateCategoryLabels[cat] ?? cat}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 폐업 세부 유형 */}
+              {detail.closedSubType && (
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="text-muted-foreground">폐업 세부 유형</div>
+                  <div>{closedSubTypeLabels[detail.closedSubType] ?? detail.closedSubType}</div>
+                </div>
+              )}
+
+              {/* 유저 제안값 */}
+              {detail.correction && (
+                <div className="space-y-3">
+                  <p className="text-sm font-medium">유저 제안값</p>
+
+                  {/* 장소 접근성 교정 */}
+                  {detail.correction.placeAccessibilityCorrection && (
+                    <div className="rounded-md border p-3 space-y-1.5">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">장소 접근성</p>
+                      <div className="grid grid-cols-2 gap-1.5 text-sm">
+                        {detail.correction.placeAccessibilityCorrection.stairInfo && (
+                          <>
+                            <div className="text-muted-foreground">입구 계단</div>
+                            <div>{stairInfoLabels[detail.correction.placeAccessibilityCorrection.stairInfo] ?? detail.correction.placeAccessibilityCorrection.stairInfo}</div>
+                          </>
+                        )}
+                        {detail.correction.placeAccessibilityCorrection.stairHeightLevel && detail.correction.placeAccessibilityCorrection.stairInfo === 'ONE' && (
+                          <>
+                            <div className="text-muted-foreground">계단 높이</div>
+                            <div>{stairHeightLevelLabels[detail.correction.placeAccessibilityCorrection.stairHeightLevel] ?? detail.correction.placeAccessibilityCorrection.stairHeightLevel}</div>
+                          </>
+                        )}
+                        {detail.correction.placeAccessibilityCorrection.hasSlope != null && (
+                          <>
+                            <div className="text-muted-foreground">경사로</div>
+                            <div>{detail.correction.placeAccessibilityCorrection.hasSlope ? "있음" : "없음"}</div>
+                          </>
+                        )}
+                        {detail.correction.placeAccessibilityCorrection.floors && detail.correction.placeAccessibilityCorrection.floors.length > 0 && (
+                          <>
+                            <div className="text-muted-foreground">층 정보</div>
+                            <div>{detail.correction.placeAccessibilityCorrection.floors.join(", ")}층</div>
+                          </>
+                        )}
+                        {detail.correction.placeAccessibilityCorrection.entranceDoorTypes && detail.correction.placeAccessibilityCorrection.entranceDoorTypes.length > 0 && (
+                          <>
+                            <div className="text-muted-foreground">출입문 유형</div>
+                            <div>{detail.correction.placeAccessibilityCorrection.entranceDoorTypes.map((t) => entranceDoorTypeLabels[t] ?? t).join(", ")}</div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 건물 접근성 교정 */}
+                  {detail.correction.buildingAccessibilityCorrection && (
+                    <div className="rounded-md border p-3 space-y-1.5">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">건물 접근성</p>
+                      <div className="grid grid-cols-2 gap-1.5 text-sm">
+                        {detail.correction.buildingAccessibilityCorrection.entranceStairInfo && (
+                          <>
+                            <div className="text-muted-foreground">입구 계단</div>
+                            <div>{stairInfoLabels[detail.correction.buildingAccessibilityCorrection.entranceStairInfo] ?? detail.correction.buildingAccessibilityCorrection.entranceStairInfo}</div>
+                          </>
+                        )}
+                        {detail.correction.buildingAccessibilityCorrection.entranceStairHeightLevel && detail.correction.buildingAccessibilityCorrection.entranceStairInfo === 'ONE' && (
+                          <>
+                            <div className="text-muted-foreground">입구 계단 높이</div>
+                            <div>{stairHeightLevelLabels[detail.correction.buildingAccessibilityCorrection.entranceStairHeightLevel] ?? detail.correction.buildingAccessibilityCorrection.entranceStairHeightLevel}</div>
+                          </>
+                        )}
+                        {detail.correction.buildingAccessibilityCorrection.hasSlope != null && (
+                          <>
+                            <div className="text-muted-foreground">경사로</div>
+                            <div>{detail.correction.buildingAccessibilityCorrection.hasSlope ? "있음" : "없음"}</div>
+                          </>
+                        )}
+                        {detail.correction.buildingAccessibilityCorrection.hasElevator != null && (
+                          <>
+                            <div className="text-muted-foreground">엘리베이터</div>
+                            <div>{detail.correction.buildingAccessibilityCorrection.hasElevator ? "있음" : "없음"}</div>
+                          </>
+                        )}
+                        {detail.correction.buildingAccessibilityCorrection.entranceDoorTypes && detail.correction.buildingAccessibilityCorrection.entranceDoorTypes.length > 0 && (
+                          <>
+                            <div className="text-muted-foreground">출입문 유형</div>
+                            <div>{detail.correction.buildingAccessibilityCorrection.entranceDoorTypes.map((t) => entranceDoorTypeLabels[t] ?? t).join(", ")}</div>
+                          </>
+                        )}
+                        {detail.correction.buildingAccessibilityCorrection.elevatorStairInfo && (
+                          <>
+                            <div className="text-muted-foreground">엘리베이터 계단</div>
+                            <div>{stairInfoLabels[detail.correction.buildingAccessibilityCorrection.elevatorStairInfo] ?? detail.correction.buildingAccessibilityCorrection.elevatorStairInfo}</div>
+                          </>
+                        )}
+                        {detail.correction.buildingAccessibilityCorrection.elevatorStairHeightLevel && detail.correction.buildingAccessibilityCorrection.elevatorStairInfo === 'ONE' && (
+                          <>
+                            <div className="text-muted-foreground">엘리베이터 계단 높이</div>
+                            <div>{stairHeightLevelLabels[detail.correction.buildingAccessibilityCorrection.elevatorStairHeightLevel] ?? detail.correction.buildingAccessibilityCorrection.elevatorStairHeightLevel}</div>
+                          </>
+                        )}
+                        {detail.correction.buildingAccessibilityCorrection.elevatorHasSlope != null && (
+                          <>
+                            <div className="text-muted-foreground">엘리베이터 경사로</div>
+                            <div>{detail.correction.buildingAccessibilityCorrection.elevatorHasSlope ? "있음" : "없음"}</div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 부연 설명 */}
+                  {detail.correction.noteText && (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">부연 설명</p>
+                      <p className="text-sm bg-muted rounded-md p-2">{detail.correction.noteText}</p>
+                    </div>
+                  )}
+
+                  {/* 첨부 사진 */}
+                  {detail.correction.photoUrls && detail.correction.photoUrls.length > 0 && (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1.5">
+                        첨부 사진 ({detail.correction.photoUrls.length}장)
+                      </p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {detail.correction.photoUrls.map((url, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setSelectedImageUrl(url)}
+                            className="relative aspect-square overflow-hidden rounded-md border hover:opacity-80 transition-opacity block cursor-pointer w-full"
+                          >
+                            <img
+                              src={url}
+                              alt={`첨부 사진 ${idx + 1}`}
+                              className="object-cover w-full h-full"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
 
           {/* Accessibility Edit Forms */}
           {showPlaceForm && (
