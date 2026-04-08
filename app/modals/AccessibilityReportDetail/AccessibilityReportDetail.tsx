@@ -79,12 +79,12 @@ const stairHeightLevelLabels: Record<string, string> = {
 }
 
 const entranceDoorTypeLabels: Record<string, string> = {
-  HINGED: "여닫이문",
-  SLIDING: "미닫이문",
-  AUTOMATIC: "자동문",
-  REVOLVING: "회전문",
+  None: "문 없음",
+  Hinged: "여닫이문",
+  Sliding: "미닫이문",
+  Automatic: "자동문",
+  Revolving: "회전문",
   ETC: "기타",
-  NONE: "문 없음",
 }
 
 export default function AccessibilityReportDetail({ reportId, visible, close }: Props) {
