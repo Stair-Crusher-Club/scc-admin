@@ -4806,6 +4806,19 @@ export type QuestTargetPlaceCategoryEnumDTO = typeof QuestTargetPlaceCategoryEnu
 
 
 /**
+ * 퀘스트 그룹 이름 변경 요청
+ * @export
+ * @interface RenameClubQuestGroupRequestDto
+ */
+export interface RenameClubQuestGroupRequestDto {
+    /**
+     * 새 퀘스트 이름 prefix
+     * @type {string}
+     * @memberof RenameClubQuestGroupRequestDto
+     */
+    'questNamePrefix': string;
+}
+/**
  * 
  * @export
  * @enum {string}
@@ -9244,6 +9257,50 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary 퀘스트 그룹의 이름(퀘스트 이름 prefix)을 변경한다.
+         * @param {string} groupId 퀘스트 그룹 식별자
+         * @param {RenameClubQuestGroupRequestDto} renameClubQuestGroupRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        renameClubQuestGroup: async (groupId: string, renameClubQuestGroupRequestDto: RenameClubQuestGroupRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('renameClubQuestGroup', 'groupId', groupId)
+            // verify required parameter 'renameClubQuestGroupRequestDto' is not null or undefined
+            assertParamExists('renameClubQuestGroup', 'renameClubQuestGroupRequestDto', renameClubQuestGroupRequestDto)
+            const localVarPath = `/clubQuests/byGroup/{groupId}/name`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(renameClubQuestGroupRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 지정된 지역 내의 장소를 지도 API를 통해 크롤링해서 계단정복지도 서버 DB에 캐싱한다.
          * @param {StartPlaceCrawlingRequestDTO} startPlaceCrawlingRequestDTO 
          * @param {*} [options] Override http request option.
@@ -9632,6 +9689,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 퀘스트 그룹의 이름(퀘스트 이름 prefix)을 변경한다.
+         * @param {string} groupId 퀘스트 그룹 식별자
+         * @param {RenameClubQuestGroupRequestDto} renameClubQuestGroupRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async renameClubQuestGroup(groupId: string, renameClubQuestGroupRequestDto: RenameClubQuestGroupRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.renameClubQuestGroup(groupId, renameClubQuestGroupRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 지정된 지역 내의 장소를 지도 API를 통해 크롤링해서 계단정복지도 서버 DB에 캐싱한다.
          * @param {StartPlaceCrawlingRequestDTO} startPlaceCrawlingRequestDTO 
          * @param {*} [options] Override http request option.
@@ -9958,6 +10027,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         notificationsPushSchedulesScheduleIdPut(scheduleId: string, adminUpdatePushNotificationScheduleRequestDTO: AdminUpdatePushNotificationScheduleRequestDTO, options?: any): AxiosPromise<void> {
             return localVarFp.notificationsPushSchedulesScheduleIdPut(scheduleId, adminUpdatePushNotificationScheduleRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 퀘스트 그룹의 이름(퀘스트 이름 prefix)을 변경한다.
+         * @param {string} groupId 퀘스트 그룹 식별자
+         * @param {RenameClubQuestGroupRequestDto} renameClubQuestGroupRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        renameClubQuestGroup(groupId: string, renameClubQuestGroupRequestDto: RenameClubQuestGroupRequestDto, options?: any): AxiosPromise<void> {
+            return localVarFp.renameClubQuestGroup(groupId, renameClubQuestGroupRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -10345,6 +10425,19 @@ export class DefaultApi extends BaseAPI {
      */
     public notificationsPushSchedulesScheduleIdPut(scheduleId: string, adminUpdatePushNotificationScheduleRequestDTO: AdminUpdatePushNotificationScheduleRequestDTO, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).notificationsPushSchedulesScheduleIdPut(scheduleId, adminUpdatePushNotificationScheduleRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 퀘스트 그룹의 이름(퀘스트 이름 prefix)을 변경한다.
+     * @param {string} groupId 퀘스트 그룹 식별자
+     * @param {RenameClubQuestGroupRequestDto} renameClubQuestGroupRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public renameClubQuestGroup(groupId: string, renameClubQuestGroupRequestDto: RenameClubQuestGroupRequestDto, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).renameClubQuestGroup(groupId, renameClubQuestGroupRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

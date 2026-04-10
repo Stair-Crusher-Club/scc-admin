@@ -46,6 +46,13 @@ export const ManageGroupButton = styled(Button, {
   },
 })
 
+export const RenameButton = styled(Button, {
+  base: {
+    borderColor: "#FF9800",
+    color: "#FF9800",
+  },
+})
+
 export const ShareButton = styled(Button, {
   base: {
     borderColor: "#1D85FF",

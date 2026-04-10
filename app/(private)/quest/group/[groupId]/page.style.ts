@@ -1,9 +1,29 @@
 import { styled } from "@/styles/jsx"
 
+export const GroupHeader = styled("div", {
+  base: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    padding: "12px 16px",
+    borderBottom: "1px solid #e0e0e0",
+    backgroundColor: "#fff",
+  },
+})
+
+export const GroupName = styled("h2", {
+  base: {
+    fontSize: "18px",
+    fontWeight: 700,
+    color: "#333",
+    margin: 0,
+  },
+})
+
 export const Container = styled("div", {
   base: {
     display: "flex",
-    height: "calc(100vh - 60px)",
+    height: "calc(100vh - 105px)",
     width: "100%",
     position: "relative",
   },

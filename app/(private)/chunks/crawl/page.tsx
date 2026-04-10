@@ -3,6 +3,7 @@
 import clip from "polygon-clipping"
 import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
 
 import { LocationDTO } from "@/lib/generated-sources/openapi"
 
@@ -27,8 +28,10 @@ interface FormValues {
 }
 export default function CrawlPage() {
   const mode = useRef<InputMode>("POLYGON")
+  const mapRef = useRef<kakao.maps.Map>()
   const [status, setCrawlingStatus] = useState<CrawlingStatus>("WAITING")
   const [chunks, setChunks] = useState<Chunk[]>([])
+  const [searchKeyword, setSearchKeyword] = useState("")
   const timeout = useRef<number | null>(null)
   const form = useForm<FormValues>({ defaultValues: { points: [], circle: {} } })
   const crawling = useCrawling()
@@ -48,7 +51,23 @@ export default function CrawlPage() {
     }
   }
 
+  function handleSearch() {
+    if (!searchKeyword.trim() || !mapRef.current) return
+    const ps = new kakao.maps.services.Places()
+    ps.keywordSearch(searchKeyword, (result, searchStatus) => {
+      if (searchStatus === kakao.maps.services.Status.OK && result.length > 0) {
+        const place = result[0]
+        const latlng = new kakao.maps.LatLng(parseFloat(place.y), parseFloat(place.x))
+        mapRef.current!.panTo(latlng)
+        toast.info(`${place.place_name}(으)로 지도를 움직입니다`)
+      } else {
+        toast.warn("검색 결과가 없습니다")
+      }
+    })
+  }
+
   function initializeMap(map: kakao.maps.Map) {
+    mapRef.current = map
     kakao.maps.event.addListener(map, "mousedown", (e: kakao.maps.event.MouseEvent) => handleMouseDown(e))
     kakao.maps.event.addListener(map, "mouseup", (e: kakao.maps.event.MouseEvent) => handleMouseUp(e))
     kakao.maps.event.addListener(map, "click", (e: kakao.maps.event.MouseEvent) => handleClick(e))
@@ -212,6 +231,15 @@ export default function CrawlPage() {
               />
             ))}
         </Map>
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
+          <input
+            className="px-3 py-2 rounded-md shadow-md border bg-white text-sm w-64"
+            placeholder="장소 검색 (예: 강남역, 종로구)"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && !e.nativeEvent.isComposing && handleSearch()}
+          />
+        </div>
       </div>
     </Contents>
   )
