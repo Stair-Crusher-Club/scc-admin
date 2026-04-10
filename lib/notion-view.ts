@@ -180,5 +180,11 @@ function getTextValue(row: any, propName: string): string {
   if (prop.type === "rich_text") {
     return (prop.rich_text ?? []).map((t: any) => t.plain_text).join("")
   }
+  if (prop.type === "select") {
+    return prop.select?.name ?? ""
+  }
+  if (prop.type === "number") {
+    return String(prop.number ?? "")
+  }
   return ""
 }
