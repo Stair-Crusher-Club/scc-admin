@@ -239,9 +239,16 @@ export default function QuestGroupPage({ params }: PageProps) {
     )
   }
 
+  const questGroupName = quests.length > 0 ? getQuestGroupName(quests[0].name) : undefined
+
   return (
     <>
       <Contents>
+        {questGroupName && (
+          <S.GroupHeader>
+            <S.GroupName>{questGroupName}</S.GroupName>
+          </S.GroupHeader>
+        )}
         <S.Container>
           {/* 좌측 퀘스트 목록 */}
           <S.LeftPanel>

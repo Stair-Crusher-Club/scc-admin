@@ -3,15 +3,23 @@
 import { useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { toast } from "react-toastify"
 
-import { deleteQuest } from "@/lib/apis/api"
+import { deleteQuest, renameQuestGroup } from "@/lib/apis/api"
 import { ClubQuestSummaryDTO } from "@/lib/generated-sources/openapi"
 
 import { useClubQuestSummaries } from "@/(private)/quest/query"
 import { Contents } from "@/components/layout"
 import { PageActions } from "@/components/page-actions"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 import * as S from "./page.style"
 import { getQuestGroupName } from "./util"
@@ -21,6 +29,10 @@ export default function QuestList() {
   const { data, fetchNextPage, hasNextPage } = useClubQuestSummaries()
   const queryClient = useQueryClient()
   const quests = data?.pages.flatMap((p) => p.list) ?? []
+
+  const [renameTarget, setRenameTarget] = useState<{ groupId: string; currentName: string } | null>(null)
+  const [newName, setNewName] = useState("")
+  const [isRenaming, setIsRenaming] = useState(false)
 
   const regrouped = quests.reduce(
     (acc, q) => {
@@ -54,6 +66,26 @@ export default function QuestList() {
     toast.success(`퀘스트가 삭제되었습니다.`)
   }
 
+  function openRenameDialog(groupId: string, currentName: string) {
+    setRenameTarget({ groupId, currentName })
+    setNewName(currentName)
+  }
+
+  async function handleRename() {
+    if (!renameTarget || !newName.trim()) return
+    setIsRenaming(true)
+    try {
+      await renameQuestGroup({ groupId: renameTarget.groupId, questNamePrefix: newName.trim() })
+      queryClient.invalidateQueries({ queryKey: ["@clubQuestSummaries"] })
+      toast.success("퀘스트 이름이 변경되었습니다.")
+      setRenameTarget(null)
+    } catch {
+      toast.error("퀘스트 이름 변경에 실패했습니다.")
+    } finally {
+      setIsRenaming(false)
+    }
+  }
+
   return (
     <Contents.Normal>
       <PageActions>
@@ -66,9 +98,14 @@ export default function QuestList() {
               <S.CreatedAt></S.CreatedAt>
               {quests[0].groupId
                 ? (
-                  <S.ManageGroupButton onClick={() => router.push(`/quest/group/${encodeURIComponent(quests[0].groupId!)}`)}>
-                    그룹 관리
-                  </S.ManageGroupButton>
+                  <>
+                    <S.ManageGroupButton onClick={() => router.push(`/quest/group/${encodeURIComponent(quests[0].groupId!)}`)}>
+                      그룹 관리
+                    </S.ManageGroupButton>
+                    <S.RenameButton onClick={() => openRenameDialog(quests[0].groupId!, questGroupName)}>
+                      이름 변경
+                    </S.RenameButton>
+                  </>
                 )
                 : null
               }
@@ -87,6 +124,28 @@ export default function QuestList() {
           </S.QuestRow>
         ))}
       {hasNextPage && <S.LoadNextPageButton onClick={() => fetchNextPage()}>더 불러오기</S.LoadNextPageButton>}
+
+      <Dialog open={!!renameTarget} onOpenChange={(open) => !open && setRenameTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>퀘스트 이름 변경</DialogTitle>
+          </DialogHeader>
+          <input
+            className="w-full px-3 py-2 border rounded-md text-sm"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && !e.nativeEvent.isComposing && handleRename()}
+            placeholder="새 퀘스트 이름"
+            autoFocus
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRenameTarget(null)}>취소</Button>
+            <Button onClick={handleRename} disabled={isRenaming || !newName.trim()}>
+              {isRenaming ? "변경 중..." : "변경"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Contents.Normal>
   )
 }

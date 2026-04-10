@@ -224,6 +224,16 @@ export async function moveQuestTargetPlace({
   })
 }
 
+export async function renameQuestGroup({
+  groupId,
+  questNamePrefix,
+}: {
+  groupId: string
+  questNamePrefix: string
+}) {
+  return api.default.renameClubQuestGroup(groupId, { questNamePrefix })
+}
+
 export function useChallenges() {
   return useQuery({
     queryKey: ["@challenges"],
