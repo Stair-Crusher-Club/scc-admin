@@ -42,7 +42,7 @@ export default function QuestMarker({ building, buildingIndex, questId, markerSt
       image: new kakao.maps.MarkerImage(`/marker_sprite.png`, new kakao.maps.Size(24, 36), {
         offset: new kakao.maps.Point(12, 36),
         spriteOrigin: new kakao.maps.Point(24 * (buildingIconIndex % 10), 36 * Math.floor(buildingIconIndex / 10)),
-        spriteSize: new kakao.maps.Size(24 * 10, 36 * 4),
+        spriteSize: new kakao.maps.Size(24 * 10, 36 * 10),
       }),
     })
     const buildingMarker = building.places.every((p) => p.isConquered || p.isClosed || p.isNotAccessible)
