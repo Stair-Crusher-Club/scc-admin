@@ -5,12 +5,14 @@ import { useParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
 import { useQuest } from "@/lib/apis/api"
-import { ClubQuestTargetBuildingDTO} from "@/lib/generated-sources/openapi"
+import { ClubQuestTargetBuildingDTO } from "@/lib/generated-sources/openapi"
 
 import Map from "@/components/Map"
-import { Me, QuestMarker } from "@/components/Map/components"
+import { Me, QuestMarker, LocationButton } from "@/components/Map/components"
 import { Contents } from "@/components/layout"
 import { Button } from "@/components/ui/button"
+import useDeviceHeading from "@/hooks/useDeviceHeading"
+import useLocationTracking from "@/hooks/useLocationTracking"
 import { useModal } from "@/hooks/useModal"
 
 export default function QuestDetail() {
@@ -20,6 +22,14 @@ export default function QuestDetail() {
   const { openModal } = useModal()
   const queryClient = useQueryClient()
   const intialized = useRef(false)
+
+  const { heading, requestPermission } = useDeviceHeading()
+  const { trackingMode, position, toggleTracking, interruptTracking } = useLocationTracking({ map })
+
+  function handleLocationButtonClick() {
+    requestPermission()
+    toggleTracking()
+  }
 
   // 10초마다 퀘스트 진행 상황을 갱신합니다.
   useEffect(() => {
@@ -58,13 +68,20 @@ export default function QuestDetail() {
         <div className="relative w-full h-[calc(100vh-120px)]">
           <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
             {quest?.buildings.map((building, index) => (
-              <QuestMarker key={building.buildingId} building={building} questId={quest.id} buildingIndex={index} />
+              <QuestMarker
+                key={building.buildingId}
+                building={building}
+                questId={quest.id}
+                buildingIndex={index}
+                onTrackingInterrupt={interruptTracking}
+              />
             ))}
-            <Me />
+            <Me position={position} heading={heading} />
           </Map>
-          <Button onClick={openSummary} className="absolute z-10 bottom-4 right-4">
-            개요
-          </Button>
+          <div className="absolute z-10 bottom-4 right-4 flex flex-col gap-2">
+            <LocationButton trackingMode={trackingMode} onClick={handleLocationButtonClick} />
+            <Button onClick={openSummary}>개요</Button>
+          </div>
         </div>
       </Contents>
     </>
