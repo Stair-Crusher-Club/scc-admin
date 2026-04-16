@@ -14,9 +14,10 @@ export interface Props {
   buildingIndex: number
   questId: string
   markerStyle?: MarkerStyle
+  onTrackingInterrupt?: () => void
 }
 
-export default function QuestMarker({ building, buildingIndex, questId, markerStyle }: Props) {
+export default function QuestMarker({ building, buildingIndex, questId, markerStyle, onTrackingInterrupt }: Props) {
   const { map, mapElement } = useContext(MapContext)
   const { openModal, closeModal, closeAll } = useModal()
   const openedModal = useRef<string>()
@@ -62,6 +63,8 @@ export default function QuestMarker({ building, buildingIndex, questId, markerSt
 
   function onMarkerClick(building: ClubQuestTargetBuildingDTO) {
     if (!map) return
+
+    onTrackingInterrupt?.()
 
     // 이미 열린 모달이 있다면 강제로 닫습니다.
     closeAll()
