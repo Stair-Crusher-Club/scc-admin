@@ -22,26 +22,37 @@ export default function Me({ updateInterval = 1000, position: externalPosition, 
 
     if (hasHeading) {
       const container = document.createElement("div")
-      container.style.cssText = "position: relative; width: 60px; height: 60px; pointer-events: none;"
+      container.style.cssText = "position: relative; width: 80px; height: 80px; pointer-events: none;"
 
       const cone = document.createElement("div")
       cone.style.cssText = [
-        "position: absolute; width: 60px; height: 60px; top: 50%; left: 50%;",
+        "position: absolute; width: 80px; height: 80px; top: 50%; left: 50%;",
         "transform: translate(-50%, -50%);",
-        "background: conic-gradient(from -30deg, rgba(59, 130, 246, 0.3) 60deg, transparent 60deg);",
+        "background: conic-gradient(from -30deg, rgba(28, 100, 242, 0.35) 60deg, transparent 60deg);",
         "border-radius: 50%;",
         "display: none;",
       ].join(" ")
       container.appendChild(cone)
       coneRef.current = cone
 
+      // Accuracy ring (semi-transparent blue circle)
+      const ring = document.createElement("div")
+      ring.style.cssText = [
+        "position: absolute; top: 50%; left: 50%;",
+        "width: 36px; height: 36px;",
+        "background: rgba(28, 100, 242, 0.15);",
+        "border-radius: 50%;",
+        "transform: translate(-50%, -50%);",
+      ].join(" ")
+      container.appendChild(ring)
+
       const dot = document.createElement("div")
       dot.style.cssText = [
         "position: absolute; top: 50%; left: 50%;",
-        "width: 14px; height: 14px;",
-        "background: #3B82F6; border: 2.5px solid white; border-radius: 50%;",
+        "width: 18px; height: 18px;",
+        "background: #1C64F2; border: 3px solid white; border-radius: 50%;",
         "transform: translate(-50%, -50%);",
-        "box-shadow: 0 0 4px rgba(0,0,0,0.3);",
+        "box-shadow: 0 0 6px rgba(0,0,0,0.35);",
       ].join(" ")
       container.appendChild(dot)
 
