@@ -34,7 +34,7 @@ export default function Me({ updateInterval = 1000, position: externalPosition, 
       ].join(" ")
       arrow.innerHTML = [
         '<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">',
-        '  <polygon points="40,6 32,24 48,24" fill="#EF4444" stroke="white" stroke-width="1.5" />',
+        '  <polygon points="40,14 33,30 47,30" fill="#EF4444" stroke="white" stroke-width="1.5" />',
         "</svg>",
       ].join("")
       container.appendChild(arrow)
