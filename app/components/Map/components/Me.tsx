@@ -34,7 +34,7 @@ export default function Me({ updateInterval = 1000, position: externalPosition, 
       ].join(" ")
       arrow.innerHTML = [
         '<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">',
-        '  <polygon points="40,14 33,30 47,30" fill="#EF4444" stroke="white" stroke-width="1.5" />',
+        '  <polygon points="40,17 33,28 47,28" fill="#EF4444" />',
         "</svg>",
       ].join("")
       container.appendChild(arrow)
@@ -54,7 +54,7 @@ export default function Me({ updateInterval = 1000, position: externalPosition, 
       const dot = document.createElement("div")
       dot.style.cssText = [
         "position: absolute; top: 50%; left: 50%;",
-        "width: 18px; height: 18px;",
+        "width: 22px; height: 22px;",
         "background: #EF4444; border: 3px solid white; border-radius: 50%;",
         "transform: translate(-50%, -50%);",
         "box-shadow: 0 0 6px rgba(0,0,0,0.35);",
