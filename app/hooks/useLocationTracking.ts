@@ -13,6 +13,7 @@ export default function useLocationTracking({ map }: UseLocationTrackingProps) {
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null)
   const trackingModeRef = useRef<TrackingMode>("OFF")
   const positionRef = useRef<{ lat: number; lng: number } | null>(null)
+  const geolocationFailedRef = useRef(false)
 
   // Always watch position (for Me marker display)
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function useLocationTracking({ map }: UseLocationTrackingProps) {
 
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
+        geolocationFailedRef.current = false
         const newPos = { lat: pos.coords.latitude, lng: pos.coords.longitude }
         setPosition(newPos)
         positionRef.current = newPos
@@ -30,6 +32,9 @@ export default function useLocationTracking({ map }: UseLocationTrackingProps) {
         }
       },
       (error) => {
+        geolocationFailedRef.current = true
+        trackingModeRef.current = "OFF"
+        setTrackingMode("OFF")
         console.error("Geolocation error:", error)
       },
       { enableHighAccuracy: true, maximumAge: 1000 },
@@ -61,6 +66,7 @@ export default function useLocationTracking({ map }: UseLocationTrackingProps) {
   }, [map])
 
   const toggleTracking = useCallback(() => {
+    if (geolocationFailedRef.current) return
     const current = trackingModeRef.current
     switch (current) {
       case "OFF":

@@ -35,6 +35,7 @@ export default function useDeviceHeading() {
 
   // iOS 13+ requires explicit permission request from a user gesture
   const requestPermission = useCallback(async () => {
+    if (typeof window === "undefined" || typeof DeviceOrientationEvent === "undefined") return
     if (typeof (DeviceOrientationEvent as any).requestPermission !== "function") return
     try {
       await (DeviceOrientationEvent as any).requestPermission()

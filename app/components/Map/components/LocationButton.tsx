@@ -14,6 +14,8 @@ export default function LocationButton({ trackingMode, onClick }: Props) {
       variant="outline"
       size="icon"
       onClick={onClick}
+      aria-label={trackingMode === "TRACKING" ? "현재 위치 추적 끄기" : "현재 위치 추적 켜기"}
+      aria-pressed={trackingMode === "TRACKING"}
       className="rounded-full h-10 w-10 bg-white shadow-md border-gray-200"
     >
       <LocateFixed
