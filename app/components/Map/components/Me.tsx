@@ -12,7 +12,7 @@ export default function Me({ updateInterval = 1000, position: externalPosition, 
   const { map } = useContext(MapContext)
   const markerRef = useRef<kakao.maps.Marker | null>(null)
   const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null)
-  const coneRef = useRef<HTMLDivElement | null>(null)
+  const arrowRef = useRef<HTMLDivElement | null>(null)
   const hasExternalPosition = externalPosition !== undefined
   const hasHeading = heading !== undefined
 
@@ -24,16 +24,21 @@ export default function Me({ updateInterval = 1000, position: externalPosition, 
       const container = document.createElement("div")
       container.style.cssText = "position: relative; width: 80px; height: 80px; pointer-events: none;"
 
-      const cone = document.createElement("div")
-      cone.style.cssText = [
-        "position: absolute; width: 80px; height: 80px; top: 50%; left: 50%;",
+      // Heading arrow - SVG triangle, rotates around center (where dot is)
+      const arrow = document.createElement("div")
+      arrow.style.cssText = [
+        "position: absolute; top: 50%; left: 50%;",
+        "width: 80px; height: 80px;",
         "transform: translate(-50%, -50%);",
-        "background: conic-gradient(from -30deg, rgba(239, 68, 68, 0.35) 60deg, transparent 60deg);",
-        "border-radius: 50%;",
         "display: none;",
       ].join(" ")
-      container.appendChild(cone)
-      coneRef.current = cone
+      arrow.innerHTML = [
+        '<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">',
+        '  <polygon points="40,6 32,24 48,24" fill="#EF4444" stroke="white" stroke-width="1.5" />',
+        "</svg>",
+      ].join("")
+      container.appendChild(arrow)
+      arrowRef.current = arrow
 
       // Accuracy ring (semi-transparent red circle, matching me.png)
       const ring = document.createElement("div")
@@ -77,18 +82,18 @@ export default function Me({ updateInterval = 1000, position: externalPosition, 
       markerRef.current = null
       overlayRef.current?.setMap(null)
       overlayRef.current = null
-      coneRef.current = null
+      arrowRef.current = null
     }
   }, [map, hasHeading])
 
-  // Update heading cone rotation
+  // Update heading arrow rotation
   useEffect(() => {
-    if (!coneRef.current) return
+    if (!arrowRef.current) return
     if (heading != null) {
-      coneRef.current.style.display = ""
-      coneRef.current.style.transform = `translate(-50%, -50%) rotate(${heading}deg)`
+      arrowRef.current.style.display = ""
+      arrowRef.current.style.transform = `translate(-50%, -50%) rotate(${heading}deg)`
     } else {
-      coneRef.current.style.display = "none"
+      arrowRef.current.style.display = "none"
     }
   }, [heading])
 
