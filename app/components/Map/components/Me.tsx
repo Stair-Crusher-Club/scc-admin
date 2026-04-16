@@ -14,13 +14,13 @@ export default function Me({ updateInterval = 1000, position: externalPosition, 
   const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null)
   const coneRef = useRef<HTMLDivElement | null>(null)
   const hasExternalPosition = externalPosition !== undefined
-  const useHeadingMode = heading !== undefined
+  const hasHeading = heading !== undefined
 
   // Create display element: CustomOverlay (heading mode) or Marker (simple mode)
   useEffect(() => {
     if (!map) return
 
-    if (useHeadingMode) {
+    if (hasHeading) {
       const container = document.createElement("div")
       container.style.cssText = "position: relative; width: 60px; height: 60px; pointer-events: none;"
 
@@ -68,7 +68,7 @@ export default function Me({ updateInterval = 1000, position: externalPosition, 
       overlayRef.current = null
       coneRef.current = null
     }
-  }, [map, useHeadingMode])
+  }, [map, hasHeading])
 
   // Update heading cone rotation
   useEffect(() => {

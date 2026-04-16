@@ -61,16 +61,22 @@ export default function useLocationTracking({ map }: UseLocationTrackingProps) {
   }, [map])
 
   const toggleTracking = useCallback(() => {
-    if (trackingModeRef.current === "OFF") {
-      trackingModeRef.current = "TRACKING"
-      setTrackingMode("TRACKING")
-      // Immediately pan to current position
-      if (map && positionRef.current) {
-        map.panTo(new kakao.maps.LatLng(positionRef.current.lat, positionRef.current.lng))
-      }
-    } else {
-      trackingModeRef.current = "OFF"
-      setTrackingMode("OFF")
+    const current = trackingModeRef.current
+    switch (current) {
+      case "OFF":
+        trackingModeRef.current = "TRACKING"
+        setTrackingMode("TRACKING")
+        // Immediately pan to current position
+        if (map && positionRef.current) {
+          map.panTo(new kakao.maps.LatLng(positionRef.current.lat, positionRef.current.lng))
+        }
+        break
+      case "TRACKING":
+        trackingModeRef.current = "OFF"
+        setTrackingMode("OFF")
+        break
+      default:
+        current satisfies never
     }
   }, [map])
 
