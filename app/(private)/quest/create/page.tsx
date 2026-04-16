@@ -2,6 +2,7 @@
 
 import { Combobox, DateInput, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import { useQueryClient } from "@tanstack/react-query"
+import { isAxiosError } from "axios"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
@@ -169,14 +170,23 @@ export default function QuestCreate() {
       form.setError("name", { type: "required", message: "퀘스트 이름을 입력해주세요." })
       return
     }
-    await createQuest({
-      questNamePrefix: values.name,
-      purposeType: values.purposeType.value,
-      startAt: { value: values.startDate.getTime() },
-      endAt: { value: atEndOfDay(values.endDate).getTime() },
-      isAttendanceCheckEnabled: values.isAttendanceCheckEnabled,
-      dryRunResults: clusters,
-    })
+    try {
+      await createQuest({
+        questNamePrefix: values.name,
+        purposeType: values.purposeType.value,
+        startAt: { value: values.startDate.getTime() },
+        endAt: { value: atEndOfDay(values.endDate).getTime() },
+        isAttendanceCheckEnabled: values.isAttendanceCheckEnabled,
+        dryRunResults: clusters,
+      })
+    } catch (e: unknown) {
+      if (isAxiosError(e) && e.response?.data?.msg) {
+        toast.error(e.response.data.msg)
+      } else {
+        toast.error("퀘스트 생성에 실패했습니다.")
+      }
+      return
+    }
 
     toast.success("퀘스트가 생성되었습니다.")
     queryClient.invalidateQueries({ queryKey: ["@quests",], exact: true })
