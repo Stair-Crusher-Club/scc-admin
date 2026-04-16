@@ -12,9 +12,11 @@ import { ClubQuestTargetBuildingDTO } from "@/lib/generated-sources/openapi"
 import { storage } from "@/lib/storage"
 
 import Map from "@/components/Map"
-import { Me, QuestMarker } from "@/components/Map/components"
+import { Me, QuestMarker, LocationButton } from "@/components/Map/components"
 import { Contents } from "@/components/layout"
 import { PublicHeader } from "@/components/public-header"
+import useDeviceHeading from "@/hooks/useDeviceHeading"
+import useLocationTracking from "@/hooks/useLocationTracking"
 import { useModal } from "@/hooks/useModal"
 import QuestCompletionModal from "@/modals/QuestCompletion"
 
@@ -27,6 +29,15 @@ export default function QuestDetail() {
   const queryClient = useQueryClient()
   const [map, setMap] = useState<kakao.maps.Map>()
   const intialized = useRef(false)
+
+  const { heading, requestPermission } = useDeviceHeading()
+  const { trackingMode, position, toggleTracking, interruptTracking } = useLocationTracking({ map })
+
+  function handleLocationButtonClick() {
+    requestPermission()
+    toggleTracking()
+  }
+
   // 10초마다 퀘스트 진행 상황을 갱신합니다.
   useEffect(() => {
     const interval = setInterval(() => {
@@ -129,12 +140,23 @@ export default function QuestDetail() {
         </PublicHeader.ActionButtonWrapper>
       </PublicHeader>
       <Contents>
-        <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
-          {quest?.buildings.map((building, index) => (
-            <QuestMarker key={building.buildingId} building={building} questId={quest.id} buildingIndex={index} />
-          ))}
-          <Me />
-        </Map>
+        <div className="relative w-full h-full">
+          <Map id="map" initializeOptions={{ center: { lat: 37.566826, lng: 126.9786567 } }} onInit={setMap}>
+            {quest?.buildings.map((building, index) => (
+              <QuestMarker
+                key={building.buildingId}
+                building={building}
+                questId={quest.id}
+                buildingIndex={index}
+                onTrackingInterrupt={interruptTracking}
+              />
+            ))}
+            <Me position={position} heading={heading} />
+          </Map>
+          <div className="absolute z-10 bottom-4 right-4">
+            <LocationButton trackingMode={trackingMode} onClick={handleLocationButtonClick} />
+          </div>
+        </div>
       </Contents>
 
       <QuestCompletionModal
