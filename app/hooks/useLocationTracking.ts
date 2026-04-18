@@ -11,6 +11,7 @@ interface UseLocationTrackingProps {
 export default function useLocationTracking({ map }: UseLocationTrackingProps) {
   const [trackingMode, setTrackingMode] = useState<TrackingMode>("OFF")
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null)
+  const [watchRetryCount, setWatchRetryCount] = useState(0)
   const trackingModeRef = useRef<TrackingMode>("OFF")
   const positionRef = useRef<{ lat: number; lng: number } | null>(null)
   const geolocationFailedRef = useRef(false)
@@ -41,7 +42,7 @@ export default function useLocationTracking({ map }: UseLocationTrackingProps) {
     )
 
     return () => navigator.geolocation.clearWatch(watchId)
-  }, [map])
+  }, [map, watchRetryCount])
 
   // Listen for user interactions to exit tracking
   useEffect(() => {
@@ -66,10 +67,13 @@ export default function useLocationTracking({ map }: UseLocationTrackingProps) {
   }, [map])
 
   const toggleTracking = useCallback(() => {
-    if (geolocationFailedRef.current) return
     const current = trackingModeRef.current
     switch (current) {
       case "OFF":
+        // Retry watch if geolocation previously failed — browser may re-prompt.
+        if (geolocationFailedRef.current) {
+          setWatchRetryCount((c) => c + 1)
+        }
         trackingModeRef.current = "TRACKING"
         setTrackingMode("TRACKING")
         // Immediately pan to current position
