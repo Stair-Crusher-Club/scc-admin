@@ -19,6 +19,38 @@ export const CustomTitle = styled("div", {
   },
 })
 
+export const TitleRow = styled("div", {
+  base: {
+    display: "flex",
+    flexFlow: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+})
+
+export const NavButton = styled("button", {
+  base: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 32,
+    height: 32,
+    padding: 0,
+    backgroundColor: "transparent",
+    border: "none",
+    cursor: "pointer",
+    borderRadius: "50%",
+    color: "var(--leaf-grey-30)",
+    "&:hover": {
+      backgroundColor: "rgba(0, 0, 0, 0.05)",
+    },
+    "&:active": {
+      backgroundColor: "rgba(0, 0, 0, 0.1)",
+    },
+  },
+})
+
 export const ReloadButton = styled("button", {
   base: {
     position: "absolute",

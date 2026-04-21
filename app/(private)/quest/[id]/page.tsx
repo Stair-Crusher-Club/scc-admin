@@ -19,6 +19,7 @@ export default function QuestDetail() {
   const { id } = useParams<{ id: string }>()
   const { data: quest } = useQuest({ id })
   const [map, setMap] = useState<kakao.maps.Map>()
+  const [focusedBuildingId, setFocusedBuildingId] = useState<string>()
   const { openModal } = useModal()
   const queryClient = useQueryClient()
   const intialized = useRef(false)
@@ -74,6 +75,9 @@ export default function QuestDetail() {
                 questId={quest.id}
                 buildingIndex={index}
                 onTrackingInterrupt={interruptTracking}
+                buildings={quest.buildings}
+                focusedBuildingId={focusedBuildingId}
+                onFocusChange={setFocusedBuildingId}
               />
             ))}
             <Me position={position} heading={heading} />

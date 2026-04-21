@@ -19,13 +19,23 @@ import PlaceCard from "./PlaceCard"
 interface Props extends BasicModalProps {
   building: ClubQuestTargetBuildingDTO
   questId: string
+  buildings?: ClubQuestTargetBuildingDTO[]
+  onBuildingFocus?: (building: ClubQuestTargetBuildingDTO) => void
 }
 
 export const defaultOverlayOptions = { closeDelay: 200, dim: false }
-export default function BuildingDetailSheet({ building: initialData, questId, visible, close }: Props) {
+export default function BuildingDetailSheet({
+  building: initialData,
+  questId,
+  buildings,
+  onBuildingFocus,
+  visible,
+  close,
+}: Props) {
+  const [currentBuildingId, setCurrentBuildingId] = useState(initialData.buildingId)
   const [sortedPlaces, setSortedPlaces] = useState<ClubQuestTargetPlaceDTO[]>([])
-  const { data: building } = useQuestBuilding({ questId, buildingId: initialData.buildingId })
-  const [appState, setAppState] = useAtom(AppState)
+  const { data: building } = useQuestBuilding({ questId, buildingId: currentBuildingId })
+  const [, setAppState] = useAtom(AppState)
   const queryClient = useQueryClient()
   const [authenticated, setAuthenticated] = useState<boolean>()
   useEffect(() => {
@@ -69,7 +79,7 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
   // 활동 중 장소 순서가 바뀌는 것을 막습니다.
   useMemo(() => {
     setSortedPlaces(getSortedPlaces())
-  }, [initialData, building])
+  }, [currentBuildingId, building])
 
   // 다만 place가 삭제된 경우에만 장소를 다시 렌더링 해줍니다.
   useEffect(() => {
@@ -77,14 +87,40 @@ export default function BuildingDetailSheet({ building: initialData, questId, vi
     if (sortedPlaces.length !== newSortedPlaces.length) {
       setSortedPlaces(newSortedPlaces)
     }
-  }, [initialData, building])
+  }, [currentBuildingId, building])
+
+  const showNavButtons = !!buildings
+  function navigate(direction: -1 | 1) {
+    if (!buildings || buildings.length <= 1) return
+    const idx = buildings.findIndex((b) => b.buildingId === currentBuildingId)
+    if (idx === -1) return
+    const next = buildings[(idx + direction + buildings.length) % buildings.length]
+    setCurrentBuildingId(next.buildingId)
+    onBuildingFocus?.(next)
+  }
 
   if (!building) return null
 
   const conquered = building.places.filter(isConquered)
   const title = (
     <S.CustomTitle>
-      <h5>{building.name}</h5>
+      <S.TitleRow>
+        {showNavButtons && (
+          <S.NavButton type="button" aria-label="이전 건물" onClick={() => navigate(-1)}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.5 15 7.5 10l5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </S.NavButton>
+        )}
+        <h5>{building.name}</h5>
+        {showNavButtons && (
+          <S.NavButton type="button" aria-label="다음 건물" onClick={() => navigate(1)}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="m7.5 5 5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </S.NavButton>
+        )}
+      </S.TitleRow>
       <S.ReloadButton onClick={reloadQuest}>
         <Reload size={24} />
       </S.ReloadButton>
