@@ -28,6 +28,7 @@ export default function QuestDetail() {
   const { isHeaderHidden } = useAtomValue(AppState)
   const queryClient = useQueryClient()
   const [map, setMap] = useState<kakao.maps.Map>()
+  const [focusedBuildingId, setFocusedBuildingId] = useState<string>()
   const intialized = useRef(false)
 
   const { heading, requestPermission } = useDeviceHeading()
@@ -149,6 +150,9 @@ export default function QuestDetail() {
                 questId={quest.id}
                 buildingIndex={index}
                 onTrackingInterrupt={interruptTracking}
+                buildings={quest.buildings}
+                focusedBuildingId={focusedBuildingId}
+                onFocusChange={setFocusedBuildingId}
               />
             ))}
             <Me position={position} heading={heading} />

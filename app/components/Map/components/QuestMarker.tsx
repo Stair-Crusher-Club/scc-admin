@@ -15,91 +15,109 @@ export interface Props {
   questId: string
   markerStyle?: MarkerStyle
   onTrackingInterrupt?: () => void
+  buildings?: ClubQuestTargetBuildingDTO[]
+  focusedBuildingId?: string
+  onFocusChange?: (buildingId: string | undefined) => void
 }
 
-export default function QuestMarker({ building, buildingIndex, questId, markerStyle, onTrackingInterrupt }: Props) {
+const FOCUSED_SCALE = 1.5
+const FOCUSED_Z_INDEX = 999
+
+export default function QuestMarker({
+  building,
+  buildingIndex,
+  questId,
+  markerStyle,
+  onTrackingInterrupt,
+  buildings,
+  focusedBuildingId,
+  onFocusChange,
+}: Props) {
   const { map, mapElement } = useContext(MapContext)
-  const { openModal, closeModal, closeAll } = useModal()
+  const { openModal, closeAll } = useModal()
   const openedModal = useRef<string>()
   const isMobile = useMediaQuery({ maxWidth: 800 })
   const marker = useRef<kakao.maps.Marker>()
+
+  const isFocused = focusedBuildingId === building.buildingId
 
   useEffect(() => {
     if (!map) return
     if (!building) return
 
     const latlng = new kakao.maps.LatLng(building.location.lat, building.location.lng)
+    const scale = isFocused ? FOCUSED_SCALE : 1.0
 
-    const buildingIconIndex = building.name.match(/\d+번/) ? (parseInt(building.name.match(/(\d+)번/)![0]) - 1) : buildingIndex
+    const isAllConquered = building.places.every((p) => p.isConquered || p.isClosed || p.isNotAccessible)
 
-    const conqueredMarker = new kakao.maps.Marker({
-      position: latlng,
-      image: new kakao.maps.MarkerImage("/marker_conquered.png", new kakao.maps.Size(32, 32), {
-        offset: new kakao.maps.Point(8, 32),
-      }),
-    })
-    const notConqueredMarker = new kakao.maps.Marker({
-      position: latlng,
-      image: new kakao.maps.MarkerImage(`/marker_sprite.png`, new kakao.maps.Size(24, 36), {
-        offset: new kakao.maps.Point(12, 36),
-        spriteOrigin: new kakao.maps.Point(24 * (buildingIconIndex % 10), 36 * Math.floor(buildingIconIndex / 10)),
-        spriteSize: new kakao.maps.Size(24 * 10, 36 * 10),
-      }),
-    })
-    const buildingMarker = building.places.every((p) => p.isConquered || p.isClosed || p.isNotAccessible)
-      ? conqueredMarker
-      : notConqueredMarker
+    const image = isAllConquered
+      ? new kakao.maps.MarkerImage("/marker_conquered.png", new kakao.maps.Size(32 * scale, 32 * scale), {
+          offset: new kakao.maps.Point(8 * scale, 32 * scale),
+        })
+      : (() => {
+          const buildingIconIndex = building.name.match(/\d+번/)
+            ? parseInt(building.name.match(/(\d+)번/)![0]) - 1
+            : buildingIndex
+          return new kakao.maps.MarkerImage(`/marker_sprite.png`, new kakao.maps.Size(24 * scale, 36 * scale), {
+            offset: new kakao.maps.Point(12 * scale, 36 * scale),
+            spriteOrigin: new kakao.maps.Point(24 * scale * (buildingIconIndex % 10), 36 * scale * Math.floor(buildingIconIndex / 10)),
+            spriteSize: new kakao.maps.Size(24 * scale * 10, 36 * scale * 10),
+          })
+        })()
 
-    buildingMarker.setMap(map)
-    marker.current = buildingMarker
+    const m = new kakao.maps.Marker({ position: latlng, image })
+    m.setMap(map)
+    if (isFocused) m.setZIndex(FOCUSED_Z_INDEX)
+    marker.current = m
 
-    kakao.maps.event.addListener(marker.current, "click", () => onMarkerClick(building))
+    kakao.maps.event.addListener(m, "click", () => onMarkerClick(building))
 
-    // unmount 되면 map에서 circle을 제거.
     return () => {
-      marker.current?.setMap(null)
+      m.setMap(null)
     }
-  }, [map, building, markerStyle])
+  }, [map, building, buildingIndex, markerStyle, isFocused])
 
-  function onMarkerClick(building: ClubQuestTargetBuildingDTO) {
+  function onMarkerClick(target: ClubQuestTargetBuildingDTO) {
+    if (!map) return
+    onTrackingInterrupt?.()
+    openBuildingSheet(target)
+  }
+
+  function openBuildingSheet(target: ClubQuestTargetBuildingDTO) {
     if (!map) return
 
-    onTrackingInterrupt?.()
-
-    // 이미 열린 모달이 있다면 강제로 닫습니다.
     closeAll()
 
-    if (isMobile) {
-      // 지도 중앙에 마커를 위치시킵니다.
-      const focusPoint = getFocusedCenter(building)
-      map.panTo(focusPoint!)
+    onFocusChange?.(target.buildingId)
 
-      // 바텀시트를 엽니다.
-      openedModal.current = openModal({
-        type: "BuildingDetailSheetMobile",
-        props: { building, questId },
-        events: { onClose: () => onModalClose(building) },
-      })
-    } else {
-      // 지도 중앙에 마커를 위치시킵니다.
-      const focusPoint = getFocusedCenter(building)
-      map.panTo(focusPoint!)
+    const focusPoint = getFocusedCenter(target)
+    if (focusPoint) map.panTo(focusPoint)
 
-      // 우측에 시트를 엽니다.
-      openedModal.current = openModal({
-        type: "BuildingDetailSheetDesktop",
-        props: { building, questId },
-        events: { onClose: () => onModalClose(building) },
-      })
-    }
+    openedModal.current = openModal({
+      type: isMobile ? "BuildingDetailSheetMobile" : "BuildingDetailSheetDesktop",
+      props: {
+        building: target,
+        questId,
+        buildings,
+        onBuildingFocus: handleBuildingFocusChange,
+      },
+      events: { onClose: () => onModalClose(target) },
+    })
+  }
+
+  // 시트 내부에서 화살표로 건물을 바꿨을 때 부모 state + 카메라 동기화
+  function handleBuildingFocusChange(next: ClubQuestTargetBuildingDTO) {
+    if (!map) return
+    onFocusChange?.(next.buildingId)
+    const focusPoint = getFocusedCenter(next)
+    if (focusPoint) map.panTo(focusPoint)
   }
 
   function onModalClose(building: ClubQuestTargetBuildingDTO) {
-    // 모달이 닫히면 빌딩을 중앙으로 이동합니다
     const buildingCenter = new kakao.maps.LatLng(building.location.lat, building.location.lng)
     map?.panTo(buildingCenter)
-
     openedModal.current = undefined
+    onFocusChange?.(undefined)
   }
 
   /**
