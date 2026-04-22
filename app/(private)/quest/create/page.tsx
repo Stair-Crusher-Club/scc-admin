@@ -70,6 +70,7 @@ export default function QuestCreate() {
   const [showPreview, setShowPreview] = useState(false)
   const [searchKeyword, setSearchKeyword] = useState("")
   const [isPreviewLoading, setPreviewLoading] = useState(false)
+  const [isCreating, setCreating] = useState(false)
   const form = useForm<FormValues>({
     defaultValues: {
       purposeType: purposeTypeOptions[0],
@@ -165,11 +166,16 @@ export default function QuestCreate() {
   }
 
   async function onSubmit(values: FormValues) {
+    // 생성 중복 호출 방지: 이미 createQuest 요청이 진행 중이면 무시
+    if (isCreating) return
+
     // name 값은 프리뷰 시에는 필수가 아니지만 생성할 때는 필수이므로 별도 체크 필요
     if (!values.name) {
       form.setError("name", { type: "required", message: "퀘스트 이름을 입력해주세요." })
       return
     }
+
+    setCreating(true)
     try {
       await createQuest({
         questNamePrefix: values.name,
@@ -180,6 +186,7 @@ export default function QuestCreate() {
         dryRunResults: clusters,
       })
     } catch (e: unknown) {
+      setCreating(false)
       if (isAxiosError(e) && e.response?.data?.msg) {
         toast.error(e.response.data.msg)
       } else {
@@ -188,6 +195,8 @@ export default function QuestCreate() {
       return
     }
 
+    // 성공 시에는 router.push 이후 화면이 전환되므로 setCreating(false)는 생략.
+    // (상태 해제 → 버튼 활성화 → 사용자가 다시 누를 가능성을 차단)
     toast.success("퀘스트가 생성되었습니다.")
     queryClient.invalidateQueries({ queryKey: ["@quests",], exact: true })
     queryClient.invalidateQueries({ queryKey: ["@clubQuestSummaries",], exact: true })
@@ -227,6 +236,11 @@ export default function QuestCreate() {
           {isPreviewLoading && (
             <div className="absolute z-[100] inset-0 flex items-center justify-center bg-black/30 text-white">
               건물 정보를 불러오는 중입니다...
+            </div>
+          )}
+          {isCreating && (
+            <div className="absolute z-[100] inset-0 flex items-center justify-center bg-black/30 text-white">
+              퀘스트를 생성하는 중입니다...
             </div>
           )}
         </div>
@@ -341,8 +355,8 @@ export default function QuestCreate() {
               )}
               {showPreview && <TextInput name="name" label="퀘스트 이름" />}
               {showPreview && (
-                <Button type="submit" className="w-full">
-                  이대로 생성하기
+                <Button type="submit" className="w-full" disabled={isCreating}>
+                  {isCreating ? "생성 중..." : "이대로 생성하기"}
                 </Button>
               )}
             </div>
