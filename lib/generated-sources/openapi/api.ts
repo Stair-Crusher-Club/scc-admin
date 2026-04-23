@@ -47,6 +47,37 @@ export interface AccessibilityAllowedRegionDTO {
     'boundaryVertices': Array<LocationDTO>;
 }
 /**
+ * 구조화된 신고 교정 데이터
+ * @export
+ * @interface AccessibilityReportCorrectionDTO
+ */
+export interface AccessibilityReportCorrectionDTO {
+    /**
+     * 
+     * @type {AdminPlaceAccessibilityCorrectionDTO}
+     * @memberof AccessibilityReportCorrectionDTO
+     */
+    'placeAccessibilityCorrection'?: AdminPlaceAccessibilityCorrectionDTO;
+    /**
+     * 
+     * @type {AdminBuildingAccessibilityCorrectionDTO}
+     * @memberof AccessibilityReportCorrectionDTO
+     */
+    'buildingAccessibilityCorrection'?: AdminBuildingAccessibilityCorrectionDTO;
+    /**
+     * 유저 부연 설명
+     * @type {string}
+     * @memberof AccessibilityReportCorrectionDTO
+     */
+    'noteText'?: string;
+    /**
+     * 유저 첨부 사진
+     * @type {Array<string>}
+     * @memberof AccessibilityReportCorrectionDTO
+     */
+    'photoUrls'?: Array<string>;
+}
+/**
  * 
  * @export
  * @enum {string}
@@ -293,6 +324,24 @@ export interface AdminAccessibilityReportDetailDTO {
      * @memberof AdminAccessibilityReportDetailDTO
      */
     'buildingAccessibility'?: AdminBuildingAccessibilityDTO;
+    /**
+     * 구조화 신고 - 틀린 정보 항목
+     * @type {Array<InaccurateInfoCategoryDTO>}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'inaccurateCategories'?: Array<InaccurateInfoCategoryDTO>;
+    /**
+     * 
+     * @type {ClosedSubTypeDTO}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'closedSubType'?: ClosedSubTypeDTO;
+    /**
+     * 
+     * @type {AccessibilityReportCorrectionDTO}
+     * @memberof AdminAccessibilityReportDetailDTO
+     */
+    'correction'?: AccessibilityReportCorrectionDTO;
 }
 /**
  * 
@@ -458,6 +507,61 @@ export interface AdminBannerDTO {
      * @memberof AdminBannerDTO
      */
     'bannerType': HomeBannerTypeDTO;
+}
+/**
+ * 유저가 제안한 건물 접근성 교정값
+ * @export
+ * @interface AdminBuildingAccessibilityCorrectionDTO
+ */
+export interface AdminBuildingAccessibilityCorrectionDTO {
+    /**
+     * 
+     * @type {AdminStairInfoDTO}
+     * @memberof AdminBuildingAccessibilityCorrectionDTO
+     */
+    'entranceStairInfo'?: AdminStairInfoDTO;
+    /**
+     * 
+     * @type {AdminStairHeightLevel}
+     * @memberof AdminBuildingAccessibilityCorrectionDTO
+     */
+    'entranceStairHeightLevel'?: AdminStairHeightLevel;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminBuildingAccessibilityCorrectionDTO
+     */
+    'hasSlope'?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminBuildingAccessibilityCorrectionDTO
+     */
+    'hasElevator'?: boolean;
+    /**
+     * 
+     * @type {Array<AdminEntranceDoorType>}
+     * @memberof AdminBuildingAccessibilityCorrectionDTO
+     */
+    'entranceDoorTypes'?: Array<AdminEntranceDoorType>;
+    /**
+     * 
+     * @type {AdminStairInfoDTO}
+     * @memberof AdminBuildingAccessibilityCorrectionDTO
+     */
+    'elevatorStairInfo'?: AdminStairInfoDTO;
+    /**
+     * 
+     * @type {AdminStairHeightLevel}
+     * @memberof AdminBuildingAccessibilityCorrectionDTO
+     */
+    'elevatorStairHeightLevel'?: AdminStairHeightLevel;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminBuildingAccessibilityCorrectionDTO
+     */
+    'elevatorHasSlope'?: boolean;
 }
 /**
  * 
@@ -2111,6 +2215,43 @@ export interface AdminListPushNotificationSchedulesResponseDTO {
      * @memberof AdminListPushNotificationSchedulesResponseDTO
      */
     'cursor'?: string;
+}
+/**
+ * 유저가 제안한 장소 접근성 교정값
+ * @export
+ * @interface AdminPlaceAccessibilityCorrectionDTO
+ */
+export interface AdminPlaceAccessibilityCorrectionDTO {
+    /**
+     * 
+     * @type {AdminStairInfoDTO}
+     * @memberof AdminPlaceAccessibilityCorrectionDTO
+     */
+    'stairInfo'?: AdminStairInfoDTO;
+    /**
+     * 
+     * @type {AdminStairHeightLevel}
+     * @memberof AdminPlaceAccessibilityCorrectionDTO
+     */
+    'stairHeightLevel'?: AdminStairHeightLevel;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminPlaceAccessibilityCorrectionDTO
+     */
+    'hasSlope'?: boolean;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof AdminPlaceAccessibilityCorrectionDTO
+     */
+    'floors'?: Array<number>;
+    /**
+     * 
+     * @type {Array<AdminEntranceDoorType>}
+     * @memberof AdminPlaceAccessibilityCorrectionDTO
+     */
+    'entranceDoorTypes'?: Array<AdminEntranceDoorType>;
 }
 /**
  * 
@@ -3791,6 +3932,21 @@ export type ChallengeAggregationPeriodTypeEnum = typeof ChallengeAggregationPeri
 
 
 /**
+ * 폐업/이전 신고 시 세부 유형
+ * @export
+ * @enum {string}
+ */
+
+export const ClosedSubTypeDTO = {
+    PermanentlyClosed: 'PERMANENTLY_CLOSED',
+    ReplacedByOther: 'REPLACED_BY_OTHER',
+    Other: 'OTHER'
+} as const;
+
+export type ClosedSubTypeDTO = typeof ClosedSubTypeDTO[keyof typeof ClosedSubTypeDTO];
+
+
+/**
  * 퀘스트 생성 시뮬레이션 결과. 각 퀘스트마다 1개의 아이템이 반환된다.
  * @export
  * @interface ClubQuestCreateDryRunResultItemDTO
@@ -4040,6 +4196,18 @@ export interface ClubQuestTargetPlaceDTO {
      * @memberof ClubQuestTargetPlaceDTO
      */
     'isNotAccessible': boolean;
+    /**
+     * 점포가 위치한 층 표시용 문자열 원문. PlaceBusinessInfo.additionalInfo.floor 를 그대로 전달. 크롤링 미수집 또는 외부 소스에도 층 정보가 없으면 null.
+     * @type {string}
+     * @memberof ClubQuestTargetPlaceDTO
+     */
+    'floor'?: string;
+    /**
+     * 층 정규화 정수. 지상은 양수, 지하는 음수 (예: \"B1층\" → -1, \"3층\" → 3). 옥상/루프탑 등 정수로 환원 불가한 값 또는 크롤링 미수집 시 null. UI에서는 오름차순 정렬 키로 사용하고, null 은 유효 층 그룹 다음에 배치한다.
+     * @type {number}
+     * @memberof ClubQuestTargetPlaceDTO
+     */
+    'floorNum'?: number;
 }
 /**
  * 
@@ -4546,6 +4714,25 @@ export const HomeBannerTypeDTO = {
 } as const;
 
 export type HomeBannerTypeDTO = typeof HomeBannerTypeDTO[keyof typeof HomeBannerTypeDTO];
+
+
+/**
+ * 틀린 정보 신고 시 구체적으로 어떤 항목이 틀렸는지
+ * @export
+ * @enum {string}
+ */
+
+export const InaccurateInfoCategoryDTO = {
+    PlaceEntrance: 'PLACE_ENTRANCE',
+    Floor: 'FLOOR',
+    DoorType: 'DOOR_TYPE',
+    Elevator: 'ELEVATOR',
+    AccessLevel: 'ACCESS_LEVEL',
+    Photo: 'PHOTO',
+    Other: 'OTHER'
+} as const;
+
+export type InaccurateInfoCategoryDTO = typeof InaccurateInfoCategoryDTO[keyof typeof InaccurateInfoCategoryDTO];
 
 
 /**
