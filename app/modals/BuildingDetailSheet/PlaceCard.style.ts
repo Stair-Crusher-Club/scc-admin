@@ -108,3 +108,13 @@ export const Link = styled("a", {
     cursor: "pointer",
   },
 })
+
+export const FloorInline = styled("span", {
+  base: {
+    fontSize: "13px",
+    color: "var(--leaf-grey-70)",
+    marginLeft: "4px",
+    whiteSpace: "nowrap",
+    flexShrink: 0,
+  },
+})

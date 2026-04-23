@@ -14,6 +14,14 @@ import naverMapIcon from "../../../public/naver_map.jpg"
 import stairCrusherIcon from "../../../public/scc_button.png"
 import * as S from "./PlaceCard.style"
 
+function formatFloorLabel(place: ClubQuestTargetPlaceDTO): string {
+  if (place.floorNum != null) {
+    return place.floorNum < 0 ? `지하${-place.floorNum}층` : `${place.floorNum}층`
+  }
+  if (place.floor) return place.floor
+  return "층 없음"
+}
+
 interface Props {
   place: ClubQuestTargetPlaceDTO
   questId: string
@@ -98,6 +106,7 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
         </S.Badges>
         <S.PlaceName>
           <span>{place.name}</span>
+          <S.FloorInline>({formatFloorLabel(place)})</S.FloorInline>
           <S.Button onClick={openInApp}>
             <Image src={stairCrusherIcon} alt="계단뿌셔클럽" style={{ width: 24, height: 24 }} />
           </S.Button>
