@@ -101,7 +101,7 @@ export default function useLocationTracking({ map }: UseLocationTrackingProps) {
       },
       (error) => {
         if (error.code === error.PERMISSION_DENIED) {
-          toast.error("위치 권한이 거부되었습니다. 브라우저 설정에서 권한을 허용한 뒤 다시 시도해주세요.")
+          toast.error("위치 권한이 거부되었어요. 페이지를 새로고침한 뒤 다시 허용해주세요.")
         } else {
           toast.error("위치를 가져올 수 없습니다. 잠시 후 다시 시도해주세요.")
         }
