@@ -18,12 +18,11 @@ export function PublicHeader({ title, hidden, children }: Props) {
   return (
     <header
       className={cn(
-        "fixed z-10 top-0 flex items-center justify-between w-full h-12 px-4 bg-background border-b transition-transform duration-300",
+        "fixed z-10 top-0 flex items-center w-full h-12 px-4 bg-background border-b transition-transform duration-300",
         appState.isHeaderHidden || hidden ? "-translate-y-full" : "translate-y-0"
       )}
     >
-      <h2 className="text-lg font-bold leading-tight">{title}</h2>
-      <div className="flex-1" />
+      <h2 className="flex-1 min-w-0 text-lg font-bold leading-tight">{title}</h2>
       {children}
     </header>
   )

@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { toast } from "react-toastify"
 
 export type TrackingMode = "OFF" | "TRACKING"
 
@@ -8,43 +9,57 @@ interface UseLocationTrackingProps {
   map: kakao.maps.Map | undefined
 }
 
+const GEO_OPTIONS: PositionOptions = { enableHighAccuracy: true, maximumAge: 1000 }
+
 export default function useLocationTracking({ map }: UseLocationTrackingProps) {
   const [trackingMode, setTrackingMode] = useState<TrackingMode>("OFF")
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null)
-  const [watchRetryCount, setWatchRetryCount] = useState(0)
   const trackingModeRef = useRef<TrackingMode>("OFF")
-  const positionRef = useRef<{ lat: number; lng: number } | null>(null)
-  const geolocationFailedRef = useRef(false)
+  const watchIdRef = useRef<number | null>(null)
+  const mapRef = useRef<kakao.maps.Map | undefined>(map)
 
-  // Always watch position (for Me marker display)
   useEffect(() => {
-    if (!map) return
-    if (!navigator.geolocation) return
+    mapRef.current = map
+  }, [map])
 
-    const watchId = navigator.geolocation.watchPosition(
+  const clearWatch = useCallback(() => {
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current)
+      watchIdRef.current = null
+    }
+  }, [])
+
+  const startWatch = useCallback(() => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) return
+    clearWatch()
+
+    watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
-        geolocationFailedRef.current = false
         const newPos = { lat: pos.coords.latitude, lng: pos.coords.longitude }
         setPosition(newPos)
-        positionRef.current = newPos
-
-        if (trackingModeRef.current === "TRACKING") {
-          map.panTo(new kakao.maps.LatLng(newPos.lat, newPos.lng))
+        if (trackingModeRef.current === "TRACKING" && mapRef.current) {
+          mapRef.current.panTo(new kakao.maps.LatLng(newPos.lat, newPos.lng))
         }
       },
       (error) => {
-        geolocationFailedRef.current = true
+        if (error.code === error.PERMISSION_DENIED) {
+          clearWatch()
+        }
         trackingModeRef.current = "OFF"
         setTrackingMode("OFF")
-        console.error("Geolocation error:", error)
       },
-      { enableHighAccuracy: true, maximumAge: 1000 },
+      GEO_OPTIONS,
     )
+  }, [clearWatch])
 
-    return () => navigator.geolocation.clearWatch(watchId)
-  }, [map, watchRetryCount])
+  // Silent attempt on mount so Me marker appears when permission is already granted.
+  useEffect(() => {
+    if (!map) return
+    startWatch()
+    return () => clearWatch()
+  }, [map, startWatch, clearWatch])
 
-  // Listen for user interactions to exit tracking
+  // Exit tracking when user interacts with the map.
   useEffect(() => {
     if (!map) return
 
@@ -66,29 +81,49 @@ export default function useLocationTracking({ map }: UseLocationTrackingProps) {
     }
   }, [map])
 
-  const toggleTracking = useCallback(() => {
-    const current = trackingModeRef.current
-    switch (current) {
-      case "OFF":
-        // Retry watch if geolocation previously failed — browser may re-prompt.
-        if (geolocationFailedRef.current) {
-          setWatchRetryCount((c) => c + 1)
+  // Must be invoked synchronously inside a user gesture handler so the browser
+  // treats the geolocation request as user-initiated and has a chance to re-prompt.
+  const requestLocation = useCallback(() => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      toast.error("이 브라우저는 위치 기능을 지원하지 않습니다.")
+      return
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const newPos = { lat: pos.coords.latitude, lng: pos.coords.longitude }
+        setPosition(newPos)
+        if (mapRef.current) {
+          mapRef.current.panTo(new kakao.maps.LatLng(newPos.lat, newPos.lng))
         }
         trackingModeRef.current = "TRACKING"
         setTrackingMode("TRACKING")
-        // Immediately pan to current position
-        if (map && positionRef.current) {
-          map.panTo(new kakao.maps.LatLng(positionRef.current.lat, positionRef.current.lng))
+        if (watchIdRef.current === null) startWatch()
+      },
+      (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+          toast.error("위치 권한이 거부되었습니다. 브라우저 설정에서 권한을 허용한 뒤 다시 시도해주세요.")
+        } else {
+          toast.error("위치를 가져올 수 없습니다. 잠시 후 다시 시도해주세요.")
         }
-        break
+      },
+      GEO_OPTIONS,
+    )
+  }, [startWatch])
+
+  const toggleTracking = useCallback(() => {
+    const current = trackingModeRef.current
+    switch (current) {
       case "TRACKING":
         trackingModeRef.current = "OFF"
         setTrackingMode("OFF")
         break
+      case "OFF":
+        requestLocation()
+        break
       default:
         current satisfies never
     }
-  }, [map])
+  }, [requestLocation])
 
   const interruptTracking = useCallback(() => {
     trackingModeRef.current = "OFF"

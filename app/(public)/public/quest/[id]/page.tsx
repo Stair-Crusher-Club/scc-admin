@@ -14,6 +14,7 @@ import { storage } from "@/lib/storage"
 import Map from "@/components/Map"
 import { Me, QuestMarker, LocationButton } from "@/components/Map/components"
 import { Contents } from "@/components/layout"
+import { MarqueeText } from "@/components/marquee-text"
 import { PublicHeader } from "@/components/public-header"
 import useDeviceHeading from "@/hooks/useDeviceHeading"
 import useLocationTracking from "@/hooks/useLocationTracking"
@@ -120,13 +121,12 @@ export default function QuestDetail() {
       <PublicHeader
         title={
           quest ? (
-            <>
-              {quest?.name}
-              <br />
-              <small>
+            <div className="flex flex-col min-w-0">
+              <MarqueeText text={quest.name} />
+              <small className="text-xs text-muted-foreground">
                 {buildingCount}개 건물 / {placeCount}개 장소
               </small>
-            </>
+            </div>
           ) : (
             ""
           )

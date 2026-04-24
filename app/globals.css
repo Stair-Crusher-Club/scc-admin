@@ -126,3 +126,24 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  70% {
+    transform: translateX(var(--marquee-shift, 0));
+  }
+  90% {
+    transform: translateX(var(--marquee-shift, 0));
+  }
+  91% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.animate-marquee-scroll {
+  animation: marquee-scroll var(--marquee-duration, 8s) linear infinite;
+}
