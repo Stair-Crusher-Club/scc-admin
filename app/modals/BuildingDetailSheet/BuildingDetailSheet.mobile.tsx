@@ -71,9 +71,16 @@ export default function BuildingDetailSheet({
 
   function getSortedPlaces() {
     if (!building) return []
-    const conquered = building.places.filter(isConquered).toSorted((a, b) => a.name.localeCompare(b.name))
-    const notConquered = building.places.filter((p) => !isConquered(p)).toSorted((a, b) => a.name.localeCompare(b.name))
-    return [...notConquered, ...conquered].map((p) => building.places.find((b) => b.placeId === p.placeId) || p)
+    const FLOOR_UNKNOWN = Number.POSITIVE_INFINITY
+    return [...building.places].sort((a, b) => {
+      const af = a.floorNum ?? FLOOR_UNKNOWN
+      const bf = b.floorNum ?? FLOOR_UNKNOWN
+      if (af !== bf) return af - bf
+      const ac = isConquered(a) ? 1 : 0
+      const bc = isConquered(b) ? 1 : 0
+      if (ac !== bc) return ac - bc
+      return a.name.localeCompare(b.name)
+    })
   }
 
   // 활동 중 장소 순서가 바뀌는 것을 막습니다.
