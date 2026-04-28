@@ -71,7 +71,7 @@ export default function BuildingDetailSheet({
 
   function getSortedPlaces() {
     if (!building) return []
-    const FLOOR_UNKNOWN = Number.POSITIVE_INFINITY
+    const FLOOR_UNKNOWN = Number.NEGATIVE_INFINITY
     return [...building.places].sort((a, b) => {
       const af = a.floorNum ?? FLOOR_UNKNOWN
       const bf = b.floorNum ?? FLOOR_UNKNOWN
