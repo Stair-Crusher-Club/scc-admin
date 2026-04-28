@@ -15,7 +15,7 @@ import stairCrusherIcon from "../../../public/scc_button.png"
 import * as S from "./PlaceCard.style"
 
 function formatFloorLabel(place: ClubQuestTargetPlaceDTO): string {
-  if (place.floorNum != null) {
+  if (place.floorNum != null && place.floorNum !== 0) {
     return place.floorNum < 0 ? `지하${-place.floorNum}층` : `${place.floorNum}층`
   }
   if (place.floor) return place.floor
