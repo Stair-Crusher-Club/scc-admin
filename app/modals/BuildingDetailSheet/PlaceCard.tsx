@@ -19,7 +19,7 @@ function formatFloorLabel(place: ClubQuestTargetPlaceDTO): string {
     return place.floorNum < 0 ? `지하${-place.floorNum}층` : `${place.floorNum}층`
   }
   if (place.floor) return place.floor
-  return "층 없음"
+  return "층 모름"
 }
 
 interface Props {
