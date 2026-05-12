@@ -17,6 +17,7 @@ export interface FormField {
   customDisplayName?: string    // Display name (built-in override or custom required)
   options: string[] | null      // Multiple choice options, null = free text
   optionsText: string          // UI input value (comma-separated)
+  isRequired: boolean          // 필수 입력 여부 (false면 선택 입력)
 }
 
 export interface BuiltinFieldOption {

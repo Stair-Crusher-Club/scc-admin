@@ -11,6 +11,7 @@ interface B2bFormSchemaPanelProps {
   onUpdateField: (fieldId: string, updates: Partial<FormField>) => void
   onUpdateOptionsText: (fieldId: string, text: string) => void
   onToggleOptions: (fieldId: string, enabled: boolean) => void
+  onToggleRequired: (fieldId: string, isRequired: boolean) => void
   onAddCustomField: () => void
   onRemoveField: (fieldId: string) => void
   disabled?: boolean
@@ -23,6 +24,7 @@ export default function B2bFormSchemaPanel({
   onUpdateField,
   onUpdateOptionsText,
   onToggleOptions,
+  onToggleRequired,
   onAddCustomField,
   onRemoveField,
   disabled = false,
@@ -74,6 +76,7 @@ export default function B2bFormSchemaPanel({
                 onUpdateField={onUpdateField}
                 onUpdateOptionsText={onUpdateOptionsText}
                 onToggleOptions={onToggleOptions}
+                onToggleRequired={onToggleRequired}
                 disabled={disabled}
               />
             )
@@ -109,6 +112,7 @@ export default function B2bFormSchemaPanel({
               onRemove={onRemoveField}
               onUpdateOptionsText={onUpdateOptionsText}
               onToggleOptions={onToggleOptions}
+              onToggleRequired={onToggleRequired}
               disabled={disabled}
             />
           ))}

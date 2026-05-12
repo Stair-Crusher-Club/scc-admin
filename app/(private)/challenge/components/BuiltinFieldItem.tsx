@@ -1,6 +1,7 @@
 import { AdminChallengeB2bFormSchemaAvailableFieldNameEnumDTO } from "@/lib/generated-sources/openapi"
 import { css } from "@/styles/css"
 import OptionsControl from "./OptionsControl"
+import RequiredControl from "./RequiredControl"
 import { FormField, BuiltinFieldOption } from "./B2bFormTypes"
 
 interface BuiltinFieldItemProps {
@@ -11,6 +12,7 @@ interface BuiltinFieldItemProps {
   onUpdateField: (fieldId: string, updates: Partial<FormField>) => void
   onUpdateOptionsText: (fieldId: string, text: string) => void
   onToggleOptions: (fieldId: string, enabled: boolean) => void
+  onToggleRequired: (fieldId: string, isRequired: boolean) => void
   disabled?: boolean
 }
 
@@ -22,6 +24,7 @@ export default function BuiltinFieldItem({
   onUpdateField,
   onUpdateOptionsText,
   onToggleOptions,
+  onToggleRequired,
   disabled = false,
 }: BuiltinFieldItemProps) {
   return (
@@ -103,6 +106,13 @@ export default function BuiltinFieldItem({
               })}
             />
           </div>
+
+          {/* Required Control */}
+          <RequiredControl
+            field={field}
+            onToggle={onToggleRequired}
+            disabled={disabled}
+          />
 
           {/* Options Control */}
           <OptionsControl

@@ -1,5 +1,6 @@
 import { css } from "@/styles/css"
 import OptionsControl from "./OptionsControl"
+import RequiredControl from "./RequiredControl"
 import { FormField } from "./B2bFormTypes"
 
 interface CustomFieldItemProps {
@@ -9,6 +10,7 @@ interface CustomFieldItemProps {
   onRemove: (fieldId: string) => void
   onUpdateOptionsText: (fieldId: string, text: string) => void
   onToggleOptions: (fieldId: string, enabled: boolean) => void
+  onToggleRequired: (fieldId: string, isRequired: boolean) => void
   disabled?: boolean
 }
 
@@ -19,6 +21,7 @@ export default function CustomFieldItem({
   onRemove,
   onUpdateOptionsText,
   onToggleOptions,
+  onToggleRequired,
   disabled = false,
 }: CustomFieldItemProps) {
   return (
@@ -149,6 +152,13 @@ export default function CustomFieldItem({
             })}
           />
         </div>
+
+        {/* Required Control */}
+        <RequiredControl
+          field={field}
+          onToggle={onToggleRequired}
+          disabled={disabled}
+        />
 
         {/* Options Control */}
         <OptionsControl

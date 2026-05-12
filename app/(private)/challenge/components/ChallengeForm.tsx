@@ -127,9 +127,10 @@ function dtoToField(dto: AdminChallengeB2bFormSchemaAvailableFieldDTO): FormFiel
       customDisplayName: dto.customDisplayName || undefined,
       options: dto.options || null,
       optionsText: (dto.options || []).join(', '),
+      isRequired: dto.isRequired ?? true,
     }
   }
-  
+
   // V2 custom question (name === null, must have key and customDisplayName)
   return {
     id: generateId(),
@@ -138,6 +139,7 @@ function dtoToField(dto: AdminChallengeB2bFormSchemaAvailableFieldDTO): FormFiel
     customDisplayName: dto.customDisplayName || '',
     options: dto.options || null,
     optionsText: (dto.options || []).join(', '),
+    isRequired: dto.isRequired ?? true,
   }
 }
 
@@ -151,6 +153,7 @@ function fieldToDTO(field: FormField): AdminChallengeB2bFormSchemaAvailableField
       key: null,
       customDisplayName: field.customDisplayName || null,
       options: field.options || undefined,
+      isRequired: field.isRequired,
     }
   } else {
     // Custom field - omit name instead of setting to null
@@ -158,6 +161,7 @@ function fieldToDTO(field: FormField): AdminChallengeB2bFormSchemaAvailableField
       key: field.customKey!,
       customDisplayName: field.customDisplayName!,
       options: field.options || undefined,
+      isRequired: field.isRequired,
     }
   }
 }
@@ -212,6 +216,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
         customDisplayName: undefined,
         options: null,
         optionsText: '',
+        isRequired: true,
       }
       const newFields = [...formFields, newField]
       setFormFields(newFields)
@@ -260,6 +265,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
       customDisplayName: '',
       options: null,
       optionsText: '',
+      isRequired: true,
     }
     
     const newFields = [...formFields, newField]
@@ -284,6 +290,17 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
       field.id === fieldId
         ? { ...field, options: enabled ? [] : null, optionsText: enabled ? field.optionsText : '' }
         : field
+    )
+    setFormFields(newFields)
+    syncFormFieldsToSchema(newFields)
+  }
+
+  /**
+   * V2: Toggle required for a field
+   */
+  const handleToggleRequired = (fieldId: string, isRequired: boolean) => {
+    const newFields = formFields.map(field =>
+      field.id === fieldId ? { ...field, isRequired } : field
     )
     setFormFields(newFields)
     syncFormFieldsToSchema(newFields)
@@ -627,6 +644,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
               onUpdateField={handleUpdateField}
               onUpdateOptionsText={handleUpdateOptionsText}
               onToggleOptions={handleToggleOptions}
+              onToggleRequired={handleToggleRequired}
               onAddCustomField={handleAddCustomField}
               onRemoveField={handleRemoveField}
               disabled={isEditableFieldDisabled}
