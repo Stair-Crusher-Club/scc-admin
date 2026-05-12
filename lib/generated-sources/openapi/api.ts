@@ -934,6 +934,12 @@ export interface AdminChallengeB2bFormSchemaAvailableFieldDTO {
      * @memberof AdminChallengeB2bFormSchemaAvailableFieldDTO
      */
     'options'?: Array<string> | null;
+    /**
+     * 필수 입력 여부 (null이면 true로 처리; 기존 필드 backward-compat)
+     * @type {boolean}
+     * @memberof AdminChallengeB2bFormSchemaAvailableFieldDTO
+     */
+    'isRequired'?: boolean | null;
 }
 /**
  * 
