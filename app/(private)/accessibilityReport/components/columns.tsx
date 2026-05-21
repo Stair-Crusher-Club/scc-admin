@@ -47,7 +47,11 @@ export function getColumns({
       accessorKey: "targetType",
       header: "신고 유형",
       cell: ({ row }) => (
-        <div className="text-sm">{targetTypeLabels[row.original.targetType] ?? row.original.targetType}</div>
+        <div className="text-sm">
+          {row.original.targetType
+            ? (targetTypeLabels[row.original.targetType] ?? row.original.targetType)
+            : "장소 자체"}
+        </div>
       ),
     },
     {

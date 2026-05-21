@@ -222,7 +222,11 @@ export default function AccessibilityReportDetail({ reportId, visible, close }: 
               <div className="text-muted-foreground">주소</div>
               <div>{detail.placeAddress ?? "-"}</div>
               <div className="text-muted-foreground">신고 유형</div>
-              <div>{targetTypeLabels[detail.targetType] ?? detail.targetType}</div>
+              <div>
+                {detail.targetType
+                  ? (targetTypeLabels[detail.targetType] ?? detail.targetType)
+                  : "장소 자체"}
+              </div>
               <div className="text-muted-foreground">신고 사유</div>
               <div>{reasonLabels[detail.reason] ?? detail.reason}</div>
               <div className="text-muted-foreground">상세 내용</div>
