@@ -245,13 +245,13 @@ export interface AdminAccessibilityReportDetailDTO {
      * @type {string}
      * @memberof AdminAccessibilityReportDetailDTO
      */
-    'targetId': string;
+    'targetId'?: string;
     /**
      * 
      * @type {ReportTargetTypeDTO}
      * @memberof AdminAccessibilityReportDetailDTO
      */
-    'targetType': ReportTargetTypeDTO;
+    'targetType'?: ReportTargetTypeDTO;
     /**
      * 
      * @type {AccessibilityReportReasonDTO}
@@ -360,7 +360,7 @@ export interface AdminAccessibilityReportListItemDTO {
      * @type {ReportTargetTypeDTO}
      * @memberof AdminAccessibilityReportListItemDTO
      */
-    'targetType': ReportTargetTypeDTO;
+    'targetType'?: ReportTargetTypeDTO;
     /**
      * 
      * @type {AccessibilityReportReasonDTO}
@@ -1639,6 +1639,12 @@ export interface AdminCreatePlaceListRequestDto {
      */
     'iconColor'?: string | null;
     /**
+     * 
+     * @type {AdminPlaceListAccessControlDto}
+     * @memberof AdminCreatePlaceListRequestDto
+     */
+    'accessControl'?: AdminPlaceListAccessControlDto;
+    /**
      * 리스트에 포함할 장소 ID 목록
      * @type {Array<string>}
      * @memberof AdminCreatePlaceListRequestDto
@@ -2522,6 +2528,21 @@ export interface AdminPlaceCategoryCacheDto {
     'updatedAt': EpochMillisTimestamp;
 }
 /**
+ * 저장 리스트 접근 제어. Google Drive 파일 공유 모델을 모방한다. - PRIVATE: 본인만 접근 가능 (어드민에서 임의로 PRIVATE 리스트를 생성하지는 않으나, 호환을 위해 enum에 포함) - PUBLIC: 모든 사용자에게 공개 - LINK_ONLY: 튜토리얼 메인 미션을 모두 완료한 사용자에게만 노출 
+ * @export
+ * @enum {string}
+ */
+
+export const AdminPlaceListAccessControlDto = {
+    Private: 'PRIVATE',
+    Public: 'PUBLIC',
+    LinkOnly: 'LINK_ONLY'
+} as const;
+
+export type AdminPlaceListAccessControlDto = typeof AdminPlaceListAccessControlDto[keyof typeof AdminPlaceListAccessControlDto];
+
+
+/**
  * 저장 리스트 상세 정보 (장소 목록 포함)
  * @export
  * @interface AdminPlaceListDetailDto
@@ -2557,6 +2578,12 @@ export interface AdminPlaceListDetailDto {
      * @memberof AdminPlaceListDetailDto
      */
     'iconColor'?: string | null;
+    /**
+     * 
+     * @type {AdminPlaceListAccessControlDto}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'accessControl': AdminPlaceListAccessControlDto;
     /**
      * 
      * @type {Array<AdminPlaceListPlaceDto>}
@@ -2618,6 +2645,12 @@ export interface AdminPlaceListDto {
      * @memberof AdminPlaceListDto
      */
     'placeCount': number;
+    /**
+     * 
+     * @type {AdminPlaceListAccessControlDto}
+     * @memberof AdminPlaceListDto
+     */
+    'accessControl': AdminPlaceListAccessControlDto;
     /**
      * 
      * @type {EpochMillisTimestamp}
@@ -3523,6 +3556,12 @@ export interface AdminUpdatePlaceListRequestDto {
      * @memberof AdminUpdatePlaceListRequestDto
      */
     'iconColor'?: string | null;
+    /**
+     * 
+     * @type {AdminPlaceListAccessControlDto}
+     * @memberof AdminUpdatePlaceListRequestDto
+     */
+    'accessControl'?: AdminPlaceListAccessControlDto;
     /**
      * 리스트에 포함할 장소 ID 목록 (기존 매핑을 대체)
      * @type {Array<string>}
