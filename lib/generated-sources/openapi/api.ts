@@ -245,13 +245,13 @@ export interface AdminAccessibilityReportDetailDTO {
      * @type {string}
      * @memberof AdminAccessibilityReportDetailDTO
      */
-    'targetId': string;
+    'targetId'?: string;
     /**
      * 
      * @type {ReportTargetTypeDTO}
      * @memberof AdminAccessibilityReportDetailDTO
      */
-    'targetType': ReportTargetTypeDTO;
+    'targetType'?: ReportTargetTypeDTO;
     /**
      * 
      * @type {AccessibilityReportReasonDTO}
@@ -360,7 +360,7 @@ export interface AdminAccessibilityReportListItemDTO {
      * @type {ReportTargetTypeDTO}
      * @memberof AdminAccessibilityReportListItemDTO
      */
-    'targetType': ReportTargetTypeDTO;
+    'targetType'?: ReportTargetTypeDTO;
     /**
      * 
      * @type {AccessibilityReportReasonDTO}
