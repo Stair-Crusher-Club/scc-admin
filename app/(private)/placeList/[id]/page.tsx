@@ -4,7 +4,11 @@ import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
-import { AdminPlaceListPlaceDto, AdminSearchedPlaceDto } from "@/lib/generated-sources/openapi"
+import {
+  AdminPlaceListAccessControlDto,
+  AdminPlaceListPlaceDto,
+  AdminSearchedPlaceDto,
+} from "@/lib/generated-sources/openapi"
 import {
   usePlaceListDetail,
   useUpdatePlaceList,
@@ -14,6 +18,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Contents } from "@/components/layout"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ACCESS_CONTROL_LABELS, ACCESS_CONTROL_OPTIONS } from "../components/accessControl"
 import { PlaceSearchPanel } from "../components/PlaceSearchPanel"
 import { SortablePlaceList } from "../components/SortablePlaceList"
 
@@ -29,6 +35,9 @@ export default function PlaceListDetailPage() {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [iconColor, setIconColor] = useState("#FFC01E")
+  const [accessControl, setAccessControl] = useState<AdminPlaceListAccessControlDto>(
+    AdminPlaceListAccessControlDto.Public,
+  )
   const [places, setPlaces] = useState<AdminPlaceListPlaceDto[]>([])
 
   useEffect(() => {
@@ -36,6 +45,7 @@ export default function PlaceListDetailPage() {
       setName(placeList.name)
       setDescription(placeList.description ?? "")
       setIconColor(placeList.iconColor ?? "#FFC01E")
+      setAccessControl(placeList.accessControl)
       setPlaces(placeList.places)
     }
   }, [placeList])
@@ -48,6 +58,7 @@ export default function PlaceListDetailPage() {
           name,
           description: description || null,
           iconColor: iconColor || null,
+          accessControl,
           placeIds: places.map((p) => p.placeId),
         },
       })
@@ -143,6 +154,25 @@ export default function PlaceListDetailPage() {
                   placeholder="#FFC01E"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">공개 설정</label>
+              <Select
+                value={accessControl}
+                onValueChange={(value) => setAccessControl(value as AdminPlaceListAccessControlDto)}
+              >
+                <SelectTrigger className="w-64">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ACCESS_CONTROL_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {ACCESS_CONTROL_LABELS[option]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
           </CardContent>

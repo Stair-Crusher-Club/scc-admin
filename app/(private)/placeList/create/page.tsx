@@ -4,12 +4,14 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "react-toastify"
 
-import { AdminSearchedPlaceDto } from "@/lib/generated-sources/openapi"
+import { AdminPlaceListAccessControlDto, AdminSearchedPlaceDto } from "@/lib/generated-sources/openapi"
 import { useCreatePlaceList } from "@/lib/apis/placeList"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Contents } from "@/components/layout"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ACCESS_CONTROL_LABELS, ACCESS_CONTROL_OPTIONS } from "../components/accessControl"
 import { PlaceSearchPanel } from "../components/PlaceSearchPanel"
 import { SortablePlaceList } from "../components/SortablePlaceList"
 
@@ -20,6 +22,9 @@ export default function PlaceListCreatePage() {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [iconColor, setIconColor] = useState("#FFC01E")
+  const [accessControl, setAccessControl] = useState<AdminPlaceListAccessControlDto>(
+    AdminPlaceListAccessControlDto.Public,
+  )
   const [places, setPlaces] = useState<AdminSearchedPlaceDto[]>([])
 
   const handleCreate = async () => {
@@ -28,6 +33,7 @@ export default function PlaceListCreatePage() {
         name,
         description: description || null,
         iconColor: iconColor || null,
+        accessControl,
         placeIds: places.map((p) => p.placeId),
       })
       toast.success("리스트가 생성되었습니다.")
@@ -95,6 +101,25 @@ export default function PlaceListCreatePage() {
                   placeholder="#FFC01E"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">공개 설정</label>
+              <Select
+                value={accessControl}
+                onValueChange={(value) => setAccessControl(value as AdminPlaceListAccessControlDto)}
+              >
+                <SelectTrigger className="w-64">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ACCESS_CONTROL_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {ACCESS_CONTROL_LABELS[option]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
           </CardContent>
