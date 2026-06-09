@@ -23,7 +23,7 @@ import {
 import {
   AccessibilityApi,
   AccessibilityReportApi,
-  AdminToiletAccessibilityApi,
+  AdminToiletApi,
   BannerApi,
   BbucleRoadApi,
   ChallengeApi,
@@ -66,7 +66,7 @@ const accessibilityReportApi = new AccessibilityReportApi(config)
 const experimentApi = new ExperimentApi(config)
 const placeAccessibilitySuggestionApi = new PlaceAccessibilitySuggestionApi(config)
 const placeSpecialAccessibilityApi = new PlaceSpecialAccessibilityApi(config)
-const toiletAccessibilityApi = new AdminToiletAccessibilityApi(config)
+const toiletApi = new AdminToiletApi(config)
 
 export const api: {
   default: DefaultApi
@@ -83,7 +83,7 @@ export const api: {
   placeList: PlaceListApi
   placeAccessibilitySuggestion: PlaceAccessibilitySuggestionApi
   placeSpecialAccessibility: PlaceSpecialAccessibilityApi
-  toiletAccessibility: AdminToiletAccessibilityApi
+  toilet: AdminToiletApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
@@ -99,7 +99,7 @@ export const api: {
   placeList: placeListApi,
   placeAccessibilitySuggestion: placeAccessibilitySuggestionApi,
   placeSpecialAccessibility: placeSpecialAccessibilityApi,
-  toiletAccessibility: toiletAccessibilityApi,
+  toilet: toiletApi,
 }
 
 export function useQuest({ id }: { id: string }) {
@@ -689,23 +689,18 @@ export function deletePlaceCategoryCache({ id }: { id: string }) {
   return placeCategoryCacheApi.deletePlaceCategoryCache(id)
 }
 
-import type { ToiletAccessibilitySourceTypeDto } from "@/lib/generated-sources/openapi"
-
-export function useToiletAccessibilities({
-  sourceType,
+export function useToilets({
   isSearchable,
   limit = 20,
 }: {
-  sourceType?: ToiletAccessibilitySourceTypeDto
   isSearchable?: boolean
   limit?: number
 } = {}) {
   return useInfiniteQuery({
-    queryKey: ["@toiletAccessibilities", sourceType ?? null, isSearchable ?? null, limit],
+    queryKey: ["@toilets", isSearchable ?? null, limit],
     queryFn: ({ pageParam }) =>
-      toiletAccessibilityApi
-        .adminSearchToiletAccessibilities({
-          sourceType,
+      toiletApi
+        .adminSearchToilets({
           isSearchable,
           nextPageToken: (pageParam as string | undefined) ?? undefined,
           limit,
@@ -716,6 +711,6 @@ export function useToiletAccessibilities({
   })
 }
 
-export function setToiletAccessibilitySearchable({ id, isSearchable }: { id: string; isSearchable: boolean }) {
-  return toiletAccessibilityApi.setToiletAccessibilitySearchable(id, { isSearchable })
+export function setToiletSearchable({ id, isSearchable }: { id: string; isSearchable: boolean }) {
+  return toiletApi.setToiletSearchable(id, { isSearchable })
 }

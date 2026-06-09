@@ -3038,50 +3038,44 @@ export interface AdminSearchPlacesByKeywordResponseDto {
 /**
  * 
  * @export
- * @interface AdminSearchToiletAccessibilitiesRequestDto
+ * @interface AdminSearchToiletsRequestDto
  */
-export interface AdminSearchToiletAccessibilitiesRequestDto {
-    /**
-     * 
-     * @type {ToiletAccessibilitySourceTypeDto}
-     * @memberof AdminSearchToiletAccessibilitiesRequestDto
-     */
-    'sourceType'?: ToiletAccessibilitySourceTypeDto;
+export interface AdminSearchToiletsRequestDto {
     /**
      * 검색 노출 여부 필터. null이면 전체 조회
      * @type {boolean}
-     * @memberof AdminSearchToiletAccessibilitiesRequestDto
+     * @memberof AdminSearchToiletsRequestDto
      */
     'isSearchable'?: boolean | null;
     /**
      * 
      * @type {string}
-     * @memberof AdminSearchToiletAccessibilitiesRequestDto
+     * @memberof AdminSearchToiletsRequestDto
      */
     'nextPageToken'?: string | null;
     /**
      * 
      * @type {number}
-     * @memberof AdminSearchToiletAccessibilitiesRequestDto
+     * @memberof AdminSearchToiletsRequestDto
      */
     'limit'?: number;
 }
 /**
  * 
  * @export
- * @interface AdminSearchToiletAccessibilitiesResponseDto
+ * @interface AdminSearchToiletsResponseDto
  */
-export interface AdminSearchToiletAccessibilitiesResponseDto {
+export interface AdminSearchToiletsResponseDto {
     /**
      * 
-     * @type {Array<AdminToiletAccessibilityDto>}
-     * @memberof AdminSearchToiletAccessibilitiesResponseDto
+     * @type {Array<AdminToiletDto>}
+     * @memberof AdminSearchToiletsResponseDto
      */
-    'items': Array<AdminToiletAccessibilityDto>;
+    'items': Array<AdminToiletDto>;
     /**
      * 
      * @type {string}
-     * @memberof AdminSearchToiletAccessibilitiesResponseDto
+     * @memberof AdminSearchToiletsResponseDto
      */
     'nextPageToken'?: string | null;
 }
@@ -3273,66 +3267,54 @@ export interface AdminSubBuildingDTO {
 /**
  * 
  * @export
- * @interface AdminToiletAccessibilityDto
+ * @interface AdminToiletDto
  */
-export interface AdminToiletAccessibilityDto {
+export interface AdminToiletDto {
     /**
      * 
      * @type {string}
-     * @memberof AdminToiletAccessibilityDto
+     * @memberof AdminToiletDto
      */
     'id': string;
     /**
      * 
-     * @type {ToiletAccessibilitySourceTypeDto}
-     * @memberof AdminToiletAccessibilityDto
-     */
-    'sourceType': ToiletAccessibilitySourceTypeDto;
-    /**
-     * 
      * @type {string}
-     * @memberof AdminToiletAccessibilityDto
+     * @memberof AdminToiletDto
      */
     'name': string;
     /**
      * 
      * @type {string}
-     * @memberof AdminToiletAccessibilityDto
+     * @memberof AdminToiletDto
      */
     'address'?: string | null;
     /**
      * 검색 노출 여부
      * @type {boolean}
-     * @memberof AdminToiletAccessibilityDto
+     * @memberof AdminToiletDto
      */
     'isSearchable': boolean;
     /**
-     * 이미지 보유 여부
+     * 공공데이터(ExternalAccessibility) 소스 병합 여부
      * @type {boolean}
-     * @memberof AdminToiletAccessibilityDto
+     * @memberof AdminToiletDto
      */
-    'hasImage': boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof AdminToiletAccessibilityDto
-     */
-    'thumbnailUrl'?: string | null;
+    'hasExternalSource': boolean;
     /**
      * 
      * @type {EpochMillisTimestamp}
-     * @memberof AdminToiletAccessibilityDto
+     * @memberof AdminToiletDto
      */
     'createdAt': EpochMillisTimestamp;
     /**
-     * 
-     * @type {AdminToiletReviewDetailDto}
-     * @memberof AdminToiletAccessibilityDto
+     * 이 Toilet에 병합된 유저 리뷰들 (큐레이션 판단용). 없으면 빈 배열
+     * @type {Array<AdminToiletReviewDetailDto>}
+     * @memberof AdminToiletDto
      */
-    'toiletReviewDetail'?: AdminToiletReviewDetailDto;
+    'toiletReviewDetails': Array<AdminToiletReviewDetailDto>;
 }
 /**
- * USER_TOILET_REVIEW 소스의 원본 ToiletReview 상세 정보
+ * Toilet에 병합된 유저 리뷰(ToiletReview)의 상세 정보
  * @export
  * @interface AdminToiletReviewDetailDto
  */
@@ -5259,13 +5241,13 @@ export interface RunAccessibilityImagePipelineRequestItemsInner {
 /**
  * 
  * @export
- * @interface SetToiletAccessibilitySearchableRequestDto
+ * @interface SetToiletSearchableRequestDto
  */
-export interface SetToiletAccessibilitySearchableRequestDto {
+export interface SetToiletSearchableRequestDto {
     /**
      * 검색 노출 여부. true로 설정하면 즉시 검색에 노출, false로 설정하면 즉시 제외
      * @type {boolean}
-     * @memberof SetToiletAccessibilitySearchableRequestDto
+     * @memberof SetToiletSearchableRequestDto
      */
     'isSearchable': boolean;
 }
@@ -5295,20 +5277,6 @@ export const SuggestionStatusDto = {
 } as const;
 
 export type SuggestionStatusDto = typeof SuggestionStatusDto[keyof typeof SuggestionStatusDto];
-
-
-/**
- * 화장실 접근성 데이터 소스 타입
- * @export
- * @enum {string}
- */
-
-export const ToiletAccessibilitySourceTypeDto = {
-    UserToiletReview: 'USER_TOILET_REVIEW',
-    ExternalAccessibility: 'EXTERNAL_ACCESSIBILITY'
-} as const;
-
-export type ToiletAccessibilitySourceTypeDto = typeof ToiletAccessibilitySourceTypeDto[keyof typeof ToiletAccessibilitySourceTypeDto];
 
 
 /**
@@ -6626,22 +6594,22 @@ export class AccessibilityReportApi extends BaseAPI {
 
 
 /**
- * AdminToiletAccessibilityApi - axios parameter creator
+ * AdminToiletApi - axios parameter creator
  * @export
  */
-export const AdminToiletAccessibilityApiAxiosParamCreator = function (configuration?: Configuration) {
+export const AdminToiletApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * sourceType, isSearchable 필터로 ToiletAccessibility 목록을 페이지네이션 조회한다. USER + isSearchable=false 목록을 내려 운영자가 사진/comment/위치유형을 보고 검색 대상 여부를 판단한다. 
-         * @summary 통합 화장실 접근성 목록을 조회한다. (큐레이션 큐 조회용)
-         * @param {AdminSearchToiletAccessibilitiesRequestDto} adminSearchToiletAccessibilitiesRequestDto 
+         * isSearchable 필터로 Toilet 목록을 페이지네이션 조회한다. isSearchable=false 목록을 내려 운영자가 병합된 유저 리뷰의 사진/comment/위치유형을 보고 검색 대상 여부를 판단한다. 
+         * @summary 화장실 목록을 조회한다. (큐레이션 큐 조회용)
+         * @param {AdminSearchToiletsRequestDto} adminSearchToiletsRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminSearchToiletAccessibilities: async (adminSearchToiletAccessibilitiesRequestDto: AdminSearchToiletAccessibilitiesRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'adminSearchToiletAccessibilitiesRequestDto' is not null or undefined
-            assertParamExists('adminSearchToiletAccessibilities', 'adminSearchToiletAccessibilitiesRequestDto', adminSearchToiletAccessibilitiesRequestDto)
-            const localVarPath = `/toilet-accessibilities/search`;
+        adminSearchToilets: async (adminSearchToiletsRequestDto: AdminSearchToiletsRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminSearchToiletsRequestDto' is not null or undefined
+            assertParamExists('adminSearchToilets', 'adminSearchToiletsRequestDto', adminSearchToiletsRequestDto)
+            const localVarPath = `/toilets/search`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6664,7 +6632,7 @@ export const AdminToiletAccessibilityApiAxiosParamCreator = function (configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(adminSearchToiletAccessibilitiesRequestDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(adminSearchToiletsRequestDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -6673,18 +6641,18 @@ export const AdminToiletAccessibilityApiAxiosParamCreator = function (configurat
         },
         /**
          * isSearchable=true 로 설정하면 즉시 검색에 노출되고, false 로 설정하면 즉시 제외된다. 
-         * @summary 화장실 접근성 검색 대상 여부를 설정한다.
+         * @summary 화장실 검색 대상 여부를 설정한다.
          * @param {string} id 
-         * @param {SetToiletAccessibilitySearchableRequestDto} setToiletAccessibilitySearchableRequestDto 
+         * @param {SetToiletSearchableRequestDto} setToiletSearchableRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setToiletAccessibilitySearchable: async (id: string, setToiletAccessibilitySearchableRequestDto: SetToiletAccessibilitySearchableRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        setToiletSearchable: async (id: string, setToiletSearchableRequestDto: SetToiletSearchableRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('setToiletAccessibilitySearchable', 'id', id)
-            // verify required parameter 'setToiletAccessibilitySearchableRequestDto' is not null or undefined
-            assertParamExists('setToiletAccessibilitySearchable', 'setToiletAccessibilitySearchableRequestDto', setToiletAccessibilitySearchableRequestDto)
-            const localVarPath = `/toilet-accessibilities/{id}/set-searchable`
+            assertParamExists('setToiletSearchable', 'id', id)
+            // verify required parameter 'setToiletSearchableRequestDto' is not null or undefined
+            assertParamExists('setToiletSearchable', 'setToiletSearchableRequestDto', setToiletSearchableRequestDto)
+            const localVarPath = `/toilets/{id}/set-searchable`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6708,7 +6676,7 @@ export const AdminToiletAccessibilityApiAxiosParamCreator = function (configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(setToiletAccessibilitySearchableRequestDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(setToiletSearchableRequestDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -6719,99 +6687,99 @@ export const AdminToiletAccessibilityApiAxiosParamCreator = function (configurat
 };
 
 /**
- * AdminToiletAccessibilityApi - functional programming interface
+ * AdminToiletApi - functional programming interface
  * @export
  */
-export const AdminToiletAccessibilityApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = AdminToiletAccessibilityApiAxiosParamCreator(configuration)
+export const AdminToiletApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AdminToiletApiAxiosParamCreator(configuration)
     return {
         /**
-         * sourceType, isSearchable 필터로 ToiletAccessibility 목록을 페이지네이션 조회한다. USER + isSearchable=false 목록을 내려 운영자가 사진/comment/위치유형을 보고 검색 대상 여부를 판단한다. 
-         * @summary 통합 화장실 접근성 목록을 조회한다. (큐레이션 큐 조회용)
-         * @param {AdminSearchToiletAccessibilitiesRequestDto} adminSearchToiletAccessibilitiesRequestDto 
+         * isSearchable 필터로 Toilet 목록을 페이지네이션 조회한다. isSearchable=false 목록을 내려 운영자가 병합된 유저 리뷰의 사진/comment/위치유형을 보고 검색 대상 여부를 판단한다. 
+         * @summary 화장실 목록을 조회한다. (큐레이션 큐 조회용)
+         * @param {AdminSearchToiletsRequestDto} adminSearchToiletsRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async adminSearchToiletAccessibilities(adminSearchToiletAccessibilitiesRequestDto: AdminSearchToiletAccessibilitiesRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSearchToiletAccessibilitiesResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.adminSearchToiletAccessibilities(adminSearchToiletAccessibilitiesRequestDto, options);
+        async adminSearchToilets(adminSearchToiletsRequestDto: AdminSearchToiletsRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSearchToiletsResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminSearchToilets(adminSearchToiletsRequestDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * isSearchable=true 로 설정하면 즉시 검색에 노출되고, false 로 설정하면 즉시 제외된다. 
-         * @summary 화장실 접근성 검색 대상 여부를 설정한다.
+         * @summary 화장실 검색 대상 여부를 설정한다.
          * @param {string} id 
-         * @param {SetToiletAccessibilitySearchableRequestDto} setToiletAccessibilitySearchableRequestDto 
+         * @param {SetToiletSearchableRequestDto} setToiletSearchableRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setToiletAccessibilitySearchable(id: string, setToiletAccessibilitySearchableRequestDto: SetToiletAccessibilitySearchableRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.setToiletAccessibilitySearchable(id, setToiletAccessibilitySearchableRequestDto, options);
+        async setToiletSearchable(id: string, setToiletSearchableRequestDto: SetToiletSearchableRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setToiletSearchable(id, setToiletSearchableRequestDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
 };
 
 /**
- * AdminToiletAccessibilityApi - factory interface
+ * AdminToiletApi - factory interface
  * @export
  */
-export const AdminToiletAccessibilityApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = AdminToiletAccessibilityApiFp(configuration)
+export const AdminToiletApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AdminToiletApiFp(configuration)
     return {
         /**
-         * sourceType, isSearchable 필터로 ToiletAccessibility 목록을 페이지네이션 조회한다. USER + isSearchable=false 목록을 내려 운영자가 사진/comment/위치유형을 보고 검색 대상 여부를 판단한다. 
-         * @summary 통합 화장실 접근성 목록을 조회한다. (큐레이션 큐 조회용)
-         * @param {AdminSearchToiletAccessibilitiesRequestDto} adminSearchToiletAccessibilitiesRequestDto 
+         * isSearchable 필터로 Toilet 목록을 페이지네이션 조회한다. isSearchable=false 목록을 내려 운영자가 병합된 유저 리뷰의 사진/comment/위치유형을 보고 검색 대상 여부를 판단한다. 
+         * @summary 화장실 목록을 조회한다. (큐레이션 큐 조회용)
+         * @param {AdminSearchToiletsRequestDto} adminSearchToiletsRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminSearchToiletAccessibilities(adminSearchToiletAccessibilitiesRequestDto: AdminSearchToiletAccessibilitiesRequestDto, options?: any): AxiosPromise<AdminSearchToiletAccessibilitiesResponseDto> {
-            return localVarFp.adminSearchToiletAccessibilities(adminSearchToiletAccessibilitiesRequestDto, options).then((request) => request(axios, basePath));
+        adminSearchToilets(adminSearchToiletsRequestDto: AdminSearchToiletsRequestDto, options?: any): AxiosPromise<AdminSearchToiletsResponseDto> {
+            return localVarFp.adminSearchToilets(adminSearchToiletsRequestDto, options).then((request) => request(axios, basePath));
         },
         /**
          * isSearchable=true 로 설정하면 즉시 검색에 노출되고, false 로 설정하면 즉시 제외된다. 
-         * @summary 화장실 접근성 검색 대상 여부를 설정한다.
+         * @summary 화장실 검색 대상 여부를 설정한다.
          * @param {string} id 
-         * @param {SetToiletAccessibilitySearchableRequestDto} setToiletAccessibilitySearchableRequestDto 
+         * @param {SetToiletSearchableRequestDto} setToiletSearchableRequestDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setToiletAccessibilitySearchable(id: string, setToiletAccessibilitySearchableRequestDto: SetToiletAccessibilitySearchableRequestDto, options?: any): AxiosPromise<void> {
-            return localVarFp.setToiletAccessibilitySearchable(id, setToiletAccessibilitySearchableRequestDto, options).then((request) => request(axios, basePath));
+        setToiletSearchable(id: string, setToiletSearchableRequestDto: SetToiletSearchableRequestDto, options?: any): AxiosPromise<void> {
+            return localVarFp.setToiletSearchable(id, setToiletSearchableRequestDto, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * AdminToiletAccessibilityApi - object-oriented interface
+ * AdminToiletApi - object-oriented interface
  * @export
- * @class AdminToiletAccessibilityApi
+ * @class AdminToiletApi
  * @extends {BaseAPI}
  */
-export class AdminToiletAccessibilityApi extends BaseAPI {
+export class AdminToiletApi extends BaseAPI {
     /**
-     * sourceType, isSearchable 필터로 ToiletAccessibility 목록을 페이지네이션 조회한다. USER + isSearchable=false 목록을 내려 운영자가 사진/comment/위치유형을 보고 검색 대상 여부를 판단한다. 
-     * @summary 통합 화장실 접근성 목록을 조회한다. (큐레이션 큐 조회용)
-     * @param {AdminSearchToiletAccessibilitiesRequestDto} adminSearchToiletAccessibilitiesRequestDto 
+     * isSearchable 필터로 Toilet 목록을 페이지네이션 조회한다. isSearchable=false 목록을 내려 운영자가 병합된 유저 리뷰의 사진/comment/위치유형을 보고 검색 대상 여부를 판단한다. 
+     * @summary 화장실 목록을 조회한다. (큐레이션 큐 조회용)
+     * @param {AdminSearchToiletsRequestDto} adminSearchToiletsRequestDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof AdminToiletAccessibilityApi
+     * @memberof AdminToiletApi
      */
-    public adminSearchToiletAccessibilities(adminSearchToiletAccessibilitiesRequestDto: AdminSearchToiletAccessibilitiesRequestDto, options?: AxiosRequestConfig) {
-        return AdminToiletAccessibilityApiFp(this.configuration).adminSearchToiletAccessibilities(adminSearchToiletAccessibilitiesRequestDto, options).then((request) => request(this.axios, this.basePath));
+    public adminSearchToilets(adminSearchToiletsRequestDto: AdminSearchToiletsRequestDto, options?: AxiosRequestConfig) {
+        return AdminToiletApiFp(this.configuration).adminSearchToilets(adminSearchToiletsRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * isSearchable=true 로 설정하면 즉시 검색에 노출되고, false 로 설정하면 즉시 제외된다. 
-     * @summary 화장실 접근성 검색 대상 여부를 설정한다.
+     * @summary 화장실 검색 대상 여부를 설정한다.
      * @param {string} id 
-     * @param {SetToiletAccessibilitySearchableRequestDto} setToiletAccessibilitySearchableRequestDto 
+     * @param {SetToiletSearchableRequestDto} setToiletSearchableRequestDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof AdminToiletAccessibilityApi
+     * @memberof AdminToiletApi
      */
-    public setToiletAccessibilitySearchable(id: string, setToiletAccessibilitySearchableRequestDto: SetToiletAccessibilitySearchableRequestDto, options?: AxiosRequestConfig) {
-        return AdminToiletAccessibilityApiFp(this.configuration).setToiletAccessibilitySearchable(id, setToiletAccessibilitySearchableRequestDto, options).then((request) => request(this.axios, this.basePath));
+    public setToiletSearchable(id: string, setToiletSearchableRequestDto: SetToiletSearchableRequestDto, options?: AxiosRequestConfig) {
+        return AdminToiletApiFp(this.configuration).setToiletSearchable(id, setToiletSearchableRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
