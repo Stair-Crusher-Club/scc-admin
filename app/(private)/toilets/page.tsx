@@ -6,7 +6,11 @@ import { CheckCircle2, EyeOff, ImageOff, RotateCcw } from "lucide-react"
 import { useState } from "react"
 
 import { setToiletSearchable, useToilets } from "@/lib/apis/api"
-import { AdminToiletDto, AdminToiletReviewDetailDto } from "@/lib/generated-sources/openapi"
+import {
+  AdminToiletAccessibilityDetailsDto,
+  AdminToiletAccessibilityDto,
+  AdminToiletDto,
+} from "@/lib/generated-sources/openapi"
 
 import { Contents } from "@/components/layout"
 import { Badge } from "@/components/ui/badge"
@@ -23,10 +27,25 @@ const TOILET_LOCATION_TYPE_LABELS: Record<string, string> = {
   ETC: "기타",
 }
 
-function getToiletLocationTypeLabel(type: string | undefined): string {
+function getToiletLocationTypeLabel(type: string | null | undefined): string {
   if (!type) return "-"
   return TOILET_LOCATION_TYPE_LABELS[type] ?? type
 }
+
+// 공공데이터(toiletDetails) 필드 라벨 — 표시 순서 유지
+const TOILET_DETAILS_FIELDS: { key: keyof AdminToiletAccessibilityDetailsDto; label: string }[] = [
+  { key: "gender", label: "성별 구분" },
+  { key: "accessDesc", label: "접근 방법" },
+  { key: "availableDesc", label: "이용 가능 정보" },
+  { key: "entranceDesc", label: "출입구" },
+  { key: "stallWidth", label: "칸 너비" },
+  { key: "stallDepth", label: "칸 깊이" },
+  { key: "doorDesc", label: "문" },
+  { key: "doorSideRoom", label: "문 옆 여유 공간" },
+  { key: "washStandBelowRoom", label: "세면대 하부 공간" },
+  { key: "washStandHandle", label: "세면대 손잡이" },
+  { key: "extraDesc", label: "기타 정보" },
+]
 
 // isSearchable 필터: all(전체) | false(미노출) | true(검색노출)
 type SearchableFilter = "all" | "false" | "true"
@@ -160,7 +179,7 @@ function ToiletCard({
   isToggling: boolean
   onToggle: () => void
 }) {
-  const reviewDetails = item.toiletReviewDetails ?? []
+  const accessibilities = item.toiletAccessibilities ?? []
 
   return (
     <Card>
@@ -175,10 +194,10 @@ function ToiletCard({
               <Badge variant="destructive">미노출</Badge>
             )}
             {item.hasExternalSource && <Badge variant="secondary">공공데이터 병합</Badge>}
-            {reviewDetails.length === 0 && (
+            {accessibilities.length === 0 && (
               <Badge variant="outline" className="gap-1">
                 <ImageOff className="h-3 w-3" />
-                유저 리뷰 없음
+                접근성 정보 없음
               </Badge>
             )}
           </div>
@@ -190,11 +209,16 @@ function ToiletCard({
           </p>
         </div>
 
-        {/* 유저 리뷰 상세 (병합된 리뷰 모두 표시) */}
-        {reviewDetails.length > 0 && (
+        {/* 접근성 정보 상세 (유저 리뷰 + 공공데이터, 병합된 소스 모두 표시) */}
+        {accessibilities.length > 0 && (
           <div className="flex flex-col gap-3">
-            {reviewDetails.map((detail, index) => (
-              <ToiletReviewDetail key={index} detail={detail} index={index} total={reviewDetails.length} />
+            {accessibilities.map((accessibility, index) => (
+              <ToiletAccessibilityDetail
+                key={accessibility.id}
+                accessibility={accessibility}
+                index={index}
+                total={accessibilities.length}
+              />
             ))}
           </div>
         )}
@@ -218,44 +242,88 @@ function ToiletCard({
   )
 }
 
-function ToiletReviewDetail({
-  detail,
+function ToiletAccessibilityImages({ images }: { images: AdminToiletAccessibilityDto["images"] }) {
+  if (!images || images.length === 0) return null
+  return (
+    <div className="flex flex-wrap gap-2 pt-1">
+      {images.map((img) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={img.id}
+          src={img.thumbnailUrl || img.imageUrl}
+          alt="화장실 사진"
+          className="h-20 w-20 rounded-md border object-cover"
+        />
+      ))}
+    </div>
+  )
+}
+
+function ToiletAccessibilityDetail({
+  accessibility,
   index,
   total,
 }: {
-  detail: AdminToiletReviewDetailDto
+  accessibility: AdminToiletAccessibilityDto
   index: number
   total: number
 }) {
+  // 소스 판별: toiletDetails(공공데이터)가 있으면 공공 소스, 없으면 유저 리뷰 소스.
+  // sourceType 분기 없이 존재하는 필드로 표시한다.
+  const isPublicSource = accessibility.toiletDetails != null
+
   return (
     <div className="space-y-2 rounded-md bg-muted/50 p-3 text-sm">
-      {total > 1 && <p className="text-xs font-semibold text-muted-foreground">리뷰 {index + 1}</p>}
-      <p>
-        <span className="font-semibold">위치 유형:</span> {getToiletLocationTypeLabel(detail.toiletLocationType)}
-      </p>
-      {detail.locationComment && (
-        <p>
-          <span className="font-semibold">위치 코멘트:</span> {detail.locationComment}
-        </p>
+      <div className="flex items-center gap-2">
+        {total > 1 && <span className="text-xs font-semibold text-muted-foreground">소스 {index + 1}</span>}
+        <Badge variant={isPublicSource ? "secondary" : "outline"} className="text-xs">
+          {isPublicSource ? "공공데이터" : "유저 리뷰"}
+        </Badge>
+      </div>
+
+      {isPublicSource ? (
+        <PublicToiletDetails details={accessibility.toiletDetails!} />
+      ) : (
+        <>
+          <p>
+            <span className="font-semibold">위치 유형:</span>{" "}
+            {getToiletLocationTypeLabel(accessibility.toiletLocationType)}
+          </p>
+          {accessibility.locationComment && (
+            <p>
+              <span className="font-semibold">위치 코멘트:</span> {accessibility.locationComment}
+            </p>
+          )}
+          {accessibility.comment && (
+            <p>
+              <span className="font-semibold">기타 참고사항:</span> {accessibility.comment}
+            </p>
+          )}
+        </>
       )}
-      {detail.comment && (
-        <p>
-          <span className="font-semibold">기타 참고사항:</span> {detail.comment}
-        </p>
-      )}
-      {detail.images && detail.images.length > 0 && (
-        <div className="flex flex-wrap gap-2 pt-1">
-          {detail.images.map((img) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={img.id}
-              src={img.thumbnailUrl || img.imageUrl}
-              alt="화장실 사진"
-              className="h-20 w-20 rounded-md border object-cover"
-            />
-          ))}
-        </div>
-      )}
+
+      <ToiletAccessibilityImages images={accessibility.images} />
     </div>
+  )
+}
+
+function PublicToiletDetails({ details }: { details: AdminToiletAccessibilityDetailsDto }) {
+  const rows = TOILET_DETAILS_FIELDS.filter(({ key }) => {
+    const value = details[key]
+    return value != null && value !== ""
+  })
+
+  if (rows.length === 0) {
+    return <p className="text-muted-foreground">표시할 공공데이터 정보가 없습니다.</p>
+  }
+
+  return (
+    <>
+      {rows.map(({ key, label }) => (
+        <p key={key}>
+          <span className="font-semibold">{label}:</span> {details[key]}
+        </p>
+      ))}
+    </>
   )
 }

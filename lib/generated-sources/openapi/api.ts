@@ -3265,6 +3265,122 @@ export interface AdminSubBuildingDTO {
     'updatedAt': EpochMillisTimestamp;
 }
 /**
+ * 공공데이터(ExternalAccessibility) 화장실 상세 필드
+ * @export
+ * @interface AdminToiletAccessibilityDetailsDto
+ */
+export interface AdminToiletAccessibilityDetailsDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'gender'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'accessDesc'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'availableDesc'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'entranceDesc'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'stallWidth'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'stallDepth'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'doorDesc'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'doorSideRoom'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'washStandBelowRoom'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'washStandHandle'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDetailsDto
+     */
+    'extraDesc'?: string | null;
+}
+/**
+ * Toilet에 병합된 단일 소스(유저 리뷰 ToiletReview 또는 공공데이터 ExternalAccessibility)의 접근성 정보. 소스 종류에 따라 채워지는 필드가 다르며, 어드민은 존재하는 필드로 큐레이션을 판단한다. 
+ * @export
+ * @interface AdminToiletAccessibilityDto
+ */
+export interface AdminToiletAccessibilityDto {
+    /**
+     * 소스 엔티티 id (ToiletReview 또는 ExternalAccessibility)
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDto
+     */
+    'id': string;
+    /**
+     * 
+     * @type {Array<AdminImageDTO>}
+     * @memberof AdminToiletAccessibilityDto
+     */
+    'images': Array<AdminImageDTO>;
+    /**
+     * 화장실 위치 유형 PLACE/BUILDING/NONE/ETC (유저 리뷰 소스)
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDto
+     */
+    'toiletLocationType'?: string | null;
+    /**
+     * 화장실 위치 설명 (유저 리뷰 소스)
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDto
+     */
+    'locationComment'?: string | null;
+    /**
+     * 기타 참고사항 (유저 리뷰 소스)
+     * @type {string}
+     * @memberof AdminToiletAccessibilityDto
+     */
+    'comment'?: string | null;
+    /**
+     * 
+     * @type {AdminToiletAccessibilityDetailsDto}
+     * @memberof AdminToiletAccessibilityDto
+     */
+    'toiletDetails'?: AdminToiletAccessibilityDetailsDto;
+}
+/**
  * 
  * @export
  * @interface AdminToiletDto
@@ -3307,42 +3423,11 @@ export interface AdminToiletDto {
      */
     'createdAt': EpochMillisTimestamp;
     /**
-     * 이 Toilet에 병합된 유저 리뷰들 (큐레이션 판단용). 없으면 빈 배열
-     * @type {Array<AdminToiletReviewDetailDto>}
+     * 이 Toilet에 병합된 모든 소스(유저 리뷰 + 공공데이터). 큐레이션 판단용. 없으면 빈 배열
+     * @type {Array<AdminToiletAccessibilityDto>}
      * @memberof AdminToiletDto
      */
-    'toiletReviewDetails': Array<AdminToiletReviewDetailDto>;
-}
-/**
- * Toilet에 병합된 유저 리뷰(ToiletReview)의 상세 정보
- * @export
- * @interface AdminToiletReviewDetailDto
- */
-export interface AdminToiletReviewDetailDto {
-    /**
-     * 화장실 위치 유형 (PLACE / BUILDING / NONE / ETC)
-     * @type {string}
-     * @memberof AdminToiletReviewDetailDto
-     */
-    'toiletLocationType'?: string;
-    /**
-     * 화장실 위치 설명
-     * @type {string}
-     * @memberof AdminToiletReviewDetailDto
-     */
-    'locationComment'?: string | null;
-    /**
-     * 기타 참고사항
-     * @type {string}
-     * @memberof AdminToiletReviewDetailDto
-     */
-    'comment'?: string | null;
-    /**
-     * 
-     * @type {Array<AdminImageDTO>}
-     * @memberof AdminToiletReviewDetailDto
-     */
-    'images'?: Array<AdminImageDTO>;
+    'toiletAccessibilities': Array<AdminToiletAccessibilityDto>;
 }
 /**
  * 
