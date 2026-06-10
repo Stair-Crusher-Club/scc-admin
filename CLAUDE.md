@@ -1,135 +1,54 @@
-# CLAUDE.md
+# SCC Admin Development Guide
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Stair Crusher Club Admin (계단뿌셔클럽 어드민) — 접근성 데이터/챌린지/퀘스트/지역/푸시 관리 대시보드.
 
-## Project Overview
+## Commands
 
-Stair Crusher Club Admin (계단뿌셔클럽 어드민) - Admin dashboard for managing accessibility data, challenges, quests, regions, and push notifications.
+Node.js 20 (.node-version) + pnpm 10.x (corepack로 활성화, pnpm workspaces).
 
-## Development Setup & Commands
-
-### Prerequisites
-- Node.js 20 (managed via .node-version)
-- pnpm 10.x (package manager)
-
-### Essential Commands
 ```bash
-# Install dependencies
-pnpm i
-
-# Generate Panda CSS styles (required before dev/build)
-pnpm panda
-
-# Start development server (port 3066)
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Lint code
-pnpm lint
-
-# Type checking
-pnpm typecheck
-
-# Generate API client from OpenAPI spec
-pnpm codegen
+pnpm i           # 의존성 설치
+pnpm panda       # Panda CSS 생성 (dev/build 전 필수)
+pnpm dev         # dev server (port 3066)
+pnpm build       # production 빌드
+pnpm lint        # lint
+pnpm typecheck   # 타입 체크
+pnpm codegen     # OpenAPI 스펙 → API 클라이언트 생성
 ```
 
-### Environment Configuration
-- Set `NEXT_PUBLIC_DEPLOY_TYPE` to `dev` or `live` to switch API endpoints
-- Dev API: `https://api.dev.staircrusher.club/admin`
-- Live API: `https://api.staircrusher.club/admin`
+### 환경 설정
 
-Example:
-```bash
-NEXT_PUBLIC_DEPLOY_TYPE=live pnpm dev
-```
+- `NEXT_PUBLIC_DEPLOY_TYPE` = `dev` | `live` (| `local`)로 API 엔드포인트 전환
+- Dev: `https://api.dev.staircrusher.club/admin` / Live: `https://api.staircrusher.club/admin`
+- 예: `NEXT_PUBLIC_DEPLOY_TYPE=live pnpm dev`
 
-## Architecture Overview
+## Architecture
 
-### Tech Stack
-- **Framework**: Next.js 14 with App Router
-- **Styling**: Panda CSS (generates styled-system directory)
-- **State Management**: React Query (TanStack Query) + Jotai
-- **API Client**: Generated TypeScript-Axios client from OpenAPI spec
-- **Forms**: React Hook Form
-- **Maps**: Kakao Maps API
-
-### Directory Structure
-
-```
-app/
-├── (api)/          # API routes
-├── (private)/      # Authenticated admin pages
-│   ├── accessibility/
-│   ├── banner/
-│   ├── challenge/
-│   ├── quest/
-│   ├── region/
-│   └── searchPreset/
-├── (public)/       # Public pages (login, guides)
-├── components/     # Shared components
-├── hooks/         # Custom hooks
-└── icons/         # Icon components
-
-lib/
-├── apis/          # API wrapper functions
-├── generated-sources/openapi/  # Auto-generated API client
-└── storage.ts     # LocalStorage wrapper
-```
-
-### Key Architecture Patterns
-
-1. **Route Groups**: Uses Next.js route groups `(private)` and `(public)` for layout segregation
-2. **Authentication**: Token-based auth checked in `(private)/layout.tsx`
-3. **API Generation**: OpenAPI spec generates TypeScript client in `lib/generated-sources/openapi/`
-4. **Styling**: Panda CSS with configuration in `panda.config.ts`, outputs to `styled-system/`
-5. **Data Fetching**: React Query for server state management with custom hooks in `lib/apis/api.ts`
+- **Stack**: Next.js 14 App Router / Panda CSS (`panda.config.ts` → `styled-system/`) / React Query + Jotai / TypeScript-Axios 생성 클라이언트 / React Hook Form / Kakao Maps API (`kakao.maps.d.ts`)
+- **Route groups**: `(private)` 인증 어드민 페이지 (accessibility, banner, challenge, quest, region, searchPreset), `(public)` 로그인/가이드, `(api)` API 라우트
+- **인증**: localStorage 토큰 기반, `(private)/layout.tsx`에서 체크
+- **API**: 스펙은 `subprojects/scc-api/admin-api-spec.yaml` → `pnpm codegen` → `lib/generated-sources/openapi/` (수동 수정은 hook이 차단). API 인스턴스/훅은 `lib/apis/api.ts`
+- **주요 API 서비스**: `DefaultApi`(퀘스트/지역/알림), `ChallengeApi`, `BannerApi`, `AccessibilityApi`
 
 ### Path Aliases
-- `@/styles/*` → `./styled-system/*`
-- `@/lib/*` → `./lib/*`
-- `@/*` → `./app/*`
 
-## API Integration
+- `@/styles/*` → `./styled-system/*`, `@/lib/*` → `./lib/*`, `@/*` → `./app/*`
 
-The app communicates with the backend through a generated TypeScript client:
+## CI/CD
 
-1. **OpenAPI Spec**: Located in `subprojects/scc-api/admin-api-spec.yaml`
-2. **Generation**: Run `pnpm codegen` to regenerate client
-3. **API Instances**: Configured in `lib/apis/api.ts` with environment-based base URLs
-4. **Custom Hooks**: Data fetching hooks use React Query for caching and state management
-
-### Key API Services
-- `DefaultApi`: General operations (quests, regions, notifications)
-- `ChallengeApi`: Challenge management
-- `BannerApi`: Banner management
-- `AccessibilityApi`: Accessibility data management
-
-## CI/CD Pipeline
-
-### Pull Request CI (`pr-ci.yaml`)
-- Installs dependencies
-- Runs linting
-- Generates Panda CSS
-- Builds the application
-
-### Deployment
-- **Dev**: Auto-deploys on push to `main` branch
-- **Prod**: Deploys on semantic versioning tags (e.g., `v1.0.0`)
+- PR CI: install → lint → panda → build
+- Dev는 main push 시 자동 배포, Prod는 semver 태그(`v1.0.0`)로 배포
 
 ## Code Style
 
-- **Prettier**: Configured with import sorting plugin
-- **ESLint**: Next.js core-web-vitals with `react-hooks/exhaustive-deps` disabled
-- **TypeScript**: Strict mode enabled
-- **Import Order**: Enforced by Prettier plugin (`@/lib`, `@/`, `@/styles`, relative imports)
+- Prettier(import 정렬 플러그인: `@/lib`, `@/`, `@/styles`, relative 순), ESLint(next core-web-vitals, exhaustive-deps off), TypeScript strict
 
-## Important Notes
+## Notes
 
-1. Always run `pnpm panda` before starting development or building
-2. The app requires authentication token in localStorage for private routes
-3. Images are served from S3 buckets and CloudFront CDNs (configured in `next.config.js`)
-4. Map functionality uses Kakao Maps API (types from `kakao.maps.d.ts`)
-5. The project uses pnpm workspaces - ensure pnpm is enabled via corepack
+- dev/build 전 `pnpm panda` 필수 (styled-system 생성)
+- 이미지는 S3 + CloudFront에서 서빙 (`next.config.js`에 도메인 설정)
+- 새 페이지 추가 절차/템플릿: `/scc-admin-add-page`
+
+---
+
+이 파일은 fact만 담는다. 절차는 skill, 강제 규칙은 workspace `.claude/hooks/` 참조. 줄수 상한 120.
