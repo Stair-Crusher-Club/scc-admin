@@ -23,6 +23,7 @@ import {
 import {
   AccessibilityApi,
   AccessibilityReportApi,
+  AdminToiletApi,
   BannerApi,
   BbucleRoadApi,
   ChallengeApi,
@@ -65,6 +66,7 @@ const accessibilityReportApi = new AccessibilityReportApi(config)
 const experimentApi = new ExperimentApi(config)
 const placeAccessibilitySuggestionApi = new PlaceAccessibilitySuggestionApi(config)
 const placeSpecialAccessibilityApi = new PlaceSpecialAccessibilityApi(config)
+const toiletApi = new AdminToiletApi(config)
 
 export const api: {
   default: DefaultApi
@@ -81,6 +83,7 @@ export const api: {
   placeList: PlaceListApi
   placeAccessibilitySuggestion: PlaceAccessibilitySuggestionApi
   placeSpecialAccessibility: PlaceSpecialAccessibilityApi
+  toilet: AdminToiletApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
@@ -96,6 +99,7 @@ export const api: {
   placeList: placeListApi,
   placeAccessibilitySuggestion: placeAccessibilitySuggestionApi,
   placeSpecialAccessibility: placeSpecialAccessibilityApi,
+  toilet: toiletApi,
 }
 
 export function useQuest({ id }: { id: string }) {
@@ -683,4 +687,30 @@ export function updatePlaceCategoryCache({
 
 export function deletePlaceCategoryCache({ id }: { id: string }) {
   return placeCategoryCacheApi.deletePlaceCategoryCache(id)
+}
+
+export function useToilets({
+  isSearchable,
+  limit = 20,
+}: {
+  isSearchable?: boolean
+  limit?: number
+} = {}) {
+  return useInfiniteQuery({
+    queryKey: ["@toilets", isSearchable ?? null, limit],
+    queryFn: ({ pageParam }) =>
+      toiletApi
+        .adminSearchToilets({
+          isSearchable,
+          nextPageToken: (pageParam as string | undefined) ?? undefined,
+          limit,
+        })
+        .then((res) => res.data),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextPageToken ?? undefined,
+  })
+}
+
+export function setToiletSearchable({ id, isSearchable }: { id: string; isSearchable: boolean }) {
+  return toiletApi.setToiletSearchable(id, { isSearchable })
 }
