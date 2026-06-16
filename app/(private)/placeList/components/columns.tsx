@@ -20,6 +20,17 @@ export const getColumns = (): ColumnDef<AdminPlaceListDto>[] => [
     },
   },
   {
+    accessorKey: "shortName",
+    header: "짧은 이름",
+    cell: ({ row }) => {
+      return (
+        <div className="text-sm text-muted-foreground">
+          {row.original.shortName ?? "-"}
+        </div>
+      )
+    },
+  },
+  {
     accessorKey: "accessControl",
     header: "공개 설정",
     cell: ({ row }) => {

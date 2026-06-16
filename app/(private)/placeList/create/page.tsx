@@ -20,6 +20,7 @@ export default function PlaceListCreatePage() {
   const { mutateAsync: createPlaceList, isPending: isCreating } = useCreatePlaceList()
 
   const [name, setName] = useState("")
+  const [shortName, setShortName] = useState("")
   const [description, setDescription] = useState("")
   const [iconColor, setIconColor] = useState("#FFC01E")
   const [accessControl, setAccessControl] = useState<AdminPlaceListAccessControlDto>(
@@ -31,6 +32,7 @@ export default function PlaceListCreatePage() {
     try {
       await createPlaceList({
         name,
+        shortName: shortName || null,
         description: description || null,
         iconColor: iconColor || null,
         accessControl,
@@ -71,6 +73,19 @@ export default function PlaceListCreatePage() {
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-3 py-2 border rounded-md"
                 placeholder="리스트 이름"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                짧은 이름 <span className="text-muted-foreground text-xs">(최대 8자, 검색 태그에 표시)</span>
+              </label>
+              <input
+                value={shortName}
+                onChange={(e) => setShortName(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="예: 홍대핫플"
+                maxLength={8}
               />
             </div>
 

@@ -13,6 +13,7 @@ import {
   Megaphone,
   Search,
   ShieldCheck,
+  Star,
   Tag,
   Trophy,
 } from "lucide-react"
@@ -45,6 +46,7 @@ const menuItems = [
   { href: "/bbucleRoad", label: "뿌클로드 관리", icon: Map },
   { href: "/notification", label: "푸시 알림 관리", icon: Megaphone },
   { href: "/searchPreset", label: "추천 검색어 관리", icon: Search },
+  { href: "/placeSearchRecommendation", label: "검색 추천 관리", icon: Star },
   { href: "/accessibilityInspectionResult", label: "접근성 검증 결과", icon: ShieldCheck },
 ]
 
