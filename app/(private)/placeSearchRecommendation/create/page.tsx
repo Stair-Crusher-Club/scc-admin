@@ -91,7 +91,8 @@ export default function PlaceSearchRecommendationCreatePage() {
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              ⚠️ 장소 3개 이상 포함된 저장리스트를 선택해야 추천 영역(폴리곤)이 계산됩니다. 장소가 3개 미만이면 칩이 노출되지 않습니다.
+              ⚠️ 장소 3개 이상 포함된 저장리스트를 선택해야 추천 영역(폴리곤)이
+              계산됩니다. 장소가 3개 미만이면 칩이 노출되지 않습니다.
             </p>
           </div>
 
