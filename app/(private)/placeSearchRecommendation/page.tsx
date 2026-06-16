@@ -139,7 +139,7 @@ export default function PlaceSearchRecommendationPage() {
                               value={editState.name}
                               onChange={(e) => setEditState({ ...editState, name: e.target.value })}
                               className="w-full px-2 py-1 border rounded-md text-sm"
-                              maxLength={12}
+                              maxLength={8}
                             />
                           </TableCell>
                           <TableCell>

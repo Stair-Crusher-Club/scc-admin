@@ -63,14 +63,14 @@ export default function PlaceSearchRecommendationCreatePage() {
           <div className="space-y-2">
             <label className="text-sm font-medium">
               이름 <span className="text-red-500">*</span>
-              <span className="text-muted-foreground text-xs ml-1">(최대 12자, 칩에 표시)</span>
+              <span className="text-muted-foreground text-xs ml-1">(최대 8자, 칩에 표시)</span>
             </label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-3 py-2 border rounded-md"
               placeholder="예: 홍대 핫플"
-              maxLength={12}
+              maxLength={8}
             />
           </div>
 
