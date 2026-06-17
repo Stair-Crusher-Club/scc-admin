@@ -36,6 +36,7 @@ import {
   PlaceAccessibilitySuggestionApi,
   PlaceCategoryCacheApi,
   PlaceListApi,
+  PlaceSearchRecommendationApi,
   PlaceSpecialAccessibilityApi,
 } from "../../lib/generated-sources/openapi"
 import {
@@ -67,6 +68,7 @@ const experimentApi = new ExperimentApi(config)
 const placeAccessibilitySuggestionApi = new PlaceAccessibilitySuggestionApi(config)
 const placeSpecialAccessibilityApi = new PlaceSpecialAccessibilityApi(config)
 const toiletApi = new AdminToiletApi(config)
+const placeSearchRecommendationApi = new PlaceSearchRecommendationApi(config)
 
 export const api: {
   default: DefaultApi
@@ -84,6 +86,7 @@ export const api: {
   placeAccessibilitySuggestion: PlaceAccessibilitySuggestionApi
   placeSpecialAccessibility: PlaceSpecialAccessibilityApi
   toilet: AdminToiletApi
+  placeSearchRecommendation: PlaceSearchRecommendationApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
@@ -100,6 +103,7 @@ export const api: {
   placeAccessibilitySuggestion: placeAccessibilitySuggestionApi,
   placeSpecialAccessibility: placeSpecialAccessibilityApi,
   toilet: toiletApi,
+  placeSearchRecommendation: placeSearchRecommendationApi,
 }
 
 export function useQuest({ id }: { id: string }) {

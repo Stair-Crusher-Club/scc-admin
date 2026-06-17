@@ -1621,6 +1621,12 @@ export interface AdminCreatePlaceListRequestDto {
      */
     'name': string;
     /**
+     * 검색 결과 카드 등 공간이 좁은 곳에 표시하는 짧은 이름 (최대 8자).
+     * @type {string}
+     * @memberof AdminCreatePlaceListRequestDto
+     */
+    'shortName'?: string | null;
+    /**
      * 
      * @type {string}
      * @memberof AdminCreatePlaceListRequestDto
@@ -1650,6 +1656,43 @@ export interface AdminCreatePlaceListRequestDto {
      * @memberof AdminCreatePlaceListRequestDto
      */
     'placeIds': Array<string>;
+}
+/**
+ * 장소 검색 추천 생성 요청
+ * @export
+ * @interface AdminCreatePlaceSearchRecommendationRequestDto
+ */
+export interface AdminCreatePlaceSearchRecommendationRequestDto {
+    /**
+     * 
+     * @type {AdminPlaceSearchRecommendationTypeDto}
+     * @memberof AdminCreatePlaceSearchRecommendationRequestDto
+     */
+    'type': AdminPlaceSearchRecommendationTypeDto;
+    /**
+     * 칩에 표시하는 짧은 이름 (최대 12자)
+     * @type {string}
+     * @memberof AdminCreatePlaceSearchRecommendationRequestDto
+     */
+    'name': string;
+    /**
+     * 연결할 저장리스트 ID
+     * @type {string}
+     * @memberof AdminCreatePlaceSearchRecommendationRequestDto
+     */
+    'placeListId': string;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminCreatePlaceSearchRecommendationRequestDto
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminCreatePlaceSearchRecommendationRequestDto
+     */
+    'endAt'?: EpochMillisTimestamp;
 }
 /**
  * 
@@ -2210,6 +2253,25 @@ export interface AdminListPlaceListsResponseDto {
     'cursor'?: string | null;
 }
 /**
+ * 장소 검색 추천 목록 응답
+ * @export
+ * @interface AdminListPlaceSearchRecommendationsResponseDto
+ */
+export interface AdminListPlaceSearchRecommendationsResponseDto {
+    /**
+     * 
+     * @type {Array<AdminPlaceSearchRecommendationDto>}
+     * @memberof AdminListPlaceSearchRecommendationsResponseDto
+     */
+    'items': Array<AdminPlaceSearchRecommendationDto>;
+    /**
+     * 다음 페이지 커서 (없으면 마지막 페이지)
+     * @type {string}
+     * @memberof AdminListPlaceSearchRecommendationsResponseDto
+     */
+    'cursor'?: string | null;
+}
+/**
  * 
  * @export
  * @interface AdminListPushNotificationSchedulesResponseDTO
@@ -2561,6 +2623,12 @@ export interface AdminPlaceListDetailDto {
      */
     'name': string;
     /**
+     * 검색 결과 카드 등 공간이 좁은 곳에 표시하는 짧은 이름 (최대 8자).
+     * @type {string}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'shortName'?: string | null;
+    /**
      * 
      * @type {string}
      * @memberof AdminPlaceListDetailDto
@@ -2621,6 +2689,12 @@ export interface AdminPlaceListDto {
      * @memberof AdminPlaceListDto
      */
     'name': string;
+    /**
+     * 검색 결과 카드 등 공간이 좁은 곳에 표시하는 짧은 이름 (최대 8자).
+     * @type {string}
+     * @memberof AdminPlaceListDto
+     */
+    'shortName'?: string | null;
     /**
      * 
      * @type {string}
@@ -2701,6 +2775,80 @@ export interface AdminPlaceListPlaceDto {
      */
     'accessibilityScore'?: number | null;
 }
+/**
+ * 장소 검색 추천 항목
+ * @export
+ * @interface AdminPlaceSearchRecommendationDto
+ */
+export interface AdminPlaceSearchRecommendationDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminPlaceSearchRecommendationDto
+     */
+    'id': string;
+    /**
+     * 
+     * @type {AdminPlaceSearchRecommendationTypeDto}
+     * @memberof AdminPlaceSearchRecommendationDto
+     */
+    'type': AdminPlaceSearchRecommendationTypeDto;
+    /**
+     * 칩에 표시하는 짧은 이름
+     * @type {string}
+     * @memberof AdminPlaceSearchRecommendationDto
+     */
+    'name': string;
+    /**
+     * 연결된 저장리스트 ID
+     * @type {string}
+     * @memberof AdminPlaceSearchRecommendationDto
+     */
+    'placeListId': string;
+    /**
+     * 연결된 저장리스트 이름 (표시용)
+     * @type {string}
+     * @memberof AdminPlaceSearchRecommendationDto
+     */
+    'placeListName'?: string | null;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceSearchRecommendationDto
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceSearchRecommendationDto
+     */
+    'endAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceSearchRecommendationDto
+     */
+    'createdAt': EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminPlaceSearchRecommendationDto
+     */
+    'updatedAt': EpochMillisTimestamp;
+}
+/**
+ * 장소 검색 추천 타입
+ * @export
+ * @enum {string}
+ */
+
+export const AdminPlaceSearchRecommendationTypeDto = {
+    RegionBased: 'REGION_BASED'
+} as const;
+
+export type AdminPlaceSearchRecommendationTypeDto = typeof AdminPlaceSearchRecommendationTypeDto[keyof typeof AdminPlaceSearchRecommendationTypeDto];
+
+
 /**
  * 뿌클로드 접근성 데이터 (어드민용)
  * @export
@@ -3748,6 +3896,12 @@ export interface AdminUpdatePlaceListRequestDto {
      */
     'name': string;
     /**
+     * 검색 결과 카드 등 공간이 좁은 곳에 표시하는 짧은 이름 (최대 8자).
+     * @type {string}
+     * @memberof AdminUpdatePlaceListRequestDto
+     */
+    'shortName'?: string | null;
+    /**
      * 
      * @type {string}
      * @memberof AdminUpdatePlaceListRequestDto
@@ -3777,6 +3931,43 @@ export interface AdminUpdatePlaceListRequestDto {
      * @memberof AdminUpdatePlaceListRequestDto
      */
     'placeIds': Array<string>;
+}
+/**
+ * 장소 검색 추천 수정 요청
+ * @export
+ * @interface AdminUpdatePlaceSearchRecommendationRequestDto
+ */
+export interface AdminUpdatePlaceSearchRecommendationRequestDto {
+    /**
+     * 
+     * @type {AdminPlaceSearchRecommendationTypeDto}
+     * @memberof AdminUpdatePlaceSearchRecommendationRequestDto
+     */
+    'type': AdminPlaceSearchRecommendationTypeDto;
+    /**
+     * 칩에 표시하는 짧은 이름 (최대 12자)
+     * @type {string}
+     * @memberof AdminUpdatePlaceSearchRecommendationRequestDto
+     */
+    'name': string;
+    /**
+     * 연결할 저장리스트 ID
+     * @type {string}
+     * @memberof AdminUpdatePlaceSearchRecommendationRequestDto
+     */
+    'placeListId': string;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminUpdatePlaceSearchRecommendationRequestDto
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminUpdatePlaceSearchRecommendationRequestDto
+     */
+    'endAt'?: EpochMillisTimestamp;
 }
 /**
  * 
@@ -13652,6 +13843,348 @@ export class PlaceListApi extends BaseAPI {
      */
     public updatePlaceList(id: string, adminUpdatePlaceListRequestDto: AdminUpdatePlaceListRequestDto, options?: AxiosRequestConfig) {
         return PlaceListApiFp(this.configuration).updatePlaceList(id, adminUpdatePlaceListRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * PlaceSearchRecommendationApi - axios parameter creator
+ * @export
+ */
+export const PlaceSearchRecommendationApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 장소 검색 추천을 생성한다.
+         * @param {AdminCreatePlaceSearchRecommendationRequestDto} adminCreatePlaceSearchRecommendationRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPlaceSearchRecommendation: async (adminCreatePlaceSearchRecommendationRequestDto: AdminCreatePlaceSearchRecommendationRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminCreatePlaceSearchRecommendationRequestDto' is not null or undefined
+            assertParamExists('createPlaceSearchRecommendation', 'adminCreatePlaceSearchRecommendationRequestDto', adminCreatePlaceSearchRecommendationRequestDto)
+            const localVarPath = `/place-search-recommendations`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreatePlaceSearchRecommendationRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 검색 추천을 삭제한다.
+         * @param {string} id PlaceSearchRecommendation ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlaceSearchRecommendation: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deletePlaceSearchRecommendation', 'id', id)
+            const localVarPath = `/place-search-recommendations/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 검색 추천 목록을 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPlaceSearchRecommendations: async (cursor?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/place-search-recommendations`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 장소 검색 추천을 수정한다.
+         * @param {string} id PlaceSearchRecommendation ID
+         * @param {AdminUpdatePlaceSearchRecommendationRequestDto} adminUpdatePlaceSearchRecommendationRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceSearchRecommendation: async (id: string, adminUpdatePlaceSearchRecommendationRequestDto: AdminUpdatePlaceSearchRecommendationRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updatePlaceSearchRecommendation', 'id', id)
+            // verify required parameter 'adminUpdatePlaceSearchRecommendationRequestDto' is not null or undefined
+            assertParamExists('updatePlaceSearchRecommendation', 'adminUpdatePlaceSearchRecommendationRequestDto', adminUpdatePlaceSearchRecommendationRequestDto)
+            const localVarPath = `/place-search-recommendations/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminUpdatePlaceSearchRecommendationRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * PlaceSearchRecommendationApi - functional programming interface
+ * @export
+ */
+export const PlaceSearchRecommendationApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = PlaceSearchRecommendationApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 장소 검색 추천을 생성한다.
+         * @param {AdminCreatePlaceSearchRecommendationRequestDto} adminCreatePlaceSearchRecommendationRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPlaceSearchRecommendation(adminCreatePlaceSearchRecommendationRequestDto: AdminCreatePlaceSearchRecommendationRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceSearchRecommendationDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlaceSearchRecommendation(adminCreatePlaceSearchRecommendationRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 검색 추천을 삭제한다.
+         * @param {string} id PlaceSearchRecommendation ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePlaceSearchRecommendation(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePlaceSearchRecommendation(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 검색 추천 목록을 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPlaceSearchRecommendations(cursor?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListPlaceSearchRecommendationsResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPlaceSearchRecommendations(cursor, limit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 장소 검색 추천을 수정한다.
+         * @param {string} id PlaceSearchRecommendation ID
+         * @param {AdminUpdatePlaceSearchRecommendationRequestDto} adminUpdatePlaceSearchRecommendationRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePlaceSearchRecommendation(id: string, adminUpdatePlaceSearchRecommendationRequestDto: AdminUpdatePlaceSearchRecommendationRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPlaceSearchRecommendationDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlaceSearchRecommendation(id, adminUpdatePlaceSearchRecommendationRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * PlaceSearchRecommendationApi - factory interface
+ * @export
+ */
+export const PlaceSearchRecommendationApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = PlaceSearchRecommendationApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 장소 검색 추천을 생성한다.
+         * @param {AdminCreatePlaceSearchRecommendationRequestDto} adminCreatePlaceSearchRecommendationRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPlaceSearchRecommendation(adminCreatePlaceSearchRecommendationRequestDto: AdminCreatePlaceSearchRecommendationRequestDto, options?: any): AxiosPromise<AdminPlaceSearchRecommendationDto> {
+            return localVarFp.createPlaceSearchRecommendation(adminCreatePlaceSearchRecommendationRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 검색 추천을 삭제한다.
+         * @param {string} id PlaceSearchRecommendation ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlaceSearchRecommendation(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePlaceSearchRecommendation(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 검색 추천 목록을 조회한다.
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPlaceSearchRecommendations(cursor?: string, limit?: number, options?: any): AxiosPromise<AdminListPlaceSearchRecommendationsResponseDto> {
+            return localVarFp.listPlaceSearchRecommendations(cursor, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 장소 검색 추천을 수정한다.
+         * @param {string} id PlaceSearchRecommendation ID
+         * @param {AdminUpdatePlaceSearchRecommendationRequestDto} adminUpdatePlaceSearchRecommendationRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePlaceSearchRecommendation(id: string, adminUpdatePlaceSearchRecommendationRequestDto: AdminUpdatePlaceSearchRecommendationRequestDto, options?: any): AxiosPromise<AdminPlaceSearchRecommendationDto> {
+            return localVarFp.updatePlaceSearchRecommendation(id, adminUpdatePlaceSearchRecommendationRequestDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * PlaceSearchRecommendationApi - object-oriented interface
+ * @export
+ * @class PlaceSearchRecommendationApi
+ * @extends {BaseAPI}
+ */
+export class PlaceSearchRecommendationApi extends BaseAPI {
+    /**
+     * 
+     * @summary 장소 검색 추천을 생성한다.
+     * @param {AdminCreatePlaceSearchRecommendationRequestDto} adminCreatePlaceSearchRecommendationRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceSearchRecommendationApi
+     */
+    public createPlaceSearchRecommendation(adminCreatePlaceSearchRecommendationRequestDto: AdminCreatePlaceSearchRecommendationRequestDto, options?: AxiosRequestConfig) {
+        return PlaceSearchRecommendationApiFp(this.configuration).createPlaceSearchRecommendation(adminCreatePlaceSearchRecommendationRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 검색 추천을 삭제한다.
+     * @param {string} id PlaceSearchRecommendation ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceSearchRecommendationApi
+     */
+    public deletePlaceSearchRecommendation(id: string, options?: AxiosRequestConfig) {
+        return PlaceSearchRecommendationApiFp(this.configuration).deletePlaceSearchRecommendation(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 검색 추천 목록을 조회한다.
+     * @param {string} [cursor] 페이지네이션 커서
+     * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceSearchRecommendationApi
+     */
+    public listPlaceSearchRecommendations(cursor?: string, limit?: number, options?: AxiosRequestConfig) {
+        return PlaceSearchRecommendationApiFp(this.configuration).listPlaceSearchRecommendations(cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 장소 검색 추천을 수정한다.
+     * @param {string} id PlaceSearchRecommendation ID
+     * @param {AdminUpdatePlaceSearchRecommendationRequestDto} adminUpdatePlaceSearchRecommendationRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlaceSearchRecommendationApi
+     */
+    public updatePlaceSearchRecommendation(id: string, adminUpdatePlaceSearchRecommendationRequestDto: AdminUpdatePlaceSearchRecommendationRequestDto, options?: AxiosRequestConfig) {
+        return PlaceSearchRecommendationApiFp(this.configuration).updatePlaceSearchRecommendation(id, adminUpdatePlaceSearchRecommendationRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
