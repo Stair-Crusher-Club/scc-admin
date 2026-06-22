@@ -110,7 +110,7 @@ export default function PlaceCard({ place, questId, onUpdate, onDelete }: Props)
           <S.Button onClick={openInApp}>
             <Image src={stairCrusherIcon} alt="계단뿌셔클럽" style={{ width: 24, height: 24 }} />
           </S.Button>
-          <S.Link href={`https://map.naver.com/p/search/${place.name}`}>
+          <S.Link href={`https://map.naver.com/p/search/${place.name}`} target="_blank" rel="noopener noreferrer">
             <Image src={naverMapIcon} alt="네이버 지도" style={{ width: 24, height: 24 }} />
           </S.Link>
           {authenticated ? (
