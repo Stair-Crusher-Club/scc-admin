@@ -1207,7 +1207,60 @@ export interface AdminClosedPlaceCandidateDTO {
      * @memberof AdminClosedPlaceCandidateDTO
      */
     'ignoredAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {AdminClosureCheckSourceDTO}
+     * @memberof AdminClosedPlaceCandidateDTO
+     */
+    'checkSource': AdminClosureCheckSourceDTO;
+    /**
+     * 
+     * @type {AdminClosureReasonDTO}
+     * @memberof AdminClosedPlaceCandidateDTO
+     */
+    'closureReason'?: AdminClosureReasonDTO;
+    /**
+     * 매칭 신뢰도 (0.0~1.0). 낮은 신뢰도로 폐업 추정된 경우 등에 설정, 없으면 null.
+     * @type {number}
+     * @memberof AdminClosedPlaceCandidateDTO
+     */
+    'matchConfidence'?: number;
 }
+/**
+ * 폐업 추정 소스 (어떤 방식으로 확인했는지) - NAVER_MAPS_API: 네이버 지도 API 검색 - NAVER_PLACE_CRAWLER: 네이버 플레이스 크롤링 - PUBLIC_DATA: 공공데이터 폐업 정보 - KAKAO / GOOGLE / TMAP: 각 지도 서비스 - MANUAL: 관리자 수동 입력 
+ * @export
+ * @enum {string}
+ */
+
+export const AdminClosureCheckSourceDTO = {
+    NaverMapsApi: 'NAVER_MAPS_API',
+    NaverPlaceCrawler: 'NAVER_PLACE_CRAWLER',
+    PublicData: 'PUBLIC_DATA',
+    Kakao: 'KAKAO',
+    Google: 'GOOGLE',
+    Tmap: 'TMAP',
+    Manual: 'MANUAL'
+} as const;
+
+export type AdminClosureCheckSourceDTO = typeof AdminClosureCheckSourceDTO[keyof typeof AdminClosureCheckSourceDTO];
+
+
+/**
+ * 폐업 추정 근거 (왜 폐업으로 추정했는지) - CLOSED_BY_PUBLIC_DATA: 공공데이터에서 폐업 확인 - NOT_FOUND_ON_MAP: 지도에서 검색 결과 없음 - LOW_MATCH_CONFIDENCE: 검색 결과와 일치도 낮음 - MANUAL_CHECK: 관리자 수동 확인 
+ * @export
+ * @enum {string}
+ */
+
+export const AdminClosureReasonDTO = {
+    ClosedByPublicData: 'CLOSED_BY_PUBLIC_DATA',
+    NotFoundOnMap: 'NOT_FOUND_ON_MAP',
+    LowMatchConfidence: 'LOW_MATCH_CONFIDENCE',
+    ManualCheck: 'MANUAL_CHECK'
+} as const;
+
+export type AdminClosureReasonDTO = typeof AdminClosureReasonDTO[keyof typeof AdminClosureReasonDTO];
+
+
 /**
  * 
  * @export
@@ -1670,7 +1723,7 @@ export interface AdminCreatePlaceSearchRecommendationRequestDto {
      */
     'type': AdminPlaceSearchRecommendationTypeDto;
     /**
-     * 칩에 표시하는 짧은 이름 (최대 12자)
+     * 칩에 표시하는 짧은 이름 (최대 8자)
      * @type {string}
      * @memberof AdminCreatePlaceSearchRecommendationRequestDto
      */
@@ -3945,7 +3998,7 @@ export interface AdminUpdatePlaceSearchRecommendationRequestDto {
      */
     'type': AdminPlaceSearchRecommendationTypeDto;
     /**
-     * 칩에 표시하는 짧은 이름 (최대 12자)
+     * 칩에 표시하는 짧은 이름 (최대 8자)
      * @type {string}
      * @memberof AdminUpdatePlaceSearchRecommendationRequestDto
      */
