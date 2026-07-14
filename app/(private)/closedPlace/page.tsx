@@ -4,7 +4,11 @@ import dayjs from "dayjs"
 import Image from "next/image"
 import { useState } from "react"
 
-import { AdminClosedPlaceCandidateDTO } from "@/lib/generated-sources/openapi"
+import {
+  AdminClosedPlaceCandidateDTO,
+  AdminClosureCheckSourceDTO,
+  AdminClosureReasonDTO,
+} from "@/lib/generated-sources/openapi"
 
 import { Contents } from "@/components/layout"
 
@@ -12,6 +16,23 @@ import naverMapIcon from "../../../public/naver_map.jpg"
 import { ActionsCell } from "./components/Cells"
 import * as S from "./page.style"
 import { useClosedPlaceCandidates } from "./query"
+
+const SOURCE_LABEL: Record<AdminClosureCheckSourceDTO, string> = {
+  [AdminClosureCheckSourceDTO.NaverMapsApi]: "네이버 지도 API",
+  [AdminClosureCheckSourceDTO.NaverPlaceCrawler]: "네이버 플레이스 크롤러",
+  [AdminClosureCheckSourceDTO.PublicData]: "공공데이터",
+  [AdminClosureCheckSourceDTO.Kakao]: "카카오",
+  [AdminClosureCheckSourceDTO.Google]: "구글",
+  [AdminClosureCheckSourceDTO.Tmap]: "티맵",
+  [AdminClosureCheckSourceDTO.Manual]: "수동 입력",
+}
+
+const REASON_LABEL: Record<AdminClosureReasonDTO, string> = {
+  [AdminClosureReasonDTO.ClosedByPublicData]: "공공데이터 폐업",
+  [AdminClosureReasonDTO.NotFoundOnMap]: "지도 검색결과 없음",
+  [AdminClosureReasonDTO.LowMatchConfidence]: "매칭 신뢰도 낮음",
+  [AdminClosureReasonDTO.ManualCheck]: "수동 확인",
+}
 
 export default function ClosedPlacePage() {
   const [activeTab, setActiveTab] = useState<"all" | "registered">("all")
@@ -48,8 +69,16 @@ export default function ClosedPlacePage() {
                 {closedPlaceCandidates.map((candidate) => (
                   <S.RowWrapper key={candidate.id}>
                     <S.TextContent>
-                      {candidate.name}({candidate.address}), {dayjs(candidate.closedAt?.value).format("YYYY-MM-DD")}{" "}
-                      폐업 추정
+                      {candidate.name}({candidate.address}),{" "}
+                      {candidate.closedAt?.value
+                        ? `${dayjs(candidate.closedAt.value).format("YYYY-MM-DD")} 폐업 추정`
+                        : "폐업 추정"}
+                      {" · 출처: "}
+                      {SOURCE_LABEL[candidate.checkSource] ?? candidate.checkSource}
+                      {candidate.closureReason
+                        ? ` · 근거: ${REASON_LABEL[candidate.closureReason] ?? candidate.closureReason}`
+                        : ""}
+                      {candidate.matchConfidence != null ? ` · 신뢰도: ${candidate.matchConfidence.toFixed(2)}` : ""}
                     </S.TextContent>
                     <S.ExternalMap onClick={() => openNaverMap(candidate)}>
                       <Image src={naverMapIcon} alt="네이버 지도" />
