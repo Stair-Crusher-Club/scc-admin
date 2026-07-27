@@ -4,14 +4,23 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "react-toastify"
 
-import { AdminPlaceListAccessControlDto, AdminSearchedPlaceDto } from "@/lib/generated-sources/openapi"
+import {
+  AdminImageUploadPurposeTypeDTO,
+  AdminPlaceListAccessControlDto,
+  AdminPlaceListNameChipDto,
+  AdminUserInterestedThemeDto,
+  AdminSearchedPlaceDto,
+} from "@/lib/generated-sources/openapi"
 import { useCreatePlaceList } from "@/lib/apis/placeList"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Contents } from "@/components/layout"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import ImageUploader from "@/components/ImageUploader"
 import { ACCESS_CONTROL_LABELS, ACCESS_CONTROL_OPTIONS } from "../components/accessControl"
+import { THEME_LABELS, THEME_OPTIONS } from "../components/themes"
 import { PlaceSearchPanel } from "../components/PlaceSearchPanel"
 import { SortablePlaceList } from "../components/SortablePlaceList"
 
@@ -20,7 +29,11 @@ export default function PlaceListCreatePage() {
   const { mutateAsync: createPlaceList, isPending: isCreating } = useCreatePlaceList()
 
   const [name, setName] = useState("")
-  const [shortName, setShortName] = useState("")
+  const [chipText, setChipText] = useState("")
+  const [chipIconUrls, setChipIconUrls] = useState<string[]>([])
+  const [chipBackgroundColor, setChipBackgroundColor] = useState("")
+  const [chipBorderColor, setChipBorderColor] = useState("")
+  const [themes, setThemes] = useState<AdminUserInterestedThemeDto[]>([])
   const [description, setDescription] = useState("")
   const [iconColor, setIconColor] = useState("#FFC01E")
   const [accessControl, setAccessControl] = useState<AdminPlaceListAccessControlDto>(
@@ -28,11 +41,29 @@ export default function PlaceListCreatePage() {
   )
   const [places, setPlaces] = useState<AdminSearchedPlaceDto[]>([])
 
+  const toggleTheme = (theme: AdminUserInterestedThemeDto) => {
+    setThemes((prev) => (prev.includes(theme) ? prev.filter((t) => t !== theme) : [...prev, theme]))
+  }
+
   const handleCreate = async () => {
+    // 문구가 비면 아이콘/색 지정 여부와 무관하게 nameChip 전체를 null로 전송한다.
+    // 서버 PlaceListNameChip.text는 blank를 허용하지 않으므로(require) 문구 없이 저장할 수 없다.
+    const nameChip: AdminPlaceListNameChipDto | null = chipText.trim()
+      ? {
+          text: chipText.trim(),
+          iconUrl: chipIconUrls[0] ?? null,
+          backgroundColor: chipBackgroundColor || null,
+          borderColor: chipBorderColor || null,
+        }
+      : null
+
     try {
       await createPlaceList({
         name,
-        shortName: shortName || null,
+        // ponytail: openapi generator가 $ref 옆의 `nullable: true`를 무시해 생성 타입에 `| null`이 빠졌다.
+        // 실제로는 null을 그대로 보내야 하므로(undefined면 필드 자체가 누락) 타입만 캐스팅한다.
+        nameChip: nameChip as AdminPlaceListNameChipDto | undefined,
+        themes,
         description: description || null,
         iconColor: iconColor || null,
         accessControl,
@@ -76,17 +107,92 @@ export default function PlaceListCreatePage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                짧은 이름 <span className="text-muted-foreground text-xs">(최대 8자, 검색 태그에 표시)</span>
-              </label>
-              <input
-                value={shortName}
-                onChange={(e) => setShortName(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="예: 홍대핫플"
-                maxLength={8}
+            <div className="space-y-3 rounded-md border p-4">
+              <div>
+                <h4 className="text-sm font-semibold">이름칩</h4>
+                <p className="text-xs text-muted-foreground">
+                  검색 카드/장소상세/리스트상세에 공통으로 노출되는 칩입니다. 미지정 시 기본 칩 디자인으로 노출됩니다.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">칩 문구</label>
+                <input
+                  value={chipText}
+                  onChange={(e) => setChipText(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md"
+                  placeholder="예: 홍대핫플"
+                />
+                <p className="text-xs text-muted-foreground">
+                  문구가 비어 있으면 이름칩 전체가 사라지며, 아래 아이콘/색상 지정도 함께 무시됩니다.
+                </p>
+              </div>
+
+              <ImageUploader
+                value={chipIconUrls}
+                onChange={setChipIconUrls}
+                purposeType={AdminImageUploadPurposeTypeDTO.Banner}
+                maxImages={1}
+                label="칩 아이콘"
               />
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">칩 배경색</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={chipBackgroundColor || "#FFFFFF"}
+                    onChange={(e) => setChipBackgroundColor(e.target.value)}
+                    className="w-10 h-10 rounded cursor-pointer border"
+                  />
+                  <input
+                    value={chipBackgroundColor}
+                    onChange={(e) => setChipBackgroundColor(e.target.value)}
+                    className="w-32 px-3 py-2 border rounded-md font-mono text-sm"
+                    placeholder="미지정"
+                  />
+                  {chipBackgroundColor && (
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setChipBackgroundColor("")}>
+                      지우기
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">칩 테두리색</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={chipBorderColor || "#FFFFFF"}
+                    onChange={(e) => setChipBorderColor(e.target.value)}
+                    className="w-10 h-10 rounded cursor-pointer border"
+                  />
+                  <input
+                    value={chipBorderColor}
+                    onChange={(e) => setChipBorderColor(e.target.value)}
+                    className="w-32 px-3 py-2 border rounded-md font-mono text-sm"
+                    placeholder="미지정"
+                  />
+                  {chipBorderColor && (
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setChipBorderColor("")}>
+                      지우기
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">관심 테마</label>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {THEME_OPTIONS.map((theme) => (
+                  <label key={theme} className="flex items-center gap-2 text-sm">
+                    <Checkbox checked={themes.includes(theme)} onCheckedChange={() => toggleTheme(theme)} />
+                    {THEME_LABELS[theme]}
+                  </label>
+                ))}
+              </div>
             </div>
 
             <div className="space-y-2">
