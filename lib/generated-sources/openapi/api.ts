@@ -1674,12 +1674,6 @@ export interface AdminCreatePlaceListRequestDto {
      */
     'name': string;
     /**
-     * 검색 결과 카드 등 공간이 좁은 곳에 표시하는 짧은 이름 (최대 8자).
-     * @type {string}
-     * @memberof AdminCreatePlaceListRequestDto
-     */
-    'shortName'?: string | null;
-    /**
      * 
      * @type {string}
      * @memberof AdminCreatePlaceListRequestDto
@@ -1697,6 +1691,18 @@ export interface AdminCreatePlaceListRequestDto {
      * @memberof AdminCreatePlaceListRequestDto
      */
     'iconColor'?: string | null;
+    /**
+     * 
+     * @type {AdminPlaceListNameChipDto}
+     * @memberof AdminCreatePlaceListRequestDto
+     */
+    'nameChip'?: AdminPlaceListNameChipDto;
+    /**
+     * 저장리스트에 지정할 관심 테마 목록. 지정 안 하면 빈 배열로 저장.
+     * @type {Array<AdminUserInterestedThemeDto>}
+     * @memberof AdminCreatePlaceListRequestDto
+     */
+    'themes'?: Array<AdminUserInterestedThemeDto>;
     /**
      * 
      * @type {AdminPlaceListAccessControlDto}
@@ -2676,12 +2682,6 @@ export interface AdminPlaceListDetailDto {
      */
     'name': string;
     /**
-     * 검색 결과 카드 등 공간이 좁은 곳에 표시하는 짧은 이름 (최대 8자).
-     * @type {string}
-     * @memberof AdminPlaceListDetailDto
-     */
-    'shortName'?: string | null;
-    /**
      * 
      * @type {string}
      * @memberof AdminPlaceListDetailDto
@@ -2699,6 +2699,18 @@ export interface AdminPlaceListDetailDto {
      * @memberof AdminPlaceListDetailDto
      */
     'iconColor'?: string | null;
+    /**
+     * 
+     * @type {AdminPlaceListNameChipDto}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'nameChip'?: AdminPlaceListNameChipDto;
+    /**
+     * 저장리스트에 지정된 관심 테마 목록. 지정 안 하면 빈 배열.
+     * @type {Array<AdminUserInterestedThemeDto>}
+     * @memberof AdminPlaceListDetailDto
+     */
+    'themes': Array<AdminUserInterestedThemeDto>;
     /**
      * 
      * @type {AdminPlaceListAccessControlDto}
@@ -2743,12 +2755,6 @@ export interface AdminPlaceListDto {
      */
     'name': string;
     /**
-     * 검색 결과 카드 등 공간이 좁은 곳에 표시하는 짧은 이름 (최대 8자).
-     * @type {string}
-     * @memberof AdminPlaceListDto
-     */
-    'shortName'?: string | null;
-    /**
      * 
      * @type {string}
      * @memberof AdminPlaceListDto
@@ -2774,6 +2780,18 @@ export interface AdminPlaceListDto {
     'placeCount': number;
     /**
      * 
+     * @type {AdminPlaceListNameChipDto}
+     * @memberof AdminPlaceListDto
+     */
+    'nameChip'?: AdminPlaceListNameChipDto;
+    /**
+     * 저장리스트에 지정된 관심 테마 목록. 지정 안 하면 빈 배열.
+     * @type {Array<AdminUserInterestedThemeDto>}
+     * @memberof AdminPlaceListDto
+     */
+    'themes': Array<AdminUserInterestedThemeDto>;
+    /**
+     * 
      * @type {AdminPlaceListAccessControlDto}
      * @memberof AdminPlaceListDto
      */
@@ -2790,6 +2808,37 @@ export interface AdminPlaceListDto {
      * @memberof AdminPlaceListDto
      */
     'updatedAt': EpochMillisTimestamp;
+}
+/**
+ * 저장리스트 이름칩. 검색 카드/PDP/상세화면에 공통으로 쓰이는 칩 하나의 표현.
+ * @export
+ * @interface AdminPlaceListNameChipDto
+ */
+export interface AdminPlaceListNameChipDto {
+    /**
+     * 칩 표시 문구
+     * @type {string}
+     * @memberof AdminPlaceListNameChipDto
+     */
+    'text': string;
+    /**
+     * 칩 좌측 아이콘 이미지 URL. null이면 기본 저장리스트 배지 아이콘 사용.
+     * @type {string}
+     * @memberof AdminPlaceListNameChipDto
+     */
+    'iconUrl'?: string | null;
+    /**
+     * 칩 배경색 hex (예 \"#FFFFFF\"). null이면 기본 스타일.
+     * @type {string}
+     * @memberof AdminPlaceListNameChipDto
+     */
+    'backgroundColor'?: string | null;
+    /**
+     * 칩 테두리색 hex (예 \"#C4132F\"). null이면 기본 스타일.
+     * @type {string}
+     * @memberof AdminPlaceListNameChipDto
+     */
+    'borderColor'?: string | null;
 }
 /**
  * 저장 리스트에 포함된 장소 정보
@@ -3949,12 +3998,6 @@ export interface AdminUpdatePlaceListRequestDto {
      */
     'name': string;
     /**
-     * 검색 결과 카드 등 공간이 좁은 곳에 표시하는 짧은 이름 (최대 8자).
-     * @type {string}
-     * @memberof AdminUpdatePlaceListRequestDto
-     */
-    'shortName'?: string | null;
-    /**
      * 
      * @type {string}
      * @memberof AdminUpdatePlaceListRequestDto
@@ -3972,6 +4015,18 @@ export interface AdminUpdatePlaceListRequestDto {
      * @memberof AdminUpdatePlaceListRequestDto
      */
     'iconColor'?: string | null;
+    /**
+     * 
+     * @type {AdminPlaceListNameChipDto}
+     * @memberof AdminUpdatePlaceListRequestDto
+     */
+    'nameChip'?: AdminPlaceListNameChipDto;
+    /**
+     * 저장리스트에 지정할 관심 테마 목록. 지정 안 하면 빈 배열로 저장.
+     * @type {Array<AdminUserInterestedThemeDto>}
+     * @memberof AdminUpdatePlaceListRequestDto
+     */
+    'themes'?: Array<AdminUserInterestedThemeDto>;
     /**
      * 
      * @type {AdminPlaceListAccessControlDto}
@@ -4090,6 +4145,26 @@ export interface AdminUpdateSubBuildingRequestDTO {
      */
     'notes'?: string;
 }
+/**
+ * 사용자의 관심 테마. 윌리의 외출 NUX 튜토리얼 첫 번째 메인 미션에서 선택한다. Figma 1427-8980 화면 기준 8개 항목. - WHEELCHAIR_REVIEW: 휠체어 찐방문기 - MEDIA_HOTSPOT: 방송·SNS 핫플 - FOOD_CAFE_TOUR: 맛집·카페 투어 - EMOTIONAL_VIEW: 감성·뷰 맛집 - SPORTS: 야구장·스포츠 - CULTURE: 공연·전시·영화 - TRAVEL: 훌쩍 떠나는 여행 - NATURE: 자연·공원 힐링 
+ * @export
+ * @enum {string}
+ */
+
+export const AdminUserInterestedThemeDto = {
+    WheelchairReview: 'WHEELCHAIR_REVIEW',
+    MediaHotspot: 'MEDIA_HOTSPOT',
+    FoodCafeTour: 'FOOD_CAFE_TOUR',
+    EmotionalView: 'EMOTIONAL_VIEW',
+    Sports: 'SPORTS',
+    Culture: 'CULTURE',
+    Travel: 'TRAVEL',
+    Nature: 'NATURE'
+} as const;
+
+export type AdminUserInterestedThemeDto = typeof AdminUserInterestedThemeDto[keyof typeof AdminUserInterestedThemeDto];
+
+
 /**
  * 검수 결과 반영 시 수행된 작업
  * @export

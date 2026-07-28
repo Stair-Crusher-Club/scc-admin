@@ -20,12 +20,12 @@ export const getColumns = (): ColumnDef<AdminPlaceListDto>[] => [
     },
   },
   {
-    accessorKey: "shortName",
-    header: "짧은 이름",
+    accessorKey: "nameChip",
+    header: "이름칩",
     cell: ({ row }) => {
       return (
         <div className="text-sm text-muted-foreground">
-          {row.original.shortName ?? "-"}
+          {row.original.nameChip?.text ?? "-"}
         </div>
       )
     },
