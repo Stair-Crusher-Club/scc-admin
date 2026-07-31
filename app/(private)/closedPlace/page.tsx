@@ -79,6 +79,14 @@ export default function ClosedPlacePage() {
                         ? ` · 근거: ${REASON_LABEL[candidate.closureReason] ?? candidate.closureReason}`
                         : ""}
                       {candidate.matchConfidence != null ? ` · 신뢰도: ${candidate.matchConfidence.toFixed(2)}` : ""}
+                      {/* 근거가 된 원본 레코드(공공데이터 인허가 등)의 상호명이 우리 place 이름과 다르면
+                          왜 이 장소가 폐업 추정됐는지 화면에서 알 수 없으므로 함께 보여준다. */}
+                      {candidate.originalName && candidate.originalName !== candidate.name && (
+                        <S.OriginalRecord>
+                          원본: {candidate.originalName}
+                          {candidate.originalAddress ? ` (${candidate.originalAddress})` : ""}
+                        </S.OriginalRecord>
+                      )}
                     </S.TextContent>
                     <S.ExternalMap onClick={() => openNaverMap(candidate)}>
                       <Image src={naverMapIcon} alt="네이버 지도" />

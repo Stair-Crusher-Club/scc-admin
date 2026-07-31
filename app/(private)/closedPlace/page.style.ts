@@ -30,6 +30,15 @@ export const TextContent = styled("p", {
   },
 })
 
+export const OriginalRecord = styled("span", {
+  base: {
+    display: "block",
+    marginTop: "4px",
+    fontSize: "13px",
+    color: "#888",
+  },
+})
+
 export const ExternalMap = styled("div", {
   base: {
     cursor: "pointer",
