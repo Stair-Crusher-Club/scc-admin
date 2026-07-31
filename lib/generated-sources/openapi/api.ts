@@ -1225,6 +1225,18 @@ export interface AdminClosedPlaceCandidateDTO {
      * @memberof AdminClosedPlaceCandidateDTO
      */
     'matchConfidence'?: number;
+    /**
+     * 폐업 추정의 근거가 된 원본 레코드의 상호명. PUBLIC_DATA면 공공데이터(행안부 인허가) 상호명이라 우리 place 이름과 다를 수 있다.
+     * @type {string}
+     * @memberof AdminClosedPlaceCandidateDTO
+     */
+    'originalName'?: string;
+    /**
+     * 폐업 추정의 근거가 된 원본 레코드의 주소.
+     * @type {string}
+     * @memberof AdminClosedPlaceCandidateDTO
+     */
+    'originalAddress'?: string;
 }
 /**
  * 폐업 추정 소스 (어떤 방식으로 확인했는지) - NAVER_MAPS_API: 네이버 지도 API 검색 - NAVER_PLACE_CRAWLER: 네이버 플레이스 크롤링 - PUBLIC_DATA: 공공데이터 폐업 정보 - KAKAO / GOOGLE / TMAP: 각 지도 서비스 - MANUAL: 관리자 수동 입력 
