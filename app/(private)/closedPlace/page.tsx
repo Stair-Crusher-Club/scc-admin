@@ -6,6 +6,7 @@ import { useState } from "react"
 
 import {
   AdminClosedPlaceCandidateDTO,
+  AdminClosedPlaceCandidateFilterDTO,
   AdminClosureCheckSourceDTO,
   AdminClosureReasonDTO,
 } from "@/lib/generated-sources/openapi"
@@ -34,9 +35,19 @@ const REASON_LABEL: Record<AdminClosureReasonDTO, string> = {
   [AdminClosureReasonDTO.ManualCheck]: "수동 확인",
 }
 
+// 검수 큐를 기본 탭으로 둔다. 슬랙 다이제스트가 "검수 필요"라고 알린 장소가
+// 목록 정렬(후보 생성 시각) 때문에 수천 번째에 묻혀 사실상 접근 불가였다.
+const TABS = [
+  { filter: AdminClosedPlaceCandidateFilterDTO.NeedsReview, label: "검수 필요" },
+  { filter: AdminClosedPlaceCandidateFilterDTO.NeedsAction, label: "전체 미처리" },
+  { filter: AdminClosedPlaceCandidateFilterDTO.AccessibilityRegistered, label: "접근성 정보가 등록된 장소" },
+] as const
+
 export default function ClosedPlacePage() {
-  const [activeTab, setActiveTab] = useState<"all" | "registered">("all")
-  const { data, fetchNextPage, hasNextPage, refetch } = useClosedPlaceCandidates(activeTab === "registered")
+  const [activeTab, setActiveTab] = useState<AdminClosedPlaceCandidateFilterDTO>(
+    AdminClosedPlaceCandidateFilterDTO.NeedsReview,
+  )
+  const { data, fetchNextPage, hasNextPage, refetch } = useClosedPlaceCandidates(activeTab)
   const closedPlaceCandidates: AdminClosedPlaceCandidateDTO[] =
     data?.pages.flatMap((p) => p.items)?.filter((it) => it !== undefined) ?? []
 
@@ -53,12 +64,11 @@ export default function ClosedPlacePage() {
     <>
       <Contents.Normal>
         <S.TabContainer>
-          <S.Tab active={activeTab === "all"} onClick={() => setActiveTab("all")}>
-            전체
-          </S.Tab>
-          <S.Tab active={activeTab === "registered"} onClick={() => setActiveTab("registered")}>
-            접근성 정보가 등록된 장소
-          </S.Tab>
+          {TABS.map(({ filter, label }) => (
+            <S.Tab key={filter} active={activeTab === filter} onClick={() => setActiveTab(filter)}>
+              {label}
+            </S.Tab>
+          ))}
         </S.TabContainer>
         <S.TableWrapper>
           <div>

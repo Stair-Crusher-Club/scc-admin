@@ -1239,6 +1239,21 @@ export interface AdminClosedPlaceCandidateDTO {
     'originalAddress'?: string;
 }
 /**
+ * 폐업 추정 후보 목록 필터 - NEEDS_REVIEW: 교차검증에서 자동 판정이 안 돼 사람 판단이 필요한 것만 (검수 큐). 검수 판정 시각 최신순. - NEEDS_ACTION: 아직 폐업 확정/무시 처리되지 않은 전체 후보 - ACCESSIBILITY_REGISTERED: NEEDS_ACTION 중 접근성 정보가 등록된 장소 
+ * @export
+ * @enum {string}
+ */
+
+export const AdminClosedPlaceCandidateFilterDTO = {
+    NeedsReview: 'NEEDS_REVIEW',
+    NeedsAction: 'NEEDS_ACTION',
+    AccessibilityRegistered: 'ACCESSIBILITY_REGISTERED'
+} as const;
+
+export type AdminClosedPlaceCandidateFilterDTO = typeof AdminClosedPlaceCandidateFilterDTO[keyof typeof AdminClosedPlaceCandidateFilterDTO];
+
+
+/**
  * 폐업 추정 소스 (어떤 방식으로 확인했는지) - NAVER_MAPS_API: 네이버 지도 API 검색 - NAVER_PLACE_CRAWLER: 네이버 플레이스 크롤링 - PUBLIC_DATA: 공공데이터 폐업 정보 - KAKAO / GOOGLE / TMAP: 각 지도 서비스 - MANUAL: 관리자 수동 입력 
  * @export
  * @enum {string}
@@ -9985,13 +10000,14 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary 폐업이 추정되는 장소의 리스트를 조회한다.
-         * @param {boolean} [isAccessibilityRegistered] 
+         * @param {AdminClosedPlaceCandidateFilterDTO} [filter] 조회 대상 필터. 생략하면 NEEDS_ACTION. 하위 호환을 위해 isAccessibilityRegistered도 계속 지원하지만, 신규 클라이언트는 이 파라미터를 쓴다.
+         * @param {boolean} [isAccessibilityRegistered] deprecated. filter&#x3D;ACCESSIBILITY_REGISTERED와 동일. filter가 있으면 무시된다.
          * @param {string} [cursor] 
          * @param {string} [limit] default 값은 50으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listClosedPlaceCandidates: async (isAccessibilityRegistered?: boolean, cursor?: string, limit?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listClosedPlaceCandidates: async (filter?: AdminClosedPlaceCandidateFilterDTO, isAccessibilityRegistered?: boolean, cursor?: string, limit?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/closed-place-candidates`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -10007,6 +10023,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             // authentication Admin required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (filter !== undefined) {
+                localVarQueryParameter['filter'] = filter;
+            }
 
             if (isAccessibilityRegistered !== undefined) {
                 localVarQueryParameter['isAccessibilityRegistered'] = isAccessibilityRegistered;
@@ -10596,14 +10616,15 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 폐업이 추정되는 장소의 리스트를 조회한다.
-         * @param {boolean} [isAccessibilityRegistered] 
+         * @param {AdminClosedPlaceCandidateFilterDTO} [filter] 조회 대상 필터. 생략하면 NEEDS_ACTION. 하위 호환을 위해 isAccessibilityRegistered도 계속 지원하지만, 신규 클라이언트는 이 파라미터를 쓴다.
+         * @param {boolean} [isAccessibilityRegistered] deprecated. filter&#x3D;ACCESSIBILITY_REGISTERED와 동일. filter가 있으면 무시된다.
          * @param {string} [cursor] 
          * @param {string} [limit] default 값은 50으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listClosedPlaceCandidates(isAccessibilityRegistered?: boolean, cursor?: string, limit?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListClosedPlaceCandidatesResponseDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listClosedPlaceCandidates(isAccessibilityRegistered, cursor, limit, options);
+        async listClosedPlaceCandidates(filter?: AdminClosedPlaceCandidateFilterDTO, isAccessibilityRegistered?: boolean, cursor?: string, limit?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListClosedPlaceCandidatesResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listClosedPlaceCandidates(filter, isAccessibilityRegistered, cursor, limit, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -10943,14 +10964,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 
          * @summary 폐업이 추정되는 장소의 리스트를 조회한다.
-         * @param {boolean} [isAccessibilityRegistered] 
+         * @param {AdminClosedPlaceCandidateFilterDTO} [filter] 조회 대상 필터. 생략하면 NEEDS_ACTION. 하위 호환을 위해 isAccessibilityRegistered도 계속 지원하지만, 신규 클라이언트는 이 파라미터를 쓴다.
+         * @param {boolean} [isAccessibilityRegistered] deprecated. filter&#x3D;ACCESSIBILITY_REGISTERED와 동일. filter가 있으면 무시된다.
          * @param {string} [cursor] 
          * @param {string} [limit] default 값은 50으로 설정된다.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listClosedPlaceCandidates(isAccessibilityRegistered?: boolean, cursor?: string, limit?: string, options?: any): AxiosPromise<AdminListClosedPlaceCandidatesResponseDTO> {
-            return localVarFp.listClosedPlaceCandidates(isAccessibilityRegistered, cursor, limit, options).then((request) => request(axios, basePath));
+        listClosedPlaceCandidates(filter?: AdminClosedPlaceCandidateFilterDTO, isAccessibilityRegistered?: boolean, cursor?: string, limit?: string, options?: any): AxiosPromise<AdminListClosedPlaceCandidatesResponseDTO> {
+            return localVarFp.listClosedPlaceCandidates(filter, isAccessibilityRegistered, cursor, limit, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -11330,15 +11352,16 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary 폐업이 추정되는 장소의 리스트를 조회한다.
-     * @param {boolean} [isAccessibilityRegistered] 
+     * @param {AdminClosedPlaceCandidateFilterDTO} [filter] 조회 대상 필터. 생략하면 NEEDS_ACTION. 하위 호환을 위해 isAccessibilityRegistered도 계속 지원하지만, 신규 클라이언트는 이 파라미터를 쓴다.
+     * @param {boolean} [isAccessibilityRegistered] deprecated. filter&#x3D;ACCESSIBILITY_REGISTERED와 동일. filter가 있으면 무시된다.
      * @param {string} [cursor] 
      * @param {string} [limit] default 값은 50으로 설정된다.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public listClosedPlaceCandidates(isAccessibilityRegistered?: boolean, cursor?: string, limit?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).listClosedPlaceCandidates(isAccessibilityRegistered, cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    public listClosedPlaceCandidates(filter?: AdminClosedPlaceCandidateFilterDTO, isAccessibilityRegistered?: boolean, cursor?: string, limit?: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).listClosedPlaceCandidates(filter, isAccessibilityRegistered, cursor, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
