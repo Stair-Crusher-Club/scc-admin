@@ -417,6 +417,44 @@ export interface AdminAccessibilityReportListItemDTO {
     'isAutoResolved'?: boolean;
 }
 /**
+ * 정복 대상 장소 목록에 장소를 일괄 추가하는 요청
+ * @export
+ * @interface AdminAddPlacesToConquerTargetPlaceListRequestDto
+ */
+export interface AdminAddPlacesToConquerTargetPlaceListRequestDto {
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminAddPlacesToConquerTargetPlaceListRequestDto
+     */
+    'placeIds': Array<string>;
+}
+/**
+ * 정복 대상 장소 목록에 장소를 일괄 추가한 결과. 어드민이 붙여넣은 ID 중 오타/미존재를 되돌려주기 위해 실패 목록을 함께 내려준다.
+ * @export
+ * @interface AdminAddPlacesToConquerTargetPlaceListResponseDto
+ */
+export interface AdminAddPlacesToConquerTargetPlaceListResponseDto {
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminAddPlacesToConquerTargetPlaceListResponseDto
+     */
+    'addedCount': number;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminAddPlacesToConquerTargetPlaceListResponseDto
+     */
+    'alreadyExistingPlaceIds': Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AdminAddPlacesToConquerTargetPlaceListResponseDto
+     */
+    'notFoundPlaceIds': Array<string>;
+}
+/**
  * Place를 SubBuilding에 할당한 결과
  * @export
  * @interface AdminAssignPlacesToSubBuildingsResponseDTO
@@ -1139,6 +1177,12 @@ export interface AdminChallengeDTO {
      * @memberof AdminChallengeDTO
      */
     'maxParticipants'?: number;
+    /**
+     * 지정 시 이 챌린지의 대상 장소는 해당 정복 대상 리스트로 정해지며, goal 은 리스트의 장소 수로 서버가 덮어쓴다. conditions 는 무시된다.
+     * @type {string}
+     * @memberof AdminChallengeDTO
+     */
+    'conquerTargetPlaceListId'?: string;
 }
 /**
  * 원형 검색 영역
@@ -1300,6 +1344,74 @@ export interface AdminConfirmPlaceAccessibilitySuggestionRequestDto {
      * @memberof AdminConfirmPlaceAccessibilitySuggestionRequestDto
      */
     'adminNote'?: string | null;
+}
+/**
+ * 정복 대상 장소 목록에 포함된 장소 정보
+ * @export
+ * @interface AdminConquerTargetPlaceDto
+ */
+export interface AdminConquerTargetPlaceDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminConquerTargetPlaceDto
+     */
+    'placeId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminConquerTargetPlaceDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminConquerTargetPlaceDto
+     */
+    'address': string;
+    /**
+     * 접근성 정보(PlaceAccessibility)가 등록되어 \"정복\"된 상태인지 여부
+     * @type {boolean}
+     * @memberof AdminConquerTargetPlaceDto
+     */
+    'isConquered': boolean;
+}
+/**
+ * 정복 대상 장소 목록 항목
+ * @export
+ * @interface AdminConquerTargetPlaceListDto
+ */
+export interface AdminConquerTargetPlaceListDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminConquerTargetPlaceListDto
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminConquerTargetPlaceListDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminConquerTargetPlaceListDto
+     */
+    'placeCount': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof AdminConquerTargetPlaceListDto
+     */
+    'conqueredPlaceCount': number;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminConquerTargetPlaceListDto
+     */
+    'createdAt': EpochMillisTimestamp;
 }
 /**
  * 
@@ -1507,6 +1619,25 @@ export interface AdminCreateChallengeRequestDTO {
      * @memberof AdminCreateChallengeRequestDTO
      */
     'maxParticipants'?: number;
+    /**
+     * 지정 시 이 챌린지의 대상 장소는 해당 정복 대상 리스트로 정해지며, goal 은 리스트의 장소 수로 서버가 덮어쓴다. conditions 는 무시된다.
+     * @type {string}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'conquerTargetPlaceListId'?: string;
+}
+/**
+ * 정복 대상 장소 목록 생성 요청
+ * @export
+ * @interface AdminCreateConquerTargetPlaceListRequestDto
+ */
+export interface AdminCreateConquerTargetPlaceListRequestDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminCreateConquerTargetPlaceListRequestDto
+     */
+    'name': string;
 }
 /**
  * 
@@ -2234,6 +2365,38 @@ export interface AdminListClosedPlaceCandidatesResponseDTO {
      * @memberof AdminListClosedPlaceCandidatesResponseDTO
      */
     'cursor'?: string;
+}
+/**
+ * 정복 대상 장소 목록 목록 조회 응답
+ * @export
+ * @interface AdminListConquerTargetPlaceListsResponseDto
+ */
+export interface AdminListConquerTargetPlaceListsResponseDto {
+    /**
+     * 
+     * @type {Array<AdminConquerTargetPlaceListDto>}
+     * @memberof AdminListConquerTargetPlaceListsResponseDto
+     */
+    'items': Array<AdminConquerTargetPlaceListDto>;
+}
+/**
+ * 정복 대상 장소 목록에 포함된 장소 커서 페이지네이션 조회 응답
+ * @export
+ * @interface AdminListConquerTargetPlacesResponseDto
+ */
+export interface AdminListConquerTargetPlacesResponseDto {
+    /**
+     * 
+     * @type {Array<AdminConquerTargetPlaceDto>}
+     * @memberof AdminListConquerTargetPlacesResponseDto
+     */
+    'items': Array<AdminConquerTargetPlaceDto>;
+    /**
+     * 다음 페이지 커서 (없으면 마지막 페이지)
+     * @type {string}
+     * @memberof AdminListConquerTargetPlacesResponseDto
+     */
+    'cursor'?: string | null;
 }
 /**
  * 
@@ -3875,6 +4038,25 @@ export interface AdminUpdateChallengeRequestDTO {
      * @memberof AdminUpdateChallengeRequestDTO
      */
     'maxParticipants'?: number;
+    /**
+     * 지정 시 이 챌린지의 대상 장소는 해당 정복 대상 리스트로 정해지며, goal 은 리스트의 장소 수로 서버가 덮어쓴다. conditions 는 무시된다.
+     * @type {string}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'conquerTargetPlaceListId'?: string;
+}
+/**
+ * 정복 대상 장소 목록 수정 요청
+ * @export
+ * @interface AdminUpdateConquerTargetPlaceListRequestDto
+ */
+export interface AdminUpdateConquerTargetPlaceListRequestDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminUpdateConquerTargetPlaceListRequestDto
+     */
+    'name': string;
 }
 /**
  * 
@@ -9043,6 +9225,648 @@ export class ChallengeApi extends BaseAPI {
      */
     public challengesPost(adminCreateChallengeRequestDTO: AdminCreateChallengeRequestDTO, options?: AxiosRequestConfig) {
         return ChallengeApiFp(this.configuration).challengesPost(adminCreateChallengeRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * ConquerTargetPlaceListApi - axios parameter creator
+ * @export
+ */
+export const ConquerTargetPlaceListApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에 장소를 일괄 추가한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {AdminAddPlacesToConquerTargetPlaceListRequestDto} adminAddPlacesToConquerTargetPlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addPlacesToConquerTargetPlaceList: async (id: string, adminAddPlacesToConquerTargetPlaceListRequestDto: AdminAddPlacesToConquerTargetPlaceListRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('addPlacesToConquerTargetPlaceList', 'id', id)
+            // verify required parameter 'adminAddPlacesToConquerTargetPlaceListRequestDto' is not null or undefined
+            assertParamExists('addPlacesToConquerTargetPlaceList', 'adminAddPlacesToConquerTargetPlaceListRequestDto', adminAddPlacesToConquerTargetPlaceListRequestDto)
+            const localVarPath = `/conquer-target-place-lists/{id}/places`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminAddPlacesToConquerTargetPlaceListRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 생성한다.
+         * @param {AdminCreateConquerTargetPlaceListRequestDto} adminCreateConquerTargetPlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createConquerTargetPlaceList: async (adminCreateConquerTargetPlaceListRequestDto: AdminCreateConquerTargetPlaceListRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminCreateConquerTargetPlaceListRequestDto' is not null or undefined
+            assertParamExists('createConquerTargetPlaceList', 'adminCreateConquerTargetPlaceListRequestDto', adminCreateConquerTargetPlaceListRequestDto)
+            const localVarPath = `/conquer-target-place-lists`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCreateConquerTargetPlaceListRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 삭제한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteConquerTargetPlaceList: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteConquerTargetPlaceList', 'id', id)
+            const localVarPath = `/conquer-target-place-lists/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록 상세를 조회한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getConquerTargetPlaceList: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getConquerTargetPlaceList', 'id', id)
+            const localVarPath = `/conquer-target-place-lists/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listConquerTargetPlaceLists: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/conquer-target-place-lists`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에 포함된 장소를 커서 페이지네이션으로 조회한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listConquerTargetPlaces: async (id: string, cursor?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('listConquerTargetPlaces', 'id', id)
+            const localVarPath = `/conquer-target-place-lists/{id}/places`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에서 장소를 제거한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {string} placeId Place ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removePlaceFromConquerTargetPlaceList: async (id: string, placeId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('removePlaceFromConquerTargetPlaceList', 'id', id)
+            // verify required parameter 'placeId' is not null or undefined
+            assertParamExists('removePlaceFromConquerTargetPlaceList', 'placeId', placeId)
+            const localVarPath = `/conquer-target-place-lists/{id}/places/{placeId}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"placeId"}}`, encodeURIComponent(String(placeId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 수정한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {AdminUpdateConquerTargetPlaceListRequestDto} adminUpdateConquerTargetPlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateConquerTargetPlaceList: async (id: string, adminUpdateConquerTargetPlaceListRequestDto: AdminUpdateConquerTargetPlaceListRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateConquerTargetPlaceList', 'id', id)
+            // verify required parameter 'adminUpdateConquerTargetPlaceListRequestDto' is not null or undefined
+            assertParamExists('updateConquerTargetPlaceList', 'adminUpdateConquerTargetPlaceListRequestDto', adminUpdateConquerTargetPlaceListRequestDto)
+            const localVarPath = `/conquer-target-place-lists/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminUpdateConquerTargetPlaceListRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ConquerTargetPlaceListApi - functional programming interface
+ * @export
+ */
+export const ConquerTargetPlaceListApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ConquerTargetPlaceListApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에 장소를 일괄 추가한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {AdminAddPlacesToConquerTargetPlaceListRequestDto} adminAddPlacesToConquerTargetPlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addPlacesToConquerTargetPlaceList(id: string, adminAddPlacesToConquerTargetPlaceListRequestDto: AdminAddPlacesToConquerTargetPlaceListRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminAddPlacesToConquerTargetPlaceListResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addPlacesToConquerTargetPlaceList(id, adminAddPlacesToConquerTargetPlaceListRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 생성한다.
+         * @param {AdminCreateConquerTargetPlaceListRequestDto} adminCreateConquerTargetPlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createConquerTargetPlaceList(adminCreateConquerTargetPlaceListRequestDto: AdminCreateConquerTargetPlaceListRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminConquerTargetPlaceListDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createConquerTargetPlaceList(adminCreateConquerTargetPlaceListRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 삭제한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteConquerTargetPlaceList(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteConquerTargetPlaceList(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록 상세를 조회한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getConquerTargetPlaceList(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminConquerTargetPlaceListDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getConquerTargetPlaceList(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listConquerTargetPlaceLists(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListConquerTargetPlaceListsResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listConquerTargetPlaceLists(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에 포함된 장소를 커서 페이지네이션으로 조회한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listConquerTargetPlaces(id: string, cursor?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListConquerTargetPlacesResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listConquerTargetPlaces(id, cursor, limit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에서 장소를 제거한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {string} placeId Place ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async removePlaceFromConquerTargetPlaceList(id: string, placeId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.removePlaceFromConquerTargetPlaceList(id, placeId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 수정한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {AdminUpdateConquerTargetPlaceListRequestDto} adminUpdateConquerTargetPlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateConquerTargetPlaceList(id: string, adminUpdateConquerTargetPlaceListRequestDto: AdminUpdateConquerTargetPlaceListRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminConquerTargetPlaceListDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateConquerTargetPlaceList(id, adminUpdateConquerTargetPlaceListRequestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * ConquerTargetPlaceListApi - factory interface
+ * @export
+ */
+export const ConquerTargetPlaceListApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ConquerTargetPlaceListApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에 장소를 일괄 추가한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {AdminAddPlacesToConquerTargetPlaceListRequestDto} adminAddPlacesToConquerTargetPlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addPlacesToConquerTargetPlaceList(id: string, adminAddPlacesToConquerTargetPlaceListRequestDto: AdminAddPlacesToConquerTargetPlaceListRequestDto, options?: any): AxiosPromise<AdminAddPlacesToConquerTargetPlaceListResponseDto> {
+            return localVarFp.addPlacesToConquerTargetPlaceList(id, adminAddPlacesToConquerTargetPlaceListRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 생성한다.
+         * @param {AdminCreateConquerTargetPlaceListRequestDto} adminCreateConquerTargetPlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createConquerTargetPlaceList(adminCreateConquerTargetPlaceListRequestDto: AdminCreateConquerTargetPlaceListRequestDto, options?: any): AxiosPromise<AdminConquerTargetPlaceListDto> {
+            return localVarFp.createConquerTargetPlaceList(adminCreateConquerTargetPlaceListRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 삭제한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteConquerTargetPlaceList(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteConquerTargetPlaceList(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록 상세를 조회한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getConquerTargetPlaceList(id: string, options?: any): AxiosPromise<AdminConquerTargetPlaceListDto> {
+            return localVarFp.getConquerTargetPlaceList(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 조회한다.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listConquerTargetPlaceLists(options?: any): AxiosPromise<AdminListConquerTargetPlaceListsResponseDto> {
+            return localVarFp.listConquerTargetPlaceLists(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에 포함된 장소를 커서 페이지네이션으로 조회한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listConquerTargetPlaces(id: string, cursor?: string, limit?: number, options?: any): AxiosPromise<AdminListConquerTargetPlacesResponseDto> {
+            return localVarFp.listConquerTargetPlaces(id, cursor, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에서 장소를 제거한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {string} placeId Place ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removePlaceFromConquerTargetPlaceList(id: string, placeId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.removePlaceFromConquerTargetPlaceList(id, placeId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록을 수정한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {AdminUpdateConquerTargetPlaceListRequestDto} adminUpdateConquerTargetPlaceListRequestDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateConquerTargetPlaceList(id: string, adminUpdateConquerTargetPlaceListRequestDto: AdminUpdateConquerTargetPlaceListRequestDto, options?: any): AxiosPromise<AdminConquerTargetPlaceListDto> {
+            return localVarFp.updateConquerTargetPlaceList(id, adminUpdateConquerTargetPlaceListRequestDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ConquerTargetPlaceListApi - object-oriented interface
+ * @export
+ * @class ConquerTargetPlaceListApi
+ * @extends {BaseAPI}
+ */
+export class ConquerTargetPlaceListApi extends BaseAPI {
+    /**
+     * 
+     * @summary 정복 대상 장소 목록에 장소를 일괄 추가한다.
+     * @param {string} id ConquerTargetPlaceList ID
+     * @param {AdminAddPlacesToConquerTargetPlaceListRequestDto} adminAddPlacesToConquerTargetPlaceListRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ConquerTargetPlaceListApi
+     */
+    public addPlacesToConquerTargetPlaceList(id: string, adminAddPlacesToConquerTargetPlaceListRequestDto: AdminAddPlacesToConquerTargetPlaceListRequestDto, options?: AxiosRequestConfig) {
+        return ConquerTargetPlaceListApiFp(this.configuration).addPlacesToConquerTargetPlaceList(id, adminAddPlacesToConquerTargetPlaceListRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 정복 대상 장소 목록을 생성한다.
+     * @param {AdminCreateConquerTargetPlaceListRequestDto} adminCreateConquerTargetPlaceListRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ConquerTargetPlaceListApi
+     */
+    public createConquerTargetPlaceList(adminCreateConquerTargetPlaceListRequestDto: AdminCreateConquerTargetPlaceListRequestDto, options?: AxiosRequestConfig) {
+        return ConquerTargetPlaceListApiFp(this.configuration).createConquerTargetPlaceList(adminCreateConquerTargetPlaceListRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 정복 대상 장소 목록을 삭제한다.
+     * @param {string} id ConquerTargetPlaceList ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ConquerTargetPlaceListApi
+     */
+    public deleteConquerTargetPlaceList(id: string, options?: AxiosRequestConfig) {
+        return ConquerTargetPlaceListApiFp(this.configuration).deleteConquerTargetPlaceList(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 정복 대상 장소 목록 상세를 조회한다.
+     * @param {string} id ConquerTargetPlaceList ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ConquerTargetPlaceListApi
+     */
+    public getConquerTargetPlaceList(id: string, options?: AxiosRequestConfig) {
+        return ConquerTargetPlaceListApiFp(this.configuration).getConquerTargetPlaceList(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 정복 대상 장소 목록을 조회한다.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ConquerTargetPlaceListApi
+     */
+    public listConquerTargetPlaceLists(options?: AxiosRequestConfig) {
+        return ConquerTargetPlaceListApiFp(this.configuration).listConquerTargetPlaceLists(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 정복 대상 장소 목록에 포함된 장소를 커서 페이지네이션으로 조회한다.
+     * @param {string} id ConquerTargetPlaceList ID
+     * @param {string} [cursor] 페이지네이션 커서
+     * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ConquerTargetPlaceListApi
+     */
+    public listConquerTargetPlaces(id: string, cursor?: string, limit?: number, options?: AxiosRequestConfig) {
+        return ConquerTargetPlaceListApiFp(this.configuration).listConquerTargetPlaces(id, cursor, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 정복 대상 장소 목록에서 장소를 제거한다.
+     * @param {string} id ConquerTargetPlaceList ID
+     * @param {string} placeId Place ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ConquerTargetPlaceListApi
+     */
+    public removePlaceFromConquerTargetPlaceList(id: string, placeId: string, options?: AxiosRequestConfig) {
+        return ConquerTargetPlaceListApiFp(this.configuration).removePlaceFromConquerTargetPlaceList(id, placeId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 정복 대상 장소 목록을 수정한다.
+     * @param {string} id ConquerTargetPlaceList ID
+     * @param {AdminUpdateConquerTargetPlaceListRequestDto} adminUpdateConquerTargetPlaceListRequestDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ConquerTargetPlaceListApi
+     */
+    public updateConquerTargetPlaceList(id: string, adminUpdateConquerTargetPlaceListRequestDto: AdminUpdateConquerTargetPlaceListRequestDto, options?: AxiosRequestConfig) {
+        return ConquerTargetPlaceListApiFp(this.configuration).updateConquerTargetPlaceList(id, adminUpdateConquerTargetPlaceListRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

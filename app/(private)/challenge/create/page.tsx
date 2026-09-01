@@ -29,6 +29,7 @@ export default function CreateChallenge() {
       milestones,
       questActions,
       questRegions,
+      conquerTargetPlaceList,
       description,
       isB2B,
       isRetroactiveContributionEnabled,
@@ -42,6 +43,9 @@ export default function CreateChallenge() {
     } = values
 
     const milestoneNumbers = milestones.map((v) => parseInt(v.value))
+    // ctpl 선택 시 goal/conditions 는 서버가 리스트 기준으로 덮어쓰므로, 마일스톤 끝에서 goal을 분리하는
+    // 기존 트릭(slice(0, -1))을 쓰지 않는다 — 미선택 경로는 100% 기존 동작 그대로 유지.
+    const conquerTargetPlaceListId = conquerTargetPlaceList?.value || undefined
     let icon
     if (imageUrl && imageUrl.trim() !== "") {
       icon = {
@@ -71,14 +75,17 @@ export default function CreateChallenge() {
       startsAtMillis: startDate.getTime(),
       joinStartAtMillis: joinStartDate ? joinStartDate.getTime() : undefined,
       endsAtMillis: endDate ? endDate.getTime() : undefined,
-      goal: milestoneNumbers.at(-1) ?? 0,
-      milestones: milestoneNumbers.slice(0, -1),
-      conditions: [
-        {
-          addressCondition: { rawEupMyeonDongs: questRegions?.map((v) => v.label.split(" ").at(-1) ?? "") || [] },
-          actionCondition: { types: questActions.map((v) => v.value) },
-        },
-      ],
+      goal: conquerTargetPlaceListId ? 0 : (milestoneNumbers.at(-1) ?? 0),
+      milestones: conquerTargetPlaceListId ? milestoneNumbers : milestoneNumbers.slice(0, -1),
+      conditions: conquerTargetPlaceListId
+        ? []
+        : [
+            {
+              addressCondition: { rawEupMyeonDongs: questRegions?.map((v) => v.label.split(" ").at(-1) ?? "") || [] },
+              actionCondition: { types: questActions.map((v) => v.value) },
+            },
+          ],
+      conquerTargetPlaceListId,
       description: description,
       isB2B: isB2B,
       isRetroactiveContributionEnabled: isRetroactiveContributionEnabled,

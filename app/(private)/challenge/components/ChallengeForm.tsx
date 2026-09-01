@@ -7,6 +7,7 @@ import { ChangeEventHandler, useEffect, useRef, useState } from "react"
 import { FormProvider, UseFormReturn, useWatch } from "react-hook-form"
 
 import { getImageUploadUrls } from "@/lib/apis/api"
+import { useConquerTargetPlaceLists } from "@/lib/apis/conquerTargetPlaceList"
 import { uploadImage } from "@/lib/imageUpload"
 import {
   AdminChallengeB2bFormSchemaDTO,
@@ -49,6 +50,9 @@ export interface ChallengeFormValues {
   milestones: Option[]
   questActions: Option[]
   questRegions: Option[]
+  // 지정 시 이 챌린지의 대상 장소는 해당 정복 대상 리스트로 정해지고, goal/conditions 는 서버가 덮어쓴다.
+  // 미선택은 value: "" ("지정 안 함" 옵션)로 표현한다.
+  conquerTargetPlaceList: Option
   description: string
   isB2B: boolean
   isRetroactiveContributionEnabled: boolean
@@ -68,7 +72,12 @@ export const defaultValues: Partial<ChallengeFormValues> = {
   startDate: new Date(),
   joinStartDate: null,
   endDate: null,
+  // ctpl 선택 시 milestones required가 꺼지므로(위 key/rules 참고) 한 번도 안 건드려도
+  // undefined가 아닌 빈 배열이어야 한다 — create/page.tsx의 milestones.map()이 undefined에서 죽는다.
+  milestones: [],
+  questRegions: [],
   questActions: defaultActionOptions,
+  conquerTargetPlaceList: { label: "(지정 안 함)", value: "" },
   description: "",
   isB2B: false,
   isRetroactiveContributionEnabled: false,
@@ -182,6 +191,18 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
   
   // useWatch로 b2bFormSchema 값 변화 감지
   const b2bFormSchema = useWatch({ control: form.control, name: "b2bFormSchema" })
+
+  // 정복 대상 리스트 선택 여부 감지 (선택 시 지역/액션 조건이 무시되고 goal이 리스트 크기로 대체된다)
+  const conquerTargetPlaceList = useWatch({ control: form.control, name: "conquerTargetPlaceList" })
+  const isConquerTargetPlaceListSelected = !!conquerTargetPlaceList?.value
+  const { data: conquerTargetPlaceLists } = useConquerTargetPlaceLists()
+  const conquerTargetPlaceListOptions: Option[] = [
+    { label: "(지정 안 함)", value: "" },
+    ...(conquerTargetPlaceLists ?? []).map((list) => ({ label: list.name, value: list.id })),
+  ]
+  const selectedConquerTargetPlaceList = conquerTargetPlaceLists?.find(
+    (list) => list.id === conquerTargetPlaceList?.value,
+  )
   
   // 초기화 상태 추적용 ref
   const isInitialized = useRef(false)
@@ -547,13 +568,50 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
             예: 1월 1일 시작 챌린지에 1월 15일 참여 시, 1월 1~14일 기여분도 인정
           </div>
         </div>
+        <Combobox
+          name="conquerTargetPlaceList"
+          label="정복 대상 리스트"
+          isDisabled={isEditableFieldDisabled}
+          isClearable={false}
+          options={conquerTargetPlaceListOptions}
+        />
+        {isConquerTargetPlaceListSelected && (
+          <div
+            className={css({
+              fontSize: "12px",
+              color: "#6b7280",
+              marginTop: "-8px",
+              marginBottom: "16px",
+              padding: "8px 12px",
+              backgroundColor: "#f3f4f6",
+              borderRadius: "6px",
+            })}
+          >
+            이 챌린지의 대상 장소는 「{conquerTargetPlaceList?.label}」 으로 정해집니다. 목표는 리스트의 장소 수(
+            {selectedConquerTargetPlaceList?.placeCount ?? "?"}개)로 서버가 자동 설정하며, 지역/액션 조건은 무시됩니다.
+          </div>
+        )}
         <Autocomplete
+          // ponytail: RHF Controller(v7.55)는 rules를 mount 시점에 딱 한 번만 register()하고
+          // 이후 rules prop이 바뀌어도 재등록하지 않는다(useController 소스 확인 — mount effect의
+          // deps에 rules가 없음). isConquerTargetPlaceListSelected 토글 때마다 실제로 재검증 규칙이
+          // 걸리게 하려면 key로 강제 리마운트해야 한다. required도 undefined가 아니라 explicit false로
+          // 줘야 한다 — register()의 필드 병합이 얕은 merge라 이전 required 값이 남아있을 수 있다.
+          key={isConquerTargetPlaceListSelected ? "milestones-ctpl" : "milestones-normal"}
           isMulti
           name="milestones"
-          label="마일스톤"
-          placeholder="가장 큰 숫자가 목표로 지정됩니다."
+          label={isConquerTargetPlaceListSelected ? "마일스톤 (목표는 리스트 크기로 자동 설정)" : "마일스톤"}
+          placeholder={
+            isConquerTargetPlaceListSelected
+              ? "목표를 제외한 중간 마일스톤을 입력합니다."
+              : "가장 큰 숫자가 목표로 지정됩니다."
+          }
           isDisabled={isEditableFieldDisabled}
-          rules={{ required: { value: true, message: "마일스톤을 1개 이상 입력해주세요." } }}
+          rules={
+            isConquerTargetPlaceListSelected
+              ? { required: false }
+              : { required: { value: true, message: "마일스톤을 1개 이상 입력해주세요." } }
+          }
           options={[
             { label: "100", value: "100" },
             { label: "500", value: "500" },
@@ -565,18 +623,23 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
           name="questRegions"
           label="퀘스트 대상 지역"
           placeholder="전체 지역"
-          isDisabled={isEditableFieldDisabled}
+          isDisabled={isEditableFieldDisabled || isConquerTargetPlaceListSelected}
           filterOption={(option, inputValue) => option.label.includes(inputValue)}
           options={emdOptions}
         />
         <Combobox
+          key={isConquerTargetPlaceListSelected ? "questActions-ctpl" : "questActions-normal"}
           isMulti
           name="questActions"
           label="퀘스트 대상 액션"
           placeholder="이 행동을 하면 퀘스트로 인정됩니다."
           closeMenuOnSelect={false}
-          isDisabled={isEditableFieldDisabled}
-          rules={{ required: { value: true, message: "1개 이상의 조건을 선택해주세요." } }}
+          isDisabled={isEditableFieldDisabled || isConquerTargetPlaceListSelected}
+          rules={
+            isConquerTargetPlaceListSelected
+              ? { required: false }
+              : { required: { value: true, message: "1개 이상의 조건을 선택해주세요." } }
+          }
           options={actionOptions}
         />
         <div className={css({ marginBottom: "16px" })}>

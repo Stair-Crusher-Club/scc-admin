@@ -6,7 +6,8 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { deleteChallenge, updateChallenge, useChallenge } from "@/lib/apis/api"
-import { AdminUpdateChallengeRequestDTO } from "@/lib/generated-sources/openapi"
+import { useConquerTargetPlaceLists } from "@/lib/apis/conquerTargetPlaceList"
+import { AdminChallengeDTO, AdminUpdateChallengeRequestDTO } from "@/lib/generated-sources/openapi"
 
 import { Contents } from "@/components/layout"
 
@@ -17,10 +18,25 @@ export default function ChallengeDetail() {
   const router = useRouter()
   const { id } = useParams<{ id: string }>()
   const { data: challenge } = useChallenge({ id })
+  const { data: conquerTargetPlaceLists } = useConquerTargetPlaceLists()
   const queryClient = useQueryClient()
   const form = useForm<ChallengeFormValues>({ defaultValues })
   const [editMode, setEditMode] = useState(false)
   const originalChallenge = challenge
+
+  // ctpl 챌린지는 goal이 서버가 리스트 크기로 덮어쓴 값이므로 마일스톤 끝에 붙이지 않는다.
+  // (미선택 챌린지는 기존과 동일하게 goal을 마지막 마일스톤으로 되돌려 채운다)
+  function toMilestoneOptions(c: AdminChallengeDTO) {
+    const milestoneOptions = c.milestones.map((v) => ({ label: v.toString(), value: v.toString() }))
+    if (c.conquerTargetPlaceListId) return milestoneOptions
+    return [...milestoneOptions, { label: c.goal.toString(), value: c.goal.toString() }]
+  }
+
+  function toConquerTargetPlaceListOption(c: AdminChallengeDTO) {
+    if (!c.conquerTargetPlaceListId) return { label: "(지정 안 함)", value: "" }
+    const matched = conquerTargetPlaceLists?.find((l) => l.id === c.conquerTargetPlaceListId)
+    return { label: matched?.name ?? c.conquerTargetPlaceListId, value: c.conquerTargetPlaceListId }
+  }
 
   useEffect(() => {
     if (!challenge) return
@@ -31,11 +47,9 @@ export default function ChallengeDetail() {
       startDate: new Date(challenge.startsAtMillis),
       joinStartDate: challenge.joinStartAtMillis ? new Date(challenge.joinStartAtMillis) : null,
       endDate: challenge.endsAtMillis ? new Date(challenge.endsAtMillis) : null,
-      milestones: [
-        ...challenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
-        {label: challenge.goal.toString(), value: challenge.goal.toString()}
-      ],
+      milestones: toMilestoneOptions(challenge),
       questActions: actionOptions.filter((v) => challenge.conditions[0]?.actionCondition?.types?.includes(v.value)),
+      conquerTargetPlaceList: toConquerTargetPlaceListOption(challenge),
       description: challenge.description,
       isB2B: challenge.isB2B ?? false,
       isRetroactiveContributionEnabled: challenge.isRetroactiveContributionEnabled ?? false,
@@ -47,7 +61,7 @@ export default function ChallengeDetail() {
       lastMonthRankImageUrl: challenge.lastMonthRankImageUrl || null,
       modalImageUrl: challenge.modalImageUrl || null,
     })
-  }, [challenge])
+  }, [challenge, conquerTargetPlaceLists])
 
   async function confirmAndDeleteChallenge() {
     if (!confirm("정말 삭제하시겠습니까?")) return
@@ -80,7 +94,9 @@ export default function ChallengeDetail() {
     }
 
     const milestoneNumbers = values.milestones.map((v) => parseInt(v.value))
-    
+    // ctpl 선택 시 goal/conditions 는 서버가 리스트 기준으로 덮어쓴다 — 미선택 경로는 기존과 동일.
+    const conquerTargetPlaceListId = values.conquerTargetPlaceList?.value || undefined
+
     const payload: AdminUpdateChallengeRequestDTO = {
       name: values.name,
       invitationCode: values.inviteCode || undefined,
@@ -88,14 +104,17 @@ export default function ChallengeDetail() {
       startsAtMillis: values.startDate.getTime(),
       joinStartAtMillis: values.joinStartDate ? values.joinStartDate.getTime() : undefined,
       endsAtMillis: values.endDate ? values.endDate.getTime() : undefined,
-      goal: milestoneNumbers.at(-1) ?? 0,
-      milestones: milestoneNumbers.slice(0, -1),
-      conditions: [
-        {
-          addressCondition: { rawEupMyeonDongs: values.questRegions?.map((v) => v.label.split(" ").at(-1) ?? "") || [] },
-          actionCondition: { types: values.questActions.map((v) => v.value) as any },
-        },
-      ],
+      goal: conquerTargetPlaceListId ? 0 : (milestoneNumbers.at(-1) ?? 0),
+      milestones: conquerTargetPlaceListId ? milestoneNumbers : milestoneNumbers.slice(0, -1),
+      conditions: conquerTargetPlaceListId
+        ? []
+        : [
+            {
+              addressCondition: { rawEupMyeonDongs: values.questRegions?.map((v) => v.label.split(" ").at(-1) ?? "") || [] },
+              actionCondition: { types: values.questActions.map((v) => v.value) as any },
+            },
+          ],
+      conquerTargetPlaceListId,
       description: values.description,
       isB2B: values.isB2B,
       isRetroactiveContributionEnabled: values.isRetroactiveContributionEnabled,
@@ -139,13 +158,11 @@ export default function ChallengeDetail() {
                     startDate: new Date(originalChallenge.startsAtMillis),
                     joinStartDate: originalChallenge.joinStartAtMillis ? new Date(originalChallenge.joinStartAtMillis) : null,
                     endDate: originalChallenge.endsAtMillis ? new Date(originalChallenge.endsAtMillis) : null,
-                    milestones: [
-                      ...originalChallenge.milestones.map((v) => ({ label: v.toString(), value: v.toString() })),
-                      {label: originalChallenge.goal.toString(), value: originalChallenge.goal.toString()}
-                    ],
+                    milestones: toMilestoneOptions(originalChallenge),
                     questActions: actionOptions.filter(
                       (v) => originalChallenge.conditions?.[0]?.actionCondition?.types?.includes(v.value) ?? false,
                     ),
+                    conquerTargetPlaceList: toConquerTargetPlaceListOption(originalChallenge),
                     description: originalChallenge.description,
                     isB2B: originalChallenge.isB2B ?? false,
                     isRetroactiveContributionEnabled: originalChallenge.isRetroactiveContributionEnabled ?? false,
