@@ -28,6 +28,7 @@ import {
   BbucleRoadApi,
   ChallengeApi,
   Configuration,
+  ConquerTargetPlaceListApi,
   DefaultApi,
   ExperimentApi,
   HomeAnnouncementApi,
@@ -69,6 +70,7 @@ const placeAccessibilitySuggestionApi = new PlaceAccessibilitySuggestionApi(conf
 const placeSpecialAccessibilityApi = new PlaceSpecialAccessibilityApi(config)
 const toiletApi = new AdminToiletApi(config)
 const placeSearchRecommendationApi = new PlaceSearchRecommendationApi(config)
+const conquerTargetPlaceListApi = new ConquerTargetPlaceListApi(config)
 
 export const api: {
   default: DefaultApi
@@ -87,6 +89,7 @@ export const api: {
   placeSpecialAccessibility: PlaceSpecialAccessibilityApi
   toilet: AdminToiletApi
   placeSearchRecommendation: PlaceSearchRecommendationApi
+  conquerTargetPlaceList: ConquerTargetPlaceListApi
 } = {
   default: defaultApi,
   challenge: challengeApi,
@@ -104,6 +107,7 @@ export const api: {
   placeSpecialAccessibility: placeSpecialAccessibilityApi,
   toilet: toiletApi,
   placeSearchRecommendation: placeSearchRecommendationApi,
+  conquerTargetPlaceList: conquerTargetPlaceListApi,
 }
 
 export function useQuest({ id }: { id: string }) {
@@ -277,6 +281,7 @@ type CreateChallengeParams = {
   crusherGroup?: CrusherGroup
   lastMonthRankImageUrl?: string
   modalImageUrl?: string
+  conquerTargetPlaceListId?: string
 }
 export function createChallenge(payload: CreateChallengeParams) {
   return api.challenge.challengesPost({
