@@ -1,8 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import {
   AdminAddPlacesToConquerTargetPlaceListResponseDto,
   AdminCreateConquerTargetPlaceListRequestDto,
+  AdminListConquerTargetPlacesResponseDto,
   AdminUpdateConquerTargetPlaceListRequestDto,
 } from "@/lib/generated-sources/openapi"
 
@@ -28,6 +29,21 @@ export function useConquerTargetPlaceListDetail({ id }: { id: string }) {
       const result = await api.conquerTargetPlaceList.getConquerTargetPlaceList(queryKey[1])
       return result.data
     },
+    staleTime: 10 * 1000,
+    enabled: !!id,
+  })
+}
+
+// 정복 대상 리스트에 포함된 장소 목록 조회 (커서 페이지네이션)
+export function useConquerTargetPlaceListPlaces({ id, limit = 20 }: { id: string; limit?: number }) {
+  return useInfiniteQuery<AdminListConquerTargetPlacesResponseDto>({
+    queryKey: ["@conquer-target-place-lists", id, "places"],
+    queryFn: ({ pageParam }) =>
+      api.conquerTargetPlaceList
+        .listConquerTargetPlaces(id, (pageParam as string | undefined) ?? undefined, limit)
+        .then((res) => res.data),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.cursor ?? undefined,
     staleTime: 10 * 1000,
     enabled: !!id,
   })

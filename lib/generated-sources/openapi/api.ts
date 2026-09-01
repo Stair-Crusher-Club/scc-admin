@@ -1377,49 +1377,6 @@ export interface AdminConquerTargetPlaceDto {
     'isConquered': boolean;
 }
 /**
- * 정복 대상 장소 목록 상세 정보 (장소 목록 포함)
- * @export
- * @interface AdminConquerTargetPlaceListDetailDto
- */
-export interface AdminConquerTargetPlaceListDetailDto {
-    /**
-     * 
-     * @type {string}
-     * @memberof AdminConquerTargetPlaceListDetailDto
-     */
-    'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AdminConquerTargetPlaceListDetailDto
-     */
-    'name': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof AdminConquerTargetPlaceListDetailDto
-     */
-    'placeCount': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof AdminConquerTargetPlaceListDetailDto
-     */
-    'conqueredPlaceCount': number;
-    /**
-     * 
-     * @type {EpochMillisTimestamp}
-     * @memberof AdminConquerTargetPlaceListDetailDto
-     */
-    'createdAt': EpochMillisTimestamp;
-    /**
-     * 
-     * @type {Array<AdminConquerTargetPlaceDto>}
-     * @memberof AdminConquerTargetPlaceListDetailDto
-     */
-    'places': Array<AdminConquerTargetPlaceDto>;
-}
-/**
  * 정복 대상 장소 목록 항목
  * @export
  * @interface AdminConquerTargetPlaceListDto
@@ -2421,6 +2378,25 @@ export interface AdminListConquerTargetPlaceListsResponseDto {
      * @memberof AdminListConquerTargetPlaceListsResponseDto
      */
     'items': Array<AdminConquerTargetPlaceListDto>;
+}
+/**
+ * 정복 대상 장소 목록에 포함된 장소 커서 페이지네이션 조회 응답
+ * @export
+ * @interface AdminListConquerTargetPlacesResponseDto
+ */
+export interface AdminListConquerTargetPlacesResponseDto {
+    /**
+     * 
+     * @type {Array<AdminConquerTargetPlaceDto>}
+     * @memberof AdminListConquerTargetPlacesResponseDto
+     */
+    'items': Array<AdminConquerTargetPlaceDto>;
+    /**
+     * 다음 페이지 커서 (없으면 마지막 페이지)
+     * @type {string}
+     * @memberof AdminListConquerTargetPlacesResponseDto
+     */
+    'cursor'?: string | null;
 }
 /**
  * 
@@ -9455,6 +9431,54 @@ export const ConquerTargetPlaceListApiAxiosParamCreator = function (configuratio
         },
         /**
          * 
+         * @summary 정복 대상 장소 목록에 포함된 장소를 커서 페이지네이션으로 조회한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listConquerTargetPlaces: async (id: string, cursor?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('listConquerTargetPlaces', 'id', id)
+            const localVarPath = `/conquer-target-place-lists/{id}/places`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Admin required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 정복 대상 장소 목록에서 장소를 제거한다.
          * @param {string} id ConquerTargetPlaceList ID
          * @param {string} placeId Place ID
@@ -9590,7 +9614,7 @@ export const ConquerTargetPlaceListApiFp = function(configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getConquerTargetPlaceList(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminConquerTargetPlaceListDetailDto>> {
+        async getConquerTargetPlaceList(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminConquerTargetPlaceListDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getConquerTargetPlaceList(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -9602,6 +9626,19 @@ export const ConquerTargetPlaceListApiFp = function(configuration?: Configuratio
          */
         async listConquerTargetPlaceLists(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListConquerTargetPlaceListsResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listConquerTargetPlaceLists(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에 포함된 장소를 커서 페이지네이션으로 조회한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listConquerTargetPlaces(id: string, cursor?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminListConquerTargetPlacesResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listConquerTargetPlaces(id, cursor, limit, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -9676,7 +9713,7 @@ export const ConquerTargetPlaceListApiFactory = function (configuration?: Config
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getConquerTargetPlaceList(id: string, options?: any): AxiosPromise<AdminConquerTargetPlaceListDetailDto> {
+        getConquerTargetPlaceList(id: string, options?: any): AxiosPromise<AdminConquerTargetPlaceListDto> {
             return localVarFp.getConquerTargetPlaceList(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -9687,6 +9724,18 @@ export const ConquerTargetPlaceListApiFactory = function (configuration?: Config
          */
         listConquerTargetPlaceLists(options?: any): AxiosPromise<AdminListConquerTargetPlaceListsResponseDto> {
             return localVarFp.listConquerTargetPlaceLists(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 정복 대상 장소 목록에 포함된 장소를 커서 페이지네이션으로 조회한다.
+         * @param {string} id ConquerTargetPlaceList ID
+         * @param {string} [cursor] 페이지네이션 커서
+         * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listConquerTargetPlaces(id: string, cursor?: string, limit?: number, options?: any): AxiosPromise<AdminListConquerTargetPlacesResponseDto> {
+            return localVarFp.listConquerTargetPlaces(id, cursor, limit, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -9778,6 +9827,20 @@ export class ConquerTargetPlaceListApi extends BaseAPI {
      */
     public listConquerTargetPlaceLists(options?: AxiosRequestConfig) {
         return ConquerTargetPlaceListApiFp(this.configuration).listConquerTargetPlaceLists(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 정복 대상 장소 목록에 포함된 장소를 커서 페이지네이션으로 조회한다.
+     * @param {string} id ConquerTargetPlaceList ID
+     * @param {string} [cursor] 페이지네이션 커서
+     * @param {number} [limit] 페이지당 항목 수 (기본값 20)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ConquerTargetPlaceListApi
+     */
+    public listConquerTargetPlaces(id: string, cursor?: string, limit?: number, options?: AxiosRequestConfig) {
+        return ConquerTargetPlaceListApiFp(this.configuration).listConquerTargetPlaces(id, cursor, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

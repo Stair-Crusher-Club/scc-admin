@@ -8,6 +8,7 @@ import { AdminAddPlacesToConquerTargetPlaceListResponseDto } from "@/lib/generat
 import {
   useAddPlacesToConquerTargetPlaceList,
   useConquerTargetPlaceListDetail,
+  useConquerTargetPlaceListPlaces,
   useDeleteConquerTargetPlaceList,
   useUpdateConquerTargetPlaceList,
 } from "@/lib/apis/conquerTargetPlaceList"
@@ -19,11 +20,6 @@ import { DataTable } from "@/components/ui/data-table"
 import { Textarea } from "@/components/ui/textarea"
 
 import { getPlaceColumns } from "../components/columns"
-
-// ponytail: API가 places 를 한 번에 전부 내려주므로(커서 없음) 서버 페이지네이션이 없다.
-// 수백~수천 행을 한 번에 렌더링하지 않도록 DataTable의 onLoadMore/hasMore(원래 커서 페이징용)를
-// 로컬 slice에 붙여 재사용한다.
-const PAGE_SIZE = 100
 
 function parsePlaceIds(text: string): string[] {
   const ids = text
@@ -39,6 +35,7 @@ export default function ConquerTargetPlaceListDetailPage() {
   const placeListId = params.id as string
 
   const { data: placeList, isLoading } = useConquerTargetPlaceListDetail({ id: placeListId })
+  const { data: placesData, fetchNextPage, hasNextPage } = useConquerTargetPlaceListPlaces({ id: placeListId })
   const { mutateAsync: updatePlaceList, isPending: isUpdatingName } = useUpdateConquerTargetPlaceList()
   const { mutateAsync: deletePlaceList, isPending: isDeleting } = useDeleteConquerTargetPlaceList()
   const { mutateAsync: addPlaces, isPending: isAdding } = useAddPlacesToConquerTargetPlaceList()
@@ -46,7 +43,6 @@ export default function ConquerTargetPlaceListDetailPage() {
   const [name, setName] = useState("")
   const [placeIdsText, setPlaceIdsText] = useState("")
   const [addResult, setAddResult] = useState<AdminAddPlacesToConquerTargetPlaceListResponseDto | null>(null)
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
   useEffect(() => {
     if (placeList) {
@@ -101,10 +97,10 @@ export default function ConquerTargetPlaceListDetailPage() {
   }
 
   const columns = getPlaceColumns(placeListId)
-  const totalCount = placeList.places.length
-  const conqueredCount = placeList.places.filter((p) => p.isConquered).length
+  const totalCount = placeList.placeCount
+  const conqueredCount = placeList.conqueredPlaceCount
   const conqueredPercent = totalCount > 0 ? Math.round((conqueredCount / totalCount) * 100) : 0
-  const visiblePlaces = placeList.places.slice(0, visibleCount)
+  const places = placesData?.pages.flatMap((p) => p.items) ?? []
 
   return (
     <Contents.Normal>
@@ -172,12 +168,7 @@ export default function ConquerTargetPlaceListDetailPage() {
             {totalCount === 0 ? (
               <p className="text-sm text-muted-foreground">장소가 없습니다.</p>
             ) : (
-              <DataTable
-                columns={columns}
-                data={visiblePlaces}
-                hasMore={visibleCount < totalCount}
-                onLoadMore={() => setVisibleCount((v) => v + PAGE_SIZE)}
-              />
+              <DataTable columns={columns} data={places} hasMore={!!hasNextPage} onLoadMore={() => fetchNextPage()} />
             )}
           </CardContent>
         </Card>
