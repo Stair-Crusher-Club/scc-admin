@@ -91,7 +91,7 @@ export default function QuestCreate() {
   })
   const [clusters, setClusters] = useState<ClubQuestCreateDryRunResultItemDTO[]>([])
   // 개월수를 지정한 경우, 대상 장소 중 이미 접근성 정보가 있는 곳(= archive 예정)이 몇 곳인지.
-  // dryRun 응답의 isConquered가 곧 PA 존재 여부라 서버 추가 응답 없이 셀 수 있다.
+  // dryRun 응답의 isConquered가 곧 PA 존재 여부다. 수백 건이 사라지는 작업이라 누르기 전에 규모가 보여야 한다.
   const archiveTargetCount =
     normalizeMonths(form.watch("placeAccessibilityOlderThanMonths")) === undefined
       ? null
@@ -331,6 +331,7 @@ export default function QuestCreate() {
                 name="placeAccessibilityOlderThanMonths"
                 label="오래된 접근성 정보 포함 (개월)"
                 placeholder="비워두면 접근성 정보가 없는 장소만 대상"
+                rules={{ min: { value: 1, message: "1 이상의 개월수를 입력해주세요." } }}
               />
             </fieldset>
 
