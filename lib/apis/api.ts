@@ -19,6 +19,7 @@ import {
   InspectorTypeDTO,
   ResultTypeDTO,
 } from "@/lib/generated-sources/openapi"
+import { parseDateInputAsStartOfDay } from "@/lib/utils"
 
 import {
   AccessibilityApi,
@@ -178,6 +179,8 @@ type PreviewDivisionsParams = {
   radiusMeters: number
   useAlreadyCrawledPlace: boolean
   questTargetPlaceCategories: ClubQuestTargetPlaceCategory[]
+  /** 지정되면, 이 CTPL들에 속한 장소는 questTargetPlaceCategories와 무관하게 대상에 포함된다. */
+  conquerTargetPlaceListIds?: string[]
   /** 지정되면 PA가 등록된 지 이 개월수보다 오래된 장소도 퀘스트 대상에 포함한다. */
   includePlaceAccessibilityOlderThanMonths?: number
 }
@@ -464,19 +467,16 @@ export function deleteSearchPreset(id: string) {
 // Store cursors for pagination
 const cursorCache = new Map<string, string[]>()
 
-// Convert date string (yyyy-MM-dd) to epoch milliseconds in user's local timezone.
-// The date string represents the start of the day (00:00:00) in the user's timezone,
-// which is the intended behavior since users select dates based on their local time.
-// For end date: adds one day to make it exclusive (e.g., "2025-12-05" becomes start of 2025-12-06)
+// Convert date string (yyyy-MM-dd) to epoch milliseconds in the user's local timezone.
+// new Date(dateString)로 직접 파싱하면 date-only 문자열이 UTC 자정으로 해석돼 KST에서 9시간
+// 밀린다 — 이 함수의 옛 구현이 그 버그를 갖고 있었다(위 주석의 "로컬 자정"이 실제로는 지켜지지
+// 않음). parseDateInputAsStartOfDay로 교체. end date는 검색 API가 exclusive 상한(createdAtTo)
+// 으로 받으므로 다음날 로컬 자정을 돌려준다(한국은 DST가 없어 하루가 항상 24시간이다).
 function dateStringToEpochMillis(dateString: string | undefined, isEndDate: boolean): number | undefined {
   if (!dateString) return undefined
-  const date = new Date(dateString)
-  if (isNaN(date.getTime())) return undefined
-  if (isEndDate) {
-    // For end date, add one day to make it exclusive
-    date.setDate(date.getDate() + 1)
-  }
-  return date.getTime()
+  const startOfDay = parseDateInputAsStartOfDay(dateString)
+  if (isNaN(startOfDay)) return undefined
+  return isEndDate ? startOfDay + 24 * 60 * 60 * 1000 : startOfDay
 }
 
 export function useAccessibilityInspectionResults({

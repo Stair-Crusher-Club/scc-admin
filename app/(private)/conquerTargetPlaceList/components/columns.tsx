@@ -42,6 +42,25 @@ export const getColumns = (): ColumnDef<AdminConquerTargetPlaceListDto>[] => [
     },
   },
   {
+    id: "period",
+    header: "기간",
+    cell: ({ row }) => {
+      const { startAt, endAt } = row.original
+      const startLabel = startAt ? format(new Date(startAt.value), "yyyy.MM.dd") : ""
+      const endLabel = endAt ? format(new Date(endAt.value), "yyyy.MM.dd") : ""
+      // 한쪽만 있으면 그쪽 라벨만 남기고 trim으로 남는 " ~ "/"~ " 여백을 정리한다.
+      const period = !startAt && !endAt ? "제한 없음" : `${startLabel} ~ ${endLabel}`.trim()
+      return <div className="text-sm text-muted-foreground">{period}</div>
+    },
+  },
+  {
+    accessorKey: "isActive",
+    header: "상태",
+    cell: ({ row }) => {
+      return <Badge variant={row.original.isActive ? "default" : "secondary"}>{row.original.isActive ? "활성" : "비활성"}</Badge>
+    },
+  },
+  {
     accessorKey: "createdAt",
     header: ({ column }) => <DataTableColumnHeader column={column} title="생성일" />,
     cell: ({ row }) => {
