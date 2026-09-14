@@ -1,7 +1,6 @@
 "use client"
 
 import { ColumnFiltersState } from "@tanstack/react-table"
-import { format } from "date-fns"
 import { Search, Sparkles } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -55,14 +54,13 @@ export default function AccessibilityList() {
     const createdAtFrom = formData.get("createdAtFromLocalDate") as string
     const createdAtTo = formData.get("createdAtToLocalDate") as string
 
+    // <input type="date"> 값은 이미 "yyyy-MM-dd" 문자열이라 그대로 쓴다.
+    // (예전엔 new Date(...)로 파싱 후 재포맷했는데, date-only 문자열은 UTC 자정으로 파싱되는
+    // 함정이 있고 애초에 재포맷이 no-op이라 파싱 자체가 불필요했다.)
     setFormInput({
       placeName: placeName || "",
-      createdAtFromLocalDate: createdAtFrom
-        ? format(new Date(createdAtFrom), "yyyy-MM-dd")
-        : "",
-      createdAtToLocalDate: createdAtTo
-        ? format(new Date(createdAtTo), "yyyy-MM-dd")
-        : "",
+      createdAtFromLocalDate: createdAtFrom || "",
+      createdAtToLocalDate: createdAtTo || "",
     })
 
     const filters: ColumnFiltersState = []

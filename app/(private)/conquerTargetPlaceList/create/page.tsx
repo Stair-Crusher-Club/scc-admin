@@ -5,12 +5,11 @@ import { useState } from "react"
 import { toast } from "react-toastify"
 
 import { useCreateConquerTargetPlaceList } from "@/lib/apis/conquerTargetPlaceList"
+import { parseDateInputAsEndOfDay, parseDateInputAsStartOfDay } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Contents } from "@/components/layout"
-
-import { parseDateInputAsEndOfDay, parseDateInputAsStartOfDay } from "../components/dateRange"
 
 export default function ConquerTargetPlaceListCreatePage() {
   const router = useRouter()
