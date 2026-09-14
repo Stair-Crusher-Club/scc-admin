@@ -5095,6 +5095,12 @@ export interface ClubQuestsCreateDryRunPostRequest {
      * @memberof ClubQuestsCreateDryRunPostRequest
      */
     'questTargetPlaceCategories'?: Array<QuestTargetPlaceCategoryEnumDTO>;
+    /**
+     * 지정되면, 접근성 정보(PlaceAccessibility)가 등록된 지 이 개월수보다 오래된 장소도 퀘스트 대상에 포함한다. 이 경우 퀘스트를 실제로 생성하는 시점에 해당 장소의 오래된 접근성 정보는 archive 되고, 퀘스트 종료 후 자동으로 복원된다. 지정되지 않은 경우, 기존과 동일하게 접근성 정보가 없는 장소만 대상이 된다. 
+     * @type {number}
+     * @memberof ClubQuestsCreateDryRunPostRequest
+     */
+    'includePlaceAccessibilityOlderThanMonths'?: number;
 }
 /**
  * 
@@ -5287,6 +5293,12 @@ export interface CreateClubQuestRequest {
      * @memberof CreateClubQuestRequest
      */
     'dryRunResults': Array<ClubQuestCreateDryRunResultItemDTO>;
+    /**
+     * 지정되면, 접근성 정보(PlaceAccessibility)가 등록된 지 이 개월수보다 오래된 장소도 퀘스트 대상에 포함한다. 이 경우 퀘스트를 실제로 생성하는 시점에 해당 장소의 오래된 접근성 정보는 archive 되고, 퀘스트 종료 후 자동으로 복원된다. 지정되지 않은 경우, 기존과 동일하게 접근성 정보가 없는 장소만 대상이 된다. 
+     * @type {number}
+     * @memberof CreateClubQuestRequest
+     */
+    'includePlaceAccessibilityOlderThanMonths'?: number;
 }
 /**
  * 

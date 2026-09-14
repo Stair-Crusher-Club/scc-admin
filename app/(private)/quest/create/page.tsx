@@ -58,6 +58,7 @@ interface FormValues {
   division: number
   maxPlacesPerQuest: number
   isAttendanceCheckEnabled: boolean
+  placeAccessibilityOlderThanMonths?: number
 }
 
 export default function QuestCreate() {
@@ -85,9 +86,21 @@ export default function QuestCreate() {
       division: 3,
       maxPlacesPerQuest: 50,
       isAttendanceCheckEnabled: true,
+      placeAccessibilityOlderThanMonths: undefined,
     },
   })
   const [clusters, setClusters] = useState<ClubQuestCreateDryRunResultItemDTO[]>([])
+  // 개월수를 지정한 경우, 대상 장소 중 이미 접근성 정보가 있는 곳(= archive 예정)이 몇 곳인지.
+  // dryRun 응답의 isConquered가 곧 PA 존재 여부다. 수백 건이 사라지는 작업이라 누르기 전에 규모가 보여야 한다.
+  const archiveTargetCount =
+    normalizeMonths(form.watch("placeAccessibilityOlderThanMonths")) === undefined
+      ? null
+      : clusters.reduce(
+          (acc, cluster) =>
+            acc +
+            cluster.targetBuildings.reduce((a, b) => a + b.places.filter((p) => p.isConquered).length, 0),
+          0,
+        )
 
   function initializeMap(map: kakao.maps.Map) {
     mapRef.current = map
@@ -149,6 +162,7 @@ export default function QuestCreate() {
         maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
         useAlreadyCrawledPlace: form.getValues("placeSearchMethod").value === "USE_ALREADY_CRAWLED_PLACES",
         questTargetPlaceCategories: form.getValues("questTargetPlaceCategories").map((it) => it.value),
+        includePlaceAccessibilityOlderThanMonths: normalizeMonths(form.getValues("placeAccessibilityOlderThanMonths")),
       })
       setClusters(res)
       setPreviewLoading(false)
@@ -184,6 +198,7 @@ export default function QuestCreate() {
         endAt: { value: atEndOfDay(values.endDate).getTime() },
         isAttendanceCheckEnabled: values.isAttendanceCheckEnabled,
         dryRunResults: clusters,
+        includePlaceAccessibilityOlderThanMonths: normalizeMonths(values.placeAccessibilityOlderThanMonths),
       })
     } catch (e: unknown) {
       setCreating(false)
@@ -312,6 +327,12 @@ export default function QuestCreate() {
                 clearable={false}
               />
               <NumberInput name="maxPlacesPerQuest" label="퀘스트 당 최대 장소 수" clearable={false} />
+              <NumberInput
+                name="placeAccessibilityOlderThanMonths"
+                label="오래된 접근성 정보 포함 (개월)"
+                placeholder="비워두면 접근성 정보가 없는 장소만 대상"
+                rules={{ min: { value: 1, message: "1 이상의 개월수를 입력해주세요." } }}
+              />
             </fieldset>
 
             <div className="flex items-center gap-2 px-6 mt-3">
@@ -350,6 +371,13 @@ export default function QuestCreate() {
                         <td>{cluster.targetBuildings.reduce((acc, b) => acc + b.places.length, 0)}개 장소</td>
                       </tr>
                     ))}
+                    {archiveTargetCount !== null && (
+                      <tr>
+                        <td colSpan={3} className="pt-2 text-orange-600">
+                          접근성 정보 아카이브 예정: {archiveTargetCount}곳
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               )}
@@ -365,6 +393,11 @@ export default function QuestCreate() {
       </div>
     </>
   )
+}
+
+// NumberInput은 비우면 undefined/NaN을 줄 수 있다. 유효한 양수일 때만 서버로 보낸다.
+function normalizeMonths(value: number | undefined | null): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : undefined
 }
 
 function atEndOfDay(date: Date): Date {
