@@ -46,10 +46,10 @@ export const getColumns = (): ColumnDef<AdminConquerTargetPlaceListDto>[] => [
     header: "기간",
     cell: ({ row }) => {
       const { startAt, endAt } = row.original
-      const period =
-        !startAt && !endAt
-          ? "제한 없음"
-          : `${startAt ? format(new Date(startAt.value), "yyyy.MM.dd") : ""} ~ ${endAt ? format(new Date(endAt.value), "yyyy.MM.dd") : ""}`
+      const startLabel = startAt ? format(new Date(startAt.value), "yyyy.MM.dd") : ""
+      const endLabel = endAt ? format(new Date(endAt.value), "yyyy.MM.dd") : ""
+      // 한쪽만 있으면 그쪽 라벨만 남기고 trim으로 남는 " ~ "/"~ " 여백을 정리한다.
+      const period = !startAt && !endAt ? "제한 없음" : `${startLabel} ~ ${endLabel}`.trim()
       return <div className="text-sm text-muted-foreground">{period}</div>
     },
   },

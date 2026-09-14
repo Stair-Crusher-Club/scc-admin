@@ -1,6 +1,5 @@
 "use client"
 
-import { format } from "date-fns"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
@@ -21,6 +20,7 @@ import { DataTable } from "@/components/ui/data-table"
 import { Textarea } from "@/components/ui/textarea"
 
 import { getPlaceColumns } from "../components/columns"
+import { parseDateInputAsEndOfDay, parseDateInputAsStartOfDay, toDateInputValue } from "../components/dateRange"
 
 function parsePlaceIds(text: string): string[] {
   const ids = text
@@ -28,11 +28,6 @@ function parsePlaceIds(text: string): string[] {
     .map((id) => id.trim())
     .filter((id) => id.length > 0)
   return Array.from(new Set(ids))
-}
-
-// <input type="date"> 는 "yyyy-MM-dd" 문자열을 요구한다.
-function toDateInputValue(epochMillis: number): string {
-  return format(new Date(epochMillis), "yyyy-MM-dd")
 }
 
 export default function ConquerTargetPlaceListDetailPage() {
@@ -68,8 +63,8 @@ export default function ConquerTargetPlaceListDetailPage() {
         id: placeListId,
         data: {
           name,
-          startAt: startAt ? { value: new Date(startAt).getTime() } : undefined,
-          endAt: endAt ? { value: new Date(endAt).getTime() } : undefined,
+          startAt: startAt ? { value: parseDateInputAsStartOfDay(startAt) } : undefined,
+          endAt: endAt ? { value: parseDateInputAsEndOfDay(endAt) } : undefined,
         },
       })
       toast.success("저장되었습니다.")

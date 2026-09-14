@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Contents } from "@/components/layout"
 
+import { parseDateInputAsEndOfDay, parseDateInputAsStartOfDay } from "../components/dateRange"
+
 export default function ConquerTargetPlaceListCreatePage() {
   const router = useRouter()
   const { mutateAsync: createConquerTargetPlaceList, isPending: isCreating } = useCreateConquerTargetPlaceList()
@@ -22,8 +24,8 @@ export default function ConquerTargetPlaceListCreatePage() {
     try {
       const created = await createConquerTargetPlaceList({
         name,
-        startAt: startAt ? { value: new Date(startAt).getTime() } : undefined,
-        endAt: endAt ? { value: new Date(endAt).getTime() } : undefined,
+        startAt: startAt ? { value: parseDateInputAsStartOfDay(startAt) } : undefined,
+        endAt: endAt ? { value: parseDateInputAsEndOfDay(endAt) } : undefined,
       })
       toast.success("리스트가 생성되었습니다.")
       router.push(`/conquerTargetPlaceList/${created.id}`)
