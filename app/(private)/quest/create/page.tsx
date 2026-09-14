@@ -4,11 +4,12 @@ import { Combobox, DateInput, NumberInput, TextInput } from "@reactleaf/input/ho
 import { useQueryClient } from "@tanstack/react-query"
 import { isAxiosError } from "axios"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 
 import { ClubQuestCreateRegionType, createQuest, previewDivisions } from "@/lib/apis/api"
+import { useConquerTargetPlaceLists } from "@/lib/apis/conquerTargetPlaceList"
 import { ClubQuestCreateDryRunResultItemDTO, ClubQuestPurposeTypeEnumDTO } from "@/lib/generated-sources/openapi"
 
 import Map from "@/components/Map"
@@ -50,6 +51,7 @@ interface FormValues {
   startDate: Date
   endDate: Date
   questTargetPlaceCategories: typeof questTargetPlaceCategoryOptions
+  conquerTargetPlaceLists: { label: string; value: string }[]
   method: (typeof methodOptions)[number]
   placeSearchMethod: (typeof placeSearchMethodOptions)[number]
   center: { lat: number; lng: number }
@@ -76,6 +78,7 @@ export default function QuestCreate() {
     defaultValues: {
       purposeType: purposeTypeOptions[0],
       questTargetPlaceCategories: questTargetPlaceCategoryOptions,
+      conquerTargetPlaceLists: [],
       placeSearchMethod: placeSearchMethodOptions[0],
       method: methodOptions[0],
       startDate: undefined,
@@ -90,6 +93,27 @@ export default function QuestCreate() {
     },
   })
   const [clusters, setClusters] = useState<ClubQuestCreateDryRunResultItemDTO[]>([])
+
+  // CTPL 멀티셀렉트 옵션 + 기본 선택(활성 CTPL 전부) 1회 주입
+  const { data: conquerTargetPlaceLists } = useConquerTargetPlaceLists()
+  const hasInjectedDefaultCtpl = useRef(false)
+  const ctplOptions = useMemo(
+    () =>
+      (conquerTargetPlaceLists ?? []).map((list) => ({
+        label: list.isActive ? list.name : `${list.name} (비활성)`,
+        value: list.id,
+      })),
+    [conquerTargetPlaceLists],
+  )
+  useEffect(() => {
+    if (hasInjectedDefaultCtpl.current || !conquerTargetPlaceLists) return
+    hasInjectedDefaultCtpl.current = true
+    form.setValue(
+      "conquerTargetPlaceLists",
+      conquerTargetPlaceLists.filter((list) => list.isActive).map((list) => ({ label: list.name, value: list.id })),
+    )
+  }, [conquerTargetPlaceLists, form])
+
   // 개월수를 지정한 경우, 대상 장소 중 이미 접근성 정보가 있는 곳(= archive 예정)이 몇 곳인지.
   // dryRun 응답의 isConquered가 곧 PA 존재 여부다. 수백 건이 사라지는 작업이라 누르기 전에 규모가 보여야 한다.
   const archiveTargetCount =
@@ -153,6 +177,7 @@ export default function QuestCreate() {
 
     setPreviewLoading(true)
     try {
+      const conquerTargetPlaceListIds = form.getValues("conquerTargetPlaceLists").map((it) => it.value)
       const res = await previewDivisions({
         regionType: form.getValues("method").value,
         centerLocation: form.getValues("center"),
@@ -162,6 +187,7 @@ export default function QuestCreate() {
         maxPlaceCountPerQuest: form.getValues("maxPlacesPerQuest"),
         useAlreadyCrawledPlace: form.getValues("placeSearchMethod").value === "USE_ALREADY_CRAWLED_PLACES",
         questTargetPlaceCategories: form.getValues("questTargetPlaceCategories").map((it) => it.value),
+        conquerTargetPlaceListIds: conquerTargetPlaceListIds.length > 0 ? conquerTargetPlaceListIds : undefined,
         includePlaceAccessibilityOlderThanMonths: normalizeMonths(form.getValues("placeAccessibilityOlderThanMonths")),
       })
       setClusters(res)
@@ -288,6 +314,14 @@ export default function QuestCreate() {
                 closeMenuOnSelect={false}
                 rules={{ required: { value: true, message: "1개 이상의 카테고리를 선택해주세요." } }}
                 options={questTargetPlaceCategoryOptions}
+              />
+              <Combobox
+                isMulti
+                name="conquerTargetPlaceLists"
+                label="정복 대상 리스트 (CTPL)"
+                placeholder=""
+                closeMenuOnSelect={false}
+                options={ctplOptions}
               />
               <Combobox
                 name="placeSearchMethod"

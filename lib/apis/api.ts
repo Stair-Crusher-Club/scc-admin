@@ -178,6 +178,8 @@ type PreviewDivisionsParams = {
   radiusMeters: number
   useAlreadyCrawledPlace: boolean
   questTargetPlaceCategories: ClubQuestTargetPlaceCategory[]
+  /** 지정되면, 이 CTPL들에 속한 장소는 questTargetPlaceCategories와 무관하게 대상에 포함된다. */
+  conquerTargetPlaceListIds?: string[]
   /** 지정되면 PA가 등록된 지 이 개월수보다 오래된 장소도 퀘스트 대상에 포함한다. */
   includePlaceAccessibilityOlderThanMonths?: number
 }

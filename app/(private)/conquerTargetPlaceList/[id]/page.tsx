@@ -1,5 +1,6 @@
 "use client"
 
+import { format } from "date-fns"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
@@ -29,6 +30,11 @@ function parsePlaceIds(text: string): string[] {
   return Array.from(new Set(ids))
 }
 
+// <input type="date"> 는 "yyyy-MM-dd" 문자열을 요구한다.
+function toDateInputValue(epochMillis: number): string {
+  return format(new Date(epochMillis), "yyyy-MM-dd")
+}
+
 export default function ConquerTargetPlaceListDetailPage() {
   const params = useParams()
   const router = useRouter()
@@ -41,23 +47,34 @@ export default function ConquerTargetPlaceListDetailPage() {
   const { mutateAsync: addPlaces, isPending: isAdding } = useAddPlacesToConquerTargetPlaceList()
 
   const [name, setName] = useState("")
+  const [startAt, setStartAt] = useState("")
+  const [endAt, setEndAt] = useState("")
   const [placeIdsText, setPlaceIdsText] = useState("")
   const [addResult, setAddResult] = useState<AdminAddPlacesToConquerTargetPlaceListResponseDto | null>(null)
 
   useEffect(() => {
     if (placeList) {
       setName(placeList.name)
+      setStartAt(placeList.startAt ? toDateInputValue(placeList.startAt.value) : "")
+      setEndAt(placeList.endAt ? toDateInputValue(placeList.endAt.value) : "")
     }
   }, [placeList])
 
   const parsedPlaceIds = useMemo(() => parsePlaceIds(placeIdsText), [placeIdsText])
 
-  const handleSaveName = async () => {
+  const handleSave = async () => {
     try {
-      await updatePlaceList({ id: placeListId, data: { name } })
-      toast.success("이름이 수정되었습니다.")
+      await updatePlaceList({
+        id: placeListId,
+        data: {
+          name,
+          startAt: startAt ? { value: new Date(startAt).getTime() } : undefined,
+          endAt: endAt ? { value: new Date(endAt).getTime() } : undefined,
+        },
+      })
+      toast.success("저장되었습니다.")
     } catch {
-      toast.error("이름 수정에 실패했습니다.")
+      toast.error("저장에 실패했습니다.")
     }
   }
 
@@ -101,6 +118,10 @@ export default function ConquerTargetPlaceListDetailPage() {
   const conqueredCount = placeList.conqueredPlaceCount
   const conqueredPercent = totalCount > 0 ? Math.round((conqueredCount / totalCount) * 100) : 0
   const places = placesData?.pages.flatMap((p) => p.items) ?? []
+  const isUnchanged =
+    name === placeList.name &&
+    startAt === (placeList.startAt ? toDateInputValue(placeList.startAt.value) : "") &&
+    endAt === (placeList.endAt ? toDateInputValue(placeList.endAt.value) : "")
 
   return (
     <Contents.Normal>
@@ -121,9 +142,29 @@ export default function ConquerTargetPlaceListDetailPage() {
                   placeholder="리스트 이름"
                 />
               </div>
-              <Button onClick={handleSaveName} disabled={isUpdatingName || !name.trim() || name === placeList.name}>
+              <Button onClick={handleSave} disabled={isUpdatingName || !name.trim() || isUnchanged}>
                 {isUpdatingName ? "저장 중..." : "저장"}
               </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">시작일</label>
+                <input
+                  type="date"
+                  value={startAt}
+                  onChange={(e) => setStartAt(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">종료일</label>
+                <input
+                  type="date"
+                  value={endAt}
+                  onChange={(e) => setEndAt(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

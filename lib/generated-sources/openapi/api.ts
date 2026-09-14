@@ -1411,6 +1411,24 @@ export interface AdminConquerTargetPlaceListDto {
      * @type {EpochMillisTimestamp}
      * @memberof AdminConquerTargetPlaceListDto
      */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminConquerTargetPlaceListDto
+     */
+    'endAt'?: EpochMillisTimestamp;
+    /**
+     * 서버 시계 기준으로 지금 유효한 기간인지 여부. (startAt == null || now >= startAt) && (endAt == null || now <= endAt). 클라이언트가 now 비교를 재구현하지 않도록 서버가 확정해 내려준다. 
+     * @type {boolean}
+     * @memberof AdminConquerTargetPlaceListDto
+     */
+    'isActive': boolean;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminConquerTargetPlaceListDto
+     */
     'createdAt': EpochMillisTimestamp;
 }
 /**
@@ -1638,6 +1656,18 @@ export interface AdminCreateConquerTargetPlaceListRequestDto {
      * @memberof AdminCreateConquerTargetPlaceListRequestDto
      */
     'name': string;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminCreateConquerTargetPlaceListRequestDto
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminCreateConquerTargetPlaceListRequestDto
+     */
+    'endAt'?: EpochMillisTimestamp;
 }
 /**
  * 
@@ -4046,7 +4076,7 @@ export interface AdminUpdateChallengeRequestDTO {
     'conquerTargetPlaceListId'?: string;
 }
 /**
- * 정복 대상 장소 목록 수정 요청
+ * 정복 대상 장소 목록 수정 요청. startAt/endAt은 부분 수정이 아니라 덮어쓰기다 — 값을 보내지 않으면 null(기간 없음)로 저장된다. 
  * @export
  * @interface AdminUpdateConquerTargetPlaceListRequestDto
  */
@@ -4057,6 +4087,18 @@ export interface AdminUpdateConquerTargetPlaceListRequestDto {
      * @memberof AdminUpdateConquerTargetPlaceListRequestDto
      */
     'name': string;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminUpdateConquerTargetPlaceListRequestDto
+     */
+    'startAt'?: EpochMillisTimestamp;
+    /**
+     * 
+     * @type {EpochMillisTimestamp}
+     * @memberof AdminUpdateConquerTargetPlaceListRequestDto
+     */
+    'endAt'?: EpochMillisTimestamp;
 }
 /**
  * 
@@ -5095,6 +5137,12 @@ export interface ClubQuestsCreateDryRunPostRequest {
      * @memberof ClubQuestsCreateDryRunPostRequest
      */
     'questTargetPlaceCategories'?: Array<QuestTargetPlaceCategoryEnumDTO>;
+    /**
+     * 지정되면, 이 정복 대상 장소 목록(CTPL)에 속한 장소는 questTargetPlaceCategories와 무관하게 퀘스트 대상에 포함된다. 비활성(기간 밖)이거나 존재하지 않는 id는 무시된다. 영역(원/다각형) 밖의 장소는 포함되지 않는다. 지정되지 않은 경우, 기존과 동일하게 카테고리 기준으로만 대상을 고른다. 
+     * @type {Array<string>}
+     * @memberof ClubQuestsCreateDryRunPostRequest
+     */
+    'conquerTargetPlaceListIds'?: Array<string>;
     /**
      * 지정되면, 접근성 정보(PlaceAccessibility)가 등록된 지 이 개월수보다 오래된 장소도 퀘스트 대상에 포함한다. 이 경우 퀘스트를 실제로 생성하는 시점에 해당 장소의 오래된 접근성 정보는 archive 되고, 퀘스트 종료 후 자동으로 복원된다. 지정되지 않은 경우, 기존과 동일하게 접근성 정보가 없는 장소만 대상이 된다. 
      * @type {number}

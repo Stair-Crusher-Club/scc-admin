@@ -42,6 +42,25 @@ export const getColumns = (): ColumnDef<AdminConquerTargetPlaceListDto>[] => [
     },
   },
   {
+    id: "period",
+    header: "기간",
+    cell: ({ row }) => {
+      const { startAt, endAt } = row.original
+      const period =
+        !startAt && !endAt
+          ? "제한 없음"
+          : `${startAt ? format(new Date(startAt.value), "yyyy.MM.dd") : ""} ~ ${endAt ? format(new Date(endAt.value), "yyyy.MM.dd") : ""}`
+      return <div className="text-sm text-muted-foreground">{period}</div>
+    },
+  },
+  {
+    accessorKey: "isActive",
+    header: "상태",
+    cell: ({ row }) => {
+      return <Badge variant={row.original.isActive ? "default" : "secondary"}>{row.original.isActive ? "활성" : "비활성"}</Badge>
+    },
+  },
+  {
     accessorKey: "createdAt",
     header: ({ column }) => <DataTableColumnHeader column={column} title="생성일" />,
     cell: ({ row }) => {
