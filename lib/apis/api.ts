@@ -181,8 +181,8 @@ type PreviewDivisionsParams = {
   questTargetPlaceCategories: ClubQuestTargetPlaceCategory[]
   /** 지정되면, 이 CTPL들에 속한 장소는 questTargetPlaceCategories와 무관하게 대상에 포함된다. */
   conquerTargetPlaceListIds?: string[]
-  /** 지정되면 PA가 등록된 지 이 개월수보다 오래된 장소도 퀘스트 대상에 포함한다. */
-  includePlaceAccessibilityOlderThanMonths?: number
+  /** 지정되면 이 날짜 이전에 PA가 등록된 장소도 퀘스트 대상에 포함한다. */
+  includePlaceAccessibilityRegisteredBefore?: EpochMillisTimestamp
 }
 export interface ClusterPreview {
   questNamePostfix: string
@@ -207,7 +207,7 @@ type CreateQuestPayload = {
   isAttendanceCheckEnabled?: boolean
   dryRunResults: ClubQuestCreateDryRunResultItemDTO[]
   /** dryRun과 동일한 값을 보내야 한다. 서버가 커밋 시점에 다시 적용해 dryRun 대상 밖의 PA가 archive되는 것을 막는다. */
-  includePlaceAccessibilityOlderThanMonths?: number
+  includePlaceAccessibilityRegisteredBefore?: EpochMillisTimestamp
 }
 export async function createQuest(payload: CreateQuestPayload) {
   return api.default.createClubQuest({ ...payload })
