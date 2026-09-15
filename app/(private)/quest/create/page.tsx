@@ -3,6 +3,7 @@
 import { Combobox, DateInput, NumberInput, TextInput } from "@reactleaf/input/hookform"
 import { useQueryClient } from "@tanstack/react-query"
 import { isAxiosError } from "axios"
+import { startOfDay } from "date-fns"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
@@ -60,7 +61,7 @@ interface FormValues {
   division: number
   maxPlacesPerQuest: number
   isAttendanceCheckEnabled: boolean
-  placeAccessibilityOlderThanMonths?: number
+  placeAccessibilityRegisteredBefore?: Date | null
 }
 
 export default function QuestCreate() {
@@ -89,7 +90,7 @@ export default function QuestCreate() {
       division: 3,
       maxPlacesPerQuest: 50,
       isAttendanceCheckEnabled: true,
-      placeAccessibilityOlderThanMonths: undefined,
+      placeAccessibilityRegisteredBefore: undefined,
     },
   })
   const [clusters, setClusters] = useState<ClubQuestCreateDryRunResultItemDTO[]>([])
@@ -124,10 +125,10 @@ export default function QuestCreate() {
     form.trigger("questTargetPlaceCategories")
   }, [questTargetPlaceCategoriesValue, conquerTargetPlaceListsValue, form])
 
-  // 개월수를 지정한 경우, 대상 장소 중 이미 접근성 정보가 있는 곳(= archive 예정)이 몇 곳인지.
+  // 날짜를 지정한 경우, 대상 장소 중 이미 접근성 정보가 있는 곳(= archive 예정)이 몇 곳인지.
   // dryRun 응답의 isConquered가 곧 PA 존재 여부다. 수백 건이 사라지는 작업이라 누르기 전에 규모가 보여야 한다.
   const archiveTargetCount =
-    normalizeMonths(form.watch("placeAccessibilityOlderThanMonths")) === undefined
+    form.watch("placeAccessibilityRegisteredBefore") == null
       ? null
       : clusters.reduce(
           (acc, cluster) =>
@@ -198,7 +199,9 @@ export default function QuestCreate() {
         useAlreadyCrawledPlace: form.getValues("placeSearchMethod").value === "USE_ALREADY_CRAWLED_PLACES",
         questTargetPlaceCategories: form.getValues("questTargetPlaceCategories").map((it) => it.value),
         conquerTargetPlaceListIds: conquerTargetPlaceListIds.length > 0 ? conquerTargetPlaceListIds : undefined,
-        includePlaceAccessibilityOlderThanMonths: normalizeMonths(form.getValues("placeAccessibilityOlderThanMonths")),
+        includePlaceAccessibilityRegisteredBefore: toRegisteredBeforeParam(
+          form.getValues("placeAccessibilityRegisteredBefore"),
+        ),
       })
       setClusters(res)
       setPreviewLoading(false)
@@ -234,7 +237,7 @@ export default function QuestCreate() {
         endAt: { value: atEndOfDay(values.endDate).getTime() },
         isAttendanceCheckEnabled: values.isAttendanceCheckEnabled,
         dryRunResults: clusters,
-        includePlaceAccessibilityOlderThanMonths: normalizeMonths(values.placeAccessibilityOlderThanMonths),
+        includePlaceAccessibilityRegisteredBefore: toRegisteredBeforeParam(values.placeAccessibilityRegisteredBefore),
       })
     } catch (e: unknown) {
       setCreating(false)
@@ -338,11 +341,17 @@ export default function QuestCreate() {
                 closeMenuOnSelect={false}
                 options={ctplOptions}
               />
-              <NumberInput
-                name="placeAccessibilityOlderThanMonths"
-                label="오래된 접근성 정보 포함 (개월)"
-                placeholder="비워두면 접근성 정보가 없는 장소만 대상"
-                rules={{ min: { value: 1, message: "1 이상의 개월수를 입력해주세요." } }}
+              <DateInput
+                name="placeAccessibilityRegisteredBefore"
+                label="이 날짜 이전 접근성 정보 포함"
+                dateFormat="yyyy-MM-dd"
+                placeholderText="비워두면 접근성 정보가 없는 장소만 대상"
+                maxDate={new Date()}
+                isClearable
+                rules={{
+                  // maxDate는 달력 클릭만 막는다 — 입력창에 직접 타이핑한 미래 날짜까지 막으려면 validate가 필요하다.
+                  validate: (value: Date | null | undefined) => !value || value <= new Date() || "과거 날짜여야 합니다.",
+                }}
               />
               <Combobox
                 name="placeSearchMethod"
@@ -444,9 +453,10 @@ export default function QuestCreate() {
   )
 }
 
-// NumberInput은 비우면 undefined/NaN을 줄 수 있다. 유효한 양수일 때만 서버로 보낸다.
-function normalizeMonths(value: number | undefined | null): number | undefined {
-  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : undefined
+// DateInput은 Date 객체를 그대로 준다(문자열이 아니므로 parseDateInputAsStartOfDay 대상이 아님).
+// 그 날 00:00(로컬/KST) 기준 epoch millis로 변환해 보낸다 — atEndOfDay와 대칭.
+function toRegisteredBeforeParam(date: Date | null | undefined): { value: number } | undefined {
+  return date ? { value: startOfDay(date).getTime() } : undefined
 }
 
 function atEndOfDay(date: Date): Date {
