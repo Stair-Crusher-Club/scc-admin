@@ -288,6 +288,8 @@ type CreateChallengeParams = {
   crusherGroup?: CrusherGroup
   lastMonthRankImageUrl?: string
   modalImageUrl?: string
+  welcomePopupImageUrl?: string
+  welcomePopupDescription?: string
   conquerTargetPlaceListId?: string
 }
 export function createChallenge(payload: CreateChallengeParams) {

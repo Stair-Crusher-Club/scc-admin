@@ -63,6 +63,8 @@ export interface ChallengeFormValues {
   imageHeight?: number
   lastMonthRankImageUrl?: string | null
   modalImageUrl?: string | null
+  welcomePopupImageUrl?: string | null
+  welcomePopupDescription?: string | null
 }
 
 export const defaultValues: Partial<ChallengeFormValues> = {
@@ -88,6 +90,8 @@ export const defaultValues: Partial<ChallengeFormValues> = {
   imageHeight: undefined,
   lastMonthRankImageUrl: null,
   modalImageUrl: null,
+  welcomePopupImageUrl: null,
+  welcomePopupDescription: null,
 }
 
 interface Props {
@@ -360,6 +364,10 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
   const [modalImageUrl, setModalImageUrl] = useState("")
   const [showModalImage, setShowModalImage] = useState(false)
   const formModalImageUrl = form.watch("modalImageUrl")
+
+  const [welcomePopupImageUrl, setWelcomePopupImageUrl] = useState("")
+  const [showWelcomePopupImage, setShowWelcomePopupImage] = useState(false)
+  const formWelcomePopupImageUrl = form.watch("welcomePopupImageUrl")
   useEffect(() => {
     if (formImageUrl && formImageUrl !== "") {
       setImageUrl(formImageUrl)
@@ -389,6 +397,16 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
       setShowModalImage(false)
     }
   }, [formModalImageUrl])
+
+  useEffect(() => {
+    if (formWelcomePopupImageUrl && formWelcomePopupImageUrl !== "") {
+      setWelcomePopupImageUrl(formWelcomePopupImageUrl)
+      setShowWelcomePopupImage(true)
+    } else {
+      setWelcomePopupImageUrl("")
+      setShowWelcomePopupImage(false)
+    }
+  }, [formWelcomePopupImageUrl])
 
   async function getImageSize(url: string): Promise<number[]> {
     return new Promise((resolve, reject) => {
@@ -483,6 +501,22 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
     }
   }
 
+  const handleWelcomePopupImageChange: ChangeEventHandler<HTMLInputElement> = async (e) => {
+    if (!e?.target?.files) {
+      return
+    }
+    const selectedFile = e!.target.files[0]
+
+    if (selectedFile) {
+      const uploadedImageUrl = await uploadImage({
+        file: selectedFile,
+        purposeType: "CRUSHER_LABEL",
+      })
+      setWelcomePopupImageUrl(uploadedImageUrl)
+      form.setValue("welcomePopupImageUrl", uploadedImageUrl)
+    }
+  }
+
   const handleDeleteImage = () => {
     setImageUrl("")
     setShowImage(false)
@@ -501,6 +535,12 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
     setModalImageUrl("")
     setShowModalImage(false)
     form.setValue("modalImageUrl", null)
+  }
+
+  const handleDeleteWelcomePopupImage = () => {
+    setWelcomePopupImageUrl("")
+    setShowWelcomePopupImage(false)
+    form.setValue("welcomePopupImageUrl", null)
   }
 
   const isEditableFieldDisabled = isEditMode === undefined ? false : !isEditMode
@@ -920,6 +960,111 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
             </div>
           )}
         </Flex>
+        <Flex direction={showWelcomePopupImage ? "row" : "column"}>
+          <div className={css({ width: showWelcomePopupImage ? "50%" : "100%" })}>
+            <FileInput
+              label="참여 환영 팝업 이미지"
+              accept="image/*"
+              onChange={handleWelcomePopupImageChange}
+              disabled={isEditableFieldDisabled}
+            />
+          </div>
+          {showWelcomePopupImage && (
+            <div
+              className={css({
+                width: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 4,
+                marginBottom: 12,
+                backgroundColor: "#ffffff",
+                position: "relative",
+              })}
+            >
+              <RemoteImage
+                src={welcomePopupImageUrl}
+                width={200}
+                height={200}
+                className={css({
+                  maxWidth: "200px",
+                  maxHeight: "200px",
+                  border: "1px solid #000000",
+                  objectFit: "contain",
+                })}
+              />
+              <button
+                type="button"
+                onClick={handleDeleteWelcomePopupImage}
+                disabled={isEditableFieldDisabled}
+                className={css({
+                  position: "absolute",
+                  top: "4px",
+                  right: "4px",
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "50%",
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  _hover: {
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                  },
+                  _disabled: {
+                    cursor: "not-allowed",
+                    opacity: 0.5,
+                  },
+                })}
+              >
+                ×
+              </button>
+            </div>
+          )}
+        </Flex>
+        <div className={css({ marginBottom: "16px" })}>
+          <label
+            htmlFor="welcomePopupDescription"
+            className={css({ fontSize: "14px", fontWeight: "500", display: "block", marginBottom: "4px" })}
+          >
+            참여 환영 팝업 문구
+          </label>
+          <textarea
+            {...form.register("welcomePopupDescription")}
+            id="welcomePopupDescription"
+            placeholder="참여를 환영합니다! 와 함께 보여줄 문구를 입력하세요."
+            disabled={isEditableFieldDisabled}
+            className={css({
+              width: "100%",
+              minHeight: "80px",
+              padding: "12px",
+              border: "1px solid #d1d5db",
+              borderRadius: "6px",
+              fontSize: "14px",
+              lineHeight: "1.5",
+              resize: "vertical",
+              fontFamily: "inherit",
+              _focus: {
+                outline: "none",
+                borderColor: "#3b82f6",
+                boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.1)",
+              },
+              _disabled: {
+                backgroundColor: "#f9fafb",
+                color: "#6b7280",
+                cursor: "not-allowed",
+              },
+            })}
+          />
+          <div className={css({ fontSize: "12px", color: "#6b7280", marginTop: "4px" })}>
+            비우면 기본 문구(&apos;우리 함께 계단 정복을 시작해볼까요?&apos;)가 쓰입니다.
+          </div>
+        </div>
       </form>
     </FormProvider>
   )
