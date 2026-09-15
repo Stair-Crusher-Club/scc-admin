@@ -60,6 +60,8 @@ export default function ChallengeDetail() {
       imageHeight: challenge.crusherGroup?.icon?.height,
       lastMonthRankImageUrl: challenge.lastMonthRankImageUrl || null,
       modalImageUrl: challenge.modalImageUrl || null,
+      welcomePopupImageUrl: challenge.welcomePopupImageUrl || null,
+      welcomePopupDescription: challenge.welcomePopupDescription || null,
     })
   }, [challenge, conquerTargetPlaceLists])
 
@@ -122,6 +124,8 @@ export default function ChallengeDetail() {
       crusherGroup: crusherGroup,
       lastMonthRankImageUrl: values.lastMonthRankImageUrl || undefined,
       modalImageUrl: values.modalImageUrl || undefined,
+      welcomePopupImageUrl: values.welcomePopupImageUrl || undefined,
+      welcomePopupDescription: values.welcomePopupDescription || undefined,
     }
     await updateChallenge({ id, payload })
     alert("챌린지가 수정되었습니다.")

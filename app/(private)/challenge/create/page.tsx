@@ -40,6 +40,8 @@ export default function CreateChallenge() {
       imageHeight,
       lastMonthRankImageUrl,
       modalImageUrl,
+      welcomePopupImageUrl,
+      welcomePopupDescription,
     } = values
 
     const milestoneNumbers = milestones.map((v) => parseInt(v.value))
@@ -93,6 +95,8 @@ export default function CreateChallenge() {
       crusherGroup: crusherGroup,
       lastMonthRankImageUrl: lastMonthRankImageUrl || undefined,
       modalImageUrl: modalImageUrl || undefined,
+      welcomePopupImageUrl: welcomePopupImageUrl || undefined,
+      welcomePopupDescription: welcomePopupDescription || undefined,
     })
 
     if (res.status !== 200) {
