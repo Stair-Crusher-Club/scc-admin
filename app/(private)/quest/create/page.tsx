@@ -79,7 +79,7 @@ export default function QuestCreate() {
       purposeType: purposeTypeOptions[0],
       questTargetPlaceCategories: questTargetPlaceCategoryOptions,
       conquerTargetPlaceLists: [],
-      placeSearchMethod: placeSearchMethodOptions[0],
+      placeSearchMethod: placeSearchMethodOptions.find((o) => o.value === "USE_ALREADY_CRAWLED_PLACES")!,
       method: methodOptions[0],
       startDate: undefined,
       endDate: undefined,
@@ -113,6 +113,16 @@ export default function QuestCreate() {
       conquerTargetPlaceLists.filter((list) => list.isActive).map((list) => ({ label: list.name, value: list.id })),
     )
   }, [conquerTargetPlaceLists, form])
+
+  // 카테고리 필드의 검증 규칙이 CTPL 선택 여부를 함께 보므로, 둘 중 하나라도 바뀌면
+  // 카테고리 필드를 재검증한다. previewOn()이 form.trigger()로 검증하기 때문에(실제
+  // submit이 아니므로) react-hook-form의 mode/reValidateMode가 적용되지 않아, 카테고리
+  // 자신을 다시 골라도 자동으로는 재검증되지 않는다 — 그래서 두 필드 변경을 명시적으로 감시한다.
+  const questTargetPlaceCategoriesValue = form.watch("questTargetPlaceCategories")
+  const conquerTargetPlaceListsValue = form.watch("conquerTargetPlaceLists")
+  useEffect(() => {
+    form.trigger("questTargetPlaceCategories")
+  }, [questTargetPlaceCategoriesValue, conquerTargetPlaceListsValue, form])
 
   // 개월수를 지정한 경우, 대상 장소 중 이미 접근성 정보가 있는 곳(= archive 예정)이 몇 곳인지.
   // dryRun 응답의 isConquered가 곧 PA 존재 여부다. 수백 건이 사라지는 작업이라 누르기 전에 규모가 보여야 한다.
@@ -312,7 +322,12 @@ export default function QuestCreate() {
                 label="장소 카테고리"
                 placeholder=""
                 closeMenuOnSelect={false}
-                rules={{ required: { value: true, message: "1개 이상의 카테고리를 선택해주세요." } }}
+                rules={{
+                  validate: (value: typeof questTargetPlaceCategoryOptions) =>
+                    value.length > 0 ||
+                    form.getValues("conquerTargetPlaceLists").length > 0 ||
+                    "장소 카테고리 또는 정복 대상 리스트(CTPL)를 1개 이상 선택해주세요.",
+                }}
                 options={questTargetPlaceCategoryOptions}
               />
               <Combobox
@@ -322,6 +337,12 @@ export default function QuestCreate() {
                 placeholder=""
                 closeMenuOnSelect={false}
                 options={ctplOptions}
+              />
+              <NumberInput
+                name="placeAccessibilityOlderThanMonths"
+                label="오래된 접근성 정보 포함 (개월)"
+                placeholder="비워두면 접근성 정보가 없는 장소만 대상"
+                rules={{ min: { value: 1, message: "1 이상의 개월수를 입력해주세요." } }}
               />
               <Combobox
                 name="placeSearchMethod"
@@ -361,12 +382,6 @@ export default function QuestCreate() {
                 clearable={false}
               />
               <NumberInput name="maxPlacesPerQuest" label="퀘스트 당 최대 장소 수" clearable={false} />
-              <NumberInput
-                name="placeAccessibilityOlderThanMonths"
-                label="오래된 접근성 정보 포함 (개월)"
-                placeholder="비워두면 접근성 정보가 없는 장소만 대상"
-                rules={{ min: { value: 1, message: "1 이상의 개월수를 입력해주세요." } }}
-              />
             </fieldset>
 
             <div className="flex items-center gap-2 px-6 mt-3">
