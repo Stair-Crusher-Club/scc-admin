@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form"
 
 import { deleteChallenge, updateChallenge, useChallenge } from "@/lib/apis/api"
 import { useConquerTargetPlaceLists } from "@/lib/apis/conquerTargetPlaceList"
-import { AdminChallengeDTO, AdminUpdateChallengeRequestDTO } from "@/lib/generated-sources/openapi"
+import { AdminChallengeDTO, AdminChallengeWelcomePopupDto, AdminUpdateChallengeRequestDTO } from "@/lib/generated-sources/openapi"
 
 import { Contents } from "@/components/layout"
 
@@ -60,6 +60,10 @@ export default function ChallengeDetail() {
       imageHeight: challenge.crusherGroup?.icon?.height,
       lastMonthRankImageUrl: challenge.lastMonthRankImageUrl || null,
       modalImageUrl: challenge.modalImageUrl || null,
+      welcomePopup: {
+        imageUrl: challenge.welcomePopup?.imageUrl || null,
+        description: challenge.welcomePopup?.description || null,
+      },
     })
   }, [challenge, conquerTargetPlaceLists])
 
@@ -97,6 +101,14 @@ export default function ChallengeDetail() {
     // ctpl 선택 시 goal/conditions 는 서버가 리스트 기준으로 덮어쓴다 — 미선택 경로는 기존과 동일.
     const conquerTargetPlaceListId = values.conquerTargetPlaceList?.value || undefined
 
+    // 둘 다 비면 커스텀 팝업 없음(기본 팝업 사용) — undefined로 보내면 JSON 직렬화 시 키 자체가
+    // 빠져서 서버가 null로 받는 것과 동일하게 처리된다(AdminUpdateChallengeRequestDTO.welcomePopup
+    // 은 Kotlin 쪽도 평범한 nullable 필드라 부재/명시적 null을 구분하지 않음 — scc-server 확인).
+    const welcomePopup: AdminChallengeWelcomePopupDto | undefined =
+      values.welcomePopup?.imageUrl || values.welcomePopup?.description
+        ? { imageUrl: values.welcomePopup.imageUrl || undefined, description: values.welcomePopup.description || undefined }
+        : undefined
+
     const payload: AdminUpdateChallengeRequestDTO = {
       name: values.name,
       invitationCode: values.inviteCode || undefined,
@@ -122,6 +134,7 @@ export default function ChallengeDetail() {
       crusherGroup: crusherGroup,
       lastMonthRankImageUrl: values.lastMonthRankImageUrl || undefined,
       modalImageUrl: values.modalImageUrl || undefined,
+      welcomePopup,
     }
     await updateChallenge({ id, payload })
     alert("챌린지가 수정되었습니다.")

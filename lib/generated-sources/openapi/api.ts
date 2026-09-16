@@ -1183,6 +1183,31 @@ export interface AdminChallengeDTO {
      * @memberof AdminChallengeDTO
      */
     'conquerTargetPlaceListId'?: string;
+    /**
+     * 
+     * @type {AdminChallengeWelcomePopupDto}
+     * @memberof AdminChallengeDTO
+     */
+    'welcomePopup'?: AdminChallengeWelcomePopupDto;
+}
+/**
+ * 챌린지 참여 직후 띄울 환영 팝업. 지정하지 않으면 기존 기본 팝업 동작을 따른다.
+ * @export
+ * @interface AdminChallengeWelcomePopupDto
+ */
+export interface AdminChallengeWelcomePopupDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminChallengeWelcomePopupDto
+     */
+    'imageUrl'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminChallengeWelcomePopupDto
+     */
+    'description'?: string | null;
 }
 /**
  * 원형 검색 영역
@@ -1425,11 +1450,42 @@ export interface AdminConquerTargetPlaceListDto {
      */
     'isActive': boolean;
     /**
+     * 앱 노출용 브랜드 표시명. \'{displayName} 정복하기\' 처럼 브랜드명 단독으로 쓰이므로 \'올리브영\' 형태를 권장한다. 비워두면 앱이 name 으로 폴백한다.
+     * @type {string}
+     * @memberof AdminConquerTargetPlaceListDto
+     */
+    'displayName'?: string | null;
+    /**
+     * 
+     * @type {AdminConquerTargetPlaceListMarkerIconDto}
+     * @memberof AdminConquerTargetPlaceListDto
+     */
+    'markerIcon'?: AdminConquerTargetPlaceListMarkerIconDto;
+    /**
      * 
      * @type {EpochMillisTimestamp}
      * @memberof AdminConquerTargetPlaceListDto
      */
     'createdAt': EpochMillisTimestamp;
+}
+/**
+ * 정복 대상 장소 목록 전용 지도 마커 아이콘. 값은 SVG 원문 문자열이다. 256KB 이하여야 한다.
+ * @export
+ * @interface AdminConquerTargetPlaceListMarkerIconDto
+ */
+export interface AdminConquerTargetPlaceListMarkerIconDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminConquerTargetPlaceListMarkerIconDto
+     */
+    'defaultSvg': string;
+    /**
+     * 선택(포커스) 상태 마커. 지정하지 않으면 defaultSvg 를 그대로 쓴다.
+     * @type {string}
+     * @memberof AdminConquerTargetPlaceListMarkerIconDto
+     */
+    'focusedSvg'?: string | null;
 }
 /**
  * 
@@ -1643,6 +1699,12 @@ export interface AdminCreateChallengeRequestDTO {
      * @memberof AdminCreateChallengeRequestDTO
      */
     'conquerTargetPlaceListId'?: string;
+    /**
+     * 
+     * @type {AdminChallengeWelcomePopupDto}
+     * @memberof AdminCreateChallengeRequestDTO
+     */
+    'welcomePopup'?: AdminChallengeWelcomePopupDto;
 }
 /**
  * 정복 대상 장소 목록 생성 요청
@@ -1668,6 +1730,18 @@ export interface AdminCreateConquerTargetPlaceListRequestDto {
      * @memberof AdminCreateConquerTargetPlaceListRequestDto
      */
     'endAt'?: EpochMillisTimestamp;
+    /**
+     * 앱 노출용 브랜드 표시명. \'{displayName} 정복하기\' 처럼 브랜드명 단독으로 쓰이므로 \'올리브영\' 형태를 권장한다. 비워두면 앱이 name 으로 폴백한다.
+     * @type {string}
+     * @memberof AdminCreateConquerTargetPlaceListRequestDto
+     */
+    'displayName'?: string | null;
+    /**
+     * 
+     * @type {AdminConquerTargetPlaceListMarkerIconDto}
+     * @memberof AdminCreateConquerTargetPlaceListRequestDto
+     */
+    'markerIcon'?: AdminConquerTargetPlaceListMarkerIconDto;
 }
 /**
  * 
@@ -4074,9 +4148,15 @@ export interface AdminUpdateChallengeRequestDTO {
      * @memberof AdminUpdateChallengeRequestDTO
      */
     'conquerTargetPlaceListId'?: string;
+    /**
+     * 
+     * @type {AdminChallengeWelcomePopupDto}
+     * @memberof AdminUpdateChallengeRequestDTO
+     */
+    'welcomePopup'?: AdminChallengeWelcomePopupDto;
 }
 /**
- * 정복 대상 장소 목록 수정 요청. startAt/endAt은 부분 수정이 아니라 덮어쓰기다 — 값을 보내지 않으면 null(기간 없음)로 저장된다. 
+ * 정복 대상 장소 목록 수정 요청. startAt/endAt/displayName/markerIcon 은 부분 수정이 아니라 덮어쓰기다 — 값을 보내지 않으면 null 로 저장된다. 
  * @export
  * @interface AdminUpdateConquerTargetPlaceListRequestDto
  */
@@ -4099,6 +4179,18 @@ export interface AdminUpdateConquerTargetPlaceListRequestDto {
      * @memberof AdminUpdateConquerTargetPlaceListRequestDto
      */
     'endAt'?: EpochMillisTimestamp;
+    /**
+     * 앱 노출용 브랜드 표시명. \'{displayName} 정복하기\' 처럼 브랜드명 단독으로 쓰이므로 \'올리브영\' 형태를 권장한다. 비워두면 앱이 name 으로 폴백한다.
+     * @type {string}
+     * @memberof AdminUpdateConquerTargetPlaceListRequestDto
+     */
+    'displayName'?: string | null;
+    /**
+     * 
+     * @type {AdminConquerTargetPlaceListMarkerIconDto}
+     * @memberof AdminUpdateConquerTargetPlaceListRequestDto
+     */
+    'markerIcon'?: AdminConquerTargetPlaceListMarkerIconDto;
 }
 /**
  * 
