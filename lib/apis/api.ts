@@ -4,6 +4,7 @@ import {
   AdminAccessibilityDTO,
   AdminAccessibilityInspectionResultDTO,
   AdminChallengeB2bFormSchemaDTO,
+  AdminChallengeWelcomePopupDto,
   AdminCreateSearchPlacePresetRequestDTO,
   AdminEntranceDoorType,
   AdminImageUploadPurposeTypeDTO,
@@ -288,8 +289,7 @@ type CreateChallengeParams = {
   crusherGroup?: CrusherGroup
   lastMonthRankImageUrl?: string
   modalImageUrl?: string
-  welcomePopupImageUrl?: string
-  welcomePopupDescription?: string
+  welcomePopup?: AdminChallengeWelcomePopupDto
   conquerTargetPlaceListId?: string
 }
 export function createChallenge(payload: CreateChallengeParams) {

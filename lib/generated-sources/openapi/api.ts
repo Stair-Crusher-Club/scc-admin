@@ -1184,17 +1184,30 @@ export interface AdminChallengeDTO {
      */
     'conquerTargetPlaceListId'?: string;
     /**
-     * 참여 환영 팝업 이미지 URL. 지정하면 새 디자인 팝업을 띄운다.
-     * @type {string}
+     * 
+     * @type {AdminChallengeWelcomePopupDto}
      * @memberof AdminChallengeDTO
      */
-    'welcomePopupImageUrl'?: string | null;
+    'welcomePopup'?: AdminChallengeWelcomePopupDto;
+}
+/**
+ * 챌린지 참여 직후 띄울 환영 팝업. 지정하지 않으면 기존 기본 팝업 동작을 따른다.
+ * @export
+ * @interface AdminChallengeWelcomePopupDto
+ */
+export interface AdminChallengeWelcomePopupDto {
     /**
-     * 참여 환영 팝업 본문 문구. 미지정이면 기존 기본 문구를 쓴다.
+     * 
      * @type {string}
-     * @memberof AdminChallengeDTO
+     * @memberof AdminChallengeWelcomePopupDto
      */
-    'welcomePopupDescription'?: string | null;
+    'imageUrl'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminChallengeWelcomePopupDto
+     */
+    'description'?: string | null;
 }
 /**
  * 원형 검색 영역
@@ -1687,17 +1700,11 @@ export interface AdminCreateChallengeRequestDTO {
      */
     'conquerTargetPlaceListId'?: string;
     /**
-     * 참여 환영 팝업 이미지 URL. 지정하면 새 디자인 팝업을 띄운다.
-     * @type {string}
+     * 
+     * @type {AdminChallengeWelcomePopupDto}
      * @memberof AdminCreateChallengeRequestDTO
      */
-    'welcomePopupImageUrl'?: string | null;
-    /**
-     * 참여 환영 팝업 본문 문구. 미지정이면 기존 기본 문구를 쓴다.
-     * @type {string}
-     * @memberof AdminCreateChallengeRequestDTO
-     */
-    'welcomePopupDescription'?: string | null;
+    'welcomePopup'?: AdminChallengeWelcomePopupDto;
 }
 /**
  * 정복 대상 장소 목록 생성 요청
@@ -4142,17 +4149,11 @@ export interface AdminUpdateChallengeRequestDTO {
      */
     'conquerTargetPlaceListId'?: string;
     /**
-     * 참여 환영 팝업 이미지 URL. 지정하면 새 디자인 팝업을 띄운다.
-     * @type {string}
+     * 
+     * @type {AdminChallengeWelcomePopupDto}
      * @memberof AdminUpdateChallengeRequestDTO
      */
-    'welcomePopupImageUrl'?: string | null;
-    /**
-     * 참여 환영 팝업 본문 문구. 미지정이면 기존 기본 문구를 쓴다.
-     * @type {string}
-     * @memberof AdminUpdateChallengeRequestDTO
-     */
-    'welcomePopupDescription'?: string | null;
+    'welcomePopup'?: AdminChallengeWelcomePopupDto;
 }
 /**
  * 정복 대상 장소 목록 수정 요청. startAt/endAt/displayName/markerIcon 은 부분 수정이 아니라 덮어쓰기다 — 값을 보내지 않으면 null 로 저장된다. 

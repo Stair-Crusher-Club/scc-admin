@@ -40,8 +40,7 @@ export default function CreateChallenge() {
       imageHeight,
       lastMonthRankImageUrl,
       modalImageUrl,
-      welcomePopupImageUrl,
-      welcomePopupDescription,
+      welcomePopup,
     } = values
 
     const milestoneNumbers = milestones.map((v) => parseInt(v.value))
@@ -95,8 +94,12 @@ export default function CreateChallenge() {
       crusherGroup: crusherGroup,
       lastMonthRankImageUrl: lastMonthRankImageUrl || undefined,
       modalImageUrl: modalImageUrl || undefined,
-      welcomePopupImageUrl: welcomePopupImageUrl || undefined,
-      welcomePopupDescription: welcomePopupDescription || undefined,
+      // 둘 다 비면 커스텀 팝업 없음(기본 팝업 사용) — undefined면 JSON 직렬화 시 키가 빠져
+      // 서버가 null로 받는 것과 동일하게 처리된다(scc-server 쪽도 평범한 nullable 필드).
+      welcomePopup:
+        welcomePopup?.imageUrl || welcomePopup?.description
+          ? { imageUrl: welcomePopup.imageUrl || undefined, description: welcomePopup.description || undefined }
+          : undefined,
     })
 
     if (res.status !== 200) {

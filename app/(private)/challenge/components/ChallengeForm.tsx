@@ -63,8 +63,10 @@ export interface ChallengeFormValues {
   imageHeight?: number
   lastMonthRankImageUrl?: string | null
   modalImageUrl?: string | null
-  welcomePopupImageUrl?: string | null
-  welcomePopupDescription?: string | null
+  welcomePopup: {
+    imageUrl?: string | null
+    description?: string | null
+  }
 }
 
 export const defaultValues: Partial<ChallengeFormValues> = {
@@ -90,8 +92,7 @@ export const defaultValues: Partial<ChallengeFormValues> = {
   imageHeight: undefined,
   lastMonthRankImageUrl: null,
   modalImageUrl: null,
-  welcomePopupImageUrl: null,
-  welcomePopupDescription: null,
+  welcomePopup: { imageUrl: null, description: null },
 }
 
 interface Props {
@@ -367,7 +368,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
 
   const [welcomePopupImageUrl, setWelcomePopupImageUrl] = useState("")
   const [showWelcomePopupImage, setShowWelcomePopupImage] = useState(false)
-  const formWelcomePopupImageUrl = form.watch("welcomePopupImageUrl")
+  const formWelcomePopupImageUrl = form.watch("welcomePopup.imageUrl")
   useEffect(() => {
     if (formImageUrl && formImageUrl !== "") {
       setImageUrl(formImageUrl)
@@ -513,7 +514,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
         purposeType: "CRUSHER_LABEL",
       })
       setWelcomePopupImageUrl(uploadedImageUrl)
-      form.setValue("welcomePopupImageUrl", uploadedImageUrl)
+      form.setValue("welcomePopup.imageUrl", uploadedImageUrl)
     }
   }
 
@@ -540,7 +541,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
   const handleDeleteWelcomePopupImage = () => {
     setWelcomePopupImageUrl("")
     setShowWelcomePopupImage(false)
-    form.setValue("welcomePopupImageUrl", null)
+    form.setValue("welcomePopup.imageUrl", null)
   }
 
   const isEditableFieldDisabled = isEditMode === undefined ? false : !isEditMode
@@ -1035,7 +1036,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
             참여 환영 팝업 문구
           </label>
           <textarea
-            {...form.register("welcomePopupDescription")}
+            {...form.register("welcomePopup.description")}
             id="welcomePopupDescription"
             placeholder="참여를 환영합니다! 와 함께 보여줄 문구를 입력하세요."
             disabled={isEditableFieldDisabled}
