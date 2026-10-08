@@ -3501,6 +3501,12 @@ export interface AdminSendPushNotificationRequestDTO {
      * @memberof AdminSendPushNotificationRequestDTO
      */
     'deepLink'?: string;
+    /**
+     * 즉시 전송(scheduledAt 없음)일 때 야간(21~08시 KST) 지연을 건너뛰고 바로 보낸다. 테스트용이라 PROD 에서는 400 으로 거부한다.
+     * @type {boolean}
+     * @memberof AdminSendPushNotificationRequestDTO
+     */
+    'ignoreQuietHours'?: boolean;
 }
 /**
  * 
@@ -4659,6 +4665,7 @@ export interface ClubQuestDTO {
 
 export const ClubQuestPurposeTypeEnumDTO = {
     CrusherClub: 'CRUSHER_CLUB',
+    CrusherClubWarmingUp: 'CRUSHER_CLUB_WARMING_UP',
     DailyClub: 'DAILY_CLUB',
     CollaboClub: 'COLLABO_CLUB',
     EsgPartners: 'ESG_PARTNERS'

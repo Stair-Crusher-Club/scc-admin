@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label"
 
 const purposeTypeOptions: { label: string; value: ClubQuestPurposeTypeEnumDTO }[] = [
   { label: "크러셔 클럽", value: "CRUSHER_CLUB" },
+  { label: "크러셔 클럽 - 워밍업 정복활동", value: "CRUSHER_CLUB_WARMING_UP" },
   { label: "일상 퀘스트", value: "DAILY_CLUB" },
   { label: "콜라보 클럽", value: "COLLABO_CLUB" },
   { label: "ESG 파트너스", value: "ESG_PARTNERS" },
