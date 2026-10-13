@@ -236,9 +236,7 @@ export function NotificationSendForm({ id, form, onSubmit, onTestSend }: Props) 
           {typeof form.formState.errors?.pushType?.message === "string" ? form.formState.errors?.pushType?.message : ""}
         </S.ErrorMessage>
         {form.watch("pushType") === "marketing" && (
-          <S.PreviewBox>
-            <S.PreviewContent>제목 앞에 (광고)가 자동으로 붙고, 수신 미동의 유저는 제외됩니다.</S.PreviewContent>
-          </S.PreviewBox>
+          <div><S.InputDescription>* 제목 앞에 (광고)가 자동으로 붙고, 수신 미동의 유저는 제외됩니다.</S.InputDescription></div>
         )}
 
         <S.InputTitle>발송 시각 설정</S.InputTitle>
