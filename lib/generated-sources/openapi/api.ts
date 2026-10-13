@@ -3161,6 +3161,12 @@ export interface AdminPushNotificationScheduleDTO {
      * @memberof AdminPushNotificationScheduleDTO
      */
     'targetUserIds': Array<string>;
+    /**
+     * true 면 마케팅(광고성) 푸시 — 서버가 제목 앞에 \"(광고) \" 를 붙이고 수신 미동의 유저는 제외한다.
+     * @type {boolean}
+     * @memberof AdminPushNotificationScheduleDTO
+     */
+    'isMarketing': boolean;
 }
 /**
  * 직사각형 검색 영역
@@ -3507,6 +3513,12 @@ export interface AdminSendPushNotificationRequestDTO {
      * @memberof AdminSendPushNotificationRequestDTO
      */
     'ignoreQuietHours'?: boolean;
+    /**
+     * true 면 마케팅(광고성) 푸시 — 서버가 제목 앞에 \"(광고) \" 를 붙이고 수신 미동의 유저는 제외한다.
+     * @type {boolean}
+     * @memberof AdminSendPushNotificationRequestDTO
+     */
+    'isMarketing': boolean;
 }
 /**
  * 
@@ -4182,6 +4194,12 @@ export interface AdminUpdatePushNotificationScheduleRequestDTO {
      * @memberof AdminUpdatePushNotificationScheduleRequestDTO
      */
     'deepLink'?: string;
+    /**
+     * true 면 마케팅(광고성) 푸시 — 서버가 제목 앞에 \"(광고) \" 를 붙이고 수신 미동의 유저는 제외한다.
+     * @type {boolean}
+     * @memberof AdminUpdatePushNotificationScheduleRequestDTO
+     */
+    'isMarketing': boolean;
 }
 /**
  * 사용자의 관심 테마. 윌리의 외출 NUX 튜토리얼 첫 번째 메인 미션에서 선택한다. Figma 1427-8980 화면 기준 8개 항목. - WHEELCHAIR_REVIEW: 휠체어 찐방문기 - MEDIA_HOTSPOT: 방송·SNS 핫플 - FOOD_CAFE_TOUR: 맛집·카페 투어 - EMOTIONAL_VIEW: 감성·뷰 맛집 - SPORTS: 야구장·스포츠 - CULTURE: 공연·전시·영화 - TRAVEL: 훌쩍 떠나는 여행 - NATURE: 자연·공원 힐링 
