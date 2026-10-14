@@ -8,6 +8,7 @@ import { Flex } from "@/styles/jsx"
 import * as S from "../page.style"
 import {
   DeepLinkOption,
+  IS_MARKETING_PUSH_TYPE_SELECTABLE,
   Option,
   WebviewOption,
   deepLinkOptions,
@@ -213,30 +214,34 @@ export function NotificationSendForm({ id, form, onSubmit, onTestSend }: Props) 
           </>
         )}
 
-        <S.InputTitle>발송 유형</S.InputTitle>
-        <S.RadioGroup>
-          <S.RadioLabel>
-            <input
-              type="radio"
-              value="informational"
-              {...form.register("pushType", { required: "발송 유형을 선택하세요." })}
-            />
-            <span>정보성</span>
-          </S.RadioLabel>
-          <S.RadioLabel>
-            <input
-              type="radio"
-              value="marketing"
-              {...form.register("pushType", { required: "발송 유형을 선택하세요." })}
-            />
-            <span>마케팅(광고)</span>
-          </S.RadioLabel>
-        </S.RadioGroup>
-        <S.ErrorMessage>
-          {typeof form.formState.errors?.pushType?.message === "string" ? form.formState.errors?.pushType?.message : ""}
-        </S.ErrorMessage>
-        {form.watch("pushType") === "marketing" && (
-          <div><S.InputDescription>* 제목 앞에 (광고)가 자동으로 붙고, 수신 미동의 유저는 제외됩니다.</S.InputDescription></div>
+        {IS_MARKETING_PUSH_TYPE_SELECTABLE && (
+          <>
+            <S.InputTitle>발송 유형</S.InputTitle>
+            <S.RadioGroup>
+              <S.RadioLabel>
+                <input
+                  type="radio"
+                  value="informational"
+                  {...form.register("pushType", { required: "발송 유형을 선택하세요." })}
+                />
+                <span>정보성</span>
+              </S.RadioLabel>
+              <S.RadioLabel>
+                <input
+                  type="radio"
+                  value="marketing"
+                  {...form.register("pushType", { required: "발송 유형을 선택하세요." })}
+                />
+                <span>마케팅(광고)</span>
+              </S.RadioLabel>
+            </S.RadioGroup>
+            <S.ErrorMessage>
+              {typeof form.formState.errors?.pushType?.message === "string" ? form.formState.errors?.pushType?.message : ""}
+            </S.ErrorMessage>
+            {form.watch("pushType") === "marketing" && (
+              <div><S.InputDescription>* 제목 앞에 (광고)가 자동으로 붙고, 수신 미동의 유저는 제외됩니다.</S.InputDescription></div>
+            )}
+          </>
         )}
 
         <S.InputTitle>발송 시각 설정</S.InputTitle>
