@@ -56,3 +56,6 @@ export const predefinedWebviews: WebviewOption[] = [
   },
 ]
 
+// ponytail: 마케팅 수신동의는 sandbox 에 먼저 적용한다 — prod 서버는 마케팅 구분을 무시하므로 live 어드민엔 발송 유형을 숨긴다(= 정보성).
+// prod 오픈 시 이 상수와 사용처 분기를 지운다.
+export const IS_MARKETING_PUSH_TYPE_SELECTABLE = process.env.NEXT_PUBLIC_DEPLOY_TYPE !== "live"

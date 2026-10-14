@@ -56,6 +56,13 @@ export function SendConfirmModal({ isOpen, onClose, formValues, onConfirm }: Sen
           </div>
 
           <div>
+            <S.InputTitle>발송 유형</S.InputTitle>
+            <S.PreviewBox>
+              <S.PreviewContent>{formValues.pushType === "marketing" ? "마케팅(광고)" : "정보성"}</S.PreviewContent>
+            </S.PreviewBox>
+          </div>
+
+          <div>
             <S.InputTitle>발송 시간</S.InputTitle>
             <S.PreviewBox>
               <S.PreviewContent>{scheduleText}</S.PreviewContent>

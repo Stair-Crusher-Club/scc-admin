@@ -200,6 +200,7 @@ export default function NotificationPage() {
         title: title,
         body: body,
         deepLink: deepLink,
+        isMarketing: formValues.pushType === "marketing",
         scheduledAt: truncatedDate ? { value: truncatedDate.getTime() } : undefined,
       }
 
@@ -232,6 +233,7 @@ export default function NotificationPage() {
         title: title,
         body: body,
         deepLink: deepLink,
+        isMarketing: formValues.pushType === "marketing",
         scheduledAt: undefined, // 즉시 발송
       }
 
@@ -265,6 +267,7 @@ export default function NotificationPage() {
         title: title,
         body: body,
         deepLink: deepLink,
+        isMarketing: formValues.pushType === "marketing",
       }
 
       const res = await updatePushSchedule({ id: editingId, payload: payload })
@@ -311,6 +314,7 @@ export default function NotificationPage() {
       webviewUrl: parsedData.webviewUrl,
       webviewFixedTitle: parsedData.webviewFixedTitle,
       webviewHeaderVariant: parsedData.webviewHeaderVariant,
+      pushType: schedule.isMarketing ? "marketing" : "informational",
       scheduleDate: format(new Date(schedule.scheduledAt.value), "yyyy-MM-dd HH:mm"),
     })
     setEditingId(schedule.id)
@@ -345,6 +349,7 @@ export default function NotificationPage() {
                       <S.ScheduleTheadTr>
                         <S.ScheduleTh>발송 예정 시각</S.ScheduleTh>
                         <S.ScheduleTh>발송 시각</S.ScheduleTh>
+                        <S.ScheduleTh>유형</S.ScheduleTh>
                         <S.ScheduleTh>제목</S.ScheduleTh>
                         <S.ScheduleTh>내용</S.ScheduleTh>
                         <S.ScheduleTh>딥링크</S.ScheduleTh>
@@ -365,6 +370,7 @@ export default function NotificationPage() {
                               ? format(new Date(schedule.sentAt.value), "yyyy-MM-dd HH:mm")
                               : "아직 발송 안됨"}
                           </S.ScheduleTd>
+                          <S.ScheduleTd>{schedule.isMarketing ? "마케팅" : "정보성"}</S.ScheduleTd>
                           <S.ScheduleTd>{schedule.title}</S.ScheduleTd>
                           <S.ScheduleTd>{schedule.body}</S.ScheduleTd>
                           <S.ScheduleTd>{schedule.deepLink}</S.ScheduleTd>
