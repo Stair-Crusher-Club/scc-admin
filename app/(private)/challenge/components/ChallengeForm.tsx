@@ -897,7 +897,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
         <Flex direction={showModalImage ? "row" : "column"}>
           <div className={css({ width: showModalImage ? "50%" : "100%" })}>
             <FileInput
-              label="누적 랭킹 팝업 이미지 (참여자가 챌린지 상세 진입 시, 하루 1회)"
+              label="팝업 이미지 (참여자가 챌린지 상세 진입 시, 하루 1회)"
               accept="image/*"
               onChange={handleModalImageChange}
               disabled={isEditableFieldDisabled}
