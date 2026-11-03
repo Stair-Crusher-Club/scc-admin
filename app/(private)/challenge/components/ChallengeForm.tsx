@@ -830,7 +830,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
         <Flex direction={showLastMonthRankImage ? "row" : "column"}>
           <div className={css({ width: showLastMonthRankImage ? "50%" : "100%" })}>
             <FileInput
-              label="지난 달 랭킹 이미지"
+              label="누적 랭킹 이미지 (챌린지 상세 하단 영역)"
               accept="image/*"
               onChange={handleLastMonthRankImageChange}
               disabled={isEditableFieldDisabled}
@@ -897,7 +897,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
         <Flex direction={showModalImage ? "row" : "column"}>
           <div className={css({ width: showModalImage ? "50%" : "100%" })}>
             <FileInput
-              label="모달 이미지"
+              label="팝업 이미지 (참여자가 챌린지 상세 진입 시, 하루 1회)"
               accept="image/*"
               onChange={handleModalImageChange}
               disabled={isEditableFieldDisabled}
@@ -964,7 +964,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
         <Flex direction={showWelcomePopupImage ? "row" : "column"}>
           <div className={css({ width: showWelcomePopupImage ? "50%" : "100%" })}>
             <FileInput
-              label="참여 환영 팝업 이미지"
+              label="참여 환영 팝업 이미지 (참여하기 직후 1회만 — 랭킹 이미지 넣지 마세요)"
               accept="image/*"
               onChange={handleWelcomePopupImageChange}
               disabled={isEditableFieldDisabled}
