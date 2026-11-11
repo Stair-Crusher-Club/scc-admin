@@ -69,6 +69,17 @@ export interface ChallengeFormValues {
   }
 }
 
+// 서버는 crusherGroup 을 통째로 덮어쓰고, 이름이 비면 화면에서 crusherGroup 을 아예 안 보낸다.
+// 이미지만 올리고 이름을 비우면 라벨이 조용히 사라지므로(2026-11-11 본죽 챌린지) 저장 전에 막는다.
+export const PARTNER_LABEL_NAME_REQUIRED_MESSAGE =
+  "파트너 라벨 이미지를 쓰려면 '파트너 라벨 이름'도 입력해주세요. 이름이 비어 있으면 라벨이 저장되지 않습니다."
+
+export function isPartnerLabelNameMissing(values: Pick<ChallengeFormValues, "crusherGroupName" | "imageUrl">) {
+  const hasImage = !!values.imageUrl && values.imageUrl.trim() !== ""
+  const hasName = !!values.crusherGroupName && values.crusherGroupName.trim() !== ""
+  return hasImage && !hasName
+}
+
 export const defaultValues: Partial<ChallengeFormValues> = {
   name: "",
   inviteCode: "",
@@ -758,7 +769,7 @@ export default function ChallengeForm({ form, id, isEditMode, onSubmit }: Props)
         <TextInput
           name="crusherGroupName"
           label="파트너 라벨 이름"
-          placeholder="파트너 라벨로 사용하고 싶은 이름을 입력하세요"
+          placeholder="파트너 라벨로 사용하고 싶은 이름을 입력하세요 (라벨 이미지를 쓰려면 필수)"
           disabled={isEditableFieldDisabled}
         />
         <Flex direction={showImage ? "row" : "column"}>
