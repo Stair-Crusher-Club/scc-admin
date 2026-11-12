@@ -11,7 +11,13 @@ import { AdminChallengeDTO, AdminChallengeWelcomePopupDto, AdminUpdateChallengeR
 
 import { Contents } from "@/components/layout"
 
-import ChallengeForm, { ChallengeFormValues, actionOptions, defaultValues } from "../components/ChallengeForm"
+import ChallengeForm, {
+  ChallengeFormValues,
+  PARTNER_LABEL_NAME_REQUIRED_MESSAGE,
+  actionOptions,
+  defaultValues,
+  isPartnerLabelNameMissing,
+} from "../components/ChallengeForm"
 import * as S from "./page.style"
 
 export default function ChallengeDetail() {
@@ -75,6 +81,10 @@ export default function ChallengeDetail() {
   }
 
   async function confirmAndUpdateChallenge(values: ChallengeFormValues) {
+    if (isPartnerLabelNameMissing(values)) {
+      alert(PARTNER_LABEL_NAME_REQUIRED_MESSAGE)
+      return
+    }
     if (!confirm("정말 수정하시겠습니까?")) return
     let icon
     if (values.imageUrl && values.imageUrl.trim() !== "") {

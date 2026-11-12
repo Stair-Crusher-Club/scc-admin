@@ -9,7 +9,12 @@ import { createChallenge } from "@/lib/apis/api"
 
 import { Contents } from "@/components/layout"
 
-import ChallengeForm, { ChallengeFormValues, defaultValues } from "../components/ChallengeForm"
+import ChallengeForm, {
+  ChallengeFormValues,
+  PARTNER_LABEL_NAME_REQUIRED_MESSAGE,
+  defaultValues,
+  isPartnerLabelNameMissing,
+} from "../components/ChallengeForm"
 import * as S from "./page.style"
 
 export default function CreateChallenge() {
@@ -19,6 +24,10 @@ export default function CreateChallenge() {
   const form = useForm<ChallengeFormValues>({ defaultValues })
 
   async function onSubmit(values: ChallengeFormValues) {
+    if (isPartnerLabelNameMissing(values)) {
+      toast.error(PARTNER_LABEL_NAME_REQUIRED_MESSAGE)
+      return
+    }
     const {
       name,
       inviteCode,
