@@ -22,7 +22,7 @@ export interface ViewConfig {
 /** 유형 컬럼 정렬 우선순위: 팀리더 → 유닛리더 → 프론트 → 크루 → 게스트 → 나머지 */
 const TYPE_SORT_ORDER = ["팀리더", "유닛리더", "프론트", "크루", "게스트"]
 
-const FALLBACK_COLUMN_ORDER = ["이름", "조", "출석", "결석", "팀", "유형", "비고"]
+const FALLBACK_COLUMN_ORDER = ["이름", "조", "출석", "결석", "팀", "유형", "굿즈", "비고"]
 
 const FALLBACK_SORTS: ViewConfig["sorts"] = [
   { property: "조", direction: "ascending" },
@@ -36,7 +36,7 @@ const FALLBACK_SORTS: ViewConfig["sorts"] = [
  */
 export async function getViewConfig(databaseId: string): Promise<ViewConfig> {
   return cachedFetch(
-    `notion:view-config:${databaseId}`,
+    `notion:view-config:v2:${databaseId}`,
     () => fetchViewConfig(databaseId),
     3600,
   )
